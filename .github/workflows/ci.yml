@@ -40,6 +40,8 @@ jobs:
         run: |
           go build -o bin/audiofilus.exe ./cmd/audiofilus
           go build -ldflags=-H=windowsgui -o bin/audiofilus-ui.exe ./cmd/audiofilus-ui
+      - name: Virtual sound card (the runner has none)
+        uses: LABSN/sound-ci-helpers@v1
       - name: Smoke test (service, socket, playback, quit)
         shell: bash
         run: |
