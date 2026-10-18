@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths-ignore: ["site/**", "**.md"]
   pull_request:
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -24,3 +25,29 @@ jobs:
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus-ui
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Build
+        shell: bash
+        run: |
+          go build -o bin/audiofilus.exe ./cmd/audiofilus
+          go build -ldflags=-H=windowsgui -o bin/audiofilus-ui.exe ./cmd/audiofilus-ui
+      - name: Smoke test (service, socket, playback, quit)
+        shell: bash
+        run: |
+          set -x
+          ./bin/audiofilus.exe daemon -detach
+          ./bin/audiofilus.exe status
+          ./bin/audiofilus.exe play internal/decode/testdata
+          sleep 2
+          ./bin/audiofilus.exe status
+          ./bin/audiofilus.exe quit
+          cat bin/data/*.log || true

@@ -737,6 +737,10 @@ func (a *App) readBattery() {
 	}
 	a.batAt = time.Now()
 	a.battery = -1
+	if level, charging, ok := systemBattery(); ok {
+		a.battery, a.charging = level, charging
+		return
+	}
 	caps, _ := filepath.Glob("/sys/class/power_supply/*/capacity")
 	for _, c := range caps {
 		if t, err := os.ReadFile(filepath.Join(filepath.Dir(c), "type")); err != nil || strings.TrimSpace(string(t)) != "Battery" {

@@ -55,7 +55,7 @@ func loadMPG123() error {
 		return errDisabled
 	}
 	mpg123.once.Do(func() {
-		mpg123.err = openLib([]string{"libmpg123.so.0", "libmpg123.so"}, []libFunc{
+		mpg123.err = openLib([]string{"libmpg123.so.0", "libmpg123.so", "libmpg123-0.dll"}, []libFunc{
 			{&mpg123.init, "mpg123_init"}, {&mpg123.new, "mpg123_new"}, {&mpg123.del, "mpg123_delete"},
 			{&mpg123.param, "mpg123_param"}, {&mpg123.none, "mpg123_format_none"}, {&mpg123.format, "mpg123_format"},
 			{&mpg123.getf, "mpg123_getformat"}, {&mpg123.open, "mpg123_open_fd"}, {&mpg123.close, "mpg123_close"},

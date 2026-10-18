@@ -18,6 +18,8 @@ import (
 	"sync"
 	"time"
 	"unicode/utf8"
+
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 )
 
 // Find busca el yt-dlp que el usuario puso junto a audiofilus (en base): la
@@ -78,7 +80,7 @@ func run(ctx context.Context, bin string, progress func(Progress), args ...strin
 		}
 		full = append(full, args...)
 		report(Progress{Stage: "resolve"})
-		cmd := exec.CommandContext(ctx, bin, full...)
+		cmd := proc.Hidden(exec.CommandContext(ctx, bin, full...))
 		cmd.Dir = os.TempDir()
 		stdout, _ := cmd.StdoutPipe()
 		stderr, _ := cmd.StderrPipe()
@@ -362,7 +364,7 @@ func fromCache(ctx context.Context, t Track, cached, musicDir string, progress f
 		"-metadata", "album="+t.Album,
 		"-metadata", "youtube_id="+t.ID,
 		"-f", "mp3", tmp)
-	cmd := exec.CommandContext(ctx, "ffmpeg", args...)
+	cmd := proc.Hidden(exec.CommandContext(ctx, "ffmpeg", args...))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {

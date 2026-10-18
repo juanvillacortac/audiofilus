@@ -29,7 +29,7 @@ func loadOpusfile() error {
 		return errDisabled
 	}
 	opusfile.once.Do(func() {
-		opusfile.err = openLib([]string{"libopusfile.so.0", "libopusfile.so"}, []libFunc{
+		opusfile.err = openLib([]string{"libopusfile.so.0", "libopusfile.so", "libopusfile-0.dll"}, []libFunc{
 			{&opusfile.open, "op_open_file"}, {&opusfile.read, "op_read_float_stereo"},
 			{&opusfile.total, "op_pcm_total"}, {&opusfile.seek, "op_pcm_seek"},
 			{&opusfile.tell, "op_pcm_tell"}, {&opusfile.free, "op_free"},

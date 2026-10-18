@@ -47,7 +47,7 @@ func loadXMP() error {
 		return errDisabled
 	}
 	xmp.once.Do(func() {
-		xmp.err = openLib([]string{"libxmp.so.4", "libxmp.so"}, []libFunc{
+		xmp.err = openLib([]string{"libxmp.so.4", "libxmp.so", "libxmp-4.dll", "libxmp.dll"}, []libFunc{
 			{&xmp.create, "xmp_create_context"}, {&xmp.free, "xmp_free_context"},
 			{&xmp.load, "xmp_load_module"}, {&xmp.release, "xmp_release_module"},
 			{&xmp.start, "xmp_start_player"}, {&xmp.play, "xmp_play_buffer"},

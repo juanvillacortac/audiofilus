@@ -37,7 +37,7 @@ func loadFDK() error {
 		return errDisabled
 	}
 	fdk.once.Do(func() {
-		fdk.err = openLib([]string{"libfdk-aac.so.2", "libfdk-aac.so"}, []libFunc{
+		fdk.err = openLib([]string{"libfdk-aac.so.2", "libfdk-aac.so", "libfdk-aac-2.dll"}, []libFunc{
 			{&fdk.open, "aacDecoder_Open"}, {&fdk.config, "aacDecoder_ConfigRaw"},
 			{&fdk.param, "aacDecoder_SetParam"}, {&fdk.fill, "aacDecoder_Fill"},
 			{&fdk.decode, "aacDecoder_DecodeFrame"}, {&fdk.info, "aacDecoder_GetStreamInfo"},

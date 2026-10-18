@@ -17,6 +17,14 @@ for arch in amd64 arm64; do
     -o "dist/audiofilus-ui-$arch" ./cmd/audiofilus-ui
   echo "dist/audiofilus-$arch dist/audiofilus-ui-$arch"
 done
+# Windows (amd64), sin cgo: Ebitengine usa DirectX y oto WASAPI. La interfaz
+# es una aplicación de ventana (-H windowsgui), sin consola detrás.
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w" \
+  -o dist/audiofilus-windows-amd64.exe ./cmd/audiofilus
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w -H windowsgui" \
+  -o dist/audiofilus-ui-windows-amd64.exe ./cmd/audiofilus-ui
+echo "dist/audiofilus-windows-amd64.exe dist/audiofilus-ui-windows-amd64.exe"
+
 # Con cp + mv: si el servicio está corriendo, sobrescribir su binario falla
 # ("Text file busy"); reemplazarlo con mv sí se puede (el proceso sigue con el viejo).
 for bin in audiofilus audiofilus-ui; do

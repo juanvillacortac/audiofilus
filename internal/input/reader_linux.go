@@ -16,13 +16,6 @@ const (
 	inputEventSize = 24 // struct input_event en Linux de 64 bits
 )
 
-// Event es una pulsación o suelta de un botón lógico.
-type Event struct {
-	Button  Button
-	Pressed bool
-	Time    time.Time
-}
-
 // Reader lee el mando por evdev sin acapararlo (sin EVIOCGRAB): los juegos y
 // el frontend siguen recibiendo los botones. Read bloquea, así que mientras no
 // se pulse nada no gasta CPU.

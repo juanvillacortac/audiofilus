@@ -27,7 +27,7 @@ type libFunc struct {
 func openLib(names []string, fns []libFunc) error {
 	var lib uintptr
 	for _, name := range names {
-		if l, err := purego.Dlopen(name, purego.RTLD_NOW|purego.RTLD_GLOBAL); err == nil {
+		if l, err := loadLib(name); err == nil {
 			lib = l
 			break
 		}
@@ -36,7 +36,7 @@ func openLib(names []string, fns []libFunc) error {
 		return fmt.Errorf("%s not found", names[0])
 	}
 	for _, f := range fns {
-		if _, err := purego.Dlsym(lib, f.name); err != nil {
+		if _, err := libSym(lib, f.name); err != nil {
 			return fmt.Errorf("%s: %s missing", names[0], f.name)
 		}
 	}

@@ -15,6 +15,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/config"
 	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/daemon"
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 )
 
 const (
@@ -106,7 +107,7 @@ func (c *Client) Background() {
 
 // daemonPath busca el binario del servicio junto al de la interfaz.
 func (c *Client) daemonPath() (string, error) {
-	p := filepath.Join(c.paths.Base, "audiofilus")
+	p := filepath.Join(c.paths.Base, proc.Exe("audiofilus"))
 	if _, err := os.Stat(p); err == nil {
 		return p, nil
 	}
@@ -123,7 +124,7 @@ func (c *Client) startDaemon() error {
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command(bin, "daemon", "-detach")
+	cmd := proc.Hidden(exec.Command(bin, "daemon", "-detach"))
 	cmd.Env = append(os.Environ(), "AUDIOFILUS_HOME="+c.paths.Base)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("starting the audio service: %v: %s", err, out)

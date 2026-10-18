@@ -17,7 +17,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
@@ -109,7 +108,7 @@ func startDetached(paths config.Paths) error {
 	}
 	c := exec.Command(exe, "daemon")
 	c.Stdout, c.Stderr = logf, logf
-	c.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	c.SysProcAttr = detachAttr()
 	c.Env = append(os.Environ(), "AUDIOFILUS_HOME="+paths.Base)
 	if err := c.Start(); err != nil {
 		return err

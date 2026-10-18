@@ -14,20 +14,6 @@ import (
 // dispositivo "(AVRCP)" al conectarlos) y los de cable si el chip de audio de
 // la consola los ve. Se leen sin acapararlos, como el mando.
 
-// Teclas multimedia de linux/input-event-codes.h.
-const (
-	KeyStop         = 128
-	KeyNextSong     = 163
-	KeyPlayPause    = 164
-	KeyPreviousSong = 165
-	KeyStopCD       = 166
-	KeyRewind       = 168
-	KeyPlayCD       = 200
-	KeyPauseCD      = 201
-	KeyFastForward  = 208
-	KeyMedia        = 226 // el botón único de los audífonos de cable
-)
-
 var mediaKeys = []uint16{KeyStop, KeyNextSong, KeyPlayPause, KeyPreviousSong, KeyStopCD, KeyRewind, KeyPlayCD, KeyPauseCD, KeyFastForward, KeyMedia}
 
 // MediaDevices son los dispositivos con teclas multimedia que no son mandos.
@@ -80,40 +66,6 @@ func (m *MediaReader) Run(fn func(key uint16, at time.Time)) {
 
 // Close para Run.
 func (m *MediaReader) Close() error { return m.f.Close() }
-
-// HookCounter cuenta las pulsaciones seguidas del botón único de los
-// audífonos de cable (como en Android: una pausa, dos pasa a la siguiente,
-// tres a la anterior). Press devuelve cuántas van; tras gap sin otra, el
-// llamador actúa con Done.
-type HookCounter struct {
-	gap   time.Duration
-	n     int
-	last  time.Time
-	timer *time.Timer
-}
-
-// NewHookCounter prepara el contador con la separación máxima entre
-// pulsaciones.
-func NewHookCounter(gap time.Duration) *HookCounter { return &HookCounter{gap: gap} }
-
-// Press apunta una pulsación y llama a done(n) cuando pasa gap sin otra.
-func (h *HookCounter) Press(at time.Time, done func(n int)) {
-	if at.Sub(h.last) > h.gap {
-		h.n = 0
-	}
-	h.n++
-	h.last = at
-	if h.timer != nil {
-		h.timer.Stop()
-	}
-	n := h.n
-	h.timer = time.AfterFunc(h.gap, func() {
-		if h.n == n {
-			h.n = 0
-			done(n)
-		}
-	})
-}
 
 // WaitNewDevices bloquea hasta que aparezca un dispositivo nuevo en
 // /dev/input (con inotify: sin despertar la CPU mientras no pase nada) y
