@@ -1335,6 +1335,9 @@ func (a *App) writeFrames() error {
 	if err := os.MkdirAll(a.FramesDir, 0o755); err != nil {
 		return err
 	}
+	if err := a.writeLogoFrames(filepath.Join(a.FramesDir, "logo")); err != nil {
+		return err
+	}
 	// El splash, entero, en su propia carpeta.
 	splashDir := filepath.Join(a.FramesDir, "splash")
 	if err := os.MkdirAll(splashDir, 0o755); err != nil {

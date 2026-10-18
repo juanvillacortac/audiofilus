@@ -13,7 +13,7 @@
 <link rel="icon" href="img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: a night-mode handheld. Each section is a band; screenshots sit in
    bezels like the console's own screen, pixels never smoothed. */
@@ -28,7 +28,8 @@
   --red: #f04a35;         /* the UI accent on a red cover */
   --teal: #6fe3c4;        /* the logo's chrome */
   --pink: #ee8cc2;
-  --display: "Jersey 10", "Arial Narrow", sans-serif;
+  --display: "Jersey 10", "Arial Narrow", sans-serif;  /* pixel = 1/18.667 em: sizes are multiples of 18.667px */
+  --pixel: "Tiny5", "Courier New", monospace;          /* pixel = 1/8 em: sizes are multiples of 8px */
   --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --step--1: 0.875rem;
@@ -53,8 +54,11 @@ img { max-width: 100%; height: auto; display: block; }
 a { color: var(--teal); }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
 h1, h2, h3 { text-wrap: balance; margin: 0; }
-h2 { font: 400 calc(var(--step-3) * 1.3)/0.85 var(--display); letter-spacing: 0.02em; }
-h3 { font: 400 calc(var(--step-1) * 1.35)/1.05 var(--display); letter-spacing: 0.02em; }
+h2 { font: 400 56px/56px var(--display); }
+@media (max-width: 560px) { h2 { font-size: 37.3333px; line-height: 40px; } }
+h3 { font: 400 37.3333px/38px var(--display); }
+/* Pixel fonts: no smoothing where the platform allows it. */
+h1, h2, h3, .btn, .chip { -webkit-font-smoothing: none; font-smooth: never; }
 p { margin: 0; }
 .wrap {
   max-width: var(--wrap);
@@ -91,14 +95,16 @@ p { margin: 0; }
 .hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
 .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
 @media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
-.hero h1 { font: 400 clamp(3.2rem, 2rem + 5vw, 6rem)/0.8 var(--display); letter-spacing: 0.01em; }
+.hero h1 { font: 400 74.6667px/70px var(--display); }
+@media (max-width: 560px) { .hero h1 { font-size: 56px; line-height: 52px; } }
+.hero .intro { width: 468px; max-width: 100%; height: auto; margin-bottom: -0.5rem; }
 .hero h1 em { font-style: normal; color: var(--teal); }
 .hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
 .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .btn {
   display: inline-flex; align-items: center; gap: 0.55rem;
   padding: 0.8rem 1.15rem;
-  font: 400 1.35rem/1 var(--display); letter-spacing: 0.03em;
+  font: 400 24px/24px var(--pixel);
   text-decoration: none; border-radius: 4px;
   border: 2px solid var(--fg); color: var(--fg);
 }
@@ -179,7 +185,7 @@ figure { margin: 0; }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.chip { font: 400 1.35rem/1 var(--display); letter-spacing: 0.03em; padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
+.chip { font: 400 24px/24px var(--pixel); padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
 ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; color: var(--muted); }
 ol.steps strong { color: var(--fg); }
 pre {
@@ -198,6 +204,12 @@ pre .c { color: var(--muted); }
 .state.now { background: var(--teal); color: var(--ink); }
 .state.next { border: 1px solid var(--pink); color: var(--pink); }
 
+/* Support */
+.support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; }
+.support .head { margin: 0; max-width: 40rem; }
+.btn.coffee { background: var(--teal); border-color: var(--teal); color: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
+.btn.coffee:hover { background: var(--teal); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+
 footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
 footer img { height: 56px; width: auto; }
@@ -213,6 +225,7 @@ footer img { height: 56px; width: auto; }
       <a href="#visuals">Visualizers</a>
       <a href="#sources">Sources</a>
       <a href="#install">Install</a>
+      <a href="#support">Support</a>
       <a class="gh" href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
     </nav>
   </div>
@@ -222,6 +235,7 @@ footer img { height: 56px; width: auto; }
   <section class="hero">
     <div class="wrap">
       <div class="copy">
+        <img class="intro px" src="img/logo-intro.webp" alt="audiofilus" width="468" height="200">
         <span class="eyebrow">Music player for Linux handhelds</span>
         <h1>Your music keeps playing <em>while you game.</em></h1>
         <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers and a couple of games. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
@@ -408,6 +422,16 @@ docker build --target dist --output dist .
         <div class="stop"><span class="state next">Planned</span><h3>Android</h3><p>Touch controls, a lock-screen player and background playback through the system's media session.</p></div>
         <div class="stop"><span class="state next">Planned</span><h3>iOS</h3><p>The same pixel interface on iPhone and iPad, with Control Center and AirPods controls.</p></div>
       </div>
+    </div>
+  </section>
+  <section class="band" id="support">
+    <div class="wrap support">
+      <div class="head">
+        <span class="eyebrow">Support</span>
+        <h2>Keep it playing</h2>
+        <p class="lede">audiofilus is free and made in my spare time. If it plays on your handheld every day, a coffee helps me keep working on it and bring it to desktop and phones.</p>
+      </div>
+      <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Buy me a coffee on Ko-fi</a>
     </div>
   </section>
 </main>

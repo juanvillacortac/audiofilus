@@ -10,7 +10,8 @@
 <p align="center">
   <a href="https://juanvillacortac.github.io/audiofilus/">Website</a> ·
   <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a> ·
-  <a href="docs/README.md">Docs (Spanish)</a>
+  <a href="docs/README.md">Docs (Spanish)</a> ·
+  <a href="https://ko-fi.com/juanvillacortac">Support on Ko-fi</a>
 </p>
 
 <p align="center">
@@ -146,6 +147,12 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 
 - **Desktop:** mouse and keyboard controls, media keys, window-sized layouts.
 - **Android** and **iOS**: touch controls and system media controls.
+
+## Support
+
+audiofilus is free and made in my spare time. If you enjoy it, you can buy me a coffee:
+
+<a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 
 ## Docs
 

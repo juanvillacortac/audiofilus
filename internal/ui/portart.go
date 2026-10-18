@@ -1,8 +1,12 @@
 package ui
 
 import (
+	"fmt"
 	"image"
 	"image/color"
+	"math"
+	"os"
+	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -90,4 +94,26 @@ func (a *App) writeLogo(path string) error {
 	return a.render(path, lw*splashScale+16, func(dst *ebiten.Image) {
 		drawLogo(dst, 8, 8, 2.35)
 	})
+}
+
+// writeLogoFrames guarda la entrada del logo del splash (letras que caen,
+// brillo y ecualizador) a 30 frames por segundo sobre fondo transparente,
+// para animarlo en la web. Como writeLogo, con aire alrededor.
+func (a *App) writeLogoFrames(dir string) error {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	lw, lh := splashLogoSize()
+	w := lw*splashScale + 16
+	for i := 0; float64(i)/30 < 3; i++ {
+		t := float64(i) / 30
+		err := a.render(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), w, func(dst *ebiten.Image) {
+			drawLogo(dst, 8, 40, t)
+			drawLEDs(dst, w/2, 40+lh*splashScale+2, t, math.Min(1, math.Max(0, (t-0.7)/0.4)))
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
