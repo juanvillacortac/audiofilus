@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" href="img/logo.png">
-<link rel="preload" as="image" href="img/logo-intro.webp" type="image/webp">
+<link rel="preload" as="fetch" href="img/logo-intro.webp" type="image/webp" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -259,7 +259,12 @@ footer img { height: 56px; width: auto; }
   });
   img.addEventListener("error", done);
   setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
-  img.src = "img/logo-intro.webp";
+  // A blob URL is a new image each time, so the animation (which plays once)
+  // starts over even when the browser already has it in its cache.
+  fetch("img/logo-intro.webp")
+    .then(function (r) { if (!r.ok) throw r.status; return r.blob(); })
+    .then(function (b) { img.src = URL.createObjectURL(b); })
+    .catch(done);
   el.addEventListener("click", done);
   addEventListener("keydown", done);
 })();
