@@ -97,7 +97,6 @@ p { margin: 0; }
 @media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
 .hero h1 { font: 400 74.6667px/70px var(--display); }
 @media (max-width: 560px) { .hero h1 { font-size: 56px; line-height: 52px; } }
-.hero .intro { width: 468px; max-width: 100%; height: auto; margin-bottom: -0.5rem; }
 .hero h1 em { font-style: normal; color: var(--teal); }
 .hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
 .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
@@ -210,12 +209,51 @@ pre .c { color: var(--muted); }
 .btn.coffee { background: var(--teal); border-color: var(--teal); color: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
 .btn.coffee:hover { background: var(--teal); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
 
+/* Splash, like the app's: the logo intro on the dark screen, then a fade. */
+.splash {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center; gap: 1rem; align-content: center;
+  padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(16px, env(safe-area-inset-left, 0px));
+  background: radial-gradient(ellipse at 50% 40%, #1a1426 0%, var(--ink) 70%);
+  cursor: pointer;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+.splash img { width: 702px; max-width: 100%; height: auto; }
+.splash p { font: 400 16px/16px var(--pixel); color: var(--muted); -webkit-font-smoothing: none; }
+.splash.out { opacity: 0; visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .splash { display: none; } }
+
 footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
 footer img { height: 56px; width: auto; }
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash" hidden aria-hidden="true">
+  <img class="px" id="splash-logo" alt="" width="468" height="200">
+  <p>@juanvillacortac</p>
+</div>
+<script>
+// The splash plays once per visit, as in the app; any click or key skips it.
+(function () {
+  var el = document.getElementById("splash");
+  var seen = false;
+  try { seen = sessionStorage.getItem("splash") === "1"; sessionStorage.setItem("splash", "1"); } catch (e) {}
+  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var img = document.getElementById("splash-logo");
+  img.src = "img/logo-intro.webp";
+  el.hidden = false;
+  function done() {
+    el.classList.add("out");
+    removeEventListener("keydown", done);
+    setTimeout(function () { el.hidden = true; }, 500);
+  }
+  el.addEventListener("click", done);
+  addEventListener("keydown", done);
+  setTimeout(done, 3000);
+})();
+</script>
 
 <header class="top">
   <div class="wrap">
@@ -235,7 +273,6 @@ footer img { height: 56px; width: auto; }
   <section class="hero">
     <div class="wrap">
       <div class="copy">
-        <img class="intro px" src="img/logo-intro.webp" alt="audiofilus" width="468" height="200">
         <span class="eyebrow">Music player for Linux handhelds</span>
         <h1>Your music keeps playing <em>while you game.</em></h1>
         <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers and a couple of games. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
