@@ -11,6 +11,7 @@
 <meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" href="img/logo.png">
+<link rel="preload" as="image" href="img/logo-intro.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -218,7 +219,8 @@ pre .c { color: var(--muted); }
   cursor: pointer;
   transition: opacity 0.45s ease, visibility 0.45s;
 }
-.splash img { width: 702px; max-width: 100%; height: auto; }
+.splash img { width: 702px; max-width: 100%; height: auto; visibility: hidden; }
+.splash img.ready { visibility: visible; }
 .splash p { font: 400 16px/16px var(--pixel); color: var(--muted); -webkit-font-smoothing: none; }
 .splash.out { opacity: 0; visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .splash { display: none; } }
@@ -242,16 +244,26 @@ footer img { height: 56px; width: auto; }
   try { seen = sessionStorage.getItem("splash") === "1"; sessionStorage.setItem("splash", "1"); } catch (e) {}
   if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var img = document.getElementById("splash-logo");
-  img.src = "img/logo-intro.webp";
+  var started = false;
   el.hidden = false;
   function done() {
     el.classList.add("out");
     removeEventListener("keydown", done);
     setTimeout(function () { el.hidden = true; }, 500);
   }
+  // The animation starts when the image arrives; if that takes too long,
+  // go straight to the page.
+  img.addEventListener("load", function () {
+    if (started) return;
+    started = true;
+    img.classList.add("ready");
+    setTimeout(done, 3000);
+  });
+  img.addEventListener("error", done);
+  setTimeout(function () { if (!started) { started = true; done(); } }, 1500);
+  img.src = "img/logo-intro.webp";
   el.addEventListener("click", done);
   addEventListener("keydown", done);
-  setTimeout(done, 3000);
 })();
 </script>
 
