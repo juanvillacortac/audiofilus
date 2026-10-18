@@ -26,7 +26,8 @@ done
 
 # El port de PortMaster: dist/audiofilus.zip con lo de portmaster/ (lanzador,
 # gameinfo.xml, port.json y las imágenes), los binarios de arm64 y las
-# licencias de las fuentes (la OFL pide que viajen con el programa).
+# licencias (la del programa y las de las fuentes: la OFL pide que viajen con
+# el programa).
 pkg=dist/pkg
 rm -rf "$pkg" dist/audiofilus.zip
 mkdir -p "$pkg"
@@ -34,6 +35,6 @@ cp -r portmaster/. "$pkg/"
 cp dist/audiofilus-arm64 "$pkg/audiofilus/audiofilus"
 cp dist/audiofilus-ui-arm64 "$pkg/audiofilus/audiofilus-ui"
 mkdir -p "$pkg/audiofilus/licenses"
-cp internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
+cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip

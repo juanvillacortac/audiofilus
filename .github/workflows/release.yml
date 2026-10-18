@@ -23,7 +23,7 @@ jobs:
             mkdir -p "$d/licenses"
             cp "dist/audiofilus-$arch" "$d/audiofilus"
             cp "dist/audiofilus-ui-$arch" "$d/audiofilus-ui"
-            cp internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
+            cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
             tar -czf "out/$d.tar.gz" "$d"
           done
           (cd out && sha256sum * > SHA256SUMS)

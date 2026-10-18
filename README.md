@@ -154,6 +154,10 @@ audiofilus is free and made in my spare time. If you enjoy it, you can buy me a 
 
 <a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 
+## License
+
+[MIT](LICENSE). The bundled fonts, Jersey 10 and Tiny5, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`).
+
 ## Docs
 
 How it works, platform details and power measurements are in [docs/](docs/README.md) (in Spanish).
