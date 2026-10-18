@@ -58,7 +58,6 @@ func listDevices() ([]device, error) {
 	return out, sc.Err()
 }
 
-
 func (d device) hasKey(code uint16) bool {
 	for _, k := range d.keys {
 		if k == code {
