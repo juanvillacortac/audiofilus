@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://juanvillacortac.github.io/audiofilus/">Website</a> ·
   <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a> ·
-  <a href="docs/README.md">Docs (Spanish)</a> ·
+  <a href="docs/README.md">Docs</a> ·
   <a href="https://ko-fi.com/juanvillacortac">Support on Ko-fi</a>
 </p>
 
@@ -28,7 +28,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - **The audio lives in its own service.** The interface is only a remote: close it, open an emulator, and the music keeps going.
 - **Controls from inside any game:** hold `FN` and press a button to pause, skip, go back or seek.
 - **Headphone buttons**, Bluetooth or wired: one press pauses, two skip, three go back. Devices are watched with inotify, so waiting for them costs no CPU.
-- **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. About 260 mA on an RG34XX-SP (see [docs/consumo.md](docs/consumo.md)).
+- **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. About 260 mA on an RG34XX-SP (see [docs/power.md](docs/power.md)).
 - Gapless playback, fade on pause, shuffle, repeat, "play next" and a queue that survives restarts.
 - Volume stays in sync with the system, including boost above 100%.
 
@@ -160,4 +160,4 @@ audiofilus is free and made in my spare time. If you enjoy it, you can buy me a 
 
 ## Docs
 
-How it works, platform details and power measurements are in [docs/](docs/README.md) (in Spanish).
+How it works, platform details and power measurements are in [docs/](docs/README.md).

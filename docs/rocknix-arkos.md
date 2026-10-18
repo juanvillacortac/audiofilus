@@ -1,22 +1,22 @@
-# ROCKNIX, ArkOS y dArkOS
+# ROCKNIX, ArkOS and dArkOS
 
-audiofilus también corre en **ROCKNIX** y en la familia **ArkOS** (ArkOS y dArkOS). Los tres usan systemd y comparten casi todo (sysfs para el brillo y el governor, logind), así que es una sola plataforma con sus diferencias: `internal/platform/handheld.go`. Se activa sola: ROCKNIX por `/etc/os-release`, ArkOS/dArkOS por su `/usr/local/bin/pause.sh` y su usuario `ark`. Lo que sigue sale de su código ([ROCKNIX/distribution](https://github.com/ROCKNIX/distribution), [christianhaitian/dArkOS](https://github.com/christianhaitian/dArkOS)).
+audiofilus also runs on **ROCKNIX** and on the **ArkOS** family (ArkOS and dArkOS). All three use systemd and share almost everything (sysfs for brightness and the governor, logind), so they are a single platform with its differences: `internal/platform/handheld.go`. It turns on by itself: ROCKNIX through `/etc/os-release`, ArkOS/dArkOS through their `/usr/local/bin/pause.sh` and their `ark` user. What follows comes from their code ([ROCKNIX/distribution](https://github.com/ROCKNIX/distribution), [christianhaitian/dArkOS](https://github.com/christianhaitian/dArkOS)).
 
-**Sin probar en consolas con estos sistemas todavía.** El inhibidor de logind sí se probó en el PC (`TestLogindInhibitLive`): sale en `systemd-inhibit --list` y desaparece al soltarlo.
+**Not yet tested on consoles running these systems.** The logind inhibitor was tested on the PC (`TestLogindInhibitLive`): it shows up in `systemd-inhibit --list` and disappears when released.
 
-| Qué | ROCKNIX | ArkOS / dArkOS |
+| What | ROCKNIX | ArkOS / dArkOS |
 |---|---|---|
-| Quién suspende | logind: `HandleLidSwitch=suspend`, `HandlePowerKey=suspend` | ogage (el demonio de atajos) llama a `/usr/local/bin/pause.sh` (`sudo systemctl suspend`); logind ignora el botón (`HandlePowerKey=ignore`); `auto_suspend.py` suspende tras N minutos sin tocar nada, salvo que `/usr/local/bin/processcheck.sh` diga "Running" (hoy, solo con Kodi o ffplay) |
-| Que no suspenda con la app abierta | Un **inhibidor de logind** ("block" de sleep, idle, handle-power-key, handle-suspend-key y handle-lid-switch), por D-Bus, que se suelta al cerrar el archivo que da logind. Es lo que usan los reproductores del escritorio | El inhibidor (por si acaso) y, como en Knulli, **copias montadas** encima de `pause.sh` (no suspende: el botón lo lleva audiofilus, con su sleep) y de `processcheck.sh` (dice "Running"). Se deshacen al cerrar, y tras un cierre inesperado al volver a arrancar (`/tmp/audiofilus-arkos-mounts`) |
-| Permisos | Los ports corren como root | Los ports corren como `ark`: montar y escribir en sysfs va con `sudo -n` (ark lo tiene sin contraseña) |
-| Pantalla en el sleep | `/sys/class/backlight/*/brightness` a 0 y luego el valor que tenía | Igual |
-| Volumen | `pactl` (PipeWire con el protocolo de Pulse) para leerlo; su script `/usr/bin/volume N` para ponerlo (lo guarda) | ALSA: `amixer` con el control "Playback" (RK3326) o "Master" |
-| Botones de volumen | Los lleva `input_sense`; el servicio lee el volumen cada pocos segundos | Los lleva ogage; igual |
-| Audífonos | pactl | El control "Playback Path" de ALSA (HP o SPK), que cambia su `headphone-audio-switch.sh` |
-| Tapa | El sensor del AXP (`hallkey`) o, con su kernel mainline, el interruptor `SW_LID` por evdev (`EVIOCGSW`) | Igual (casi ninguna tiene tapa) |
-| Vibración | El motor del AXP si existe (`axp2202-battery/moto`); si no, nada | Igual |
-| Governor en el sleep, `gptokeyb` congelado, botón de encendido (`KEY_POWER`) | Igual que en Knulli | Igual, con `sudo` si hace falta |
+| Who suspends | logind: `HandleLidSwitch=suspend`, `HandlePowerKey=suspend` | ogage (the shortcut daemon) calls `/usr/local/bin/pause.sh` (`sudo systemctl suspend`); logind ignores the button (`HandlePowerKey=ignore`); `auto_suspend.py` suspends after N minutes without input, unless `/usr/local/bin/processcheck.sh` says "Running" (today, only with Kodi or ffplay) |
+| No suspend while the app is open | A **logind inhibitor** ("block" for sleep, idle, handle-power-key, handle-suspend-key and handle-lid-switch), over D-Bus, released by closing the file logind hands out. It is what desktop players use | The inhibitor (just in case) and, as on Knulli, **copies mounted** over `pause.sh` (it does not suspend: audiofilus handles the button, with its sleep) and over `processcheck.sh` (it says "Running"). They are undone on exit, and after an unexpected exit on the next start (`/tmp/audiofilus-arkos-mounts`) |
+| Permissions | Ports run as root | Ports run as `ark`: mounting and writing to sysfs go through `sudo -n` (ark has it without a password) |
+| Screen during sleep | `/sys/class/backlight/*/brightness` to 0 and then back to its previous value | Same |
+| Volume | `pactl` (PipeWire with the Pulse protocol) to read it; its `/usr/bin/volume N` script to set it (it saves it) | ALSA: `amixer` with the "Playback" (RK3326) or "Master" control |
+| Volume buttons | Handled by `input_sense`; the service reads the volume every few seconds | Handled by ogage; same |
+| Headphones | pactl | The ALSA "Playback Path" control (HP or SPK), which its `headphone-audio-switch.sh` changes |
+| Lid | The AXP sensor (`hallkey`) or, with its mainline kernel, the `SW_LID` switch through evdev (`EVIOCGSW`) | Same (almost none have a lid) |
+| Vibration | The AXP motor if it exists (`axp2202-battery/moto`); otherwise, nothing | Same |
+| Governor during sleep, frozen `gptokeyb`, power button (`KEY_POWER`) | Same as on Knulli | Same, with `sudo` when needed |
 
-**Limitación en ROCKNIX:** con su "suspensión falsa" (Ajustes de ROCKNIX: modo de suspensión apagado), al pulsar el botón su `input_sense` ejecuta `rocknix-fake-suspend`, que silencia el audio, congela los procesos y acapara el mando, sin ninguna forma de saltárselo. Con la suspensión normal (la de fábrica), el inhibidor la para y el botón pone el sleep de audiofilus.
+**Limitation on ROCKNIX:** with its "fake suspend" (ROCKNIX Settings: suspend mode off), pressing the button makes its `input_sense` run `rocknix-fake-suspend`. That mutes the audio, freezes processes and grabs the controller, with no way around it. With normal suspend (the factory default), the inhibitor blocks it and the button triggers the audiofilus sleep.
 
-El audio no necesita nada: ROCKNIX tiene el protocolo de PulseAudio (PipeWire) y ArkOS va por ALSA, y oto prueba los dos. El lanzador ya arregla el `~/.asoundrc` que algunos ports de ArkOS quitan.
+Audio needs nothing: ROCKNIX has the PulseAudio protocol (PipeWire) and ArkOS goes through ALSA, and oto tries both. The launcher already fixes the `~/.asoundrc` that some ArkOS ports remove.

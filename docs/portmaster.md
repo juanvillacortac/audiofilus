@@ -1,41 +1,41 @@
-# El port de PortMaster
+# The PortMaster port
 
-`./build.sh` deja, además de los binarios, `dist/audiofilus.zip`: el port para las portátiles Linux con PortMaster. Lleva lo de `portmaster/`, los binarios de arm64 y las licencias de las fuentes (la OFL pide que viajen con el programa):
+Besides the binaries, `./build.sh` produces `dist/audiofilus.zip`: the port for Linux handhelds with PortMaster. It contains what is in `portmaster/`, the arm64 binaries and the font licenses (the OFL requires them to ship with the program):
 
 ```
-Audiofilus.sh              el lanzador (comentarios en inglés, como los de PortMaster)
-gameinfo.xml               para el menú de EmulationStation
-audiofilus/port.json       los datos del port para PortMaster
-audiofilus/cover.png       la portada (640×480)
-audiofilus/screenshot.png  una captura (640×480)
-audiofilus/audiofilus      el servicio de audio (arm64)
-audiofilus/audiofilus-ui   la interfaz (arm64)
-audiofilus/licenses/       OFL de Jersey 10 y Tiny5
+Audiofilus.sh              the launcher (comments in English, like PortMaster's)
+gameinfo.xml               for the EmulationStation menu
+audiofilus/port.json       the port metadata for PortMaster
+audiofilus/cover.png       the cover (640×480)
+audiofilus/screenshot.png  a screenshot (640×480)
+audiofilus/audiofilus      the audio service (arm64)
+audiofilus/audiofilus-ui   the UI (arm64)
+audiofilus/licenses/       OFL for Jersey 10 and Tiny5
 ```
 
-## El lanzador
+## The launcher
 
-- Usa el `control.txt` de PortMaster como cualquier port (`get_controls`, `$GPTOKEYB`, `pm_finish`).
-- `AUDIOFILUS_HOME` apunta a la carpeta del port: `audiofilus.json`, `data/` y el registro del servicio (`data/audiofilus.log`) quedan ahí. `log.txt` es la salida de la interfaz.
-- `EBITENGINE_UI_BACKEND=sdl2` y `SDL_GAMECONTROLLERCONFIG` con el mapeo de PortMaster para la consola; el servicio, que arranca la interfaz, hereda ese entorno.
-- gptokeyb solo da el atajo de salida de PortMaster (Select+Start): mata la interfaz y, como no se pidió segundo plano, el servicio para la música.
-- En ArkOS y dArkOS restaura `~/.asoundrc` si falta: allí no hay PulseAudio y el audio va por ALSA.
+- It uses PortMaster's `control.txt` like any other port (`get_controls`, `$GPTOKEYB`, `pm_finish`).
+- `AUDIOFILUS_HOME` points to the port folder: `audiofilus.json`, `data/` and the service log (`data/audiofilus.log`) live there. `log.txt` is the UI output.
+- `EBITENGINE_UI_BACKEND=sdl2` and `SDL_GAMECONTROLLERCONFIG` with PortMaster's mapping for the console. The service starts the UI, so it inherits that environment.
+- gptokeyb only provides PortMaster's exit shortcut (Select+Start): it kills the UI and, since background mode was not requested, the service stops the music.
+- On ArkOS and dArkOS it restores `~/.asoundrc` if it is missing: there is no PulseAudio there and audio goes through ALSA.
 
-## Las imágenes
+## The images
 
-`tools/portmaster/art.sh <carpeta de música> [álbum]` rehace `cover.png` y `screenshot.png`:
+`tools/portmaster/art.sh <music folder> [album]` regenerates `cover.png` and `screenshot.png`:
 
-- La **portada** la dibuja la interfaz (`internal/ui/portart.go`): un vinilo que sale de su funda, el logo del splash con su ecualizador, la frase y la firma. No usa portadas de discos de verdad, para poder publicarla. La funda es un degradado de cinco colores con trama de Bayer, como el resto de la estética.
-- La **captura** es la pantalla de reproducción en 4:3, **en inglés** (`-lang en`; es lo que ve la mayoría en PortMaster), con el álbum que se pida (`-album`, p. ej. `"Wonder What"`).
+- The **cover** is drawn by the UI (`internal/ui/portart.go`): a vinyl record sliding out of its sleeve, the splash logo with its equalizer, the tagline and the signature. It does not use real album covers, so it can be published. The sleeve is a five-color gradient with Bayer dithering, like the rest of the look.
+- The **screenshot** is the playback screen in 4:3, **in English** (`-lang en`; that is what most PortMaster users see), with the requested album (`-album`, e.g. `"Wonder What"`).
 
-Las capturas salen ×3 de 320×240; el script las baja a 1:1 tomando un píxel de cada tres (exacto, porque se ampliaron sin suavizar) y las sube ×2. Antes de las capturas se dibuja todo una vez y se tira: el primer uso de un shader en el proceso a veces no llegaba a la imagen (salía la captura sin vinilo).
+Screenshots come out at ×3 of 320×240. The script scales them down to 1:1 by taking one pixel out of every three (exact, because they were scaled up without smoothing) and then scales them up ×2. Before the screenshots, everything is drawn once and discarded: the first use of a shader in the process sometimes did not reach the image (the screenshot came out without the vinyl).
 
-**Para publicar el port**, la captura no puede llevar portadas de discos ajenos: hay que hacerla con música propia o libre.
+**To publish the port**, the screenshot cannot include other people's album covers: it must be made with your own music or free music.
 
-## Instalar en la consola
+## Installing on the console
 
-Copiar `dist/audiofilus.zip` a la carpeta `autoinstall` de PortMaster y abrir PortMaster, que lo instala en `ports/`. Ver la skill [`probar-en-knulli`](../.claude/skills/probar-en-knulli/SKILL.md).
+Copy `dist/audiofilus.zip` to PortMaster's `autoinstall` folder and open PortMaster, which installs it into `ports/`. See the [`test-on-knulli`](../.claude/skills/test-on-knulli/SKILL.md) skill.
 
-## Otros sistemas
+## Other systems
 
-Solo se ha probado en Knulli. Lo que no depende del sistema (el servicio, la interfaz, el segundo plano explícito, los atajos FN×3, el sleep OLED) debería ir en todos. Lo de impedir la suspensión, apagar la retroiluminación y capturar los botones de volumen solo está hecho para Knulli (`internal/platform/knulli.go`); en los demás no hace nada. ROCKNIX y muOS usan PipeWire con compatibilidad de PulseAudio; ArkOS y dArkOS, ALSA directo, donde la música en segundo plano y el sonido del juego podrían no poder sonar a la vez.
+It has only been tested on Knulli. What does not depend on the system (the service, the UI, explicit background mode, the FN×3 shortcuts, the OLED sleep) should work on all of them. Preventing suspend, turning off the backlight and capturing the volume buttons is only implemented for Knulli (`internal/platform/knulli.go`); on the others it does nothing. ROCKNIX and muOS use PipeWire with PulseAudio compatibility. ArkOS and dArkOS use ALSA directly, where background music and game sound might not be able to play at the same time.

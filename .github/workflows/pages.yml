@@ -1,4 +1,4 @@
-# Publica la web de site/ en GitHub Pages.
+# Publishes the website in site/ to GitHub Pages.
 name: Pages
 on:
   push:

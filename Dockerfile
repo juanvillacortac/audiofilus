@@ -1,10 +1,10 @@
-# Compila audiofilus en un contenedor, sin instalar Go ni nada en el equipo:
+# Builds audiofilus in a container, with nothing installed on the host:
 #   docker build --target dist --output dist .
-# deja en dist/ lo mismo que ./build.sh: los binarios del PC (amd64) y de las
-# portátiles (arm64) y dist/audiofilus.zip, el port de PortMaster.
+# leaves in dist/ the same as ./build.sh: the desktop (amd64) and handheld
+# (arm64) binaries and dist/audiofilus.zip, the PortMaster port.
 FROM golang:1.27.1 AS build
-# La interfaz del PC usa GLFW (cgo): necesita las cabeceras de X11, OpenGL y
-# ALSA. Lo de las portátiles se compila sin cgo y no necesita nada.
+# The desktop UI uses GLFW (cgo): it needs the X11, OpenGL and ALSA headers.
+# The handheld builds use no cgo and need nothing.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends libgl1-mesa-dev xorg-dev libasound2-dev zip \
  && rm -rf /var/lib/apt/lists/*
@@ -14,6 +14,6 @@ RUN go mod download
 COPY . .
 RUN go vet ./... && go test ./... && ./build.sh
 
-# Solo los resultados, para sacarlos con --output.
+# Only the results, to export them with --output.
 FROM scratch AS dist
 COPY --from=build /src/dist/ /

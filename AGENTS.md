@@ -1,86 +1,89 @@
 # AGENTS.md
 
-Guía para agentes de código (Claude Code, Codex, etc.) que trabajen en **audiofilus**: un reproductor de música en Go para PC y para portátiles Linux con Knulli (probado en la Anbernic RG34XX-SP). Lo distinto de otros reproductores es que **la música sigue sonando en segundo plano**, aunque se cierre la interfaz o se abra un juego, y que tiene un **modo bolsillo** que gasta muy poca batería. La documentación de cómo está hecho está en [`docs/`](docs/README.md); aquí va lo que necesitas saber antes de tocar nada.
+A guide for coding agents (Claude Code, Codex, etc.) working on **audiofilus**: a Go music player for desktops and Linux handhelds (tested on an Anbernic RG34XX-SP with Knulli). What sets it apart from other players is that **the music keeps playing in the background**, even when the interface is closed or a game is running, and that it has a **pocket mode** that uses very little battery. How it is built is documented in [`docs/`](docs/README.md); this file covers what you need to know before touching anything.
 
-## Estado
+## Status
 
-- **Hecho:** el servicio de audio con su CLI, la interfaz en Ebitengine (biblioteca, reproductor, visualizadores, juegos, servidores Subsonic/Jellyfin, radio, podcasts y YouTube Music con el yt-dlp de cada quien), el modo bolsillo y la integración con Knulli, muOS, ROCKNIX y ArkOS/dArkOS. Medido en la consola: [docs/consumo.md](docs/consumo.md).
-- **Pendiente:** optimizar para PC (ratón, teclado, ventanas), y más adelante Android e iOS.
+- **Done:** the audio service and its CLI, the Ebitengine interface (library, player, visualizers, games, Subsonic/Jellyfin servers, radio, podcasts, and YouTube Music with each user's own yt-dlp), pocket mode, and integration with Knulli, muOS, ROCKNIX and ArkOS/dArkOS. Measured on the console: [docs/power.md](docs/power.md).
+- **Pending:** desktop optimization (mouse, keyboard, windows), and later Android and iOS.
 
-## Cómo colaborar con el autor
+## Working with the author
 
-- El autor escribe en español; responde en español.
-- En este repo el autor pidió que el agente construya el reproductor, no solo que dé pistas. Aun así, las decisiones de diseño visibles (gestos, aspecto de la interfaz, qué se guarda) se le consultan antes.
-- **Antes de instalar algo en la consola, pruébalo en el PC** (`go test`, y el servicio con música real). En la consola, prueba antes lo que pueda romper el arranque.
-- Haz commits o push solo cuando el autor lo pida. El repo es público (github.com/juanvillacortac/audiofilus): nada de contraseñas, rutas personales ni música real.
+- The author writes in Spanish; reply in Spanish.
+- In this repo the author asked the agent to build the player, not just give hints. Even so, visible design decisions (gestures, how the interface looks, what gets saved) are checked with the author first.
+- **Before installing anything on the console, test it on the PC** (`go test`, and the service with real music). On the console, test first whatever could break booting.
+- Commit or push only when the author asks. The repo is public (github.com/juanvillacortac/audiofilus): no passwords, personal paths or real music.
 
-## Comandos
+## Commands
 
 ```sh
-go vet ./... && go test ./...                          # los tests (sin audio real; un segundo)
-go run ./cmd/audiofilus play ~/Music                   # escuchar en el PC (arranca el servicio)
-go run ./cmd/audiofilus status                         # qué suena
-go run ./cmd/audiofilus bench <archivo.mp3>            # cuánta CPU cuesta decodificarlo
-./build.sh                                             # servicio e interfaz, PC y arm64, y dist/audiofilus.zip (PortMaster)
-dist/audiofilus-ui                                     # la interfaz (arranca el servicio de dist/)
-dist/audiofilus-ui -shots /tmp/s -music ~/Music        # capturas de todas las pantallas y formatos
-dist/audiofilus-ui -bench lake -music ~/Music          # CPU y memoria por fotograma de un visualizador
-docker build --target dist --output dist .             # lo mismo que build.sh, sin instalar nada
+go vet ./... && go test ./...                          # the tests (no real audio; about a second)
+go run ./cmd/audiofilus play ~/Music                   # listen on the PC (starts the service)
+go run ./cmd/audiofilus status                         # what's playing
+go run ./cmd/audiofilus bench <file.mp3>               # how much CPU decoding it costs
+./build.sh                                             # service and UI, PC and arm64, and dist/audiofilus.zip (PortMaster)
+dist/audiofilus-ui                                     # the interface (starts the service from dist/)
+dist/audiofilus-ui -shots /tmp/s -music ~/Music        # screenshots of every screen and aspect ratio
+dist/audiofilus-ui -bench lake -music ~/Music          # CPU and memory per frame of a visualizer
+docker build --target dist --output dist .             # same as build.sh, nothing to install
 ```
 
-Con `go run`, el binario vive en una carpeta temporal; para que la configuración quede en un sitio fijo usa `AUDIOFILUS_HOME=$PWD/run go run ./cmd/audiofilus ...`, o compila con `./build.sh`.
+With `go run`, the binary lives in a temporary folder; to keep the configuration in a fixed place use `AUDIOFILUS_HOME=$PWD/run go run ./cmd/audiofilus ...`, or build with `./build.sh`.
 
-Antes de dar un cambio por terminado: `gofmt -l .` vacío, `go vet ./...` y `go test ./...` en verde, y que compile para la consola **sin cgo**:
+Before calling a change done: `gofmt -l .` is empty, `go vet ./...` and `go test ./...` pass, and it builds for the console **without cgo**:
 
 ```sh
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
 ```
 
-## El mapa
+## The map
 
-| Carpeta | Qué hay |
+| Folder | What's in it |
 |---|---|
-| `cmd/audiofilus/` | El binario: `daemon`, los comandos de la CLI y `bench` |
-| `internal/decode/` | Decodificadores a float32 estéreo: Go puro (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) y bibliotecas en C por purego (mpg123, opusfile, fdk-aac, libxmp) |
-| `internal/resample/` | Remuestreo lineal a la frecuencia de salida (48 kHz) |
-| `internal/engine/` | La reproducción con `oto`: un player, la cola, saltos sin cortes |
-| `internal/queue/` | El orden: aleatorio, repetición, anterior/siguiente, "reproducir después" |
-| `internal/library/` | Buscar archivos (carpetas, `.m3u`) y leer etiquetas |
-| `internal/control/` | El protocolo del socket entre el servicio y sus clientes |
-| `internal/daemon/` | El servicio: une engine, plataforma, modo bolsillo y socket |
-| `internal/platform/` | Escritorio (no hace nada), Knulli, muOS, ROCKNIX y ArkOS/dArkOS (tapa, botón, ahorro de batería, sleep de la app; ver [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) y [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
-| `internal/input/` | Botones lógicos desde el mapeo de SDL, lectura del mando (evdev) y detección de gestos y atajos |
-| `internal/sdlmap/` | Pregunta a SDL2 (vía `purego`) el mapeo del mando |
-| `internal/ui/` | La interfaz en Ebitengine: pantallas, cliente del servicio, biblioteca con caché, portadas en segundo plano, idiomas |
-| `cmd/audiofilus-ui/` | El binario de la interfaz |
-| `internal/config/` | `audiofilus.json` y `data/`, **junto al binario** |
-| `portmaster/` | El port de PortMaster: lanzador, `gameinfo.xml`, `port.json` e imágenes ([docs/portmaster.md](docs/portmaster.md)) |
-| `tools/portmaster/` | `art.sh`: rehace la portada y la captura del port |
-| `site/` | La web (GitHub Pages), en inglés; sus capturas y GIFs salen de `-shots`/`-frames` con `-lang en` |
-| `.github/workflows/` | CI (gofmt, vet, tests, arm64 sin cgo), releases al subir una etiqueta `v*` (con el `Dockerfile`) y la web |
-| `docs/` | La documentación, en español |
-| `.claude/skills/` | Procedimientos: probar en la consola, medir consumo |
+| `cmd/audiofilus/` | The binary: `daemon`, the CLI commands and `bench` |
+| `internal/decode/` | Decoders to stereo float32: pure Go (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) and C libraries through purego (mpg123, opusfile, fdk-aac, libxmp) |
+| `internal/resample/` | Linear resampling to the output rate (48 kHz) |
+| `internal/engine/` | Playback with `oto`: one player, the queue, gapless transitions |
+| `internal/queue/` | The order: shuffle, repeat, previous/next, "play next" |
+| `internal/library/` | Finding files (folders, `.m3u`) and reading tags |
+| `internal/control/` | The socket protocol between the service and its clients |
+| `internal/daemon/` | The service: ties together engine, platform, pocket mode and socket |
+| `internal/platform/` | Desktop (does nothing), Knulli, muOS, ROCKNIX and ArkOS/dArkOS (lid, power button, battery saver, app sleep; see [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) and [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
+| `internal/input/` | Logical buttons from the SDL mapping, controller reading (evdev), gesture and shortcut detection, power and headset keys |
+| `internal/sdlmap/` | Asks SDL2 (through `purego`) for the controller mapping |
+| `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |
+| `internal/radio/`, `internal/podcast/`, `internal/ytm/` | Internet radio, podcasts, and YouTube Music search plus yt-dlp |
+| `internal/sfx/` | The synthesized interface sounds and the splash jingle |
+| `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
+| `cmd/audiofilus-ui/` | The interface binary |
+| `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
+| `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
+| `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
+| `site/` | The website (GitHub Pages); its screenshots and GIFs come from `-shots`/`-frames` with `-lang en` |
+| `.github/workflows/` | CI (gofmt, vet, tests, arm64 without cgo), releases when a `v*` tag is pushed (built with the `Dockerfile`), and the website |
+| `docs/` | The documentation |
+| `.claude/skills/` | Procedures: testing on the console, measuring power |
 
-Reglas de arquitectura:
+Architecture rules:
 
-- **El audio y todo lo que ahorra energía viven en el servicio**, no en la interfaz. La interfaz será otro proceso que habla por el socket; se puede cerrar y la música sigue. Ver [docs/arquitectura.md](docs/arquitectura.md).
-- **Sin cgo.** Todo se compila con `CGO_ENABLED=0`, igual que Trancazo. Las bibliotecas en C (SDL2, mpg123, opusfile, fdk-aac, libxmp) se cargan en tiempo de ejecución con purego, y si faltan se sigue sin ellas ([docs/arquitectura.md](docs/arquitectura.md#formatos)).
-- **La configuración es portable**: `audiofilus.json` y `data/` van junto al binario (`config.Locate`). La única excepción es el socket, que va en `/tmp` porque `/userdata` en Knulli es exFAT y no admite sockets.
-- **En segundo plano la consola se suspende como siempre.** Impedirlo es cosa de la app abierta (`awake`, un permiso que caduca), nunca del servicio por su cuenta.
-- **Los botones salen del mapeo de SDL**, no de códigos fijos: cada consola usa los suyos.
-- **Lo de cada sistema (Knulli, muOS, ROCKNIX, ArkOS) solo se activa si se detecta** (`platform.Detect`); en el PC todo es un no-op, así se prueba lo mismo en los dos sitios.
+- **Audio and everything that saves power live in the service**, not in the interface. The interface is a separate process that talks over the socket; it can be closed and the music goes on. See [docs/architecture.md](docs/architecture.md).
+- **No cgo.** Everything builds with `CGO_ENABLED=0`, like Trancazo. The C libraries (SDL2, mpg123, opusfile, fdk-aac, libxmp) are loaded at runtime with purego, and if they're missing the program carries on without them ([docs/architecture.md](docs/architecture.md#formats)). The only exception is the desktop UI build, which uses GLFW.
+- **Configuration is portable**: `audiofilus.json` and `data/` sit next to the binary (`config.Locate`). The only exception is the socket, which goes in `/tmp` because `/userdata` on Knulli is exFAT and doesn't support sockets.
+- **In the background the console suspends as usual.** Preventing that is up to the open app (`awake`, a permission that expires), never the service on its own.
+- **Buttons come from the SDL mapping**, not hardcoded codes: each console uses its own.
+- **Each system's integration (Knulli, muOS, ROCKNIX, ArkOS) only turns on when that system is detected** (`platform.Detect`); on the PC everything is a no-op, so the same code is tested in both places.
 
 ## Knulli
 
-Lo que el servicio toca en la consola, cómo se limpia y los riesgos conocidos están en [docs/knulli.md](docs/knulli.md). Lo esencial:
+What the service touches on the console, how it cleans up, and the known risks are in [docs/knulli.md](docs/knulli.md). The essentials:
 
-- Mientras suena: `/var/run/battery-saver/audiofilus.pause`, y montajes `--bind` sobre `/boot/boot/knulli.board.capability` (tapa) y `/usr/bin/power-button` (botón). Se deshacen al pausar o salir, y tras un cierre inesperado al volver a arrancar (`/tmp/audiofilus-mounts`).
-- La consola solo acepta contraseña por SSH; ver la skill [`probar-en-knulli`](.claude/skills/probar-en-knulli/SKILL.md).
+- While playing: `/var/run/battery-saver/audiofilus.pause`, and `--bind` mounts over `/boot/boot/knulli.board.capability` (lid) and `/usr/bin/power-button` (button). They are undone on pause or exit, and after a crash on the next start (`/tmp/audiofilus-mounts`).
+- The console only accepts password SSH logins; see the [`test-on-knulli`](.claude/skills/test-on-knulli/SKILL.md) skill.
 
-## Convenciones de código
+## Code conventions
 
-- **Comentarios y documentación en español**, en frases completas: cada tipo, función y constante dice qué es y por qué. Los comentarios de doc empiezan por el nombre (`// Load lee audiofilus.json...`). Imita la densidad del archivo que tocas.
-- **Los mensajes de error (`fmt.Errorf`, `errors.New`), de los tests (`t.Errorf`) y del log (`log.Printf`) van en inglés.** Los textos que ve el usuario en la interfaz salen de `internal/ui/lang.go` (español e inglés).
-- El engine se llama desde dos hilos (el de audio de `oto` y los comandos): todo lo que toca su estado va con `e.mu`, y las retrollamadas salen por `emit`, nunca con el lock tomado. Para cambiar de canción o saltar, usa `apply` (vacía el búfer de audio con `Player.Seek`).
-- **Al matar procesos en pruebas, no uses `pgrep -f`/`pkill -f` con un texto que también aparezca en tu propio comando**: se mata la shell que lo ejecuta. Busca por nombre exacto (`pgrep -x`) y filtra por `/proc/<pid>/exe`.
-- Un test por comportamiento, con un comentario que diga qué comprueba. Los audios de prueba son tonos sintéticos (ver `internal/decode/testdata/README.md`); **no metas música real en el repo**.
+- **Documentation (`docs/`, READMEs, this file, skills) is in English.** Code comments are in Spanish, in full sentences: every type, function and constant says what it is and why. Doc comments start with the name (`// Load lee audiofilus.json...`). Match the comment density and language of the file you touch.
+- **Error messages (`fmt.Errorf`, `errors.New`), test messages (`t.Errorf`) and log lines (`log.Printf`) are in English.** Text the user sees in the interface comes from `internal/ui/lang.go` (Spanish and English).
+- The engine is called from two threads (`oto`'s audio thread and the commands): anything that touches its state holds `e.mu`, and callbacks go out through `emit`, never with the lock held. To change songs or seek, use `apply` (it flushes the audio buffer with `Player.Seek`).
+- **When killing processes in tests, don't use `pgrep -f`/`pkill -f` with a pattern that also appears in your own command**: it kills the shell running it. Match the exact name (`pgrep -x`) and filter by `/proc/<pid>/exe`.
+- One test per behavior, with a comment saying what it checks. Test audio is synthetic tones (see `internal/decode/testdata/README.md`); **never put real music in the repo**.

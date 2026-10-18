@@ -1,6 +1,6 @@
-# Audios de prueba
+# Test audio
 
-Tonos sintéticos generados con ffmpeg; no hay música real en el repo. Para regenerarlos:
+Synthetic tones generated with ffmpeg; there is no real music in the repo. To regenerate them:
 
 ```sh
 for fmt in mp3 flac ogg wav; do
@@ -17,7 +17,7 @@ ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=1:sample_rate=48000"
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=1:sample_rate=44100" -c:a libopus opus.ogg
 ```
 
-Además (Opus, AIFF y M4A con AAC y ALAC; el módulo tracker de los tests se genera en el propio test):
+Also (Opus, AIFF, and M4A with AAC and ALAC; the tracker module for the tests is generated inside the test itself):
 
 ```sh
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=48000" -ac 2 -c:a libopus -b:a 48k tone.opus
@@ -27,4 +27,4 @@ ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=44100"
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=1:sample_rate=48000" -ac 1 -c:a alac -sample_fmt s32p alac24mono.m4a
 ```
 
-`opus.ogg` sirve además para comprobar que, sin las bibliotecas en C (`AUDIOFILUS_DECODER=go`), Opus se rechaza con `ErrUnsupported`.
+`opus.ogg` is also used to check that, without the C libraries (`AUDIOFILUS_DECODER=go`), Opus is rejected with `ErrUnsupported`.

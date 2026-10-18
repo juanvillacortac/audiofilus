@@ -1,5 +1,5 @@
-# Al subir una etiqueta vX.Y.Z compila con el Dockerfile y publica un release
-# con el port de PortMaster y los binarios de Linux (PC y arm64).
+# When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
+# release with the PortMaster port and the Linux binaries (desktop and arm64).
 name: Release
 on:
   push:
@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compila en el contenedor
+      - name: Build in the container
         run: docker build --target dist --output dist .
-      - name: Empaqueta
+      - name: Package
         run: |
           mkdir -p out
           cp dist/audiofilus.zip out/audiofilus-portmaster.zip
@@ -27,12 +27,12 @@ jobs:
             tar -czf "out/$d.tar.gz" "$d"
           done
           (cd out && sha256sum * > SHA256SUMS)
-      - name: Sube los archivos
+      - name: Upload the files
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" out/* --title "audiofilus $GITHUB_REF_NAME" --generate-notes
-      - name: Guarda los archivos (ejecución manual)
+      - name: Keep the files (manual run)
         if: "!startsWith(github.ref, 'refs/tags/')"
         uses: actions/upload-artifact@v4
         with:

@@ -1,5 +1,5 @@
-# Comprueba cada push y pull request: formato, vet, tests y que compile para
-# las portátiles sin cgo.
+# Checks every push and pull request: formatting, vet, tests, and that the
+# handheld build works without cgo.
 name: CI
 on:
   push:
@@ -14,13 +14,13 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - name: Cabeceras para la interfaz del PC (GLFW)
+      - name: Headers for the desktop UI (GLFW)
         run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev xorg-dev libasound2-dev
       - name: gofmt
         run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
       - run: go vet ./...
       - run: go test ./...
-      - name: Compila para arm64 sin cgo
+      - name: Build for arm64 without cgo
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus-ui

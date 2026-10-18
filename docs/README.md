@@ -1,11 +1,12 @@
-# Documentación de audiofilus
+# audiofilus documentation
 
-| Documento | De qué trata |
+| Document | What it covers |
 |---|---|
-| [arquitectura.md](arquitectura.md) | Servicio + interfaz, el camino del audio, hilos y estado |
-| [protocolo.md](protocolo.md) | El socket de control: peticiones, respuestas y comandos |
-| [knulli.md](knulli.md) | Qué se toca en la consola, el modo bolsillo, la limpieza y los riesgos |
-| [muos.md](muos.md) | Lo mismo en muOS (MustardOS): qué usa en lugar de cada cosa de Knulli |
-| [rocknix-arkos.md](rocknix-arkos.md) | Lo mismo en ROCKNIX, ArkOS y dArkOS |
-| [consumo.md](consumo.md) | Mediciones de CPU y batería, y cómo medir |
-| [interfaz.md](interfaz.md) | La interfaz en Ebitengine: pantallas, controles, fuentes remotas y visualizadores |
+| [architecture.md](architecture.md) | Service + UI, the audio path, threads and state |
+| [protocol.md](protocol.md) | The control socket: requests, responses and commands |
+| [knulli.md](knulli.md) | What gets touched on the console, pocket mode, cleanup and risks |
+| [muos.md](muos.md) | The same on muOS (MustardOS): what it uses instead of each Knulli piece |
+| [rocknix-arkos.md](rocknix-arkos.md) | The same on ROCKNIX, ArkOS and dArkOS |
+| [power.md](power.md) | CPU and battery measurements, and how to measure |
+| [interface.md](interface.md) | The Ebitengine UI: screens, controls, remote sources and visualizers |
+| [portmaster.md](portmaster.md) | The PortMaster port: launcher, metadata, packaging |

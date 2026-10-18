@@ -1,70 +1,70 @@
 # Knulli
 
-Lo que sigue se aprendió parcheando Songo #5 en la RG34XX-SP (Knulli sobre Batocera 42, octubre de 2026) y está en `internal/platform/knulli.go`. Se activa solo si existen `/boot/boot/knulli.board.capability` y `/usr/bin/knulli-brightness`.
+What follows was learned by patching Songo #5 on the RG34XX-SP (Knulli on Batocera 42, October 2026) and lives in `internal/platform/knulli.go`. It only activates if `/boot/boot/knulli.board.capability` and `/usr/bin/knulli-brightness` exist.
 
-## Mientras la app pide mantenerla despierta
+## While the app asks to keep it awake
 
-Knulli suspende la consola por tres caminos. El servicio los neutraliza solo cuando la interfaz lo pide (`awake`) **y** suena música (`SetAwake(true)`), y los devuelve al pausar, al caducar el permiso o al salir. En segundo plano no toca nada: la consola se suspende como siempre.
+Knulli suspends the console in three ways. The service neutralizes them only when the interface asks for it (`awake`) **and** music is playing (`SetAwake(true)`), and restores them on pause, when the permission expires or on exit. In the background it touches nothing: the console suspends as usual.
 
-| Camino | Cómo funciona en Knulli | Qué hace audiofilus |
+| Path | How it works in Knulli | What audiofilus does |
 |---|---|---|
-| Inactividad | `idlewatcher` a los 5 min atenúa y **silencia el audio** (`system.batterysaver.mute=1`); a los 15 min suspende. Sus hooks (`/etc/idlewatcher/*.d`) no hacen nada si hay un `*.pause` en `/var/run/battery-saver/` | Crea `/var/run/battery-saver/audiofilus.pause` |
-| Tapa | Cerrar la tapa manda `KEY_INSERT`; `triggerhappy` ejecuta `/usr/bin/lid-control close`, que solo actúa si `knulli-board-capability lid` (lee `/boot/boot/knulli.board.capability`) | Monta con `--bind` una copia del archivo sin la palabra `lid` |
-| Botón de encendido | `KEY_POWER` → `/usr/bin/power-button`: pulsación corta = `knulli-suspend`, larga (2 s) = apagar | Monta una copia del script con `knulli-suspend &` cambiado por `:`. Mantener pulsado sigue apagando |
+| Inactivity | `idlewatcher` dims after 5 min and **mutes the audio** (`system.batterysaver.mute=1`); after 15 min it suspends. Its hooks (`/etc/idlewatcher/*.d`) do nothing if there is a `*.pause` in `/var/run/battery-saver/` | Creates `/var/run/battery-saver/audiofilus.pause` |
+| Lid | Closing the lid sends `KEY_INSERT`; `triggerhappy` runs `/usr/bin/lid-control close`, which only acts if `knulli-board-capability lid` (reads `/boot/boot/knulli.board.capability`) | Mounts with `--bind` a copy of the file without the word `lid` |
+| Power button | `KEY_POWER` → `/usr/bin/power-button`: short press = `knulli-suspend`, long (2 s) = power off | Mounts a copy of the script with `knulli-suspend &` replaced by `:`. Holding it still powers off |
 
-Notas:
+Notes:
 
-- Knulli **no trae `mountpoint` ni `strings`**; los montajes se comprueban leyendo `/proc/mounts`.
-- Si el archivo ya está tapado por otra app (por ejemplo Songo parcheado), no se monta encima.
-- Los montajes se anotan en `/tmp/audiofilus-mounts`. Si el servicio muere sin limpiar, el siguiente arranque los deshace (`unmountRecorded`). Como `/tmp` es tmpfs, un reinicio también lo limpia todo.
-- Con la música en pausa y la tapa **ya cerrada**, la consola no se suspende: Knulli solo actúa cuando la tapa *se cierra*.
+- Knulli **ships neither `mountpoint` nor `strings`**; mounts are checked by reading `/proc/mounts`.
+- If the file is already covered by another app (for example a patched Songo), nothing is mounted on top.
+- Mounts are recorded in `/tmp/audiofilus-mounts`. If the service dies without cleaning up, the next start undoes them (`unmountRecorded`). Since `/tmp` is tmpfs, a reboot also cleans everything.
+- With the music paused and the lid **already closed**, the console doesn't suspend: Knulli only acts when the lid *is closed*.
 
-## El sleep de la app
+## The app's sleep
 
-`audiofilus sleep on` (lo pedirá la interfaz):
+`audiofilus sleep on` (the interface will request it):
 
-1. Para `idlewatcher` (`/etc/init.d/S96idlewatcher-daemon stop`) si estaba corriendo: su hook "active" no mira los `*.pause` y, al detectar un botón, restauraría el brillo y el governor. Se vuelve a arrancar al salir.
-2. `knulli-brightness dispoff`: apaga la retroiluminación y deja en negro el framebuffer.
-3. Pone el governor `sleep.governor` (vacío: `powersave`, como el modo Power Saver de Knulli; `keep` no lo toca) y guarda el anterior para el despertar. Con libmpg123, decodificar MP3 a 480 MHz cuesta ~2 % de un núcleo; con go-mp3 eran ~55 % y por eso antes no se tocaba.
+1. Stops `idlewatcher` (`/etc/init.d/S96idlewatcher-daemon stop`) if it was running: its "active" hook ignores the `*.pause` files and, on detecting a button, would restore the brightness and the governor. It is started again on exit.
+2. `knulli-brightness dispoff`: turns off the backlight and blanks the framebuffer.
+3. Sets the `sleep.governor` governor (empty: `powersave`, like Knulli's Power Saver mode; `keep` leaves it alone) and saves the previous one for wake-up. With libmpg123, decoding MP3 at 480 MHz costs ~2 % of one core; with go-mp3 it was ~55 %, which is why it used to be left alone.
 
-EmulationStation **no se congela**: con un port abierto ya está en espera.
+EmulationStation **is not frozen**: with a port open it is already idle.
 
-Mientras dura, se reconocen estos gestos (los botones salen del mapeo de SDL):
+While it lasts, these gestures are recognized (the buttons come from the SDL mapping):
 
-| Gesto | Acción | Vibración |
+| Gesture | Action | Vibration |
 |---|---|---|
-| Doble toque de L1 / R1 (≤ 400 ms) | Anterior / siguiente | 150 ms |
-| Doble toque de L2 / R2 | −10 s / +10 s | 150 ms |
-| L1+L2 juntos, dos veces (≤ 600 ms) | Pausa / reanuda | 400 ms al pausar, 150 al reanudar |
-| R1+R2 juntos, dos veces (≤ 600 ms) | Una canción al azar de toda la biblioteca (el aleatorio queda como estaba) | 150 ms |
-| Start | Sale del sleep | — |
-| Botón de encendido (toque) | Sale del sleep, **salvo con la tapa cerrada** (`hallkey` del AXP: 0 cerrada) | — |
+| Double tap of L1 / R1 (≤ 400 ms) | Previous / next | 150 ms |
+| Double tap of L2 / R2 | −10 s / +10 s | 150 ms |
+| L1+L2 together, twice (≤ 600 ms) | Pause / resume | 400 ms on pause, 150 on resume |
+| R1+R2 together, twice (≤ 600 ms) | A random song from the whole library (shuffle stays as it was) | 150 ms |
+| Start | Exits sleep | — |
+| Power button (tap) | Exits sleep, **except with the lid closed** (`hallkey` from the AXP: 0 closed) | — |
 
-Un toque o un acorde sueltos no hacen nada. Con la tapa cerrada solo se alcanzan L1, L2, R1 y R2. La vibración escribe en `/sys/class/power_supply/axp2202-battery/moto`.
+A single tap or chord does nothing. With the lid closed only L1, L2, R1 and R2 are reachable. Vibration writes to `/sys/class/power_supply/axp2202-battery/moto`.
 
-Con la app abierta y despierta, un toque del botón de encendido entra en sleep (el servicio sube `power_seq` en el estado y la interfaz hace su fundido). El servicio lee la tecla `KEY_POWER` del dispositivo que la tenga y no sea un mando (`axp2202-pek`, `input.PowerButtons`), sin acapararla; un toque es soltarla antes de 1,5 s. Mantenerlo sigue apagando: eso lo hace el script de Knulli, del que la copia montada solo quita la suspensión. Con la app cerrada no se lee nada distinto: Knulli suspende como siempre.
+With the app open and awake, a tap of the power button enters sleep (the service bumps `power_seq` in the state and the interface does its fade). The service reads the `KEY_POWER` key from whichever device has it and isn't a controller (`axp2202-pek`, `input.PowerButtons`), without grabbing it; a tap means releasing it before 1.5 s. Holding it still powers off: Knulli's script does that, and the mounted copy only removes the suspend. With the app closed nothing different is read: Knulli suspends as usual.
 
-## Botones de los audífonos
+## Headphone buttons
 
-Los botones multimedia de los audífonos de bluetooth (BlueZ crea un dispositivo "(AVRCP)" al conectarlos) y de los de cable, si el chip de audio los ve (en la RG34XX-SP no: el H700 solo detecta si están enchufados), controlan la música con la app abierta o en segundo plano (`input/media_linux.go`, `Daemon.startMedia`): reproducir/pausa, reproducir, pausa, parar, siguiente, anterior, adelantar y retroceder. El botón único de los de cable (`KEY_MEDIA`) sigue la costumbre de Android: una pulsación pausa, dos pasan a la siguiente, tres a la anterior. No gasta batería: los dispositivos se buscan al arrancar y cada vez que aparece uno en `/dev/input` (inotify), y cada uno se lee con una lectura bloqueante; en reposo no hay ningún despertar. En el PC no se usa: ahí llegan por MPRIS. Vale en todos los sistemas (Knulli, muOS, ROCKNIX, ArkOS).
+The media buttons on bluetooth headphones (BlueZ creates an "(AVRCP)" device when they connect) and on wired ones, if the audio chip sees them (on the RG34XX-SP it doesn't: the H700 only detects whether they are plugged in), control the music with the app open or in the background (`input/media_linux.go`, `Daemon.startMedia`): play/pause, play, pause, stop, next, previous, fast-forward and rewind. The single button on wired ones (`KEY_MEDIA`) follows the Android convention: one press pauses, two skip to the next song, three to the previous one. It uses no battery: devices are looked up at startup and every time one appears in `/dev/input` (inotify), and each is read with a blocking read; at rest there are no wake-ups at all. It is not used on the PC: there they arrive through MPRIS. It works on all systems (Knulli, muOS, ROCKNIX, ArkOS).
 
-## Atajo de segundo plano
+## Background shortcut
 
-Siempre activo, también dentro de los juegos: **FN tres veces** y luego L1 / R1 / L2 / R2 / **Select (pausar)**. Ver [arquitectura.md](arquitectura.md).
+Always active, also inside games: **FN three times** and then L1 / R1 / L2 / R2 / **Select (pause)**. See [architecture.md](architecture.md).
 
-## Prueba en la consola (17 de octubre de 2026)
+## Test on the console (October 17, 2026)
 
-- El servicio suena, lee etiquetas, crea `audiofilus.json` y `data/` junto al binario, y aplica los tres overrides y el `.pause`.
-- CPU sonando a 1,5 GHz: 25 % de un núcleo (decodificar MP3 con `go-mp3`: 18 %).
-- El mando es `event1` y tiene `BTN_TL`, `BTN_TR`, `BTN_TL2`, `BTN_TR2` y `BTN_START` (bits 310–315 de `B: KEY`).
-- **Modo bolsillo:** la música siguió sonando con la pantalla apagada, pero **los gestos no hicieron nada** y la pantalla **se encendió sola** al pulsar R2. Causa: el mando de la RG34XX-SP **no usa los códigos estándar** (ver la tabla). R2 manda 0x13b, el `BTN_START` estándar, así que el servicio lo tomó por "despertar". La consola se quedó además sin red (el wifi dejó de responder a ARP) hasta reconectarlo.
-- Al hacer `quit`, el servicio deshizo todo (montajes, `.pause`, governor).
+- The service plays, reads tags, creates `audiofilus.json` and `data/` next to the binary, and applies the three overrides and the `.pause`.
+- CPU while playing at 1.5 GHz: 25 % of one core (decoding MP3 with `go-mp3`: 18 %).
+- The controller is `event1` and has `BTN_TL`, `BTN_TR`, `BTN_TL2`, `BTN_TR2` and `BTN_START` (bits 310–315 of `B: KEY`).
+- **Pocket mode:** the music kept playing with the screen off, but **the gestures did nothing** and the screen **turned on by itself** when pressing R2. Cause: the RG34XX-SP controller **doesn't use the standard codes** (see the table). R2 sends 0x13b, the standard `BTN_START`, so the service took it as "wake up". The console also lost its network (the wifi stopped answering ARP) until it was reconnected.
+- On `quit`, the service undid everything (mounts, `.pause`, governor).
 
-### Códigos reales del mando de la RG34XX-SP
+### Actual RG34XX-SP controller codes
 
-Capturados de `/dev/input/event1` (`Anbernic RG34XX-SP Controller`):
+Captured from `/dev/input/event1` (`Anbernic RG34XX-SP Controller`):
 
-| Botón | Código | Nombre en Linux |
+| Button | Code | Linux name |
 |---|---|---|
 | L1 | 0x134 (308) | `BTN_WEST` |
 | R1 | 0x135 (309) | `BTN_Z` |
@@ -72,22 +72,22 @@ Capturados de `/dev/input/event1` (`Anbernic RG34XX-SP Controller`):
 | R2 | 0x13b (315) | `BTN_START` |
 | Start | 0x137 (311) | `BTN_TR` |
 
-Por eso el mapeo sale de SDL (`internal/sdlmap`), no de los códigos estándar.
+That's why the mapping comes from SDL (`internal/sdlmap`), not from the standard codes.
 
-### El mapeo de SDL en Knulli
+### The SDL mapping on Knulli
 
-- El identificador de SDL del mando es genérico (`19000000010000000100000000010000`, bus interno, fabricante 1, producto 1) y **choca con el de la ODROID Go 2** en el `gamecontrollerdb.txt` general de PortMaster. El bueno ("ANBERNIC-keys") está en `PortMaster/knulli/gamecontrollerdb.txt`; `sdlmap` busca en el mismo orden que el `control.txt` de PortMaster (`~/.config`, `/tmp`, la carpeta de la CFW y al final el general). Lanzado desde un port, el daemon hereda `SDL_GAMECONTROLLERCONFIG` de `get_controls`, como Trancazo.
-- SDL 2.32 numera los botones por orden de código de todas las teclas del dispositivo: en la RG34XX-SP, b0=Escape, b1/b2=volumen, b3=0x130… `leftshoulder:b7` es 0x134 (L1). Comprobado con `audiofilus pad` y con los códigos capturados (test `TestFromSDLNumbering`).
-- **Atajo de FN probado en la consola (17 de octubre):** cambiar de canción, pausar y saltar funcionan con FN ×3 + botón.
-- El wifi de la consola se cae a menudo (deja de responder a ARP); las sesiones SSH largas se cortan.
+- The controller's SDL identifier is generic (`19000000010000000100000000010000`, internal bus, vendor 1, product 1) and **clashes with the ODROID Go 2 one** in PortMaster's general `gamecontrollerdb.txt`. The right one ("ANBERNIC-keys") is in `PortMaster/knulli/gamecontrollerdb.txt`; `sdlmap` searches in the same order as PortMaster's `control.txt` (`~/.config`, `/tmp`, the CFW folder and finally the general one). When launched from a port, the daemon inherits `SDL_GAMECONTROLLERCONFIG` from `get_controls`, like Trancazo.
+- SDL 2.32 numbers the buttons in code order across all the device's keys: on the RG34XX-SP, b0=Escape, b1/b2=volume, b3=0x130… `leftshoulder:b7` is 0x134 (L1). Verified with `audiofilus pad` and with the captured codes (test `TestFromSDLNumbering`).
+- **FN shortcut tested on the console (October 17):** changing song, pausing and seeking work with FN ×3 + button.
+- The console's wifi drops often (it stops answering ARP); long SSH sessions get cut off.
 
-## Riesgos sin comprobar
+## Unverified risks
 
-- **El hook "active" de `idlewatcher`** (`/etc/idlewatcher/active.d/01active-hooks`) no mira los `*.pause`: al detectar un botón hace `S31emulationstation resume`, restaura el governor y `knulli-brightness undim`. Por eso el sleep de la app para `idlewatcher` mientras dura (sin probar aún en la consola).
- deja en su cola los botones pulsados mientras tanto. Al reanudarlo los procesa; los dobles toques de L1/R1 podrían mover listas del menú.
-- **Que Knulli no mate el servicio** al salir de un port: por eso `setsid`, pero falta probarlo con el lanzador de PortMaster.
-- **Emuladores que abran ALSA directamente** podrían no compartir el audio con PipeWire.
+- **The `idlewatcher` "active" hook** (`/etc/idlewatcher/active.d/01active-hooks`) ignores the `*.pause` files: on detecting a button it runs `S31emulationstation resume`, restores the governor and `knulli-brightness undim`. That's why the app's sleep stops `idlewatcher` while it lasts (not yet tested on the console).
+- **EmulationStation, while paused,** keeps the buttons pressed in the meantime in its queue. On resume it processes them; double taps of L1/R1 could move menu lists.
+- **That Knulli doesn't kill the service** when exiting a port: hence `setsid`, but it still needs testing with the PortMaster launcher.
+- **Emulators that open ALSA directly** might not share the audio with PipeWire.
 
-## Acceso por SSH
+## SSH access
 
-La consola es `root@knulli.local` y solo acepta contraseña: `ssh-copy-id` no tiene efecto. El wifi se duerme cuando la consola no se usa y `knulli.local` deja de resolver; hay que despertarla. Ver la skill [`probar-en-knulli`](../.claude/skills/probar-en-knulli/SKILL.md).
+The console is `root@knulli.local` and only accepts a password: `ssh-copy-id` has no effect. The wifi sleeps when the console isn't in use and `knulli.local` stops resolving; you have to wake it up. See the [`test-on-knulli`](../.claude/skills/test-on-knulli/SKILL.md) skill.

@@ -1,6 +1,6 @@
 // Package daemon une el engine, la plataforma, el mando y el socket de control.
 //
-// Hay dos modos (ver docs/arquitectura.md):
+// Hay dos modos (ver docs/architecture.md):
 //
 //   - Segundo plano, con la interfaz cerrada: la consola se suspende como
 //     siempre y la música se controla con el atajo de FN (input.Combo).
