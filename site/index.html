@@ -237,12 +237,10 @@ footer img { height: 56px; width: auto; }
   <p>@juanvillacortac</p>
 </div>
 <script>
-// The splash plays once per visit, as in the app; any click or key skips it.
+// The splash plays on every load, as in the app; any click or key skips it.
 (function () {
   var el = document.getElementById("splash");
-  var seen = false;
-  try { seen = sessionStorage.getItem("splash") === "1"; sessionStorage.setItem("splash", "1"); } catch (e) {}
-  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var img = document.getElementById("splash-logo");
   var started = false;
   el.hidden = false;
@@ -260,7 +258,7 @@ footer img { height: 56px; width: auto; }
     setTimeout(done, 3000);
   });
   img.addEventListener("error", done);
-  setTimeout(function () { if (!started) { started = true; done(); } }, 1500);
+  setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
   img.src = "img/logo-intro.webp";
   el.addEventListener("click", done);
   addEventListener("keydown", done);
