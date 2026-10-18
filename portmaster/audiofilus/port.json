@@ -1,0 +1,28 @@
+{
+  "version": 4,
+  "name": "audiofilus.zip",
+  "items": [
+    "Audiofilus.sh",
+    "audiofilus"
+  ],
+  "items_opt": [],
+  "attr": {
+    "title": "audiofilus",
+    "porter": [
+      "juanvillacortac"
+    ],
+    "desc": "A pixel-art music player with album covers. Keep the music going while you game, or turn the screen off and control it from your pocket.",
+    "inst": "Ready to run on Knulli, muOS, ROCKNIX, ArkOS and dArkOS. Put your music (MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, MOD/XM/IT) in a folder and pick it on the first run.",
+    "genres": [
+      "other"
+    ],
+    "image": {},
+    "rtr": true,
+    "exp": false,
+    "runtime": null,
+    "reqs": [],
+    "arch": [
+      "aarch64"
+    ]
+  }
+}

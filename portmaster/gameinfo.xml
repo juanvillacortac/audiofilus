@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<gameList>
+	<game>
+		<path>./Audiofilus.sh</path>
+		<name>audiofilus</name>
+		<desc>A pixel-art music player for MP3, Ogg Vorbis, FLAC and WAV, with album covers, artists, playlists and folders. Keep the music going while you game: send it to the background and control it with hotkeys. Pocket mode turns the screen off and listens to the shoulder buttons.</desc>
+		<developer>juanvillacortac</developer>
+		<publisher>juanvillacortac</publisher>
+		<genre>Music player</genre>
+		<players>1</players>
+		<image>./audiofilus/screenshot.png</image>
+		<thumbnail>./audiofilus/cover.png</thumbnail>
+	</game>
+</gameList>

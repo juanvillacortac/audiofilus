@@ -1,0 +1,152 @@
+<p align="center">
+  <img src="site/img/logo.png" alt="audiofilus" width="460">
+</p>
+
+<p align="center">
+  <b>A pixel-art music player for Linux handhelds.</b><br>
+  The music keeps playing while you game, and sleep mode turns the screen off so you can control it from your pocket.
+</p>
+
+<p align="center">
+  <a href="https://juanvillacortac.github.io/audiofilus/">Website</a> ·
+  <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a> ·
+  <a href="docs/README.md">Docs (Spanish)</a>
+</p>
+
+<p align="center">
+  <img src="site/img/player.gif" alt="Now Playing" width="320">
+  <img src="site/img/vis-lake.gif" alt="Lake visualizer" width="320">
+</p>
+
+Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), and on Linux desktops.
+
+## Features
+
+### Background play
+
+- **The audio lives in its own service.** The interface is only a remote: close it, open an emulator, and the music keeps going.
+- **Controls from inside any game:** hold `FN` and press a button to pause, skip, go back or seek.
+- **Headphone buttons**, Bluetooth or wired: one press pauses, two skip, three go back. Devices are watched with inotify, so waiting for them costs no CPU.
+- **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. About 260 mA on an RG34XX-SP (see [docs/consumo.md](docs/consumo.md)).
+- Gapless playback, fade on pause, shuffle, repeat, "play next" and a queue that survives restarts.
+- Volume stays in sync with the system, including boost above 100%.
+
+### Library
+
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF** and tracker modules (**MOD, XM, IT, S3M**).
+- Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
+- Search across the library, with an on-screen QWERTY keyboard.
+- The scan runs once and is cached; later runs only read new or changed files.
+- The interface colors come from the album cover.
+
+<p align="center">
+  <img src="site/img/albums.png" alt="Albums" width="400">
+  <img src="site/img/queue.png" alt="Queue" width="400">
+</p>
+
+### Remote sources
+
+| Source | What you get |
+|---|---|
+| **Subsonic / OpenSubsonic** (Navidrome and others) | Browse, stream, cache and download |
+| **Jellyfin** | Same, with your Jellyfin user and its playlists |
+| **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY) |
+| **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume |
+| **YouTube Music** | Search without signing in; listen without downloading, or save songs with cover and tags. Requires your own `yt-dlp` (see below) |
+
+Remote songs are cached on the SD card (400 MB by default, least recently used goes first) and the next track is fetched ahead of time.
+
+<p align="center">
+  <img src="site/img/search-youtube.png" alt="Search with YouTube results" width="400">
+  <img src="site/img/radio.png" alt="Internet radio" width="400">
+</p>
+
+### Visualizers and games
+
+Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus two games that run next to the mini player: **Blocks** (falling blocks) and **Rhythm** (notes generated from the song that's playing).
+
+<p align="center">
+  <img src="site/img/vis-drift.gif" alt="Drift" width="260">
+  <img src="site/img/vis-trench.gif" alt="Trench" width="260">
+  <img src="site/img/vis-tunnel.gif" alt="Tunnel" width="260">
+</p>
+<p align="center">
+  <img src="site/img/blocks.gif" alt="Blocks" width="390">
+  <img src="site/img/rhythm.gif" alt="Rhythm" width="390">
+</p>
+
+### Interface
+
+- `SELECT` opens a dock with every screen; double `SELECT` returns to the previous one. `START` opens the More menu.
+- Hold `FN` on any screen to see its controls.
+- The layout follows the screen's real width, from 1:1 to 21:9.
+- Optional chiptune sounds, with separate switches for menus and for music actions.
+- English and Spanish, 12 h (AM/PM) or 24 h clock.
+- On desktop: fullscreen with sharp pixels.
+
+<p align="center">
+  <img src="site/img/guide.png" alt="Controls guide" width="400">
+  <img src="site/img/width-21x9.png" alt="21:9 layout" width="400">
+</p>
+
+## Install
+
+1. Download `audiofilus-portmaster.zip` from the [latest release](https://github.com/juanvillacortac/audiofilus/releases/latest).
+2. Install it with PortMaster, or unzip it into your `ports` folder.
+3. Open **audiofilus** from Ports and pick your music folder.
+
+Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
+
+**YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds.
+
+On a Linux desktop, grab `audiofilus-linux-amd64.tar.gz` and run `./audiofilus-ui`.
+
+## Build
+
+With Docker, nothing else needed:
+
+```sh
+docker build --target dist --output dist .
+```
+
+Or with Go (see `go.mod` for the version; the desktop UI needs the X11, OpenGL and ALSA headers, e.g. `libgl1-mesa-dev xorg-dev libasound2-dev`):
+
+```sh
+./build.sh
+```
+
+Both leave in `dist/`:
+
+| File | What it is |
+|---|---|
+| `audiofilus-amd64`, `audiofilus-arm64` | The audio service and CLI |
+| `audiofilus-ui-amd64`, `audiofilus-ui-arm64` | The interface |
+| `audiofilus.zip` | The PortMaster port |
+
+The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile and libxmp are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.
+
+### CLI
+
+```sh
+dist/audiofilus play ~/Music          # starts the service and plays
+dist/audiofilus status
+dist/audiofilus next | prev | toggle | seek +30 | shuffle on | repeat all
+dist/audiofilus quit
+```
+
+### Tests
+
+```sh
+go vet ./... && go test ./...
+```
+
+Releases are built by GitHub Actions when a `v*` tag is pushed.
+
+## Roadmap
+
+- **Desktop:** mouse and keyboard controls, media keys, window-sized layouts.
+- **Android** and **iOS**: touch controls and system media controls.
+
+## Docs
+
+How it works, platform details and power measurements are in [docs/](docs/README.md) (in Spanish).

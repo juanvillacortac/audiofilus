@@ -1,0 +1,8 @@
+# Binarios
+/dist/
+/audiofilus
+
+# Configuración y estado de una ejecución local (viven junto al binario)
+/run/
+audiofilus.json
+/data/

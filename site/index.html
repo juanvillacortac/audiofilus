@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>audiofilus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A pixel-art music player for Linux handhelds. The music keeps playing while you game, and sleep mode turns the screen off so you can control it from your pocket.">
+<meta property="og:title" content="audiofilus">
+<meta property="og:description" content="A pixel-art music player for Linux handhelds. Keep the music going while you game.">
+<meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" href="img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night-mode handheld. Each section is a band; screenshots sit in
+   bezels like the console's own screen, pixels never smoothed. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0b15;         /* the app's splash background */
+  --panel: #17121f;
+  --panel-2: #211829;
+  --line: #352a3d;
+  --fg: #eee6ec;
+  --muted: #a898a8;
+  --red: #f04a35;         /* the UI accent on a red cover */
+  --teal: #6fe3c4;        /* the logo's chrome */
+  --pink: #ee8cc2;
+  --display: "Jersey 10", "Arial Narrow", sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --wrap: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+.px { image-rendering: pixelated; image-rendering: crisp-edges; }
+a { color: var(--teal); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h2 { font: 400 calc(var(--step-3) * 1.3)/0.85 var(--display); letter-spacing: 0.02em; }
+h3 { font: 400 calc(var(--step-1) * 1.35)/1.05 var(--display); letter-spacing: 0.02em; }
+p { margin: 0; }
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+.band + .band { border-top: 1px solid var(--line); }
+.eyebrow {
+  font: 600 var(--step--1)/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.lede { color: var(--muted); max-width: 38rem; font-size: var(--step-1); line-height: 1.5; }
+.head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+/* Top bar */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
+.top img { height: 56px; width: auto; }
+.top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; font: 600 var(--step--1)/1 var(--mono); }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--fg); }
+@media (max-width: 720px) { .top nav a:not(.gh) { display: none; } }
+
+/* Hero */
+.hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
+.hero h1 { font: 400 clamp(3.2rem, 2rem + 5vw, 6rem)/0.8 var(--display); letter-spacing: 0.01em; }
+.hero h1 em { font-style: normal; color: var(--teal); }
+.hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.8rem 1.15rem;
+  font: 400 1.35rem/1 var(--display); letter-spacing: 0.03em;
+  text-decoration: none; border-radius: 4px;
+  border: 2px solid var(--fg); color: var(--fg);
+}
+.btn.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 4px 4px 0 var(--pink); }
+.btn.primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+.btn:hover { background: var(--panel-2); }
+.btn.primary:hover { background: var(--red); }
+.note { font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted); }
+
+/* The console: a bezel around a 3:2 screen */
+.device {
+  background: linear-gradient(160deg, #2a2230, #17121c);
+  border-radius: 22px;
+  padding: clamp(14px, 3vw, 26px);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
+  position: relative;
+}
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; max-width: 100%; }
+.device .screen img { width: 100%; height: 100%; object-fit: cover; }
+.device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+.device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
+
+/* Format strip */
+.formats { border-block: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+.formats ul {
+  list-style: none; margin: 0; padding-block: 0.9rem;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.6rem;
+  font: 600 var(--step--1)/1.4 var(--mono); color: var(--muted);
+}
+.formats li::before { content: "▸ "; color: var(--red); }
+
+/* Background play */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+.points { display: grid; gap: 1.6rem; }
+.point { display: grid; gap: 0.4rem; min-width: 0; }
+.point p { color: var(--muted); }
+kbd {
+  font: 700 0.78em/1 var(--mono);
+  background: var(--red); color: #fff;
+  padding: 0.2em 0.45em; border-radius: 3px;
+  white-space: nowrap;
+}
+.figure { display: grid; gap: 0.6rem; min-width: 0; }
+.figure figcaption, .caption { font: 400 var(--step--1)/1.4 var(--mono); color: var(--muted); }
+.shot { border-radius: 6px; border: 1px solid var(--line); background: #000; width: 100%; }
+figure { margin: 0; }
+
+/* Visualizers */
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.vis-grid figure { display: grid; gap: 0.5rem; }
+.vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
+.vis-grid figcaption span { color: var(--muted); font-weight: 400; }
+.games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+@media (max-width: 640px) { .games { grid-template-columns: 1fr; } }
+
+/* Sources */
+.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+@media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
+.source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.source .tag { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.source p { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } }
+
+/* Screens gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 1.25rem; }
+
+/* Any width */
+.widths { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
+.widths figure { display: grid; gap: 0.4rem; flex: 1 1 auto; min-width: 0; }
+.widths figure:nth-child(1) { flex-basis: 8rem; max-width: 12rem; }
+.widths figure:nth-child(2) { flex-basis: 10rem; max-width: 15rem; }
+.widths figure:nth-child(3) { flex-basis: 11rem; max-width: 17rem; }
+.widths figure:nth-child(4) { flex-basis: 13rem; max-width: 20rem; }
+.widths figure:nth-child(5) { flex-basis: 16rem; max-width: 26rem; }
+
+/* Systems */
+.systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip { font: 400 1.35rem/1 var(--display); letter-spacing: 0.03em; padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; color: var(--muted); }
+ol.steps strong { color: var(--fg); }
+pre {
+  margin: 0; padding: 1rem 1.2rem; overflow-x: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  font: 400 0.88rem/1.6 var(--mono); color: var(--fg);
+}
+pre .c { color: var(--muted); }
+
+/* Roadmap */
+.road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
+.stop { border: 1px solid var(--line); border-radius: 6px; padding: 1.3rem; display: grid; gap: 0.6rem; align-content: start; background: var(--panel); }
+.stop p { color: var(--muted); font-size: var(--step--1); }
+.state { justify-self: start; font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.5rem; border-radius: 3px; }
+.state.now { background: var(--teal); color: var(--ink); }
+.state.next { border: 1px solid var(--pink); color: var(--pink); }
+
+footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
+footer img { height: 56px; width: auto; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="#top" aria-label="audiofilus"><img class="px" src="img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Sections">
+      <a href="#background">Background play</a>
+      <a href="#visuals">Visualizers</a>
+      <a href="#sources">Sources</a>
+      <a href="#install">Install</a>
+      <a class="gh" href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <span class="eyebrow">Music player for Linux handhelds</span>
+        <h1>Your music keeps playing <em>while you game.</em></h1>
+        <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers and a couple of games. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download for PortMaster</a>
+          <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Source on GitHub</a>
+        </div>
+        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — also runs on Linux desktops.</p>
+      </div>
+      <div class="device">
+        <span class="led" aria-hidden="true"></span>
+        <div class="screen"><img class="px" src="img/player.gif" alt="The Now Playing screen: album cover, track info and a spectrum visualizer pulsing with the song" width="320" height="240"></div>
+        <span class="label" aria-hidden="true">AUDIOFILUS</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="formats">
+    <div class="wrap">
+      <ul aria-label="Supported formats">
+        <li>MP3</li><li>AAC / M4A</li><li>ALAC</li><li>FLAC</li><li>Ogg Vorbis</li><li>Opus</li><li>WAV</li><li>AIFF</li><li>MOD · XM · IT · S3M</li><li>M3U playlists</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="band" id="background">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Background play</span>
+          <h2>A player that stays out of the way</h2>
+        </div>
+        <div class="point">
+          <h3>The audio lives in its own service</h3>
+          <p>The interface is just a remote. Close it and the music keeps going; launch a game and it still plays, with gapless track changes and a quick fade when you pause.</p>
+        </div>
+        <div class="point">
+          <h3>Controls from inside any game</h3>
+          <p>Hold <kbd>FN</kbd> and tap a button to pause, skip, go back or seek. Your headphones' play button works too, over Bluetooth or cable: one press pauses, two skip, three go back.</p>
+        </div>
+        <div class="point">
+          <h3>Sleep mode for your pocket</h3>
+          <p>Press <kbd>START</kbd> twice or the power button: the screen turns off, the CPU slows down and the triggers become gestures. Close the lid and it stays asleep. On an RG34XX-SP this draws about 260&nbsp;mA, close to the console's own music player.</p>
+        </div>
+        <div class="point">
+          <h3>Help is one button away</h3>
+          <p>Hold <kbd>FN</kbd> on any screen to see what every button does there.</p>
+        </div>
+      </div>
+      <div class="figure">
+        <img class="shot px" src="img/guide.png" alt="The controls guide over the player, listing the buttons for on-screen, everywhere, sleep and background use" width="720" height="480" loading="lazy">
+        <p class="caption">The controls guide, shown while FN is held.</p>
+        <img class="shot px" src="img/menu.png" alt="The More menu with Album, Artist, Add to a playlist, Queue, Shuffle, Repeat, Screen off, Background and Quit" width="720" height="480" loading="lazy">
+        <p class="caption">START opens the More menu, including “Background” to leave the app and keep listening.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="visuals">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Visualizers and games</span>
+        <h2>Something to look at</h2>
+        <p class="lede">Seven visualizers that follow the beat, all drawn at low resolution and kept light on the CPU. Colors come from the album cover.</p>
+      </div>
+      <div class="vis-grid">
+        <figure><img class="shot px" src="img/vis-lake.gif" alt="Lake visualizer: a night lake whose lily pads ripple with the music" width="320" height="240" loading="lazy"><figcaption>Lake <span>ripples on the beat</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-drift.gif" alt="Drift visualizer: a car driving down a lit road at night" width="320" height="240" loading="lazy"><figcaption>Drift <span>three cameras</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-trench.gif" alt="Trench visualizer: flying down a city canyon" width="320" height="240" loading="lazy"><figcaption>Trench <span>city canyon</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-plasma.gif" alt="Plasma visualizer: dithered glowing plasma" width="320" height="240" loading="lazy"><figcaption>Plasma <span>dithered</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-tunnel.gif" alt="Tunnel visualizer: a pulsing ring tunnel" width="320" height="240" loading="lazy"><figcaption>Tunnel <span>pulses with bass</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-waves.gif" alt="Waves visualizer: an oscilloscope trace" width="320" height="240" loading="lazy"><figcaption>Waves <span>oscilloscope</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-bars.gif" alt="Bars visualizer: spectrum bars with falling peaks" width="320" height="240" loading="lazy"><figcaption>Bars <span>spectrum</span></figcaption></figure>
+        <figure><img class="shot px" src="img/transition.gif" alt="A screen transition between the player and the library" width="320" height="240" loading="lazy"><figcaption>Transitions <span>between screens</span></figcaption></figure>
+      </div>
+      <div class="games">
+        <figure class="figure"><img class="shot px" src="img/blocks.gif" alt="Blocks: a falling-blocks game played next to the mini player" width="320" height="240" loading="lazy"><figcaption><strong>Blocks.</strong> Falling blocks with hold, next piece and a record, while the album keeps playing.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/rhythm.gif" alt="Rhythm: notes fall down lanes built from the song's beats, with a PERFECT hit message" width="320" height="240" loading="lazy"><figcaption><strong>Rhythm.</strong> Notes are generated from whatever song is playing. Hit them on time for combos.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sources">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Sources</span>
+        <h2>Your files, your server, the radio</h2>
+        <p class="lede">Everything shows up in the same library and the same player. Remote songs are cached on the SD card so the next listen is free.</p>
+      </div>
+      <div class="sources">
+        <div class="source"><span class="tag">Local</span><h3>Your library</h3><p>Folders, tags, embedded and folder covers, M3U playlists and your own playlists. Scanned once, then only new files are read.</p></div>
+        <div class="source"><span class="tag">Server</span><h3>Subsonic</h3><p>Navidrome and other Subsonic or OpenSubsonic servers. Songs stream, stay cached for the next listen, and can be downloaded.</p></div>
+        <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Sign in with your Jellyfin user and browse its music library and playlists like your own files.</p></div>
+        <div class="source"><span class="tag">Live</span><h3>Internet radio</h3><p>Thousands of stations from radio-browser.info, by country or genre, with the current song title from the stream.</p></div>
+        <div class="source"><span class="tag">Episodes</span><h3>Podcasts</h3><p>Top shows for your country, search, or any RSS feed by address. Episodes download for offline listening and remember where you stopped.</p></div>
+        <div class="source"><span class="tag">Bring your own</span><h3>YouTube Music</h3><p>Copy your own yt-dlp next to the app and search appears: listen without downloading, or save songs into your library with cover and tags.</p></div>
+      </div>
+      <div class="trio">
+        <figure class="figure"><img class="shot px" src="img/search-youtube.png" alt="Search with All, Library and YouTube filters; songs you already have are checked" width="720" height="480" loading="lazy"><figcaption>One search for the library and YouTube. A check marks songs you already have.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/streaming.png" alt="The player with a STREAMING badge while a song loads" width="720" height="480" loading="lazy"><figcaption>Streaming songs get a badge, and you can keep them.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/radio.png" alt="The player showing a live radio station with its current song" width="720" height="480" loading="lazy"><figcaption>Radio plays live, with the song title from the station.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="screens">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Screens</span>
+        <h2>Made for a D-pad</h2>
+        <p class="lede"><kbd>SELECT</kbd> opens a dock with every screen; press it twice to jump back to the last one. A QWERTY on-screen keyboard handles search and playlist names. Interface sounds are optional, in two separate switches for menus and for music actions.</p>
+      </div>
+      <div class="gallery">
+        <figure class="figure"><img class="shot px" src="img/albums.png" alt="Album grid with covers" width="720" height="480" loading="lazy"><figcaption>Albums, with artists, songs, playlists and folders beside them.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/dock.png" alt="The screens dock along the bottom of the display" width="720" height="480" loading="lazy"><figcaption>The screens dock.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/queue.png" alt="The play queue" width="720" height="480" loading="lazy"><figcaption>The queue, with shuffle, repeat and “play next”.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/playlist-add.png" alt="Add to a playlist dialog" width="720" height="480" loading="lazy"><figcaption>Your own playlists, saved as M3U8 files next to the app.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="widths">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Any screen</span>
+        <h2>From square to ultrawide</h2>
+        <p class="lede">The layout adapts to the screen's real width instead of picking from a few fixed shapes, so it fills a 1:1 RGB30, a 3:2 clamshell and a 21:9 monitor.</p>
+      </div>
+      <div class="widths">
+        <figure><img class="shot px" src="img/width-1x1.png" alt="Player on a 1:1 screen" width="480" height="480" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
+        <figure><img class="shot px" src="img/width-4x3.png" alt="Player on a 4:3 screen" width="640" height="480" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
+        <figure><img class="shot px" src="img/width-3x2.png" alt="Player on a 3:2 screen" width="720" height="480" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
+        <figure><img class="shot px" src="img/width-16x9.png" alt="Player on a 16:9 screen" width="854" height="480" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
+        <figure><img class="shot px" src="img/width-21x9.png" alt="Player on a 21:9 screen" width="1120" height="480" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="install">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Install</span>
+          <h2>Through PortMaster</h2>
+        </div>
+        <div class="systems" aria-label="Supported systems">
+          <span class="chip">Knulli</span><span class="chip">muOS</span><span class="chip">ROCKNIX</span><span class="chip">ArkOS</span><span class="chip">dArkOS</span>
+        </div>
+        <ol class="steps">
+          <li>Download <strong>audiofilus-portmaster.zip</strong> from the <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">latest release</a>.</li>
+          <li>Install it with PortMaster, or unzip it into your <strong>ports</strong> folder.</li>
+          <li>Open <strong>audiofilus</strong> from Ports and pick your music folder.</li>
+          <li>Optional: put a <strong>yt-dlp</strong> binary in the app's <strong>yt-dlp/</strong> folder to enable YouTube Music.</li>
+        </ol>
+        <p class="note">Each system is detected at startup. Lid, power button, battery saver and volume use that system's own tools; on a desktop all of that is skipped.</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Build from source</span>
+          <h2>One command</h2>
+        </div>
+        <p class="lede">Written in Go without cgo for the handhelds. Codec libraries are loaded at runtime when the system has them.</p>
+<pre><span class="c"># with Docker, nothing else to install</span>
+git clone https://github.com/juanvillacortac/audiofilus
+cd audiofilus
+docker build --target dist --output dist .
+
+<span class="c"># or with Go installed</span>
+./build.sh</pre>
+        <p class="note">Both leave the desktop and arm64 binaries plus the PortMaster zip in dist/.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="roadmap">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Roadmap</span>
+        <h2>Beyond handhelds</h2>
+        <p class="lede">The same player, tuned for bigger screens and phones.</p>
+      </div>
+      <div class="road">
+        <div class="stop"><span class="state now">Runs today</span><h3>Desktop</h3><p>Already runs on Linux with fullscreen and crisp pixel scaling. Next: mouse and keyboard controls, media keys and window-sized layouts.</p></div>
+        <div class="stop"><span class="state next">Planned</span><h3>Android</h3><p>Touch controls, a lock-screen player and background playback through the system's media session.</p></div>
+        <div class="stop"><span class="state next">Planned</span><h3>iOS</h3><p>The same pixel interface on iPhone and iPad, with Control Center and AirPods controls.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img class="px" src="img/logo.png" alt="audiofilus" width="230" height="56">
+    <p>Made by <a href="https://github.com/juanvillacortac">@juanvillacortac</a>. Built with Go and Ebitengine.</p>
+  </div>
+</footer>
+</body>
+</html>
