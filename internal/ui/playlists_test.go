@@ -18,14 +18,14 @@ import (
 func TestSavePlaylistRoundTrip(t *testing.T) {
 	dir := t.TempDir()
 	inside := filepath.Join(dir, "música", "a.mp3")
-	outside := "/otra/b.flac"
+	outside := filepath.Join(t.TempDir(), "otra", "b.flac") // absoluta en cualquier sistema
 	pl := &Playlist{Name: "Gym", Path: filepath.Join(dir, "Gym.m3u8"), Songs: []Song{{Path: inside, Title: "A"}, {Path: outside, Title: "B"}}}
 	a := &App{paths: config.Paths{Data: dir}}
 	if err := a.savePlaylist(pl); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(pl.Path)
-	if !strings.Contains(string(b), "\nmúsica/a.mp3\n") || !strings.Contains(string(b), "\n/otra/b.flac\n") {
+	if !strings.Contains(string(b), "\nmúsica/a.mp3\n") || !strings.Contains(string(b), "\n"+outside+"\n") {
 		t.Errorf("unexpected paths in playlist:\n%s", b)
 	}
 	got, err := library.Expand([]string{pl.Path})
