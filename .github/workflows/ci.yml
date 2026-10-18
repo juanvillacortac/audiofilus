@@ -44,10 +44,10 @@ jobs:
         shell: bash
         run: |
           set -x
+          trap 'cat bin/data/audiofilus.log || true' EXIT
           ./bin/audiofilus.exe daemon -detach
           ./bin/audiofilus.exe status
           ./bin/audiofilus.exe play internal/decode/testdata
           sleep 2
           ./bin/audiofilus.exe status
           ./bin/audiofilus.exe quit
-          cat bin/data/*.log || true
