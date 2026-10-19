@@ -452,31 +452,7 @@ func (a *App) updateTetris() {
 	g.shift(in.duration(ActLeft), in.duration(ActRight))
 	// Soltar: ↑.
 	if in.Pressed(ActUp) {
-		n := 0
-		for g.down() {
-			n++
-		}
-		pts := 2 * n
-		// A tiempo con la música: sube el combo, que multiplica (y en FEVER,
-		// el doble). A destiempo se rompe.
-		if a.beat.onBeat(a.beatClock(), 0.1) {
-			g.combo++
-			pts = (2*pts + 50*(g.level()+1)) * g.combo
-			if g.fever() {
-				pts *= 2
-			}
-			g.onBeatAt, g.onBeatBonus = a.t, pts
-		} else {
-			g.combo = 0
-		}
-		g.comboAt = a.t
-		g.score += pts
-		g.laserAt, g.laserY = a.t, g.py+tetBottom(g.piece, g.rot)
-		g.shakeAt = a.t
-		g.lock(a.t, a.beatSoon())
-		if g.over {
-			a.saveTetBest()
-		}
+		a.hardDrop()
 		return
 	}
 	// Caída: la gravedad del nivel o, con ↓, una fila cada tetSoftDrop.
@@ -506,6 +482,35 @@ func (a *App) updateTetris() {
 		}
 	} else {
 		g.lockT = 0
+	}
+}
+
+// hardDrop suelta la pieza de golpe y la fija: a tiempo con la música sube el
+// combo, que multiplica (y en FEVER, el doble); a destiempo se rompe.
+func (a *App) hardDrop() {
+	g := a.tetris
+	n := 0
+	for g.down() {
+		n++
+	}
+	pts := 2 * n
+	if a.beat.onBeat(a.beatClock(), 0.1) {
+		g.combo++
+		pts = (2*pts + 50*(g.level()+1)) * g.combo
+		if g.fever() {
+			pts *= 2
+		}
+		g.onBeatAt, g.onBeatBonus = a.t, pts
+	} else {
+		g.combo = 0
+	}
+	g.comboAt = a.t
+	g.score += pts
+	g.laserAt, g.laserY = a.t, g.py+tetBottom(g.piece, g.rot)
+	g.shakeAt = a.t
+	g.lock(a.t, a.beatSoon())
+	if g.over {
+		a.saveTetBest()
 	}
 }
 

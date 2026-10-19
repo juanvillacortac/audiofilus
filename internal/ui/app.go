@@ -1376,38 +1376,41 @@ func (a *App) writeFrames() error {
 		a.sleeping = false
 	}
 	a.fadingOut, a.fadingIn = false, false
-	// Bloques reaccionando a la música (con el medidor inventado de la maqueta).
+	// Bloques: una partida de verdad, con el jugador automático (tetbot.go)
+	// soltando las piezas al ritmo de la maqueta. Empieza con una pila de
+	// cinco filas con un pozo a la derecha, para que se vean líneas, combos y
+	// un TETRA.
 	tetDir := filepath.Join(a.FramesDir, "bloques")
 	if err := os.MkdirAll(tetDir, 0o755); err != nil {
 		return err
 	}
 	a.screen, a.tetris = Blocks, a.newTetris()
-	for y := 16; y < tetRows; y++ {
-		for x := 0; x < tetW; x++ {
-			if (x*7+y*3)%11 != 0 {
-				a.tetris.board[y][x] = int8(1 + (x+y)%7)
-			}
+	g := a.tetris
+	g.queue = []int{2, 5, 3, 1, 6, 4, 0, 5, 2, 3, 1, 6, 0, 4, 5, 3, 2, 6, 1, 0, 4, 5, 3, 2, 1, 6, 0, 4, 5, 2}
+	g.bag = nil
+	g.spawn(g.take())
+	for y := tetRows - 5; y < tetRows; y++ {
+		for x := 0; x < tetW-1; x++ {
+			g.board[y][x] = int8(1 + (x*3+y)%7)
 		}
 	}
-	for i := 0; i < 80; i++ {
-		a.t = 10 + float64(i)/20
+	for x := 0; x < 4; x++ {
+		g.board[tetRows-6][x] = int8(1 + x%7)
+	}
+	var plan tetPlan
+	var readyAt float64
+	planned := false
+	for i := 0; i < 240; i++ {
 		for k := 0; k < 3; k++ { // a 20 cuadros por segundo, 3 pasos de 60 Hz
-			if a.updateBeat() {
-				a.tetris.shakeAt, a.tetris.bounceAt = a.t, a.t
-
+			a.t = 10 + float64(i*3+k)/60
+			a.beatHit = a.updateBeat()
+			if !planned && len(a.tetris.clearing) == 0 && !a.tetris.over {
+				plan, planned = a.tetris.botPlan(), true
 			}
-		}
-		switch i { // una racha: a tiempo, FEVER, un láser y unas líneas que explotan
-		case 10:
-			a.tetris.combo, a.tetris.comboAt = 2, a.t
-		case 20:
-			a.tetris.combo = 4
-			a.tetris.laserAt, a.tetris.laserY = a.t, 15
-			a.tetris.call, a.tetris.callAt = "T-SPIN", a.t
-			a.tetris.onBeatAt, a.tetris.onBeatBonus = a.t, 720
-		case 40:
-			a.tetris.clearDoneAt, a.tetris.clearY = a.t, 19
-			bgPump = 1
+			if a.botStep(i*3+k, &plan, &readyAt) {
+				planned = false
+			}
+			a.updateTetris()
 		}
 		if err := a.renderShot(filepath.Join(tetDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
 			return err
