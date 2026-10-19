@@ -17,6 +17,8 @@ audiofilus also runs on **ROCKNIX** and on the **ArkOS** family (ArkOS and dArkO
 | Vibration | The AXP motor if it exists (`axp2202-battery/moto`); otherwise, nothing | Same |
 | Governor during sleep, frozen `gptokeyb`, power button (`KEY_POWER`) | Same as on Knulli | Same, with `sudo` when needed |
 
+**Background on ROCKNIX:** since October 2026, ROCKNIX's `runemu.sh` runs every game and port in its own systemd scope (`systemd-run --scope --slice=games.slice`), and when the game exits it runs `systemctl stop` on that scope. That kills everything still inside it, and `setsid` does not leave a cgroup. So the service moves itself out at startup: if `/proc/self/cgroup` is under `games.slice`, it asks systemd over D-Bus (`StartTransientUnit`) for a scope of its own, `audiofilusd-<pid>.scope`, in `system.slice` (`proc.LeaveGameScope`). Without this, Background stopped the music when the player closed.
+
 **Limitation on ROCKNIX:** with its "fake suspend" (ROCKNIX Settings: suspend mode off), pressing the button makes its `input_sense` run `rocknix-fake-suspend`. That mutes the audio, freezes processes and grabs the controller, with no way around it. With normal suspend (the factory default), the inhibitor blocks it and the button triggers the audiofilus sleep.
 
 Audio needs nothing: ROCKNIX has the PulseAudio protocol (PipeWire) and ArkOS goes through ALSA, and oto tries both. The launcher already fixes the `~/.asoundrc` that some ArkOS ports remove.

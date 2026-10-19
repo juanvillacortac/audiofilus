@@ -26,6 +26,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/daemon"
 	"github.com/juanvillacortac/audiofilus/internal/daemon/statusfmt"
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 )
 
 const usage = `usage:
@@ -94,6 +95,9 @@ func runDaemon(paths config.Paths, args []string) {
 		}
 		return
 	}
+	// En ROCKNIX la interfaz corre en el scope del port, que se mata entero
+	// al cerrarla: el servicio se muda a uno propio.
+	proc.LeaveGameScope()
 	if err := daemon.Run(paths); err != nil {
 		log.Fatal(err)
 	}
