@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -105,15 +106,17 @@ func (c *Client) Background() {
 	_, _ = control.Call(c.paths.Socket, control.Request{Cmd: "background"})
 }
 
-// daemonPath busca el binario del servicio: junto al de la interfaz (en el
-// port de PortMaster, bin/<arquitectura>/, con la configuración una carpeta
-// más arriba), en la carpeta de audiofilus o en el PATH.
+// daemonPath busca el binario del servicio junto al de la interfaz, con su
+// mismo sufijo (en el port de PortMaster, audiofilus-ui.aarch64 lanza
+// audiofilus.aarch64; en Windows, .exe); si no, en la carpeta de audiofilus
+// o en el PATH.
 func (c *Client) daemonPath() (string, error) {
 	if exe, err := os.Executable(); err == nil {
 		if real, err := filepath.EvalSymlinks(exe); err == nil {
 			exe = real
 		}
-		p := filepath.Join(filepath.Dir(exe), proc.Exe("audiofilus"))
+		suffix := strings.TrimPrefix(filepath.Base(exe), "audiofilus-ui")
+		p := filepath.Join(filepath.Dir(exe), "audiofilus"+suffix)
 		if _, err := os.Stat(p); err == nil {
 			return p, nil
 		}

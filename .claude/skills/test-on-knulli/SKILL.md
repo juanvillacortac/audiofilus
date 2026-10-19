@@ -23,14 +23,14 @@ Filter the "post-quantum key exchange" warning out of the output. If `knulli.loc
 
 ## Installing
 
-The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster), with the console's binaries in `bin/aarch64/` and the launcher at `/userdata/roms/ports/Audiofilus.sh`.
+The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster), with the console's binaries named `audiofilus.aarch64` and `audiofilus-ui.aarch64` and the launcher at `/userdata/roms/ports/Audiofilus.sh`.
 
 ```sh
 ./build.sh                                   # dist/audiofilus-arm64 and dist/audiofilus-ui-arm64
 D=/userdata/roms/ports/audiofilus
-kcp dist/audiofilus-arm64 root@knulli.local:$D/bin/aarch64/audiofilus.new
-kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/bin/aarch64/audiofilus-ui.new
-k "cd $D/bin/aarch64 && mv -f audiofilus.new audiofilus && mv -f audiofilus-ui.new audiofilus-ui && chmod +x audiofilus audiofilus-ui"
+kcp dist/audiofilus-arm64 root@knulli.local:$D/audiofilus.aarch64.new
+kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/audiofilus-ui.aarch64.new
+k "cd $D && mv -f audiofilus.aarch64.new audiofilus.aarch64 && mv -f audiofilus-ui.aarch64.new audiofilus-ui.aarch64 && chmod +x audiofilus.aarch64 audiofilus-ui.aarch64"
 ```
 
 Check the upload with `md5sum` on both sides. If the service is running, `./audiofilus quit` makes the next launch use the new binary.
@@ -40,10 +40,10 @@ Upload as `.new` and then `mv`: this does not corrupt a running service. The con
 ## Testing
 
 ```sh
-k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus play /userdata/MUSIC'     # starts the detached service
-k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus status'
+k '/userdata/roms/ports/audiofilus/audiofilus.aarch64 play /userdata/MUSIC'     # starts the detached service
+k '/userdata/roms/ports/audiofilus/audiofilus.aarch64 status'
 k 'tail -20 /userdata/roms/ports/audiofilus/data/audiofilus.log'
-k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus quit'
+k '/userdata/roms/ports/audiofilus/audiofilus.aarch64 quit'
 ```
 
 After `quit` or a crash, check that nothing was left modified:

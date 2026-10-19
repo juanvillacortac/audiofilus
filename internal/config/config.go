@@ -150,7 +150,7 @@ func Locate() (Paths, error) {
 		if real, err := filepath.EvalSymlinks(exe); err == nil {
 			exe = real
 		}
-		base = homeFor(filepath.Dir(exe))
+		base = filepath.Dir(exe)
 	}
 	base, err := filepath.Abs(base)
 	if err != nil {
@@ -240,14 +240,4 @@ func writeJSON(path string, v any) error {
 		return err
 	}
 	return os.Rename(tmp, path)
-}
-
-// homeFor es la carpeta de audiofilus para un binario en dir: la misma, salvo
-// en el port de PortMaster, donde los binarios van en bin/<arquitectura>/ y
-// la configuración dos carpetas más arriba.
-func homeFor(dir string) string {
-	if arch := filepath.Base(dir); (arch == "aarch64" || arch == "x86_64") && filepath.Base(filepath.Dir(dir)) == "bin" {
-		return filepath.Dir(filepath.Dir(dir))
-	}
-	return dir
 }
