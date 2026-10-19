@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -10,11 +11,34 @@ import (
 // pestañas en un desplegable cuando no caben al lado (en vertical), y las
 // listas que se desplazan con el dedo y se tocan.
 
-// tabDrawer es el desplegable de pestañas abierto.
+// tabDrawer es el desplegable de pestañas abierto: baja desde arriba al
+// abrirse (at) y sube al cerrarse (closeAt).
 type tabDrawer struct {
-	names []string
-	sel   int
-	pick  func(i int)
+	names   []string
+	sel     int
+	pick    func(i int)
+	at      float64
+	closeAt float64
+}
+
+// Lo que tarda el desplegable en abrirse y en cerrarse.
+const (
+	drawerIn  = 0.18
+	drawerOut = 0.12
+)
+
+// closeDrawer cierra el desplegable (con su animación); con pick >= 0,
+// elige antes esa pestaña.
+func (a *App) closeDrawer(pick int) {
+	d := a.drawer
+	if d == nil || d.closeAt > 0 {
+		return
+	}
+	d.closeAt = a.t
+	if pick >= 0 {
+		d.sel = pick
+		d.pick(pick)
+	}
 }
 
 // tabsButton pinta, en (x, y) y con ancho w, el botón con la pestaña de
@@ -28,7 +52,7 @@ func (a *App) tabsButton(dst *ebiten.Image, x, y, w int, names []string, cur int
 	drawTextW(dst, names[cur], SmallFace, x+11, y, w-22, th.Text)
 	drawIcon(dst, "arrow_d", x+w-8, y-1, th.Dim)
 	a.tapZone(x-3, y-4, w+6, bh, func() {
-		a.drawer = &tabDrawer{names: names, sel: cur, pick: pick}
+		a.drawer = &tabDrawer{names: names, sel: cur, pick: pick, at: a.t}
 	})
 	return bh + 2
 }
@@ -37,6 +61,12 @@ func (a *App) tabsButton(dst *ebiten.Image, x, y, w int, names []string, cur int
 // dedo, sus zonas).
 func (a *App) updateDrawer() {
 	d, in := a.drawer, &a.input
+	if d.closeAt > 0 {
+		if a.t-d.closeAt >= drawerOut {
+			a.drawer = nil // ya subió del todo
+		}
+		return
+	}
 	n := len(d.names)
 	switch {
 	case in.Repeat(ActDown):
@@ -44,10 +74,9 @@ func (a *App) updateDrawer() {
 	case in.Repeat(ActUp):
 		d.sel = (d.sel - 1 + n) % n
 	case in.Pressed(ActConfirm):
-		a.drawer = nil
-		d.pick(d.sel)
+		a.closeDrawer(d.sel)
 	case in.Pressed(ActBack), in.Pressed(ActMenu):
-		a.drawer = nil
+		a.closeDrawer(-1)
 	}
 }
 
@@ -60,12 +89,24 @@ func (a *App) drawDrawer(dst *ebiten.Image) {
 	}
 	th := a.theme
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
-	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, 0xa0))
-	a.tapZone(0, 0, w, h, func() { a.drawer = nil })
+	// Cuánto está abierto (0..1): baja con un rebote corto y sube rápido.
+	open := easeOutBack(math.Min(1, (a.t-d.at)/drawerIn))
+	if d.closeAt > 0 {
+		open = 1 - math.Min(1, (a.t-d.closeAt)/drawerOut)
+		open *= open
+	}
+	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, uint8(0xa0*math.Max(0, math.Min(1, open)))))
+	if d.closeAt == 0 {
+		a.tapZone(0, 0, w, h, func() { a.closeDrawer(-1) })
+	}
 	const rowH = 20
 	pw := min(w-2*margin, 160)
-	px, py := margin, topH+6
 	ph := len(d.names)*rowH + 8
+	px, py := margin, topH+6
+	py -= int(math.Round((1 - open) * float64(ph+topH+10))) // baja desde la barra
+	// Recortado bajo la barra de arriba: parece salir de ella.
+	b := dst.Bounds()
+	dst = dst.SubImage(image.Rect(b.Min.X, topH+1, b.Max.X, b.Max.Y)).(*ebiten.Image)
 	rect(dst, px+3, py+3, pw, ph, th.Shadow)
 	panel(dst, px, py, pw, ph, th.Bg2)
 	rect(dst, px+1, py, pw-2, 1, th.Accent)
@@ -77,10 +118,9 @@ func (a *App) drawDrawer(dst *ebiten.Image) {
 			c = th.Bg
 		}
 		drawTextW(dst, name, SmallFace, px+10, y+6, pw-20, c)
-		a.tapZone(px, y, pw, rowH, func() {
-			a.drawer = nil
-			d.pick(i)
-		})
+		if d.closeAt == 0 {
+			a.tapZone(px, y, pw, rowH, func() { a.closeDrawer(i) })
+		}
 	}
 }
 

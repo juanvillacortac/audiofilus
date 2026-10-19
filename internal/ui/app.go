@@ -509,7 +509,11 @@ func (a *App) canSleep() bool {
 }
 
 // mobile dice si es la app del móvil (el servicio va en el mismo proceso).
-func (a *App) mobile() bool { return StartService != nil }
+// AUDIOFILUS_MOBILE lo simula en las capturas, para verlas como en el móvil.
+func (a *App) mobile() bool { return StartService != nil || previewMobile }
+
+// previewMobile: las capturas, como en el móvil (AUDIOFILUS_MOBILE).
+var previewMobile = os.Getenv("AUDIOFILUS_MOBILE") != ""
 
 // enterSleep empieza a apagar la pantalla: primero se disuelve en negro.
 func (a *App) enterSleep() {
@@ -1864,6 +1868,12 @@ func (a *App) writeFrames() error {
 		}
 	}
 	a.snake, a.shooter, a.duel, a.runner = nil, nil, nil, nil
+	// El desplegable de pestañas del móvil (en vertical y con el dedo): se
+	// abre, se elige Álbumes y se cierra; se vuelve a abrir y se cierra
+	// tocando fuera.
+	if err := a.drawerFrames(filepath.Join(a.FramesDir, "pestanas")); err != nil {
+		return err
+	}
 	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
 	crDir := filepath.Join(a.FramesDir, "cripta")
 	if err := os.MkdirAll(crDir, 0o755); err != nil {
@@ -2031,6 +2041,7 @@ func (a *App) renderShot(path string, w int) error {
 	return a.render(path, w, func(dst *ebiten.Image) {
 		a.drawScreen(dst, a.screen)
 		a.drawCelebration(dst)
+		a.drawDrawer(dst)
 		if a.cfg.UI.GameBoy {
 			applyGameBoy(dst)
 		}
@@ -2235,4 +2246,39 @@ func (a *App) watchProfile() {
 		f.Close()
 		log.Printf("cpu profile: written")
 	}()
+}
+
+// drawerFrames guarda en dir la secuencia del desplegable de pestañas, en un
+// iPhone (240×520) y con el dedo, a 20 cuadros por segundo.
+func (a *App) drawerFrames(dir string) error {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	w0, h0, touch0, screen0, tab0 := a.w, a.h, a.input.touch, a.screen, a.libTab
+	defer func() { a.w, a.h, a.input.touch, a.screen, a.libTab = w0, h0, touch0, screen0, tab0 }()
+	a.w, a.h, a.input.touch = 240, 520, true
+	a.setBottomH()
+	a.screen, a.libTab, a.tabFocus = LibraryScreen, tabSongs, false
+	pick := func(i int) { a.libTab, a.tabFocus = i, false }
+	for i := 0; i < 90; i++ {
+		a.t += 1.0 / 20
+		switch i {
+		case 12, 56: // tocar el botón
+			a.drawer = &tabDrawer{names: tabs(), sel: a.libTab, pick: pick, at: a.t}
+		case 28: // el dedo baja a Álbumes...
+			a.drawer.sel = tabAlbums
+		case 32: // ...y lo toca
+			a.closeDrawer(tabAlbums)
+		case 74: // tocar fuera
+			a.closeDrawer(-1)
+		}
+		if a.drawer != nil {
+			a.updateDrawer()
+		}
+		if err := a.renderShot(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), a.w); err != nil {
+			return err
+		}
+	}
+	a.drawer = nil
+	return nil
 }

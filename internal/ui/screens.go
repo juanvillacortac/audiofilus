@@ -114,11 +114,13 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 		right -= textWidth(clock, SmallFace)
 		drawText(dst, clock, SmallFace, right, 5, th.Dim)
 	}
-	// Audífonos: de cable o bluetooth (con el altavoz no se pinta nada).
-	switch a.status.Output {
-	case "wired":
+	// Audífonos: de cable o bluetooth (con el altavoz no se pinta nada). En
+	// el móvil, nada de esto: lo muestra el sistema en su barra.
+	switch {
+	case a.mobile():
+	case a.status.Output == "wired":
 		drawIcon(dst, "headphones", right-11, 4, th.Text)
-	case "bluetooth":
+	case a.status.Output == "bluetooth":
 		drawIcon(dst, "headphones", right-17, 4, th.Text)
 		drawIcon(dst, "bluetooth", right-9, 4, th.Accent)
 	}
