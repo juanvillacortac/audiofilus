@@ -1485,6 +1485,32 @@ func (a *App) writeFrames() error {
 		return err
 	}
 	a.playing, a.playingSong, a.theme = keepAl, keepSong, keepTheme
+	// El tracker tocando Pocket Pop 12 s desde la estrofa, siguiendo la
+	// canción (el sintetizador avanza lo que dura cada cuadro).
+	tkDir := filepath.Join(a.FramesDir, "tracker")
+	if err := os.MkdirAll(tkDir, 0o755); err != nil {
+		return err
+	}
+	a.screen, a.tracker = Tracker, a.newTracker()
+	ex := tracker.Examples()[0]
+	a.tracker.song, a.tracker.file = ex, "example.json"
+	a.tracker.player.SetSong(ex)
+	a.tracker.player.PlaySong(1)
+	a.tracker.playing, a.tracker.playSong = true, true
+	a.tracker.row, a.tracker.col = 0, 3
+	chunk := make([]byte, 8*sfx.Rate/20)
+	for i := 0; i < 240; i++ {
+		a.t = 30 + float64(i)/20
+		_, _ = a.tracker.player.Read(chunk)
+		a.trackerFollow()
+		if _, step, _, _ := a.tracker.player.Position(); i%4 == 0 {
+			a.tracker.row = step // el cursor acompaña un poco
+		}
+		if err := a.renderShot(filepath.Join(tkDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
+			return err
+		}
+	}
+	a.tracker = nil
 	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
 	crDir := filepath.Join(a.FramesDir, "cripta")
 	if err := os.MkdirAll(crDir, 0o755); err != nil {

@@ -54,6 +54,10 @@ type trackerState struct {
 	dirty    bool
 	dirtyAt  float64
 	exported chan string // el archivo exportado (o el error), desde la goroutine
+	playSong bool        // toca la canción (la vista de patrón la sigue), no un patrón
+	hits     [tracker.Channels]int
+	hitAt    [tracker.Channels]float64 // cuándo sonó la última nota de cada canal
+	scope    []float32
 }
 
 // Las canciones del tracker van en data/tracker/, una por archivo .json;
@@ -78,10 +82,16 @@ func (a *App) newTracker() *trackerState {
 }
 
 // trackerSongs son las canciones guardadas: archivo y nombre.
+//
+// Las copias de los ejemplos (example-*.json) no salen: se abren desde su
+// ejemplo.
 func (a *App) trackerSongs() [][2]string {
 	files, _ := filepath.Glob(filepath.Join(a.trackerDir(), "*.json"))
 	var out [][2]string
 	for _, f := range files {
+		if strings.HasPrefix(filepath.Base(f), "example-") {
+			continue
+		}
 		if s, err := tracker.Load(f); err == nil {
 			out = append(out, [2]string{filepath.Base(f), s.Name})
 		}
@@ -89,9 +99,10 @@ func (a *App) trackerSongs() [][2]string {
 	return out
 }
 
-// openTrackerSong deja abierta s (guardada en file), guardando antes la que
-// había.
-func (a *App) openTrackerSong(s *tracker.Song, file string) {
+// openTrackerSong deja abierta s (que se guarda en file), guardando antes la
+// que había. Si save, se guarda ya (una canción nueva); si no (un ejemplo),
+// solo cuando se edite: abrir ejemplos no deja archivos.
+func (a *App) openTrackerSong(s *tracker.Song, file string, save bool) {
 	t := a.tracker
 	a.saveTracker()
 	if t.playing {
@@ -100,18 +111,18 @@ func (a *App) openTrackerSong(s *tracker.Song, file string) {
 	t.song, t.file = s, file
 	t.pat, t.row, t.col, t.ord, t.ordScroll, t.songView = 0, 0, 0, 0, 0, false
 	t.player.SetSong(s)
-	t.dirty = true // se guarda ya, y queda como la abierta
+	t.dirty = save
 	a.saveTracker()
 }
 
 // openTrackerSongs es el menú de canciones: una nueva, las guardadas y las de
-// ejemplo (abrir un ejemplo hace una copia, o abre la copia que ya había).
+// ejemplo (si se editó un ejemplo, abre esa versión).
 func (a *App) openTrackerSongs() {
 	t := a.tracker
 	saved := a.trackerSongs()
 	items := []menuItem{{label: T("tk_new"), icon: "tracker", do: func() {
 		name := fmt.Sprintf(T("tk_new_name"), len(saved)+1)
-		a.openTrackerSong(tracker.Empty(name), fmt.Sprintf("song-%d.json", time.Now().Unix()))
+		a.openTrackerSong(tracker.Empty(name), fmt.Sprintf("song-%d.json", time.Now().Unix()), true)
 	}}}
 	for _, f := range saved {
 		label := f[1]
@@ -120,18 +131,22 @@ func (a *App) openTrackerSongs() {
 		}
 		items = append(items, menuItem{label: label, icon: "note", do: func() {
 			if s, err := tracker.Load(filepath.Join(a.trackerDir(), f[0])); err == nil {
-				a.openTrackerSong(s, f[0])
+				a.openTrackerSong(s, f[0], false)
 			}
 		}})
 	}
 	for _, ex := range tracker.Examples() {
 		file := "example-" + slugFile(ex.Name) + ".json"
-		items = append(items, menuItem{label: T("tk_example") + " " + ex.Name, icon: "play", do: func() {
+		label := T("tk_example") + " " + ex.Name
+		if file == t.file {
+			label = "• " + label
+		}
+		items = append(items, menuItem{label: label, icon: "play", do: func() {
 			if s, err := tracker.Load(filepath.Join(a.trackerDir(), file)); err == nil {
-				a.openTrackerSong(s, file)
+				a.openTrackerSong(s, file, false) // la versión editada
 				return
 			}
-			a.openTrackerSong(ex, file)
+			a.openTrackerSong(ex, file, false)
 		}})
 	}
 	a.menu = &menu{title: T("tk_songs"), subtitle: t.song.Name, items: items}
@@ -187,7 +202,7 @@ func (a *App) trackerToggle() {
 	} else {
 		t.player.PlayPattern(t.pat)
 	}
-	t.playing = true
+	t.playing, t.playSong = true, t.songView
 }
 
 // updateTracker atiende el tracker.
@@ -209,9 +224,15 @@ func (a *App) updateTracker() {
 	if t.dirty && a.t-t.dirtyAt > 1 {
 		a.saveTracker()
 	}
+	a.trackerFollow()
 	switch {
 	case in.Pressed(ActMenu):
 		a.openTrackerMenu()
+		return
+	case in.Pressed(ActPause) && in.duration(ActBack) > 0 && !t.songView: // B+Y: silenciar el canal
+		ch := t.col / 3
+		m := t.player.Muted()
+		t.player.SetMuted(ch, !m[ch])
 		return
 	case in.Pressed(ActPause):
 		a.trackerToggle()
@@ -231,6 +252,25 @@ func (a *App) updateTracker() {
 		a.updateTrackerPattern(aHeld, bHeld)
 	}
 	t.aWasHeld = aHeld
+}
+
+// trackerFollow sigue lo que suena: enciende la celda de cada nota que
+// sonó y, tocando la canción, pone en la vista de patrón el que suena.
+func (a *App) trackerFollow() {
+	t := a.tracker
+	if h := t.player.Hits(); h != t.hits {
+		for c := range h {
+			if h[c] != t.hits[c] {
+				t.hitAt[c] = a.t
+			}
+		}
+		t.hits = h
+	}
+	if t.playing && t.playSong && !t.songView {
+		if pat, _, _, _ := t.player.Position(); pat != t.pat {
+			t.pat = pat
+		}
+	}
 }
 
 // trackerDir es la cruceta de este fotograma: dy (↑↓) y dx (←→), con
@@ -349,7 +389,7 @@ func (a *App) updateTrackerPattern(aHeld, bHeld bool) {
 		}
 		t.pat = min(len(t.song.Patterns)-1, t.pat+1)
 	}
-	if t.playing && !t.songView {
+	if t.playing && !t.playSong {
 		if pat, _, _, _ := t.player.Position(); pat != t.pat {
 			t.player.PlayPattern(t.pat) // cambió de patrón: suena el nuevo
 		}
@@ -414,6 +454,7 @@ func (a *App) openTrackerMenu() {
 			}},
 			{label: T("tk_songs"), icon: "list", do: a.openTrackerSongs},
 			{label: T("tk_export"), icon: "download", do: a.exportTracker},
+			{label: T("tk_delete"), icon: "power", do: a.deleteTrackerSong},
 			{label: T("tk_dup"), icon: "list", do: func() {
 				if len(t.song.Patterns) < tracker.MaxPatterns {
 					t.song.Patterns = append(t.song.Patterns, t.song.Patterns[t.pat])
@@ -510,22 +551,61 @@ func (a *App) drawTrackerPattern(dst *ebiten.Image) {
 		drawIcon(dst, "play", w-margin-8, y0-1, th.Accent)
 	}
 	y0 += 11
-	// Los canales, con un medidor de lo que suena en cada uno.
-	lv := t.player.Level()
+	// Los canales, cada uno con su osciloscopio: la onda que suena ahora.
+	muted := t.player.Muted()
 	for c := 0; c < tracker.Channels; c++ {
 		x := x0 + stepW + c*chW
-		drawText(dst, tkChanNames[c], SmallFace, x, y0, th.Dim)
-		bw := chW - 8 - textWidth("PU1", SmallFace) - 4
-		rect(dst, x+textWidth("PU1", SmallFace)+4, y0+1, bw, 4, th.Bg2)
-		rect(dst, x+textWidth("PU1", SmallFace)+4, y0+1, int(float64(bw)*math.Min(1, lv[c]*1.4)), 4, th.Accent)
+		nc := th.Dim
+		if t.col/3 == c {
+			nc = th.Text
+		}
+		if muted[c] {
+			nc = withAlpha(th.Dim, 0x60)
+		}
+		drawText(dst, tkChanNames[c], SmallFace, x, y0+2, nc)
+		sx := x + textWidth("PU1", SmallFace) + 4
+		sw := chW - 8 - textWidth("PU1", SmallFace) - 4
+		rect(dst, sx, y0, sw, 11, th.Bg2)
+		if muted[c] {
+			rect(dst, sx+2, y0+5, sw-4, 1, withAlpha(th.Dim, 0x80))
+			continue
+		}
+		if len(t.scope) != sw {
+			t.scope = make([]float32, sw)
+		}
+		t.player.Scope(c, t.scope)
+		sc := th.Accent
+		if c >= tracker.Triangle {
+			sc = th.Accent2
+		}
+		prev := 0
+		for i, v := range t.scope {
+			yy := int(math.Round(float64(-v) * 9)) // ±4 px (las voces van a ~0,45 de pico)
+			yy = max(-4, min(4, yy))
+			lo, hi := min(prev, yy), max(prev, yy)
+			if i == 0 {
+				lo, hi = yy, yy
+			}
+			rect(dst, sx+i, y0+5+lo, 1, hi-lo+1, sc)
+			prev = yy
+		}
 	}
-	y0 += 10
+	y0 += 14
 	p := t.song.Patterns[t.pat]
 	for s := 0; s < tracker.Steps; s++ {
 		y := y0 + s*tkRowH
 		switch {
 		case playing && pat == t.pat && s == step:
-			rect(dst, x0-2, y-2, stepW+tracker.Channels*chW, tkRowH, withAlpha(th.Accent, 0x50))
+			al := uint8(0x50)
+			if s%4 == 0 {
+				al = 0x80 // en cada tiempo, más fuerte
+			}
+			rect(dst, x0-2, y-2, stepW+tracker.Channels*chW, tkRowH, withAlpha(th.Accent, al))
+			for c := 0; c < tracker.Channels; c++ {
+				if d := a.t - t.hitAt[c]; d < 0.25 && p[s][c].Note > 0 {
+					rect(dst, x0+stepW+c*chW-1, y-2, chW-6, tkRowH, withAlpha(th.Text, uint8(110*(1-d/0.25))))
+				}
+			}
 		case s%4 == 0:
 			rect(dst, x0-2, y-2, stepW+tracker.Channels*chW, tkRowH, withAlpha(th.Bg2, 0xa0))
 		}
@@ -625,4 +705,24 @@ func (a *App) drawTrackerSong(dst *ebiten.Image) {
 		drawText(dst, line, SmallFace, x, yy, c)
 	}
 	a.drawHints(dst, []hint{{"A", T("tk_h_open")}, {"A+^v", T("tk_h_edit")}, {"Y", T("tk_h_play")}, {"X", T("tk_h_pattern")}})
+}
+
+// deleteTrackerSong borra la canción abierta (su archivo) y abre otra de las
+// guardadas, o una nueva vacía si no queda ninguna. Un ejemplo vuelve a ser
+// el original.
+func (a *App) deleteTrackerSong() {
+	t := a.tracker
+	if t.playing {
+		a.trackerToggle()
+	}
+	_ = os.Remove(filepath.Join(a.trackerDir(), t.file))
+	t.dirty = false
+	if saved := a.trackerSongs(); len(saved) > 0 {
+		if s, err := tracker.Load(filepath.Join(a.trackerDir(), saved[0][0])); err == nil {
+			a.openTrackerSong(s, saved[0][0], false)
+			_ = os.WriteFile(filepath.Join(a.trackerDir(), "current"), []byte(saved[0][0]), 0o644)
+			return
+		}
+	}
+	a.openTrackerSong(tracker.Empty(fmt.Sprintf(T("tk_new_name"), 1)), fmt.Sprintf("song-%d.json", time.Now().Unix()), true)
 }

@@ -142,7 +142,17 @@ type Player struct {
 	voices  [Channels]voice
 	ended   bool
 	preview [Channels]float64 // muestras que le quedan a la nota de prueba
+	muted   [Channels]bool
+	// Lo que sonó en cada canal, para los osciloscopios: una muestra de cada
+	// scopeDiv, en un anillo.
+	scope    [Channels][ScopeLen]float32
+	scopeAt  int
+	scopeDiv int
+	hit      [Channels]int // cuántas notas lleva cada canal (para encender la celda)
 }
+
+// ScopeLen son las muestras que guarda cada osciloscopio.
+const ScopeLen = 64
 
 // NewPlayer prepara un reproductor a rate muestras por segundo.
 func NewPlayer(rate int) *Player {
@@ -223,6 +233,38 @@ func (p *Player) Position() (pattern, step, pos int, playing bool) {
 	return pattern, p.step, p.pos, p.playing
 }
 
+// SetMuted silencia (o no) un canal.
+func (p *Player) SetMuted(ch int, m bool) {
+	p.mu.Lock()
+	if ch >= 0 && ch < Channels {
+		p.muted[ch] = m
+	}
+	p.mu.Unlock()
+}
+
+// Muted dice qué canales están silenciados.
+func (p *Player) Muted() [Channels]bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.muted
+}
+
+// Scope copia la onda reciente del canal ch (de la más vieja a la más nueva).
+func (p *Player) Scope(ch int, dst []float32) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	for i := range dst {
+		dst[i] = p.scope[ch][(p.scopeAt+i*ScopeLen/len(dst))%ScopeLen]
+	}
+}
+
+// Hits es cuántas notas lleva cada canal: cuando cambia, sonó una nueva.
+func (p *Player) Hits() [Channels]int {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.hit
+}
+
 // Level es lo fuerte que suena cada canal ahora (0..1), para los medidores.
 func (p *Player) Level() [Channels]float64 {
 	p.mu.Lock()
@@ -258,6 +300,9 @@ func (p *Player) next() (l, r float64) {
 			pat := p.song.Patterns[p.pattern()]
 			for c := 0; c < Channels; c++ {
 				p.voices[c].apply(pat[p.step][c])
+				if pat[p.step][c].Note > 0 {
+					p.hit[c]++
+				}
 			}
 			p.left += p.stepLen()
 		}
@@ -306,6 +351,18 @@ func (p *Player) next() (l, r float64) {
 			a = 0
 		}
 		s[i] = p.voices[i].sample(p.rate, a)
+		if p.muted[i] {
+			s[i] = 0
+		}
+	}
+	// El osciloscopio: unos 21 ms de onda por canal a 48 kHz (una muestra de
+	// cada 16): un ciclo entero hasta de un bajo.
+	if p.scopeDiv++; p.scopeDiv >= 16 {
+		p.scopeDiv = 0
+		for i := range s {
+			p.scope[i][p.scopeAt] = float32(s[i])
+		}
+		p.scopeAt = (p.scopeAt + 1) % ScopeLen
 	}
 	// La mezcla: los pulsos un poco a cada lado, la triangular y el ruido al
 	// centro.
