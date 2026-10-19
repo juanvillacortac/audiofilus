@@ -2,6 +2,7 @@ package ui
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"sync"
 	"time"
@@ -86,7 +87,7 @@ func (a *App) soundFromInput() {
 	}
 	s.hadMenu, s.hadDock, s.hadPrompt = menu, dock, prompt
 	// En los juegos, sin menú, los botones son del juego: sin sonidos.
-	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt) && !menu && !dock && !prompt
+	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker) && !menu && !dock && !prompt
 	typing := prompt || a.searchTyping()
 	switch {
 	case inGame || a.sleeping || a.guideAt > 0:
@@ -116,9 +117,11 @@ var musicSounds = map[string]bool{sfx.Play: true, sfx.Pause: true, sfx.Next: tru
 // soundReq es un pedido para la goroutine del audio: tocar name con gain, o
 // cortar el jingle del splash (stop).
 type soundReq struct {
-	name string
-	gain float64
-	stop bool
+	name   string
+	gain   float64
+	stop   bool
+	stream io.Reader // un flujo continuo (el tracker): suena hasta streamOff
+	off    bool      // para el flujo
 }
 
 // playSound pide que suene name, con el volumen de Ajustes. No espera nunca:
@@ -170,11 +173,34 @@ func (a *App) soundLoop() {
 		return
 	}
 	<-ready
-	var splash *oto.Player
+	var splash, stream *oto.Player
+	var streamSrc io.Reader
 	idle := time.NewTimer(time.Hour)
 	for {
 		select {
 		case r := <-a.snd.reqs:
+			if r.stream != nil {
+				// El tracker: un reproductor que lee del sintetizador, con un
+				// búfer corto para que lo que se edita suene enseguida.
+				_ = ctx.Resume()
+				if r.stream != streamSrc { // otro reproductor (otra canción)
+					if stream != nil {
+						_ = stream.Close()
+					}
+					stream, streamSrc = ctx.NewPlayer(r.stream), r.stream
+					stream.SetBufferSize(sfx.Rate * 8 / 20) // 50 ms
+				}
+				stream.Play()
+				idle.Stop()
+				continue
+			}
+			if r.off {
+				if stream != nil {
+					stream.Pause()
+				}
+				idle.Reset(2 * time.Second)
+				continue
+			}
 			if r.stop {
 				if splash != nil {
 					splash.Pause()
@@ -189,9 +215,13 @@ func (a *App) soundLoop() {
 			}
 			d := time.Duration(len(sfx.Samples(r.name))/2) * time.Second / sfx.Rate
 			time.AfterFunc(d+200*time.Millisecond, func() { _ = p.Close() })
-			idle.Reset(d + 2*time.Second)
+			if stream == nil || !stream.IsPlaying() {
+				idle.Reset(d + 2*time.Second)
+			}
 		case <-idle.C:
-			_ = ctx.Suspend() // en reposo no gasta
+			if stream == nil || !stream.IsPlaying() {
+				_ = ctx.Suspend() // en reposo no gasta
+			}
 		}
 	}
 }
@@ -216,5 +246,19 @@ func usePulseSocket() {
 			os.Setenv("PULSE_SERVER", "unix:"+p)
 			return
 		}
+	}
+}
+
+// playStream hace sonar r (el tracker) por la salida de la interfaz, hasta
+// stopStream. No espera.
+func (a *App) playStream(r io.Reader) {
+	a.startSounds()
+	a.snd.reqs <- soundReq{stream: r}
+}
+
+// stopStream para el flujo.
+func (a *App) stopStream() {
+	if a.snd.reqs != nil {
+		a.snd.reqs <- soundReq{off: true}
 	}
 }

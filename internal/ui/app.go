@@ -8,6 +8,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
+	"github.com/juanvillacortac/audiofilus/internal/tracker"
 	"github.com/juanvillacortac/audiofilus/internal/ytm"
 	"image"
 	"image/color"
@@ -104,9 +105,10 @@ type App struct {
 	steady  steadyGrid // su rejilla suave, para los juegos (meter.go)
 	beatHit bool       // en este fotograma hay un golpe
 
-	tetris *tetris     // Bloques (tetris.go): la partida, que se queda al cambiar de pantalla
-	rhythm *rhythmGame // Ritmo (rhythm.go), igual
-	crypt  *crypt      // Cripta (crypt.go), igual
+	tetris  *tetris       // Bloques (tetris.go): la partida, que se queda al cambiar de pantalla
+	rhythm  *rhythmGame   // Ritmo (rhythm.go), igual
+	crypt   *crypt        // Cripta (crypt.go), igual
+	tracker *trackerState // el tracker (trackerui.go): la canción y su reproductor
 	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
 	gamesSel    int
 	gamesBest   map[string]int
@@ -427,7 +429,7 @@ func (a *App) maybeSleep() {
 	// Sonando, solo en la pantalla de reproducción (navegando o en Ajustes, no).
 	// Sin música, en cualquiera: con la app abierta la consola no se suspende,
 	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca.
-	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
+	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
 		return
 	}
 	a.enterSleep()
@@ -538,6 +540,14 @@ func (a *App) updateMain() {
 			a.crypt = a.newCrypt()
 		}
 		a.updateCrypt()
+		return
+	}
+	a.trackerStopIfAway()
+	if a.screen == Tracker && a.menu == nil {
+		if a.tracker == nil {
+			a.tracker = a.newTracker()
+		}
+		a.updateTracker()
 		return
 	}
 	if a.screen == Games && a.menu == nil {
@@ -869,6 +879,12 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			}
 			a.drawCrypt(dst)
 			a.drawTopBar(dst, T("cr_title"))
+		case Tracker:
+			if a.tracker == nil {
+				a.tracker = a.newTracker()
+			}
+			a.drawTracker(dst)
+			a.drawTopBar(dst, T("tk_title"))
 		case Games:
 			a.drawGames(dst)
 			a.drawTopBar(dst, T("gm_title"))
@@ -1366,6 +1382,22 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.crypt = nil
+	// El tracker: la canción de ejemplo sonando (adelantada al paso 6) y el
+	// cursor en el volumen del pulso 2; después, la vista de canción.
+	a.screen, a.tracker = Tracker, a.newTracker()
+	a.tracker.song = tracker.NewSong()
+	a.tracker.player.SetSong(a.tracker.song)
+	a.tracker.player.PlayPattern(0)
+	_, _ = a.tracker.player.Read(make([]byte, 8*sfx.Rate*60/a.tracker.song.BPM/4*6+8))
+	a.tracker.row, a.tracker.col = 4, 4
+	if err := shot("tracker"); err != nil {
+		return err
+	}
+	a.tracker.songView, a.tracker.ord = true, 0
+	if err := shot("tracker-cancion"); err != nil {
+		return err
+	}
+	a.tracker = nil
 	if err := a.writePortCover(filepath.Join(a.ShotsDir, "portada-portmaster.png")); err != nil {
 		return err
 	}

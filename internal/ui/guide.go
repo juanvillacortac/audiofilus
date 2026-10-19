@@ -40,6 +40,10 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"< v B A", "g_lanes"}, {"START", "h_pause"}}
 	case a.screen == Crypt:
 		own = []hint{{"<>^v", "g_cr_move"}, {"<>^v", "g_cr_attack"}, {"START", "h_pause"}}
+	case a.screen == Tracker && a.tracker != nil && a.tracker.songView:
+		own = []hint{{"^v", "g_dock_move"}, {"A", "tk_h_open"}, {"A+^v", "tk_g_order"}, {"B+A", "tk_g_delete"}, {"Y", "tk_h_play"}, {"X", "tk_g_view"}}
+	case a.screen == Tracker:
+		own = []hint{{"<>^v", "g_dock_move"}, {"A", "tk_g_put"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_big"}, {"B+A", "tk_g_delete"}, {"L1/R1", "tk_g_pattern"}, {"Y", "tk_h_play"}, {"X", "tk_g_view"}}
 	case a.screen == Games:
 		own = []hint{{"<>", "gm_choose"}, {"A", "gm_play"}, {"B", "h_back"}}
 	case a.screen == Visual:

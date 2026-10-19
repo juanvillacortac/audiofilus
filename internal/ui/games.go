@@ -30,11 +30,14 @@ var gameCards = []gameCard{
 	{Crypt, "sword", "scr_crypt", "gm_crypt_d", "cripta.json"},
 	{Blocks, "blocks", "scr_blocks", "gm_blocks_d", "bloques.json"},
 	{Rhythm, "note", "scr_rhythm", "gm_rhythm_d", "ritmo.json"},
+	{Tracker, "tracker", "scr_tracker", "gm_tracker_d", ""},
 }
 
 // isGame dice si una pantalla es un juego (o la de Juegos): en la barra de
 // pantallas todas cuentan como el hueco de Juegos.
-func isGame(s Screen) bool { return s == Games || s == Blocks || s == Rhythm || s == Crypt }
+func isGame(s Screen) bool {
+	return s == Games || s == Blocks || s == Rhythm || s == Crypt || s == Tracker
+}
 
 // readBest lee un récord guardado (0 si no hay).
 func (a *App) readBest(file string) int {
@@ -108,6 +111,9 @@ func (a *App) drawGames(dst *ebiten.Image) {
 		name := T(gc.name)
 		drawTextShadow(dst, name, BigFace, x+(cw-textWidth(name, BigFace))/2, yy+62, th.Text, th.Shadow)
 		drawTextWrap(dst, T(gc.desc), SmallFace, x+8, yy+84, cw-16, 10, th.Dim)
+		if gc.best == "" {
+			continue
+		}
 		if b := a.readBestCached(gc.best); b > 0 {
 			s := fmt.Sprintf("%s %d", T("tet_best"), b)
 			drawText(dst, s, SmallFace, x+(cw-textWidth(s, SmallFace))/2, yy+ch-14, th.Accent2)

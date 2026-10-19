@@ -73,6 +73,7 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
 - **Blocks**: falling blocks, with hard drops on the beat for combos.
 - **Rhythm**: notes generated from the song that's playing.
+- **Tracker**: make chiptune with the D-pad, Game Boy style: two pulse channels, a triangle and noise, 16-step patterns with arpeggio, duty and pitch-bend effects, and a song order. Export a song as WAV and it shows up in your library.
 
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">

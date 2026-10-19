@@ -54,6 +54,7 @@ GOOS=windows go vet ./...
 | `internal/sdlmap/` | Asks SDL2 (through `purego`) for the controller mapping |
 | `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |
 | `internal/radio/`, `internal/podcast/`, `internal/ytm/` | Internet radio, podcasts, and YouTube Music search plus yt-dlp |
+| `internal/tracker/` | The tracker's song format and chiptune synth (four channels, WAV export) |
 | `internal/sfx/` | The synthesized interface sounds and the splash jingle |
 | `internal/desktop/` | The Linux launcher entry and icon (`audiofilus desktop install`); see [docs/linux-desktop.md](docs/linux-desktop.md) |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
