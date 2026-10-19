@@ -117,10 +117,12 @@ func (a *App) botRunner() {
 		return
 	}
 	per, _ := a.runnerGrid(g)
-	now := a.beatClock()
 	g.duck, g.held = false, g.jumpAt != 0
+	if g.speed == 0 {
+		return // aún no corre
+	}
 	for _, it := range g.things {
-		dt := it.at - now
+		dt := (it.d - g.run) / g.speed // cuánto le falta para llegar
 		if it.done || dt < -per/2 || dt > per {
 			continue
 		}

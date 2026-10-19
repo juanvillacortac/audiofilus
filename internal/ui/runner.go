@@ -35,15 +35,20 @@ const (
 	ruSpeaker = iota // un bafle (n: cuántos juntos; big: el grande)
 	ruVinyl          // un vinilo que vuela (alt: 0 bajo, 1 medio, 2 alto)
 	ruNote           // una nota que se coge (h: su altura)
+	ruTick           // la marca de un golpe en el suelo (big: la del compás)
 )
 
 // ruVinylY es la altura sobre el suelo de un vinilo en cada altura.
 var ruVinylY = [3]float64{2, 10, 21}
 
-// ruThing es algo del camino, que llega al héroe en la hora at (reloj del ritmo).
+// ruThing es algo del camino. Se planea para llegar al héroe en la hora at
+// (reloj del ritmo), pero se dibuja y choca por su sitio en el mundo, d (en
+// píxeles, como run): así, si cambia el tempo detectado o la velocidad, el
+// escenario no pega saltos.
 type ruThing struct {
 	kind int
 	at   float64
+	d    float64
 	n    int
 	big  bool
 	alt  int
@@ -190,7 +195,7 @@ type runnerGame struct {
 	frozen    bool
 	fallback  float64
 	run       float64 // lo recorrido, en píxeles (los puntos y el suelo)
-	beatPx    float64 // lo que avanza el mundo en un golpe, que va subiendo
+	speed     float64 // a cuántos píxeles por segundo avanza el mundo
 	lastNow   float64
 	canvas    *ebiten.Image // el mundo, a media resolución
 	sky       *ebiten.Image // el cielo en intensidad
@@ -200,7 +205,7 @@ type runnerGame struct {
 func (a *App) runnerBestPath() string { return filepath.Join(a.paths.Data, "carrera.json") }
 
 func (a *App) newRunner() *runnerGame {
-	g := &runnerGame{mult: 1, fallback: a.beatClock(), beatPx: 36}
+	g := &runnerGame{mult: 1, fallback: a.beatClock()}
 	if b, err := os.ReadFile(a.runnerBestPath()); err == nil {
 		var v struct{ Best int }
 		if json.Unmarshal(b, &v) == nil {
@@ -291,11 +296,16 @@ func (a *App) stepRunner(g *runnerGame) {
 	}
 	dt := math.Min(0.05, now-g.lastNow)
 	g.lastNow = now
-	// Cada vez más rápido (como el dinosaurio), pero siempre en golpes: lo
-	// que viene sigue llegando a tiempo.
-	g.beatPx = math.Min(56, 36+float64(g.score)/60)
-	speed := g.beatPx / per
-	g.run += speed * dt
+	// Cada vez más rápido (como el dinosaurio): de 36 a 56 píxeles por
+	// golpe según lo recorrido. La velocidad va hacia la de ahora poco a
+	// poco: ni un cambio de tempo ni de ritmo la hacen saltar.
+	beatPx := math.Min(56, 36+g.run/650)
+	if want := beatPx / per; g.speed == 0 {
+		g.speed = want
+	} else {
+		g.speed += (want - g.speed) * math.Min(1, 1.5*dt)
+	}
+	g.run += g.speed * dt
 	g.score = int(g.run/10) + g.bonus
 	// El salto: gravedad para que uno entero dure un golpe; al soltar A
 	// pronto, deja de subir (tras lo mínimo); ↓ en el aire, cae rápido.
@@ -314,10 +324,13 @@ func (a *App) stepRunner(g *runnerGame) {
 		}
 	}
 	// El camino, hasta lo que se ve más un poco.
+	// Cada corchea, en la rejilla de ahora (si el tempo cambió, la
+	// siguiente se ajusta a él).
 	cw := float64(max(a.w, 240)) / 2
-	for g.planned < now+(cw-ruHeroX+24)/speed+per {
-		a.runnerPlan(g, g.planned, per)
-		g.planned += per / 2
+	for (g.planned-now)*g.speed < cw-ruHeroX+24+per*g.speed {
+		t := anchor + math.Round((g.planned-anchor)/(per/2))*(per/2)
+		a.runnerPlan(g, t, per, anchor)
+		g.planned = t + per/2
 		g.eighths++
 	}
 	// Lo que llega al héroe: su caja, algo menor que el dibujo (como en el
@@ -325,8 +338,12 @@ func (a *App) stepRunner(g *runnerGame) {
 	hx0, hx1, hy1 := ruHeroBox(g.y, g.duck)
 	keep := g.things[:0]
 	for _, th := range g.things {
-		x := ruHeroX + (th.at-now)*speed
+		x := ruHeroX + th.d - g.run
 		if x < -30 {
+			continue
+		}
+		if th.kind == ruTick {
+			keep = append(keep, th)
 			continue
 		}
 		if !th.done {
@@ -341,11 +358,12 @@ func (a *App) stepRunner(g *runnerGame) {
 					a.runnerCrash(g)
 				}
 			case th.kind != ruNote && x1 < hx0:
-				// Lo pasó. Si era de saltar y saltó en la corchea de antes,
-				// perfecto.
+				// Lo pasó. Si era de saltar y lo pasó en lo alto del salto
+				// (saltó en la corchea de antes), perfecto.
 				th.done = true
 				if th.kind == ruSpeaker || th.alt == 0 {
-					if g.jumpAt != 0 && math.Abs(g.jumpAt-(th.at-per/2)) < per*0.12 {
+					crossed := now - (ruHeroX-x)/g.speed // cuando su centro pasó por el héroe
+					if g.jumpAt != 0 && math.Abs(g.jumpAt+per/2-crossed) < per*0.15 {
 						g.mult = min(8, g.mult+1)
 						g.perfectAt = a.t
 						g.bonus += 10 * g.mult
@@ -390,11 +408,22 @@ func (th ruThing) box(x float64) (x0, x1, y0, y1 float64) {
 // runnerPlan pone lo que toca en la corchea t: lo que tocó la batería en esa
 // corchea del compás en los últimos compases (como Ritmo); sin batería
 // reconocida, al azar en los golpes.
-func (a *App) runnerPlan(g *runnerGame, t, per float64) {
+func (a *App) runnerPlan(g *runnerGame, t, per, anchor float64) {
+	n := int(math.Round((t - anchor) / (per / 2)))
+	onBeat := n%2 == 0
+	// Todo lo que se pone aquí, en su sitio del mundo.
+	from := len(g.things)
+	defer func() {
+		for i := from; i < len(g.things); i++ {
+			g.things[i].d = g.run + (t-g.lastNow)*g.speed
+		}
+	}()
+	if onBeat {
+		g.things = append(g.things, ruThing{kind: ruTick, at: t, big: (n%8+8)%8 == 0})
+	}
 	if g.eighths < 8 { // el primer compás, libre: para entrar en ritmo
 		return
 	}
-	onBeat := g.eighths%2 == 0
 	var hits [drumCount]bool
 	if dr := &a.beat.drums; dr.any && a.beat.per > 0 {
 		hits = dr.at(a.beat.slot(t), a.beatClock(), per)
@@ -409,7 +438,10 @@ func (a *App) runnerPlan(g *runnerGame, t, per float64) {
 	// entero y la caída), y las notas del suelo lejos de todo.
 	lastObs, lastAny := -1e9, -1e9
 	for _, th := range g.things {
-		if th.kind != ruNote {
+		switch th.kind {
+		case ruTick:
+			continue
+		case ruSpeaker, ruVinyl:
 			lastObs = math.Max(lastObs, th.at)
 		}
 		lastAny = math.Max(lastAny, th.at)
@@ -486,7 +518,6 @@ func (a *App) drawRunner(dst *ebiten.Image) {
 	ground := ch - 12
 	per, anchor := a.runnerGrid(g)
 	now := a.beatClock()
-	speed := g.beatPx / per
 	pulse := a.beatPulse()
 	_, _, bands, _ := a.meterNow()
 	// El cielo: el plasma de los visualizadores en la paleta de la portada,
@@ -512,8 +543,7 @@ func (a *App) drawRunner(dst *ebiten.Image) {
 		rect(cv, x, lo, 1, hi-lo+1, line)
 		prev = y
 	}
-	// Las piedritas del suelo, que pasan con el mundo, y una marca por golpe
-	// (más viva la del compás): los obstáculos caen en ellas.
+	// Las piedritas del suelo, que pasan con el mundo.
 	for x := 0; x < cw; x++ {
 		k := int(math.Floor(float64(x) + g.run))
 		switch {
@@ -525,25 +555,19 @@ func (a *App) drawRunner(dst *ebiten.Image) {
 			rect(cv, x, ground+4, 3, 1, withAlpha(th.Text, 0x60))
 		}
 	}
-	first := anchor + math.Floor((now-anchor-ruHeroX/speed)/per)*per
-	for t := first; ; t += per {
-		x := ruHeroX + (t-now)*speed
-		if x > float64(cw) {
-			break
-		}
-		c := withAlpha(th.Accent, 0x70)
-		if int(math.Round((t-anchor)/per))%4 == 0 {
-			c = th.Accent
-		}
-		rect(cv, int(math.Round(x)), ground+9, 1, 2, c)
-	}
 	// Lo que viene.
 	for _, it := range g.things {
-		x := ruHeroX + (it.at-now)*speed
+		x := ruHeroX + it.d - g.run
 		if x < -20 || x > float64(cw)+20 {
 			continue
 		}
 		switch it.kind {
+		case ruTick: // una marca por golpe (más viva la del compás): los obstáculos caen en ellas
+			c := withAlpha(th.Accent, 0x70)
+			if it.big {
+				c = th.Accent
+			}
+			rect(cv, int(math.Round(x)), ground+9, 1, 2, c)
 		case ruSpeaker:
 			name, iw, ih := "ru_speaker", 8, 12
 			if it.big {

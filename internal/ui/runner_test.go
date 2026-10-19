@@ -50,3 +50,35 @@ func TestRunnerReachable(t *testing.T) {
 		}
 	}
 }
+
+// TestRunnerScrollsSmoothly comprueba que el escenario solo avanza, poco a
+// poco, aunque el tempo detectado cambie o se sumen puntos de golpe: nada de
+// lo que hay en el camino salta de un fotograma al siguiente.
+func TestRunnerScrollsSmoothly(t *testing.T) {
+	a := &App{offline: true, t: 10, w: 360}
+	a.beat.per, a.beat.anchor = 0.5, 0
+	a.runner = a.newRunner()
+	g := a.runner
+	prev := map[float64]float64{} // el at de cada cosa → su x del fotograma anterior
+	for f := 0; f < 60*20; f++ {
+		a.t = 10 + float64(f)/60
+		switch {
+		case a.t >= 15 && a.beat.per == 0.5:
+			a.beat.per, a.beat.anchor = 0.42, 15.1 // otro tempo, y desfasado
+		case f == 60*18:
+			g.bonus += 80 // un PERFECTO grande
+		}
+		a.stepRunner(g)
+		maxStep := g.speed/60 + 0.5
+		now := map[float64]float64{}
+		for _, th := range g.things {
+			x := ruHeroX + th.d - g.run
+			key := th.at + float64(th.kind)*1e6
+			if p, ok := prev[key]; ok && (x > p+0.01 || p-x > maxStep) {
+				t.Fatalf("t=%.2f: kind %d moved from %.2f to %.2f (max %.2f per frame)", a.t, th.kind, p, x, maxStep)
+			}
+			now[key] = x
+		}
+		prev = now
+	}
+}
