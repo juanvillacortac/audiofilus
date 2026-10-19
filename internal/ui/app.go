@@ -2023,6 +2023,16 @@ func (a *App) renderShot(path string, w int) error {
 	})
 }
 
+// shotSafeArea es la zona segura simulada de las capturas verticales, en
+// píxeles del lienzo (arriba, abajo): AUDIOFILUS_SAFE="36,21" (la de un
+// iPhone 15: 59 y 34 puntos de 393 de ancho).
+func shotSafeArea() (top, bot int) {
+	if s := os.Getenv("AUDIOFILUS_SAFE"); s != "" {
+		fmt.Sscanf(s, "%d,%d", &top, &bot)
+	}
+	return top, bot
+}
+
 // render dibuja con draw a w×a.h (240, salvo en las capturas verticales) y
 // lo guarda ampliado ×3.
 func (a *App) render(path string, w int, draw func(*ebiten.Image)) error {
@@ -2030,7 +2040,31 @@ func (a *App) render(path string, w int, draw func(*ebiten.Image)) error {
 	h := max(a.h, ScreenH)
 	canvas := ebiten.NewImage(w, h)
 	defer canvas.Deallocate()
-	draw(canvas)
+	if top, bot := shotSafeArea(); top+bot > 0 && h > ScreenH {
+		// Como en un iPhone: el fondo en toda la pantalla, la interfaz en la
+		// zona segura y una barra de estado de muestra encima.
+		full := a.h
+		a.h = h - top - bot
+		inner := ebiten.NewImage(w, a.h)
+		a.ExternalBackdrop = true
+		draw(inner)
+		a.ExternalBackdrop = false
+		drawBackground(canvas, a.theme, a.t)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(0, float64(top))
+		canvas.DrawImage(inner, op)
+		inner.Deallocate()
+		a.h = full
+		white := color.RGBA{0xff, 0xff, 0xff, 0xff}
+		drawText(canvas, "9:41", SmallFace, 18, top/2-2, white)
+		frame(canvas, w-30, top/2-3, 15, 8, white)
+		rect(canvas, w-28, top/2-1, 9, 4, white)
+		rect(canvas, w-15, top/2-1, 1, 4, white)
+		panel(canvas, w/2-28, top/2-7, 56, 16, color.RGBA{0, 0, 0, 0xff}) // la isla
+		rect(canvas, w/2-36, h-bot/2-1, 72, 2, white)                     // la raya de inicio
+	} else {
+		draw(canvas)
+	}
 	pix := make([]byte, 4*w*h)
 	canvas.ReadPixels(pix)
 	const k = 3

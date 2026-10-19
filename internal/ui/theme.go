@@ -56,7 +56,8 @@ type Aspect struct {
 // Aspects son los formatos de las capturas de las maquetas: los horizontales
 // de las portátiles y el escritorio, y los verticales de un móvil.
 var Aspects = []Aspect{{"1x1", 240, 240}, {"4x3", 320, 240}, {"3x2", 360, 240}, {"16x10", 384, 240}, {"16x9", 427, 240},
-	{"2x1", 480, 240}, {"21x9", 560, 240}, {"3x4", 240, 320}, {"9x16", 240, 427}}
+	{"2x1", 480, 240}, {"21x9", 560, 240}, {"3x4", 240, 320}, {"9x16", 240, 427},
+	{"iphone", 240, 520}} // un iPhone 15 (393×852 puntos)
 
 // Theme son los colores de la interfaz. El acento se toma de la portada que
 // suena, así cada disco tiñe la interfaz (como hace Songo con sus temas).
