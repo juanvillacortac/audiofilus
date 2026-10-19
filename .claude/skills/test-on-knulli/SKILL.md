@@ -23,14 +23,14 @@ Filter the "post-quantum key exchange" warning out of the output. If `knulli.loc
 
 ## Installing
 
-The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster).
+The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster), with the console's binaries in `bin/aarch64/` and the launcher at `/userdata/roms/ports/Audiofilus.sh`.
 
 ```sh
 ./build.sh                                   # dist/audiofilus-arm64 and dist/audiofilus-ui-arm64
 D=/userdata/roms/ports/audiofilus
-kcp dist/audiofilus-arm64 root@knulli.local:$D/audiofilus.new
-kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/audiofilus-ui.new
-k "cd $D && mv -f audiofilus.new audiofilus && mv -f audiofilus-ui.new audiofilus-ui && chmod +x audiofilus audiofilus-ui"
+kcp dist/audiofilus-arm64 root@knulli.local:$D/bin/aarch64/audiofilus.new
+kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/bin/aarch64/audiofilus-ui.new
+k "cd $D/bin/aarch64 && mv -f audiofilus.new audiofilus && mv -f audiofilus-ui.new audiofilus-ui && chmod +x audiofilus audiofilus-ui"
 ```
 
 Check the upload with `md5sum` on both sides. If the service is running, `./audiofilus quit` makes the next launch use the new binary.
@@ -40,10 +40,10 @@ Upload as `.new` and then `mv`: this does not corrupt a running service. The con
 ## Testing
 
 ```sh
-k '/userdata/roms/ports/audiofilus/audiofilus play /userdata/MUSIC'     # starts the detached service
-k '/userdata/roms/ports/audiofilus/audiofilus status'
+k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus play /userdata/MUSIC'     # starts the detached service
+k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus status'
 k 'tail -20 /userdata/roms/ports/audiofilus/data/audiofilus.log'
-k '/userdata/roms/ports/audiofilus/audiofilus quit'
+k '/userdata/roms/ports/audiofilus/bin/aarch64/audiofilus quit'
 ```
 
 After `quit` or a crash, check that nothing was left modified:

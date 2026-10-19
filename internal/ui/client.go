@@ -105,8 +105,19 @@ func (c *Client) Background() {
 	_, _ = control.Call(c.paths.Socket, control.Request{Cmd: "background"})
 }
 
-// daemonPath busca el binario del servicio junto al de la interfaz.
+// daemonPath busca el binario del servicio: junto al de la interfaz (en el
+// port de PortMaster, bin/<arquitectura>/, con la configuración una carpeta
+// más arriba), en la carpeta de audiofilus o en el PATH.
 func (c *Client) daemonPath() (string, error) {
+	if exe, err := os.Executable(); err == nil {
+		if real, err := filepath.EvalSymlinks(exe); err == nil {
+			exe = real
+		}
+		p := filepath.Join(filepath.Dir(exe), proc.Exe("audiofilus"))
+		if _, err := os.Stat(p); err == nil {
+			return p, nil
+		}
+	}
 	p := filepath.Join(c.paths.Base, proc.Exe("audiofilus"))
 	if _, err := os.Stat(p); err == nil {
 		return p, nil

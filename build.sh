@@ -40,8 +40,16 @@ pkg=dist/pkg
 rm -rf "$pkg" dist/audiofilus.zip
 mkdir -p "$pkg"
 cp -r portmaster/. "$pkg/"
-cp dist/audiofilus-arm64 "$pkg/audiofilus/audiofilus"
-cp dist/audiofilus-ui-arm64 "$pkg/audiofilus/audiofilus-ui"
+# Para cada arquitectura de PortMaster, su carpeta: aarch64 (la mayoría de
+# las portátiles) y x86_64. La interfaz de x86_64 se compila aparte sin cgo
+# (la del PC usa GLFW con cgo y pide X11, que una portátil x86 puede no
+# tener); en las dos manda el backend SDL2 que pide el lanzador.
+mkdir -p "$pkg/audiofilus/bin/aarch64" "$pkg/audiofilus/bin/x86_64"
+cp dist/audiofilus-arm64 "$pkg/audiofilus/bin/aarch64/audiofilus"
+cp dist/audiofilus-ui-arm64 "$pkg/audiofilus/bin/aarch64/audiofilus-ui"
+cp dist/audiofilus-amd64 "$pkg/audiofilus/bin/x86_64/audiofilus"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" \
+  -o "$pkg/audiofilus/bin/x86_64/audiofilus-ui" ./cmd/audiofilus-ui
 mkdir -p "$pkg/audiofilus/licenses"
 cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
 (cd "$pkg" && zip -qr ../audiofilus.zip .)

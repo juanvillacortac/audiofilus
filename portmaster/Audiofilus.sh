@@ -22,7 +22,17 @@ get_controls
 GAMEDIR="/$directory/ports/audiofilus"
 BINARY="audiofilus-ui"
 
+# The binaries for this machine: bin/aarch64 or bin/x86_64. The UI finds the
+# service next to itself; settings and data stay in the port folder.
+ARCH="${DEVICE_ARCH:-$(uname -m)}"
+case "$ARCH" in
+  x86_64 | amd64) ARCH=x86_64 ;;
+  *) ARCH=aarch64 ;;
+esac
+BINDIR="bin/$ARCH"
+
 cd "$GAMEDIR"
+chmod +x "$BINDIR/audiofilus" "$BINDIR/$BINARY" 2>/dev/null
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
 # The settings and the library cache live next to the binaries
@@ -48,7 +58,7 @@ echo "SDL_GAMECONTROLLERCONFIG=$SDL_GAMECONTROLLERCONFIG"
 
 # gptokeyb only provides PortMaster's exit hotkey (Select+Start).
 $GPTOKEYB "$BINARY" &
-pm_platform_helper "$GAMEDIR/$BINARY"
-./"$BINARY" "$@"
+pm_platform_helper "$GAMEDIR/$BINDIR/$BINARY"
+./"$BINDIR/$BINARY" "$@"
 
 pm_finish
