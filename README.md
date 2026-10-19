@@ -19,7 +19,7 @@
   <img src="site/img/vis-lake.gif" alt="Lake visualizer" width="320">
 </p>
 
-Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), and on Linux desktops.
+Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), and on **Linux and Windows** desktops.
 
 ## Features
 
@@ -102,6 +102,8 @@ Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
 On a Linux desktop, grab `audiofilus-linux-amd64.tar.gz` and run `./audiofilus-ui`.
 
+On **Windows** (10 or later), grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus-ui.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
+
 ## Build
 
 With Docker, nothing else needed:
@@ -122,6 +124,7 @@ Both leave in `dist/`:
 |---|---|
 | `audiofilus-amd64`, `audiofilus-arm64` | The audio service and CLI |
 | `audiofilus-ui-amd64`, `audiofilus-ui-arm64` | The interface |
+| `audiofilus-windows-amd64.exe`, `audiofilus-ui-windows-amd64.exe` | The service and the interface for Windows |
 | `audiofilus.zip` | The PortMaster port |
 
 The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile and libxmp are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.
@@ -145,7 +148,7 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 
 ## Roadmap
 
-- **Desktop:** mouse and keyboard controls, media keys, window-sized layouts.
+- **Desktop:** mouse and keyboard controls, media keys (MPRIS on Linux, system media controls on Windows), window-sized layouts.
 - **Android** and **iOS**: touch controls and system media controls.
 
 ## Support

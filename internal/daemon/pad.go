@@ -3,6 +3,7 @@ package daemon
 import (
 	"log"
 	"math/rand/v2"
+	"runtime"
 	"sync"
 	"time"
 
@@ -21,6 +22,9 @@ const armedRumble = 60 * time.Millisecond
 // gestos de doble toque mientras dura el sleep de la app. Devuelve la función
 // que lo para.
 func (d *Daemon) startInput() (stop func()) {
+	if runtime.GOOS != "linux" {
+		return func() {} // el mando se lee por evdev: solo en Linux
+	}
 	var mu sync.Mutex
 	var cur *input.Reader
 	done := make(chan struct{})

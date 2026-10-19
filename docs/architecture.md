@@ -88,4 +88,18 @@ The C libraries are loaded at runtime with purego (`decode/native.go`), without 
 
 \* Decoding only, in % of one core at 1.5 GHz (`audiofilus bench`, 2026-10-17), with one minute of a real song.
 
+On Windows the same libraries are loaded as DLLs (`decode/native_windows.go`), looked up first in the program's folder: the MSYS2 builds `libmpg123-0.dll`, `libopusfile-0.dll` (with `libopus-0.dll` and `libogg-0.dll`), `libxmp-4.dll` or `libxmp.dll`, and `libfdk-aac-2.dll`. Without them Windows plays MP3 (go-mp3), FLAC, Ogg Vorbis, ALAC, WAV and AIFF; AAC, Opus and modules need the DLLs.
+
 Tags (title, artist, album) are read by `dhowden/tag`.
+
+## Windows
+
+The service and the interface build for Windows without cgo (`GOOS=windows`): Ebitengine draws with DirectX and oto plays through WASAPI. What changes:
+
+- **Socket:** the same Unix socket, in `%TEMP%` (Windows 10 1803 and later support `AF_UNIX`).
+- **Starting the service:** `audiofilus.exe daemon -detach` relaunches it as a detached process with no console (`cmd/audiofilus/detach_windows.go`); the interface starts it hidden (`proc.Hidden`), and the same goes for yt-dlp and ffmpeg.
+- **Interface:** built with `-H windowsgui`, so no console window opens behind it. The battery indicator uses `GetSystemPowerStatus`.
+- **Not on Windows:** reading the controller from the service (evdev), headset keys, the power button and every handheld integration. Files that need Linux end in `_linux.go`, with a `_other.go` (or `detect_other.go`) twin that compiles elsewhere and does nothing. The interface still gets keyboard and controller input through its window.
+- **System volume:** not read or changed (`desktop.SystemVolume` uses `pactl`, which isn't there); the app's own volume works.
+
+CI runs the tests on `windows-latest` and a smoke test: start the service, play the test tones with a virtual sound card, and quit.

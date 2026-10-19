@@ -34,6 +34,7 @@ Before calling a change done: `gofmt -l .` is empty, `go vet ./...` and `go test
 
 ```sh
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
+GOOS=windows go vet ./...
 ```
 
 ## The map
@@ -54,6 +55,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
 | `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |
 | `internal/radio/`, `internal/podcast/`, `internal/ytm/` | Internet radio, podcasts, and YouTube Music search plus yt-dlp |
 | `internal/sfx/` | The synthesized interface sounds and the splash jingle |
+| `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `cmd/audiofilus-ui/` | The interface binary |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
@@ -72,6 +74,7 @@ Architecture rules:
 - **In the background the console suspends as usual.** Preventing that is up to the open app (`awake`, a permission that expires), never the service on its own.
 - **Buttons come from the SDL mapping**, not hardcoded codes: each console uses its own.
 - **Each system's integration (Knulli, muOS, ROCKNIX, ArkOS) only turns on when that system is detected** (`platform.Detect`); on the PC everything is a no-op, so the same code is tested in both places.
+- **It also builds for Windows** (`GOOS=windows`, no cgo). Linux-only code goes in `_linux.go` files with a `_other.go` twin that does nothing; check with `GOOS=windows go vet ./...`. See [docs/architecture.md](docs/architecture.md#windows).
 
 ## Knulli
 
