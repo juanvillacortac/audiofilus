@@ -153,10 +153,7 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 	// La ruta, recortada por el principio si no cabe.
 	path := T("pick_roots")
 	if p.dir != "" {
-		path = p.dir
-		for textWidth(path, SmallFace) > w-2*margin-8 && strings.Contains(path[1:], "/") {
-			path = "..." + path[strings.Index(path[1:], "/")+1:]
-		}
+		path = shortPath(p.dir, func(s string) bool { return textWidth(s, SmallFace) <= w-2*margin-8 })
 	}
 	panel(dst, margin-4, y-4, w-2*margin+8, 13, withAlpha(th.Bg2, 0xf0))
 	drawIcon(dst, "folder", margin, y-1, th.Accent2)
@@ -199,4 +196,23 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 		hints = append(hints, hint{"X", T("h_use")})
 	}
 	a.drawHints(dst, hints)
+}
+
+// shortPath recorta path por el principio ("...", y lo que queda desde una
+// "/") hasta que fits diga que cabe o no se pueda recortar más. Cada vuelta
+// quita una carpeta: antes podía dejar la misma ruta y no terminar (en iOS,
+// con rutas largas y 240 de ancho, la interfaz se colgaba).
+func shortPath(path string, fits func(string) bool) string {
+	for !fits(path) {
+		rest := strings.TrimPrefix(path, "...")
+		if len(rest) < 2 {
+			break
+		}
+		i := strings.Index(rest[1:], "/")
+		if i < 0 {
+			break
+		}
+		path = "..." + rest[i+1:]
+	}
+	return path
 }

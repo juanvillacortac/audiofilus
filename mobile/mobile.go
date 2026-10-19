@@ -188,6 +188,14 @@ func start(home, tmp, langs string) error {
 	if lang, _, _ := strings.Cut(langs, ","); lang != "" {
 		os.Setenv("LANG", strings.ReplaceAll(lang, "-", "_")+".UTF-8")
 	}
+	// La carpeta de la app cambia en cada instalación (otro contenedor): la
+	// que da Swift, si es una ruta absoluta que existe; si no, la de este
+	// proceso ($HOME/Documents).
+	given := home
+	if fi, err := os.Stat(home); !filepath.IsAbs(home) || err != nil || !fi.IsDir() {
+		home = filepath.Join(os.Getenv("HOME"), "Documents")
+	}
+	home = filepath.Clean(home)
 	os.Setenv("AUDIOFILUS_HOME", home)
 	// El log, en un archivo que se ve en Archivos (data/audiofilus.log).
 	if err := os.MkdirAll(filepath.Join(home, "data"), 0o755); err == nil {
@@ -205,10 +213,21 @@ func start(home, tmp, langs string) error {
 	if err != nil {
 		return err
 	}
-	if cfg, err := config.Load(paths); err == nil && len(cfg.MusicDirs) == 0 {
-		cfg.MusicDirs = []string{filepath.Join(home, "Music")}
-		_ = os.MkdirAll(cfg.MusicDirs[0], 0o755)
-		_ = config.Save(paths, cfg)
+	log.Printf("mobile: home %q (given %q), tmp %q, $HOME %q", home, given, tmp, os.Getenv("HOME"))
+	// Sin carpeta de música, o con una de otra instalación (ya no existe):
+	// la Music de la app, que se ve en Archivos.
+	if cfg, err := config.Load(paths); err == nil {
+		ok := false
+		for _, d := range cfg.MusicDirs {
+			if fi, err := os.Stat(d); err == nil && fi.IsDir() {
+				ok = true
+			}
+		}
+		if !ok {
+			cfg.MusicDirs = []string{filepath.Join(home, "Music")}
+			_ = os.MkdirAll(cfg.MusicDirs[0], 0o755)
+			_ = config.Save(paths, cfg)
+		}
 	}
 	socket = paths.Socket
 	daemon.NowPlayingHook = nowPlaying
