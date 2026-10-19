@@ -206,6 +206,7 @@ pre .c { color: var(--muted); }
   background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
 }
 .copy:hover { border-color: var(--teal); }
+.steps code.inline { font: 400 0.85em/1.4 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.35em; word-break: break-word; }
 .note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
 
 /* Roadmap */
@@ -508,6 +509,12 @@ docker build --target dist --output dist .
           <li>Downloads the latest release for <strong>x86_64</strong> or <strong>aarch64</strong> into <strong>~/.local/share/audiofilus</strong>.</li>
           <li>Links <strong>audiofilus</strong> and <strong>audiofilus-ui</strong> into <strong>~/.local/bin</strong>.</li>
           <li>Adds Audiofilus to your app launcher. Run it again any time to update; your settings stay.</li>
+        </ol>
+        <h3>Or set it up by hand</h3>
+        <ol class="steps">
+          <li>Download <strong>audiofilus-linux-amd64.tar.gz</strong> (or <strong>-arm64</strong>) from the <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">latest release</a> and unpack it anywhere.</li>
+          <li>In that folder, run <code class="inline">./audiofilus desktop install</code>. It adds the launcher entry and the icon to <strong>~/.local/share</strong>.</li>
+          <li>Open Audiofilus from your app launcher. If you move the folder, run step 2 again.</li>
         </ol>
         <p class="note">Uninstall: <code>audiofilus quit; audiofilus desktop uninstall; rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus*</code></p>
         <p class="note">Windows 10 or later: download <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">audiofilus-windows-amd64.zip</a>, unzip it anywhere and run <strong>audiofilus-ui.exe</strong>.</p>
