@@ -3,6 +3,7 @@ package ui
 import (
 	"encoding/json"
 	"fmt"
+	"image/color"
 	"math"
 	"math/rand/v2"
 	"os"
@@ -26,6 +27,7 @@ type snPt struct{ x, y int }
 type snakeGame struct {
 	cols, rows int
 	body       []snPt // la cabeza primero
+	prev       []snPt // dónde estaba cada segmento antes del último paso (para deslizarlo)
 	dir, next  snPt
 	grow       int
 	food       snPt
@@ -37,6 +39,7 @@ type snakeGame struct {
 	overAt     float64
 	frozen     bool
 	lastStep   float64 // el último paso (reloj del ritmo)
+	stepLen    float64 // lo que dura un paso ahora
 	eatAt      float64
 	fallback   float64 // el ancla del metrónomo si no hay tempo
 }
@@ -158,7 +161,8 @@ func (a *App) updateSnake() {
 	if tick <= g.lastStep+step/2 {
 		return
 	}
-	g.lastStep = tick
+	g.lastStep, g.stepLen = tick, step
+	g.prev = append(g.prev[:0], g.body...)
 	// Un paso.
 	g.dir = g.next
 	head := snPt{g.body[0].x + g.dir.x, g.body[0].y + g.dir.y}
@@ -230,13 +234,23 @@ func (a *App) drawSnake(dst *ebiten.Image) {
 	bs := fmt.Sprintf("%s %d", T("tet_best"), max(g.best, g.score))
 	drawText(dst, bs, SmallFace, ox+bw-textWidth(bs, SmallFace), topH+4, th.Dim)
 	panel(dst, ox-2, oy-2, bw+4, bh+4, withAlpha(th.Shadow, 0xc0))
-	// La cuadrícula de puntos, que late con el golpe.
-	dc := withAlpha(th.Accent, uint8(30+50*pulse))
-	for y := 0; y < g.rows; y++ {
-		for x := 0; x < g.cols; x++ {
-			rect(dst, ox+x*snCell+snCell/2, oy+y*snCell+snCell/2, 1, 1, dc)
+	// La cuadrícula de puntos, que late con el golpe: una imagen hecha una
+	// vez (antes eran ~600 rectángulos por cuadro: en la consola se notaba).
+	if snDots == nil || snDots.Bounds().Dx() != bw || snDots.Bounds().Dy() != bh {
+		if snDots != nil {
+			snDots.Deallocate()
+		}
+		snDots = ebiten.NewImage(bw, bh)
+		for y := 0; y < g.rows; y++ {
+			for x := 0; x < g.cols; x++ {
+				snDots.Set(x*snCell+snCell/2, y*snCell+snCell/2, color.White)
+			}
 		}
 	}
+	dop := &ebiten.DrawImageOptions{}
+	dop.GeoM.Translate(float64(ox), float64(oy))
+	dop.ColorScale.ScaleWithColor(withAlpha(th.Accent, uint8(30+50*pulse)))
+	dst.DrawImage(snDots, dop)
 	// La moneda y el corazón (que parpadea al acabarse).
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(ox+g.food.x*snCell), float64(oy+g.food.y*snCell-int(pulse*1.5)))
@@ -247,9 +261,20 @@ func (a *App) drawSnake(dst *ebiten.Image) {
 		dst.DrawImage(crSprite("heart", th.Accent2, th.Text), op)
 	}
 	// La serpiente: de un acento al otro, la cabeza más clara y con ojos.
+	// Cada segmento se desliza de su casilla de antes a la nueva durante el
+	// paso (antes saltaba de golpe y, cuanto más larga, más a tirones).
+	f := 1.0
+	if g.stepLen > 0 && !g.frozen && !g.over {
+		f = math.Max(0, math.Min(1, (a.beatClock()-g.lastStep)/g.stepLen))
+	}
 	n := len(g.body)
 	for i := n - 1; i >= 0; i-- {
-		p := g.body[i]
+		px, py := float64(g.body[i].x), float64(g.body[i].y)
+		if i < len(g.prev) {
+			px += (float64(g.prev[i].x) - px) * (1 - f)
+			py += (float64(g.prev[i].y) - py) * (1 - f)
+		}
+		sx, sy := ox+int(math.Round(px*snCell)), oy+int(math.Round(py*snCell))
 		c := mix(th.Accent, th.Accent2, float64(i)/float64(max(1, n-1)))
 		if i == 0 {
 			c = mix(th.Accent, th.Text, 0.35)
@@ -261,12 +286,12 @@ func (a *App) drawSnake(dst *ebiten.Image) {
 		if i > 0 && pulse > 0.5 && i%2 == 0 {
 			inset = 0 // el cuerpo late con el golpe
 		}
-		rect(dst, ox+p.x*snCell+inset, oy+p.y*snCell+inset, snCell-2*inset, snCell-2*inset, c)
+		rect(dst, sx+inset, sy+inset, snCell-2*inset, snCell-2*inset, c)
 		if i == 0 {
 			ex, ey := 3*g.dir.y, 3*g.dir.x
 			eye := th.Shadow
-			rect(dst, ox+p.x*snCell+4+2*g.dir.x+ex, oy+p.y*snCell+4+2*g.dir.y+ey, 2, 2, eye)
-			rect(dst, ox+p.x*snCell+4+2*g.dir.x-ex, oy+p.y*snCell+4+2*g.dir.y-ey, 2, 2, eye)
+			rect(dst, sx+4+2*g.dir.x+ex, sy+4+2*g.dir.y+ey, 2, 2, eye)
+			rect(dst, sx+4+2*g.dir.x-ex, sy+4+2*g.dir.y-ey, 2, 2, eye)
 		}
 	}
 	if g.frozen && !g.over {
@@ -277,6 +302,9 @@ func (a *App) drawSnake(dst *ebiten.Image) {
 	}
 	a.drawHints(dst, []hint{{"<>^v", T("sn_h_turn")}, {"START", T("h_pause")}, {"SEL", T("h_menu")}})
 }
+
+// snDots es la cuadrícula de puntos del tablero, hecha una vez.
+var snDots *ebiten.Image
 
 // drawCenterNote es un aviso en el centro de la pantalla.
 func (a *App) drawCenterNote(dst *ebiten.Image, msg string) {
