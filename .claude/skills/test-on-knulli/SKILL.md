@@ -23,11 +23,17 @@ Filter the "post-quantum key exchange" warning out of the output. If `knulli.loc
 
 ## Installing
 
+The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster).
+
 ```sh
-./build.sh                                   # dist/audiofilus-arm64
-kcp dist/audiofilus-arm64 root@knulli.local:/userdata/audiofilus/audiofilus.new
-k 'cd /userdata/audiofilus && mv audiofilus.new audiofilus && chmod +x audiofilus'
+./build.sh                                   # dist/audiofilus-arm64 and dist/audiofilus-ui-arm64
+D=/userdata/roms/ports/audiofilus
+kcp dist/audiofilus-arm64 root@knulli.local:$D/audiofilus.new
+kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/audiofilus-ui.new
+k "cd $D && mv -f audiofilus.new audiofilus && mv -f audiofilus-ui.new audiofilus-ui && chmod +x audiofilus audiofilus-ui"
 ```
+
+Check the upload with `md5sum` on both sides. If the service is running, `./audiofilus quit` makes the next launch use the new binary.
 
 Upload as `.new` and then `mv`: this does not corrupt a running service. The configuration (`audiofilus.json`, `data/`) lives in that same folder.
 
