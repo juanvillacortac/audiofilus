@@ -1345,15 +1345,26 @@ func (a *App) writeFrames() error {
 	if err := a.writeLogoFrames(filepath.Join(a.FramesDir, "logo")); err != nil {
 		return err
 	}
-	// El splash para la web: en 16:9 y a 30 cuadros por segundo.
-	wideDir := filepath.Join(a.FramesDir, "splash-web")
-	if err := os.MkdirAll(wideDir, 0o755); err != nil {
-		return err
-	}
-	for i := 0; float64(i)/30 < splashLen; i++ {
-		a.splashT = float64(i) / 30
-		if err := a.render(filepath.Join(wideDir, fmt.Sprintf("f%04d.png", i)), 427, a.drawSplash); err != nil {
+	// El splash para la web, a 30 cuadros por segundo y hasta antes de su
+	// salida (la web hace su propio fundido), en dos capas: el fondo, que la
+	// página estira hasta cubrir cualquier pantalla, y lo de encima, sobre
+	// transparente, que centra entero.
+	for _, v := range []struct {
+		dir    string
+		bg, fg bool
+	}{{"splash-bg", true, false}, {"splash-fg", false, true}} {
+		dir := filepath.Join(a.FramesDir, v.dir)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
 			return err
+		}
+		for i := 0; float64(i)/30 < splashLen-splashOut; i++ {
+			a.splashT = float64(i) / 30
+			err := a.render(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), 427, func(dst *ebiten.Image) {
+				a.drawSplashLayers(dst, v.bg, v.fg)
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 	// El splash, entero, en su propia carpeta.

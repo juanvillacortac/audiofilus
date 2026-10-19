@@ -64,11 +64,21 @@ func steps(t float64) float32 {
 }
 
 // drawSplash pinta el splash en el instante a.splashT.
-func (a *App) drawSplash(dst *ebiten.Image) {
+func (a *App) drawSplash(dst *ebiten.Image) { a.drawSplashLayers(dst, true, true) }
+
+// drawSplashLayers pinta el fondo (bg), lo de encima (fg: logo, ecualizador y
+// firma, sobre transparente) o los dos. Por separado sirven a la web, que
+// estira el fondo a cualquier pantalla y centra lo de encima sin recortarlo.
+func (a *App) drawSplashLayers(dst *ebiten.Image, bg, fg bool) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	t := a.splashT
 	th := DefaultTheme
-	drawBackground(dst, th, t)
+	if bg {
+		drawBackground(dst, th, t)
+	}
+	if !fg {
+		return
+	}
 
 	lw, lh := splashLogoSize()
 	lx := (w - lw*splashScale) / 2
@@ -82,7 +92,7 @@ func (a *App) drawSplash(dst *ebiten.Image) {
 	}
 
 	// Salida: el fondo tapa todo por escalones.
-	if out := (t - (splashLen - splashOut)) / splashOut; out > 0 {
+	if out := (t - (splashLen - splashOut)) / splashOut; out > 0 && bg {
 		bg := th.Bg
 		k := steps(out)
 		bg.R, bg.G, bg.B, bg.A = uint8(float32(bg.R)*k), uint8(float32(bg.G)*k), uint8(float32(bg.B)*k), uint8(255*k)

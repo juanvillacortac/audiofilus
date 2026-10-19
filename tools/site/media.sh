@@ -32,10 +32,15 @@ gif 5 "$tmp/f/ritmo/f*.png" rhythm.gif
 gif 5 "$tmp/f/bloques/f*.png" blocks.gif
 gif 5 "$tmp/f/f0*.png" player.gif
 
-# El logo, recortado, y el splash de la web: el de la app en 16:9 a 30
-# cuadros por segundo, a 1:1, que se reproduce una vez (WebP sin pérdida).
+# El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo
+# de encima, sobre transparente), a 30 cuadros por segundo y a 1:1, que se
+# reproducen una vez (WebP sin pérdida).
 magick "$tmp/s/logo.png" -trim +repage -filter point -resize 66.667% "$out/logo.png"
-magick -dispose Background -delay 3.333 "$tmp"/f/splash-web/f*.png -sample 33.3334% \
-  -loop 1 -define webp:lossless=true "$out/splash-web.webp"
+magick -dispose Background -delay 3.333 "$tmp"/f/splash-bg/f*.png -sample 33.3334% \
+  -loop 1 -define webp:lossless=true "$out/splash-bg.webp"
+# Lo de encima, recortado a su contenido (el mismo recorte en todos los cuadros).
+box=$(magick "$tmp"/f/splash-fg/f*.png -layers trim-bounds -flatten -trim -format '%wx%h%O' info:)
+magick -dispose Background -delay 3.333 "$tmp"/f/splash-fg/f*.png -crop "$box" +repage \
+  -sample 33.3334% -loop 1 -define webp:lossless=true "$out/splash-fg.webp"
 magick "$tmp/s/portada-portmaster.png" -filter point -resize 50% "$out/og.png"
 ls -la "$out"

@@ -13,7 +13,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="img/icon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="img/icon-64.png">
 <link rel="apple-touch-icon" href="img/icon-256.png">
-<link rel="preload" as="fetch" href="img/splash-web.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="img/splash-bg.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="img/splash-fg.webp" type="image/webp" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -229,14 +230,18 @@ pre .c { color: var(--muted); }
 /* Splash, like the app's: the logo intro on the dark screen, then a fade. */
 .splash {
   position: fixed; inset: 0; z-index: 50;
-  display: grid; place-items: center;
   background: #0b0a13; /* the edge of the app's splash background */
   cursor: pointer;
   transition: opacity 0.45s ease, visibility 0.45s;
 }
-/* The app's own splash, rendered at 16:9 and scaled without smoothing. */
-.splash img { width: 100%; height: 100%; object-fit: contain; visibility: hidden; }
-.splash img.ready { visibility: visible; }
+/* The app's splash in two layers: its pulsing background, stretched to cover
+   any screen shape, and the logo on top, whole and centered. */
+.splash img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+.splash .bg { object-fit: cover; }
+/* The logo layer is cropped to its content (234×161 of the app's 240-tall
+   screen): as tall as the app would draw it, but never wider than the screen. */
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(88vw, 97.5vh); height: auto; }
+.splash.ready img { visibility: visible; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash.out img { visibility: hidden; }
 .splash[hidden] { display: none; }
@@ -250,14 +255,14 @@ footer img { height: 56px; width: auto; }
 <body>
 
 <div class="splash" id="splash" hidden aria-hidden="true">
-  <img class="px" id="splash-logo" alt="" width="427" height="240">
+  <img class="px bg" id="splash-bg" alt="" width="427" height="240">
+  <img class="px fg" id="splash-fg" alt="" width="234" height="161">
 </div>
 <script>
 // The splash plays on every load, as in the app; any click or key skips it.
 (function () {
   var el = document.getElementById("splash");
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var img = document.getElementById("splash-logo");
   var started = false;
   el.hidden = false;
   function done() {
@@ -265,22 +270,26 @@ footer img { height: 56px; width: auto; }
     removeEventListener("keydown", done);
     setTimeout(function () { el.hidden = true; }, 500);
   }
-  // The animation starts when the image arrives; if that takes too long,
-  // go straight to the page.
-  img.addEventListener("load", function () {
-    if (started) return;
-    started = true;
-    img.classList.add("ready");
-    setTimeout(done, 2800); // splashLen in internal/ui/splash.go
-  });
-  img.addEventListener("error", done);
+  // Both layers start together once both have arrived; if that takes too
+  // long, go straight to the page. Blob URLs make each load a new image, so
+  // the animation (which plays once) starts over even from the cache.
+  function blob(u) {
+    return fetch(u).then(function (r) { if (!r.ok) throw r.status; return r.blob(); });
+  }
+  Promise.all([blob("img/splash-bg.webp"), blob("img/splash-fg.webp")]).then(function (bs) {
+    var imgs = [document.getElementById("splash-bg"), document.getElementById("splash-fg")];
+    var left = 2;
+    imgs.forEach(function (img, i) {
+      img.onload = function () {
+        if (--left || started) return;
+        started = true;
+        el.classList.add("ready");
+        setTimeout(done, 2480); // splashLen - splashOut in internal/ui/splash.go
+      };
+      img.src = URL.createObjectURL(bs[i]);
+    });
+  }).catch(done);
   setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
-  // A blob URL is a new image each time, so the animation (which plays once)
-  // starts over even when the browser already has it in its cache.
-  fetch("img/splash-web.webp")
-    .then(function (r) { if (!r.ok) throw r.status; return r.blob(); })
-    .then(function (b) { img.src = URL.createObjectURL(b); })
-    .catch(done);
   el.addEventListener("click", done);
   addEventListener("keydown", done);
 })();
