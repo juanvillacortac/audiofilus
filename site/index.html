@@ -125,8 +125,9 @@ p { margin: 0; }
   box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
   position: relative;
 }
-.device .screen { border-radius: 6px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; max-width: 100%; }
-.device .screen img { width: 100%; height: 100%; object-fit: cover; }
+.device { justify-self: center; max-width: 100%; }
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; max-width: 100%; }
+.device .screen img { display: block; }
 .device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
 .device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
 
@@ -157,7 +158,7 @@ kbd {
 figure { margin: 0; }
 
 /* Visualizers */
-.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
 .vis-grid figure { display: grid; gap: 0.5rem; }
 .vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
 .vis-grid figcaption span { color: var(--muted); font-weight: 400; }
@@ -179,13 +180,10 @@ figure { margin: 0; }
 @media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
 
 /* Any width */
-.widths { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
-.widths figure { display: grid; gap: 0.4rem; flex: 1 1 auto; min-width: 0; }
-.widths figure:nth-child(1) { flex-basis: 8rem; max-width: 12rem; }
-.widths figure:nth-child(2) { flex-basis: 10rem; max-width: 15rem; }
-.widths figure:nth-child(3) { flex-basis: 11rem; max-width: 17rem; }
-.widths figure:nth-child(4) { flex-basis: 13rem; max-width: 20rem; }
-.widths figure:nth-child(5) { flex-basis: 16rem; max-width: 26rem; }
+/* A strip at exact size, scrolled sideways: the five shapes don't fit side by
+   side at 1×, and shrinking pixel art makes it uneven. */
+.widths { display: flex; align-items: flex-end; gap: 1rem; overflow-x: auto; padding-bottom: 0.75rem; }
+.widths figure { display: grid; gap: 0.4rem; flex: none; }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -240,7 +238,7 @@ pre .c { color: var(--muted); }
 .splash .bg { object-fit: cover; }
 /* The logo layer is cropped to its content (234×161 of the app's 240-tall
    screen): as tall as the app would draw it, but never wider than the screen. */
-.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(88vw, 97.5vh); height: auto; }
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 234px; height: auto; }
 .splash.ready img { visibility: visible; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash.out img { visibility: hidden; }
@@ -364,9 +362,9 @@ footer img { height: 56px; width: auto; }
         </div>
       </div>
       <div class="figure">
-        <img class="shot px" src="img/guide.png" alt="The controls guide over the player, listing the buttons for on-screen, everywhere, sleep and background use" width="720" height="480" loading="lazy">
+        <img class="shot px" src="img/guide.png" alt="The controls guide over the player, listing the buttons for on-screen, everywhere, sleep and background use" width="360" height="240" loading="lazy">
         <p class="caption">The controls guide, shown while FN is held.</p>
-        <img class="shot px" src="img/menu.png" alt="The More menu with Album, Artist, Add to a playlist, Queue, Shuffle, Repeat, Screen off, Background and Quit" width="720" height="480" loading="lazy">
+        <img class="shot px" src="img/menu.png" alt="The More menu with Album, Artist, Add to a playlist, Queue, Shuffle, Repeat, Screen off, Background and Quit" width="360" height="240" loading="lazy">
         <p class="caption">START opens the More menu, including “Background” to leave the app and keep listening.</p>
       </div>
     </div>
@@ -411,9 +409,9 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Bring your own</span><h3>YouTube Music</h3><p>Copy your own yt-dlp next to the app and search appears: listen without downloading, or save songs into your library with cover and tags.</p></div>
       </div>
       <div class="trio">
-        <figure class="figure"><img class="shot px" src="img/search-youtube.png" alt="Search with All, Library and YouTube filters; songs you already have are checked" width="720" height="480" loading="lazy"><figcaption>One search for the library and YouTube. A check marks songs you already have.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/streaming.png" alt="The player with a STREAMING badge while a song loads" width="720" height="480" loading="lazy"><figcaption>Streaming songs get a badge, and you can keep them.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/radio.png" alt="The player showing a live radio station with its current song" width="720" height="480" loading="lazy"><figcaption>Radio plays live, with the song title from the station.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/search-youtube.png" alt="Search with All, Library and YouTube filters; songs you already have are checked" width="360" height="240" loading="lazy"><figcaption>One search for the library and YouTube. A check marks songs you already have.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/streaming.png" alt="The player with a STREAMING badge while a song loads" width="360" height="240" loading="lazy"><figcaption>Streaming songs get a badge, and you can keep them.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/radio.png" alt="The player showing a live radio station with its current song" width="360" height="240" loading="lazy"><figcaption>Radio plays live, with the song title from the station.</figcaption></figure>
       </div>
     </div>
   </section>
@@ -426,10 +424,10 @@ footer img { height: 56px; width: auto; }
         <p class="lede"><kbd>SELECT</kbd> opens a dock with every screen; press it twice to jump back to the last one. A QWERTY on-screen keyboard handles search and playlist names. Interface sounds are optional, in two separate switches for menus and for music actions.</p>
       </div>
       <div class="gallery">
-        <figure class="figure"><img class="shot px" src="img/albums.png" alt="Album grid with covers" width="720" height="480" loading="lazy"><figcaption>Albums, with artists, songs, playlists and folders beside them.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/dock.png" alt="The screens dock along the bottom of the display" width="720" height="480" loading="lazy"><figcaption>The screens dock.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/queue.png" alt="The play queue" width="720" height="480" loading="lazy"><figcaption>The queue, with shuffle, repeat and “play next”.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/playlist-add.png" alt="Add to a playlist dialog" width="720" height="480" loading="lazy"><figcaption>Your own playlists, saved as M3U8 files next to the app.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/albums.png" alt="Album grid with covers" width="360" height="240" loading="lazy"><figcaption>Albums, with artists, songs, playlists and folders beside them.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/dock.png" alt="The screens dock along the bottom of the display" width="360" height="240" loading="lazy"><figcaption>The screens dock.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/queue.png" alt="The play queue" width="360" height="240" loading="lazy"><figcaption>The queue, with shuffle, repeat and “play next”.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/playlist-add.png" alt="Add to a playlist dialog" width="360" height="240" loading="lazy"><figcaption>Your own playlists, saved as M3U8 files next to the app.</figcaption></figure>
       </div>
     </div>
   </section>
@@ -442,11 +440,11 @@ footer img { height: 56px; width: auto; }
         <p class="lede">The layout adapts to the screen's real width instead of picking from a few fixed shapes, so it fills a 1:1 RGB30, a 3:2 clamshell and a 21:9 monitor.</p>
       </div>
       <div class="widths">
-        <figure><img class="shot px" src="img/width-1x1.png" alt="Player on a 1:1 screen" width="480" height="480" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
-        <figure><img class="shot px" src="img/width-4x3.png" alt="Player on a 4:3 screen" width="640" height="480" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
-        <figure><img class="shot px" src="img/width-3x2.png" alt="Player on a 3:2 screen" width="720" height="480" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
-        <figure><img class="shot px" src="img/width-16x9.png" alt="Player on a 16:9 screen" width="854" height="480" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
-        <figure><img class="shot px" src="img/width-21x9.png" alt="Player on a 21:9 screen" width="1120" height="480" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
+        <figure><img class="shot px" src="img/width-1x1.png" alt="Player on a 1:1 screen" width="240" height="240" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
+        <figure><img class="shot px" src="img/width-4x3.png" alt="Player on a 4:3 screen" width="320" height="240" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
+        <figure><img class="shot px" src="img/width-3x2.png" alt="Player on a 3:2 screen" width="360" height="240" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
+        <figure><img class="shot px" src="img/width-16x9.png" alt="Player on a 16:9 screen" width="427" height="240" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
+        <figure><img class="shot px" src="img/width-21x9.png" alt="Player on a 21:9 screen" width="560" height="240" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
       </div>
     </div>
   </section>
@@ -560,6 +558,49 @@ docker build --target dist --output dist .
     </div>
   </section>
 </main>
+<script>
+// Pixel art only looks even at whole-number scales of real screen pixels
+// (with fractional desktop scaling, a whole number of CSS pixels isn't one).
+// Each screenshot gets the largest integer multiple of its own size, in device
+// pixels, that fits its column (the hero's console: its column minus the
+// bezel); the splash logo, the largest that fits the screen. Below 1× it's
+// scaled down smoothly instead.
+function fitPixels() {
+  var dpr = window.devicePixelRatio || 1;
+  document.querySelectorAll("main img.px").forEach(function (img) {
+    var nw = img.naturalWidth || +img.getAttribute("width");
+    if (!nw) return;
+    var dev = img.closest(".device");
+    var pad = 0, box;
+    if (dev) {
+      var cs = getComputedStyle(dev);
+      pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      dev.style.width = "100%"; // the whole column, to measure it
+      box = dev.clientWidth - pad;
+    } else if (img.closest(".widths")) {
+      box = nw * Math.max(1, Math.round(dpr)) / dpr; // the strip scrolls: 1× of the screen
+    } else {
+      box = img.parentElement.clientWidth;
+    }
+    var k = Math.floor(box * dpr / nw);
+    if (dev) k = Math.min(k, Math.round(2 * dpr)); // the console stays a console, not a TV
+    var css = k * nw / dpr;
+    img.style.width = k >= 1 ? css + "px" : "100%";
+    img.style.height = "auto";
+    img.style.imageRendering = k >= 1 ? "pixelated" : "auto";
+    if (dev) dev.style.width = k >= 1 ? css + pad + "px" : "100%";
+  });
+  var fg = document.getElementById("splash-fg");
+  if (fg) {
+    var k = Math.max(1, Math.floor(Math.min(innerWidth * 0.92, innerHeight * 0.975) * dpr / 234));
+    fg.style.width = k * 234 / dpr + "px";
+  }
+}
+addEventListener("resize", fitPixels);
+addEventListener("load", fitPixels);
+document.querySelectorAll("main img.px").forEach(function (img) { img.addEventListener("load", fitPixels); });
+fitPixels();
+</script>
 <script>
 // Copy buttons: the clipboard when allowed, otherwise select the text.
 document.querySelectorAll(".copy-btn").forEach(function (b) {

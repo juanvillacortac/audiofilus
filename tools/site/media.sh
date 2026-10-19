@@ -14,14 +14,14 @@ out=site/img
 ./build.sh >/dev/null
 dist/audiofilus-ui -music "$music" -album "$album" -lang en -shots "$tmp/s" -frames "$tmp/f"
 
-# Capturas fijas, a ×2 (720×480).
+# Capturas fijas, a 1:1 (360×240): la web las amplía por un entero.
 for pair in reproduciendo:player albumes:albums buscar-youtube:search-youtube \
   reproduciendo-radio:radio reproduciendo-streaming:streaming guia:guide menu:menu \
   pantallas:dock lista-anadir:playlist-add cola:queue; do
-  magick "$tmp/s/${pair%%:*}-3x2.png" -filter point -resize 720x480 -strip "$out/${pair##*:}.png"
+  magick "$tmp/s/${pair%%:*}-3x2.png" -sample 33.3334% -strip "$out/${pair##*:}.png"
 done
 for r in 1x1 4x3 3x2 16x9 21x9; do
-  magick "$tmp/s/reproduciendo-$r.png" -filter point -resize x480 -strip "$out/width-$r.png"
+  magick "$tmp/s/reproduciendo-$r.png" -sample 33.3334% -strip "$out/width-$r.png"
 done
 
 # GIFs a 1:1 (320×240); la web los amplía con image-rendering: pixelated.

@@ -41,8 +41,8 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - The interface colors come from the album cover.
 
 <p align="center">
-  <img src="site/img/albums.png" alt="Albums" width="400">
-  <img src="site/img/queue.png" alt="Queue" width="400">
+  <img src="site/img/albums.png" alt="Albums" width="360">
+  <img src="site/img/queue.png" alt="Queue" width="360">
 </p>
 
 ### Remote sources
@@ -58,8 +58,8 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 Remote songs are cached on the SD card (400 MB by default, least recently used goes first) and the next track is fetched ahead of time.
 
 <p align="center">
-  <img src="site/img/search-youtube.png" alt="Search with YouTube results" width="400">
-  <img src="site/img/radio.png" alt="Internet radio" width="400">
+  <img src="site/img/search-youtube.png" alt="Search with YouTube results" width="360">
+  <img src="site/img/radio.png" alt="Internet radio" width="360">
 </p>
 
 ### Visualizers and games
@@ -67,13 +67,13 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus two games that run next to the mini player: **Blocks** (falling blocks) and **Rhythm** (notes generated from the song that's playing).
 
 <p align="center">
-  <img src="site/img/vis-drift.gif" alt="Drift" width="260">
-  <img src="site/img/vis-trench.gif" alt="Trench" width="260">
-  <img src="site/img/vis-tunnel.gif" alt="Tunnel" width="260">
+  <img src="site/img/vis-drift.gif" alt="Drift" width="320">
+  <img src="site/img/vis-trench.gif" alt="Trench" width="320">
+  <img src="site/img/vis-tunnel.gif" alt="Tunnel" width="320">
 </p>
 <p align="center">
-  <img src="site/img/blocks.gif" alt="Blocks" width="390">
-  <img src="site/img/rhythm.gif" alt="Rhythm" width="390">
+  <img src="site/img/blocks.gif" alt="Blocks" width="320">
+  <img src="site/img/rhythm.gif" alt="Rhythm" width="320">
 </p>
 
 ### Interface
@@ -86,8 +86,8 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - On desktop: fullscreen with sharp pixels.
 
 <p align="center">
-  <img src="site/img/guide.png" alt="Controls guide" width="400">
-  <img src="site/img/width-21x9.png" alt="21:9 layout" width="400">
+  <img src="site/img/guide.png" alt="Controls guide" width="360">
+  <img src="site/img/width-16x9.png" alt="16:9 layout" width="427">
 </p>
 
 ### Linux desktop
