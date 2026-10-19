@@ -201,13 +201,13 @@ pre .c { color: var(--muted); }
 /* Copyable command */
 .copy-block { display: flex; gap: 0.5rem; align-items: stretch; min-width: 0; }
 .copy-block pre { flex: 1; min-width: 0; }
-.copy {
+.copy-btn {
   flex: none;
   font: 400 16px/16px var(--pixel); -webkit-font-smoothing: none;
   padding: 0 0.8rem; border-radius: 6px; cursor: pointer;
   background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
 }
-.copy:hover { border-color: var(--teal); }
+.copy-btn:hover { border-color: var(--teal); }
 .steps code.inline { font: 400 0.85em/1.4 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.35em; word-break: break-word; }
 .note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
 
@@ -505,7 +505,7 @@ docker build --target dist --output dist .
         </div>
         <div class="copy-block">
 <pre id="curl-cmd">curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</pre>
-          <button class="copy" type="button" id="copy-curl" data-target="curl-cmd">Copy</button>
+          <button class="copy-btn" type="button" id="copy-curl" data-target="curl-cmd">Copy</button>
         </div>
         <ol class="steps">
           <li>Downloads the latest release for <strong>x86_64</strong> or <strong>aarch64</strong> into <strong>~/.local/share/audiofilus</strong>.</li>
@@ -551,7 +551,7 @@ docker build --target dist --output dist .
 </main>
 <script>
 // Copy buttons: the clipboard when allowed, otherwise select the text.
-document.querySelectorAll(".copy").forEach(function (b) {
+document.querySelectorAll(".copy-btn").forEach(function (b) {
   b.addEventListener("click", function () {
     var pre = document.getElementById(b.dataset.target);
     var text = pre.textContent.trim();
