@@ -544,6 +544,10 @@ func (a *App) drawGrid(dst *ebiten.Image, v *view, x, y, w, h int) {
 	first, off := v.scr.place(row, visible, (n+cols-1)/cols, step)
 	gy -= off
 	a.scrollArea(x, y+28, w, h-28, v.scr.by)
+	// Las portadas, recortadas bajo el título: desplazadas con el dedo no lo
+	// tapan.
+	b := dst.Bounds()
+	dst = dst.SubImage(image.Rect(b.Min.X, y+26, b.Max.X, b.Max.Y)).(*ebiten.Image)
 	// Se piden ya las portadas de la fila de arriba y la de abajo.
 	for i := max(0, (first-1)*cols); i < n && i < (first+visible+2)*cols; i++ {
 		a.cover(v.albums[i], gridTile)
