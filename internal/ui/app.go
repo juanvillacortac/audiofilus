@@ -114,6 +114,7 @@ type App struct {
 	shooter *shooterGame  // Naves (shooter.go)
 	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
 	gamesSel    int
+	gamesPos    float64 // el carrusel, deslizándose hacia gamesSel
 	gamesBest   map[string]int
 	gamesBestAt float64
 	search      searchState  // Buscar (search.go)
