@@ -392,7 +392,17 @@ func (e *Engine) Load(tracks []string, start int, at float64, play bool) {
 	})
 	if !play {
 		e.player.Pause()
+		return
 	}
+	// Si venía de una pausa, la salida está dormida, el player parado y su
+	// volumen en 0 (el fundido de Pause): op espera en el hilo del audio, que
+	// no corre, y sin esto quedaba "sonando" en silencio hasta pausar y
+	// reanudar (pasaba al elegir un episodio o una radio con la música en
+	// pausa). Despertarla, tocar y subir el volumen (fadeIn cancela además el
+	// fundido de la pausa si aún no terminó).
+	_ = e.ctx.Resume()
+	e.player.Play()
+	e.fadeIn()
 }
 
 // Append añade canciones al final de la cola.
