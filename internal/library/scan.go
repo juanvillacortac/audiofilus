@@ -155,12 +155,22 @@ func ReadTrack(path string) Track {
 		}
 		f.Close()
 	}
-	if t.Title == "" {
-		// Sin etiquetas (el audio de YouTube Music que se escucha sin
-		// guardar): las de su archivo aparte, si lo tiene (ytm.Fetch).
-		if b, err := os.ReadFile(path + ".tags.json"); err == nil {
-			_ = json.Unmarshal(b, &t)
-			t.Path = path
+	// Las etiquetas de su archivo aparte (<archivo>.tags.json), si lo tiene,
+	// mandan: lo escribe audiofilus con los datos buenos (del RSS de un
+	// podcast, de YouTube Music) para audios sin etiquetas o con etiquetas de
+	// relleno ("Title Placeholder Episode ID: ..." en algunos podcasts).
+	if b, err := os.ReadFile(path + ".tags.json"); err == nil {
+		var side Track
+		if json.Unmarshal(b, &side) == nil {
+			if side.Title != "" {
+				t.Title = side.Title
+			}
+			if side.Artist != "" {
+				t.Artist = side.Artist
+			}
+			if side.Album != "" {
+				t.Album = side.Album
+			}
 		}
 	}
 	if t.Title == "" {
