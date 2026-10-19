@@ -1,6 +1,9 @@
 package ui
 
-import "testing"
+import (
+	"math/rand/v2"
+	"testing"
+)
 
 // TestCryptStepsAfterRegrid simula una partida a 120 BPM pulsando justo en
 // cada golpe del medidor, y a la mitad el medidor se recoloca (otra fase y la
@@ -43,5 +46,25 @@ func TestCryptStepsAfterRegrid(t *testing.T) {
 	}
 	if hits < 30 {
 		t.Errorf("only %d hits", hits)
+	}
+}
+
+// TestCryptSecretRoom comprueba que cada cinco pisos hay una pared agrietada
+// con una sala escondida detrás (en casi todas las mazmorras cabe).
+func TestCryptSecretRoom(t *testing.T) {
+	found := 0
+	for seed := uint64(1); seed <= 20; seed++ {
+		g := &crypt{depth: 5}
+		g.generate(rand.New(rand.NewPCG(seed, seed)))
+		for y := range g.tiles {
+			for x := range g.tiles[y] {
+				if g.tiles[y][x] == crSecret {
+					found++
+				}
+			}
+		}
+	}
+	if found < 15 {
+		t.Errorf("secret wall in only %d of 20 dungeons", found)
 	}
 }

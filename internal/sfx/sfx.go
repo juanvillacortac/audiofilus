@@ -76,6 +76,10 @@ var recipes = map[string][]note{
 		{0, 0, 0.012, 3, 0.4}, {0, 0, 0.030, 3, 0}, {1047, 1047, 0.040, 0, 0.5}, {1568, 1568, 0.080, 0, 0.5}},
 	Error:  {{110, 110, 0.120, 0, 0.6}},
 	Screen: {{300, 900, 0.050, 2, 0.8}},
+	// Huevos de pascua (internal/ui/eggs.go): el "ding" de encendido de una
+	// Game Boy y un scratch de vinilo.
+	"gb_ding": {{1047, 1047, 0.07, 0, 0.5}, {2093, 2093, 0.38, 0, 0.45}},
+	"scratch": {{260, 1100, 0.06, 1, 0.5}, {1100, 240, 0.07, 1, 0.45}},
 	// Cripta (internal/ui/crypt.go).
 	"cr_step":   {{220, 160, 0.030, 2, 0.7}},
 	"cr_bump":   {{90, 70, 0.040, 3, 0.4}},

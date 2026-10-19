@@ -29,11 +29,14 @@ const (
 	Games   // los minijuegos juntos (games.go)
 	Crypt   // Cripta, el roguelike de ritmo (crypt.go)
 	Tracker // el tracker chiptune (trackerui.go; el motor en internal/tracker)
+	Quiz    // ¿Qué canción es? (quiz.go)
+	Snake   // Serpiente al ritmo (snake.go)
+	Shooter // Naves al ritmo (shooter.go)
 	screenCount
 )
 
 func (s Screen) String() string {
-	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes", "juegos", "cripta", "tracker"}[s]
+	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes", "juegos", "cripta", "tracker", "adivina", "serpiente", "naves"}[s]
 }
 
 const (

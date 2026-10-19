@@ -109,6 +109,9 @@ type App struct {
 	rhythm  *rhythmGame   // Ritmo (rhythm.go), igual
 	crypt   *crypt        // Cripta (crypt.go), igual
 	tracker *trackerState // el tracker (trackerui.go): la canción y su reproductor
+	quiz    *quizGame     // ¿Qué canción es? (quiz.go)
+	snake   *snakeGame    // Serpiente (snake.go)
+	shooter *shooterGame  // Naves (shooter.go)
 	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
 	gamesSel    int
 	gamesBest   map[string]int
@@ -170,6 +173,9 @@ type App struct {
 	lastTrack   string
 	spin        float64 // ángulo del vinilo
 	spinVel     float64
+	konami      []Action // las últimas pulsaciones, por si son el código Konami (eggs.go)
+	celebrateAt float64  // cuándo empezó la celebración del día especial
+	shotDay     int      // en las capturas, el día especial que se finge
 
 	theme    Theme
 	themeFor *Album // el tema se tiñe con este álbum en cuanto se lea su portada
@@ -323,6 +329,7 @@ func (a *App) Update() error {
 	defer a.soundFromInput() // el sonido de este fotograma, al final (sounds.go)
 	a.t += 1.0 / 60
 	a.now = time.Now()
+	a.watchKonami()
 	a.readBattery()
 	if a.splashing && a.updateSplash() {
 		return nil // el splash se come los botones; la biblioteca carga detrás
@@ -429,7 +436,7 @@ func (a *App) maybeSleep() {
 	// Sonando, solo en la pantalla de reproducción (navegando o en Ajustes, no).
 	// Sin música, en cualquiera: con la app abierta la consola no se suspende,
 	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca.
-	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
+	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
 		return
 	}
 	a.enterSleep()
@@ -550,6 +557,28 @@ func (a *App) updateMain() {
 		a.updateTracker()
 		return
 	}
+	if a.screen == Quiz && a.menu == nil {
+		if a.quiz == nil {
+			a.quiz = a.newQuiz()
+			a.quizRound()
+		}
+		a.updateQuiz()
+		return
+	}
+	if a.screen == Snake && a.menu == nil {
+		if a.snake == nil {
+			a.snake = a.newSnake()
+		}
+		a.updateSnake()
+		return
+	}
+	if a.screen == Shooter && a.menu == nil {
+		if a.shooter == nil {
+			a.shooter = a.newShooter()
+		}
+		a.updateShooter()
+		return
+	}
 	if a.screen == Games && a.menu == nil {
 		a.updateGames()
 		return
@@ -602,6 +631,10 @@ func (a *App) updateMain() {
 			a.openNowMenu()
 		case in.Pressed(ActBack):
 			a.screen = LibraryScreen
+		case in.Pressed(ActUp):
+			a.scratch(-1) // huevo de pascua: scratch con el vinilo (eggs.go)
+		case in.Pressed(ActDown):
+			a.scratch(1)
 		}
 		// Izquierda/derecha: un toque cambia de canción y mantenerlo busca.
 		// Así se puede todo sin gatillos, que no todas las consolas tienen.
@@ -815,6 +848,12 @@ func (a *App) Draw(screen *ebiten.Image) {
 	a.watchScreen() // aquí, después de Update: así no asoma la nueva sin cortina
 	a.drawScreen(screen, a.screen)
 	a.drawTransition(screen)
+	if a.mode == modeMain {
+		a.drawCelebration(screen)
+	}
+	if a.cfg.UI.GameBoy {
+		applyGameBoy(screen)
+	}
 }
 
 // warmUp estrena los shaders y pide las portadas de todas las pantallas en el
@@ -885,6 +924,24 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			}
 			a.drawTracker(dst)
 			a.drawTopBar(dst, T("tk_title"))
+		case Quiz:
+			if a.quiz == nil {
+				a.quiz = a.newQuiz()
+			}
+			a.drawQuiz(dst)
+			a.drawTopBar(dst, T("qz_title"))
+		case Snake:
+			if a.snake == nil {
+				a.snake = a.newSnake()
+			}
+			a.drawSnake(dst)
+			a.drawTopBar(dst, T("sn_title"))
+		case Shooter:
+			if a.shooter == nil {
+				a.shooter = a.newShooter()
+			}
+			a.drawShooter(dst)
+			a.drawTopBar(dst, T("sh_title"))
 		case Games:
 			a.drawGames(dst)
 			a.drawTopBar(dst, T("gm_title"))
@@ -1367,6 +1424,52 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.rhythm = nil
+	// ¿Qué canción es?, a media ronda; Serpiente y Naves jugadas por sus bots.
+	a.screen, a.quiz = Quiz, a.newQuiz()
+	a.quizRound()
+	if a.quiz != nil && len(a.quiz.pool) >= 4 {
+		a.quiz.round, a.quiz.score, a.quiz.streak, a.quiz.sel = 3, 430, 3, 1
+		a.quiz.startAt = a.t - 3.5
+		if err := shot("adivina"); err != nil {
+			return err
+		}
+	}
+	a.quiz = nil
+	a.screen, a.snake = Snake, nil
+	a.w = 360
+	a.snake = a.newSnake()
+	for i := 0; i < 60*14; i++ {
+		a.t += 1.0 / 60
+		a.botSnake()
+		a.updateSnake()
+	}
+	if err := shot("serpiente"); err != nil {
+		return err
+	}
+	a.snake = nil
+	a.screen, a.shooter = Shooter, a.newShooter()
+	for i := 0; i < 60*10; i++ {
+		a.t += 1.0 / 60
+		a.beatHit = a.updateBeat()
+		a.botShooter()
+		a.updateShooter()
+	}
+	if err := shot("naves"); err != nil {
+		return err
+	}
+	a.shooter = nil
+	// Los huevos de pascua: el modo Game Boy y el 26 de octubre.
+	a.screen = NowPlaying
+	a.cfg.UI.GameBoy = true
+	if err := shot("gameboy"); err != nil {
+		return err
+	}
+	a.cfg.UI.GameBoy = false
+	a.shotDay, a.celebrateAt = dayWifeBirthday, a.t-2
+	if err := shot("cumple"); err != nil {
+		return err
+	}
+	a.shotDay = dayNone
 	// Juegos y una partida de Cripta jugada por el bot unos segundos.
 	a.screen, a.gamesSel = Games, 0
 	if err := shot("juegos"); err != nil {
@@ -1511,6 +1614,32 @@ func (a *App) writeFrames() error {
 		}
 	}
 	a.tracker = nil
+	// Serpiente y Naves: sus bots, 12 s cada uno.
+	for _, gm := range []struct {
+		dir  string
+		init func()
+		step func()
+	}{
+		{"serpiente", func() { a.screen, a.snake = Snake, a.newSnake() }, func() { a.botSnake(); a.updateSnake() }},
+		{"naves", func() { a.screen, a.shooter = Shooter, a.newShooter() }, func() { a.beatHit = a.updateBeat(); a.botShooter(); a.updateShooter() }},
+	} {
+		dir := filepath.Join(a.FramesDir, gm.dir)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+		a.w = 360
+		gm.init()
+		for i := 0; i < 240; i++ {
+			for k := 0; k < 3; k++ {
+				a.t += 1.0 / 60
+				gm.step()
+			}
+			if err := a.renderShot(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
+				return err
+			}
+		}
+	}
+	a.snake, a.shooter = nil, nil
 	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
 	crDir := filepath.Join(a.FramesDir, "cripta")
 	if err := os.MkdirAll(crDir, 0o755); err != nil {
@@ -1674,7 +1803,13 @@ func (a *App) writeFrames() error {
 
 // renderShot dibuja la pantalla actual a w×240 y la guarda ampliada ×3.
 func (a *App) renderShot(path string, w int) error {
-	return a.render(path, w, func(dst *ebiten.Image) { a.drawScreen(dst, a.screen) })
+	return a.render(path, w, func(dst *ebiten.Image) {
+		a.drawScreen(dst, a.screen)
+		a.drawCelebration(dst)
+		if a.cfg.UI.GameBoy {
+			applyGameBoy(dst)
+		}
+	})
 }
 
 // render dibuja con draw a w×240 y lo guarda ampliado ×3.

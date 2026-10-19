@@ -87,7 +87,7 @@ func (a *App) soundFromInput() {
 	}
 	s.hadMenu, s.hadDock, s.hadPrompt = menu, dock, prompt
 	// En los juegos, sin menú, los botones son del juego: sin sonidos.
-	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker) && !menu && !dock && !prompt
+	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter) && !menu && !dock && !prompt
 	typing := prompt || a.searchTyping()
 	switch {
 	case inGame || a.sleeping || a.guideAt > 0:
@@ -112,7 +112,8 @@ var musicSounds = map[string]bool{sfx.Play: true, sfx.Pause: true, sfx.Next: tru
 	sfx.ShuffleOn: true, sfx.Ordered: true, sfx.Random: true,
 	// Los de Cripta: son del juego, con el volumen de los de la música.
 	"cr_step": true, "cr_bump": true, "cr_hit": true, "cr_kill": true, "cr_coin": true,
-	"cr_hurt": true, "cr_dead": true, "cr_miss": true, "cr_stairs": true}
+	"cr_hurt": true, "cr_dead": true, "cr_miss": true, "cr_stairs": true,
+	"gb_ding": true, "scratch": true}
 
 // soundReq es un pedido para la goroutine del audio: tocar name con gain, o
 // cortar el jingle del splash (stop).

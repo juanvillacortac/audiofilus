@@ -268,6 +268,29 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 }
 `
 
+// gbSrc es el modo Game Boy (eggs.go): la luminancia de cada píxel, con trama
+// de Bayer, en los cuatro verdes de la pantalla de la Game Boy.
+const gbSrc = `//kage:unit pixels
+package main
+` + bayerKage + `
+func Fragment(dst vec4, src vec2, color vec4) vec4 {
+	c := imageSrc0At(src).rgb
+	l := dot(c, vec3(0.299, 0.587, 0.114))
+	p := dst.xy - imageDstOrigin()
+	v := clamp(floor(l*3.4+bayer(p)-0.2), 0, 3)
+	if v < 0.5 {
+		return vec4(0.059, 0.220, 0.059, 1)
+	}
+	if v < 1.5 {
+		return vec4(0.188, 0.384, 0.188, 1)
+	}
+	if v < 2.5 {
+		return vec4(0.545, 0.675, 0.059, 1)
+	}
+	return vec4(0.608, 0.737, 0.059, 1)
+}
+`
+
 // plasmaSrc es el plasma del visualizador (en intensidad): sumas de senos que
 // se mueven, con los graves que lo agitan, los agudos que lo afinan y una onda
 // desde el centro en cada golpe.
@@ -322,6 +345,7 @@ var (
 	dissolveShader *ebiten.Shader
 	rhythmShader   *ebiten.Shader
 	paletteShader  *ebiten.Shader
+	gbShader       *ebiten.Shader
 	plasmaShader   *ebiten.Shader
 )
 
@@ -331,7 +355,7 @@ func LoadShaders() error {
 	for _, s := range []struct {
 		dst **ebiten.Shader
 		src string
-	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&plasmaShader, plasmaSrc}} {
+	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&plasmaShader, plasmaSrc}, {&gbShader, gbSrc}} {
 		if *s.dst, err = ebiten.NewShader([]byte(s.src)); err != nil {
 			return err
 		}

@@ -88,6 +88,8 @@ type UI struct {
 	// RadioCountry es el país de las emisoras populares: "" el de la zona
 	// horaria, "world" todo el mundo, o un código de dos letras ("VE").
 	RadioCountry string `json:"radio_country,omitempty"`
+	// GameBoy es el modo Game Boy (el código Konami): todo en cuatro verdes.
+	GameBoy bool `json:"game_boy,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

@@ -37,6 +37,7 @@ const (
 	crVoid = iota
 	crFloor
 	crWall
+	crSecret // una pared agrietada (cada cinco pisos): un golpe a tiempo la rompe
 )
 
 // Los tipos de cosas del mapa.
@@ -82,6 +83,7 @@ type crypt struct {
 	hurtAt     float64
 	invulUntil float64 // hasta cuándo no recibe daño (reloj del ritmo)
 	ents       []*crEnt
+	disco      [crH][crW]bool // la sala secreta: su suelo cambia de color en cada golpe
 	stairX     int
 	stairY     int
 	depth      int
@@ -204,6 +206,9 @@ func (g *crypt) generate(r *rand.Rand) {
 			}
 		}
 	}
+	if g.depth%5 == 0 {
+		g.hideRoom(r)
+	}
 	g.px, g.py = rooms[0].center()
 	g.pfx, g.pfy = g.px, g.py
 	// La escalera, en la sala más lejana.
@@ -256,6 +261,56 @@ func (g *crypt) generate(r *rand.Rand) {
 		}
 	}
 	g.reveal()
+}
+
+// hideRoom esconde una sala de 3×3 detrás de una pared, con una pared
+// agrietada (crSecret) como puerta y un paso de pasillo: busca una pared con
+// suelo a un lado y sitio libre detrás. Dentro, monedas y un corazón, y el suelo de discoteca.
+func (g *crypt) hideRoom(r *rand.Rand) {
+	g.disco = [crH][crW]bool{}
+	dirs := [4][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
+	for tries := 0; tries < 400; tries++ {
+		x, y := 1+r.IntN(crW-2), 1+r.IntN(crH-2)
+		if g.tiles[y][x] != crWall {
+			continue
+		}
+		for _, d := range dirs {
+			if !g.walkable(x-d[0], y-d[1]) {
+				continue // del otro lado tiene que haber suelo
+			}
+			// Tras la pared, un paso de pasillo y la sala (centrada a tres
+			// pasos), con su marco de paredes: todo eso tiene que estar vacío.
+			cx, cy := x+3*d[0], y+3*d[1]
+			ok := true
+			for yy := cy - 2; yy <= cy+2 && ok; yy++ {
+				for xx := cx - 2; xx <= cx+2 && ok; xx++ {
+					ok = xx > 0 && yy > 0 && xx < crW-1 && yy < crH-1 && g.tiles[yy][xx] == crVoid
+				}
+			}
+			if !ok {
+				continue
+			}
+			for yy := cy - 2; yy <= cy+2; yy++ {
+				for xx := cx - 2; xx <= cx+2; xx++ {
+					g.tiles[yy][xx] = crWall
+				}
+			}
+			for yy := cy - 1; yy <= cy+1; yy++ {
+				for xx := cx - 1; xx <= cx+1; xx++ {
+					g.tiles[yy][xx] = crFloor
+					g.disco[yy][xx] = true
+					if xx != cx || yy != cy {
+						g.ents = append(g.ents, &crEnt{kind: crCoin, x: xx, y: yy, fx: xx, fy: yy})
+					}
+				}
+			}
+			px, py := x+d[0], y+d[1] // el pasillo
+			g.tiles[py][px], g.disco[py][px] = crFloor, true
+			g.ents = append(g.ents, &crEnt{kind: crHeart, x: cx, y: cy, fx: cx, fy: cy})
+			g.tiles[y][x] = crSecret
+			return
+		}
+	}
 }
 
 func (g *crypt) hline(x0, x1, y int) {
@@ -449,6 +504,14 @@ func (a *App) cryptAct(dx, dy int) {
 		} else {
 			a.sound("cr_hit", 2)
 		}
+		return
+	}
+	if nx >= 0 && ny >= 0 && nx < crW && ny < crH && g.tiles[ny][nx] == crSecret {
+		g.tiles[ny][nx] = crFloor
+		g.disco[ny][nx] = true
+		g.shakeAt = a.t
+		g.floats = append(g.floats, crFloat{nx * crTile, ny * crTile, "SECRET!", a.theme.Accent2, a.t})
+		a.sound("cr_stairs", 3)
 		return
 	}
 	if !g.walkable(nx, ny) {
@@ -669,6 +732,43 @@ var crArt = map[string][]string{
 		"#........#",
 		"##########",
 	},
+	// Las de Naves (shooter.go).
+	"ship": {
+		"....##....",
+		"....##....",
+		"...####...",
+		"...#**#...",
+		"..######..",
+		".##.##.##.",
+		"##########",
+		"##.####.##",
+		"#...##...#",
+		"....oo....",
+	},
+	"ufo": {
+		"..........",
+		"...####...",
+		"..#*##*#..",
+		".########.",
+		"##o#oo#o##",
+		".########.",
+		"..#....#..",
+		".#......#.",
+		"..........",
+		"..........",
+	},
+	"bug": {
+		".#......#.",
+		"..#....#..",
+		"..######..",
+		".##*##*##.",
+		"##########",
+		"#.######.#",
+		"#.#....#.#",
+		"...#..#...",
+		"..........",
+		"..........",
+	},
 	"coin": {
 		"..........",
 		"..........",
@@ -762,14 +862,20 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 			d := math.Hypot(float64(x-g.px), float64(y-g.py))
 			light := math.Max(0.45, 1-d/float64(crLight+4))
 			switch t {
-			case crWall:
+			case crWall, crSecret:
 				// Un bloque de piedra: cara, borde de arriba claro y sombra.
 				c := mix(th.Bg2, th.Text, 0.16)
 				rect(clip, px, py, crTile, crTile, scaleRGB(c, light))
 				rect(clip, px, py, crTile, 2, scaleRGB(mix(th.Bg2, th.Text, 0.35), light))
 				rect(clip, px, py+crTile-2, crTile, 2, scaleRGB(mix(c, th.Shadow, 0.5), light))
-				if (x+y)%3 == 0 {
+				if (x+y)%3 == 0 && t == crWall {
 					rect(clip, px+3, py+5, 4, 1, scaleRGB(mix(c, th.Shadow, 0.35), light))
+				}
+				if t == crSecret { // la grieta, en zigzag
+					crack := scaleRGB(mix(c, th.Shadow, 0.7), light)
+					for i, dx := range []int{5, 6, 5, 4, 5, 6, 7, 6} {
+						rect(clip, px+dx, py+2+i, 1, 1, crack)
+					}
 				}
 			case crFloor:
 				// El suelo de discoteca: las baldosas se encienden por
@@ -785,6 +891,11 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 						amt += 0.15
 					}
 					c = mix(c, lc, amt)
+				}
+				if g.disco[y][x] {
+					// La sala secreta: cada baldosa de un color, que gira en
+					// cada golpe.
+					c = hsvRGB(float64(x*3+y*5+beatN)/9, 0.7, 0.55+0.4*pulse)
 				}
 				rect(clip, px+1, py+1, crTile-1, crTile-1, scaleRGB(c, light))
 			}
@@ -1076,4 +1187,28 @@ func (a *App) drawCryptViz(dst *ebiten.Image, top, bottom int) {
 		al := uint8(30 + 50*math.Sin(math.Pi*y/float64(h)))
 		rect(dst, int(x), top+int(y), 1, 1, withAlpha(th.Accent2, al))
 	}
+}
+
+// hsvRGB es un color por tono (0..1, da vueltas), saturación y brillo.
+func hsvRGB(h, sat, v float64) color.RGBA {
+	h -= math.Floor(h)
+	i := int(h * 6)
+	f := h*6 - float64(i)
+	p, q, t := v*(1-sat), v*(1-sat*f), v*(1-sat*(1-f))
+	var r, g, b float64
+	switch i % 6 {
+	case 0:
+		r, g, b = v, t, p
+	case 1:
+		r, g, b = q, v, p
+	case 2:
+		r, g, b = p, v, t
+	case 3:
+		r, g, b = p, q, v
+	case 4:
+		r, g, b = t, p, v
+	default:
+		r, g, b = v, p, q
+	}
+	return color.RGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), 0xff}
 }

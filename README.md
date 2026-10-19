@@ -68,11 +68,14 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 
 ### Visualizers and games
 
-Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus three arcade games, together under **Games** in the screens dock:
+Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus six arcade games and a tracker, together under **Games** in the screens dock (and a few secrets hidden around the app):
 
 - **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
 - **Blocks**: falling blocks, with hard drops on the beat for combos.
 - **Rhythm**: notes generated from the song that's playing.
+- **Name that song**: a few seconds of a song from your library, four choices, ten rounds.
+- **Snake**: steps on the song's beat subdivisions, so every song plays at its own speed.
+- **Ships**: a shooter that fires on every eighth note and spreads on the bass.
 - **Tracker**: make chiptune with the D-pad, Game Boy style: two pulse channels, a triangle and noise, 16-step patterns with arpeggio, duty and pitch-bend effects, and a song order. Several songs, four examples to start from, and WAV export straight into your library.
 
 <p align="center">

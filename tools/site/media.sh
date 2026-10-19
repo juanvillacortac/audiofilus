@@ -36,6 +36,9 @@ anim 5 "$tmp/f/cripta/f*.png" crypt.webp
 anim 5 "$tmp/f/colores/f*.png" colors.webp
 magick "$tmp/s/juegos-3x2.png" -sample 33.3334% -sample 400% -strip "$out/games.png"
 anim 5 "$tmp/f/tracker/f*.png" tracker.webp
+anim 5 "$tmp/f/serpiente/f*.png" snake.webp
+anim 5 "$tmp/f/naves/f*.png" ships.webp
+magick "$tmp/s/adivina-3x2.png" -sample 33.3334% -sample 400% -strip "$out/quiz.png"
 
 # El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo
 # de encima, sobre transparente), a 30 cuadros por segundo y a 1:1, que se

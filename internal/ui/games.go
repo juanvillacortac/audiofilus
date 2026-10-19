@@ -30,13 +30,16 @@ var gameCards = []gameCard{
 	{Crypt, "sword", "scr_crypt", "gm_crypt_d", "cripta.json"},
 	{Blocks, "blocks", "scr_blocks", "gm_blocks_d", "bloques.json"},
 	{Rhythm, "note", "scr_rhythm", "gm_rhythm_d", "ritmo.json"},
+	{Quiz, "quiz", "scr_quiz", "gm_quiz_d", "adivina.json"},
+	{Snake, "snake", "scr_snake", "gm_snake_d", "serpiente.json"},
+	{Shooter, "ship", "scr_shooter", "gm_shooter_d", "naves.json"},
 	{Tracker, "tracker", "scr_tracker", "gm_tracker_d", ""},
 }
 
 // isGame dice si una pantalla es un juego (o la de Juegos): en la barra de
 // pantallas todas cuentan como el hueco de Juegos.
 func isGame(s Screen) bool {
-	return s == Games || s == Blocks || s == Rhythm || s == Crypt || s == Tracker
+	return s == Games || s == Blocks || s == Rhythm || s == Crypt || s == Tracker || s == Quiz || s == Snake || s == Shooter
 }
 
 // readBest lee un récord guardado (0 si no hay).
