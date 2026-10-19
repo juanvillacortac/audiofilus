@@ -12,10 +12,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/dhowden/tag"
@@ -50,6 +52,31 @@ type game struct {
 	mu     sync.Mutex
 	app    *ui.App
 	failed string
+	// Cuándo fueron el último Update y el último Draw (UnixNano), para el
+	// vigilante (watch).
+	lastUpdate, lastDraw atomic.Int64
+}
+
+// watch vigila que la interfaz siga viva: si pasan 4 s sin Update o sin Draw
+// (con la app delante: en segundo plano es normal), guarda en el log lo que
+// hace cada goroutine, una vez. Una interfaz que se queda congelada sin
+// error está esperando algo, y ahí se ve qué.
+func (g *game) watch(dir string) {
+	dumped := false
+	for range time.Tick(time.Second) {
+		now := time.Now().UnixNano()
+		u, d := g.lastUpdate.Load(), g.lastDraw.Load()
+		if dumped || u == 0 || d == 0 || (now-u < 4e9 && now-d < 4e9) {
+			continue
+		}
+		dumped = true
+		buf := make([]byte, 1<<20)
+		buf = buf[:runtime.Stack(buf, true)]
+		msg := fmt.Sprintf("UI stalled: %.1f s since Update, %.1f s since Draw (normal if the app was in the background)\n%s",
+			float64(now-u)/1e9, float64(now-d)/1e9, buf)
+		log.Print(msg)
+		_ = os.WriteFile(filepath.Join(dir, "stall.txt"), []byte(msg), 0o644)
+	}
 }
 
 // fail apunta el error y lo deja a la vista.
@@ -90,6 +117,7 @@ func (g *game) current() *ui.App {
 }
 
 func (g *game) Update() error {
+	g.lastUpdate.Store(time.Now().UnixNano())
 	defer func() {
 		if r := recover(); r != nil {
 			g.fail(fmt.Sprintf("panic: %v\n%s", r, debug.Stack()))
@@ -104,6 +132,7 @@ func (g *game) Update() error {
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
+	g.lastDraw.Store(time.Now().UnixNano())
 	defer func() {
 		if r := recover(); r != nil {
 			g.fail(fmt.Sprintf("panic while drawing: %v\n%s", r, debug.Stack()))
@@ -212,6 +241,7 @@ func start(home, tmp, langs string) error {
 	if host != nil {
 		ui.PickFolder = host.PickFolder
 	}
+	go g.watch(filepath.Join(home, "data"))
 	if err := ui.LoadFonts(); err != nil {
 		return err
 	}
