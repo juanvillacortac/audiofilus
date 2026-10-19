@@ -9,6 +9,11 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
+
+	"github.com/mewkiz/flac"
+	"github.com/mewkiz/flac/frame"
+	"github.com/mewkiz/flac/meta"
 )
 
 // Los archivos de testdata son un seno de 440 Hz de 2 s a 44,1 kHz, salvo
@@ -368,5 +373,84 @@ func TestADTSStream(t *testing.T) {
 	}
 	if got := fmt.Sprint(ascs); got != "[12 10 11 88]" {
 		t.Errorf("configs %s, want [12 10 11 88]", got)
+	}
+}
+
+// writeRampFLAC escribe un FLAC estéreo de n muestras cuyo canal izquierdo
+// vale i % 30000 en la muestra i: así se ve en qué muestra quedó un salto.
+func writeRampFLAC(t *testing.T, path string, n int) {
+	t.Helper()
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	info := &meta.StreamInfo{BlockSizeMin: 4096, BlockSizeMax: 4096, SampleRate: 44100, NChannels: 2, BitsPerSample: 16}
+	enc, err := flac.NewEncoder(f, info)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for start := 0; start < n; start += 4096 {
+		size := min(4096, n-start)
+		l, r := make([]int32, size), make([]int32, size)
+		for i := range l {
+			l[i] = int32((start + i) % 30000)
+			r[i] = -l[i]
+		}
+		fr := &frame.Frame{
+			Header: frame.Header{HasFixedBlockSize: true, BlockSize: uint16(size), SampleRate: 44100, Channels: frame.ChannelsLR, BitsPerSample: 16},
+			Subframes: []*frame.Subframe{
+				{SubHeader: frame.SubHeader{Pred: frame.PredVerbatim}, Samples: l, NSamples: size},
+				{SubHeader: frame.SubHeader{Pred: frame.PredVerbatim}, Samples: r, NSamples: size},
+			},
+		}
+		if err := enc.WriteFrame(fr); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := enc.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// TestFLACSeekWithoutSeekTable comprueba que en un FLAC sin SEEKTABLE el
+// salto (por bisección sobre las cabeceras) caiga en la muestra exacta, sea
+// rápido, y que al final se pueda seguir leyendo.
+func TestFLACSeekWithoutSeekTable(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "ramp.flac")
+	const n = 44100 * 60
+	writeRampFLAC(t, path, n)
+	s, err := Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	if s.Length() != n {
+		t.Fatalf("Length = %d, want %d", s.Length(), n)
+	}
+	buf := make([]float32, 2)
+	for _, target := range []int64{44100 * 45, 10, 4096 * 100, 4096*300 + 7, n - 5000, 44100 * 30, 0} {
+		start := time.Now()
+		if err := s.SeekFrame(target); err != nil {
+			t.Fatalf("seek to %d: %v", target, err)
+		}
+		if d := time.Since(start); d > 200*time.Millisecond {
+			t.Errorf("seek to %d took %v", target, d)
+		}
+		if s.Position() != target {
+			t.Errorf("Position after seek = %d, want %d", s.Position(), target)
+		}
+		if _, err := s.Read(buf); err != nil {
+			t.Fatal(err)
+		}
+		if got, want := int(math.Round(float64(buf[0])*32768)), int(target%30000); got != want {
+			t.Errorf("after seeking to %d the sample is %d, want %d", target, got, want)
+		}
+	}
+	if err := s.SeekFrame(n - 100); err != nil {
+		t.Fatal(err)
+	}
+	if rest := readAll(t, s); len(rest)/2 != 100 {
+		t.Errorf("after seeking to the end, %d samples remain, want 100", len(rest)/2)
 	}
 }

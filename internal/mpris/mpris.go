@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -45,6 +46,7 @@ type Server struct {
 	artPath string
 	artFor  string // canción de la que salió artPath
 	stop    chan struct{}
+	closed  bool // Close ya cerró la conexión: Update no publica nada
 }
 
 // Start se conecta al bus de sesión y publica el reproductor. quit es lo que
@@ -92,11 +94,26 @@ func Start(eng *engine.Engine, quit func()) (*Server, error) {
 
 // Close deja de publicar el reproductor.
 func (s *Server) Close() {
+	s.mu.Lock()
+	s.closed = true
+	s.mu.Unlock()
 	close(s.stop)
 	s.conn.Close()
 	if s.artPath != "" {
 		_ = os.Remove(s.artPath)
 	}
+}
+
+// set publica una propiedad. SetMust (Set no deja tocar las de solo
+// lectura) entra en pánico si la conexión con el bus se cayó: entonces el
+// cambio se pierde y la música sigue.
+func (s *Server) set(iface, name string, v any) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("MPRIS %s: %v", name, r)
+		}
+	}()
+	s.props.SetMust(iface, name, v)
 }
 
 func (s *Server) propMap() prop.Map {
@@ -153,23 +170,26 @@ func (s *Server) Update() {
 	st := s.eng.Status()
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.closed {
+		return // un aviso que llegó mientras el servicio se cerraba
+	}
 	last := s.last
 	s.last = st
-	s.props.SetMust(ifacePlay, "Position", micros(st.Position))
+	s.set(ifacePlay, "Position", micros(st.Position))
 	if st.State != last.State {
-		s.props.SetMust(ifacePlay, "PlaybackStatus", playbackStatus(st))
+		s.set(ifacePlay, "PlaybackStatus", playbackStatus(st))
 	}
 	if st.Track.Path != last.Track.Path || st.Duration != last.Duration {
-		s.props.SetMust(ifacePlay, "Metadata", s.metadata(st))
+		s.set(ifacePlay, "Metadata", s.metadata(st))
 	}
 	if st.Shuffle != last.Shuffle {
-		s.props.SetMust(ifacePlay, "Shuffle", st.Shuffle)
+		s.set(ifacePlay, "Shuffle", st.Shuffle)
 	}
 	if st.Repeat != last.Repeat {
-		s.props.SetMust(ifacePlay, "LoopStatus", loopStatus(st.Repeat))
+		s.set(ifacePlay, "LoopStatus", loopStatus(st.Repeat))
 	}
 	if st.Volume != last.Volume {
-		s.props.SetMust(ifacePlay, "Volume", st.Volume)
+		s.set(ifacePlay, "Volume", st.Volume)
 	}
 	// Un salto grande de posición (seek) se anuncia con la señal Seeked.
 	if st.Track.Path == last.Track.Path && math.Abs(st.Position-last.Position) > 3 {
