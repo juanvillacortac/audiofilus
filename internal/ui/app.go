@@ -1485,7 +1485,7 @@ func (a *App) writeShots() error {
 	}
 	a.duel.level = 2 // el metrónomo, con su péndulo
 	a.duelFoe(a.duel)
-	a.duel.phase = duAttack
+	a.duel.phase, a.duel.cursor = duAttack, 0.42
 	if err := shot("duelo-metronomo"); err != nil {
 		return err
 	}
@@ -1700,6 +1700,7 @@ func (a *App) writeFrames() error {
 	if err := os.MkdirAll(crDir, 0o755); err != nil {
 		return err
 	}
+	a.w = 360
 	a.screen, a.crypt = Crypt, a.newCrypt()
 	for i := 0; i < 240; i++ {
 		for k := 0; k < 3; k++ {
@@ -1707,7 +1708,7 @@ func (a *App) writeFrames() error {
 			a.beatHit = a.updateBeat()
 			a.botStepCrypt()
 		}
-		if err := a.renderShot(filepath.Join(crDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
+		if err := a.renderShot(filepath.Join(crDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
 		}
 	}
@@ -1744,7 +1745,7 @@ func (a *App) writeFrames() error {
 			}
 			a.updateTetris()
 		}
-		if err := a.renderShot(filepath.Join(tetDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
+		if err := a.renderShot(filepath.Join(tetDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
 		}
 	}
@@ -1826,7 +1827,7 @@ func (a *App) writeFrames() error {
 			a.updateRhythmFrame()
 			a.autoPlay()
 		}
-		if err := a.renderShot(filepath.Join(rhDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
+		if err := a.renderShot(filepath.Join(rhDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
 		}
 	}

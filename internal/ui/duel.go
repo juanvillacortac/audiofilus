@@ -13,12 +13,16 @@ import (
 )
 
 // Duelo: batallas por turnos al ritmo. En tu turno, un cursor cruza la barra
-// de ataque en dos golpes: A cerca del centro hace más daño, y en el golpe es
-// crítico. En el del enemigo, durante ocho golpes, hay que esquivar con el
+// de ataque en dos golpes, empezando en uno, así su centro cae justo en el
+// siguiente: A cerca del centro hace más daño, y en el golpe es crítico. En el del enemigo, durante ocho golpes, hay que esquivar con el
 // corazón, dentro de la caja, las notas que lanza en cada golpe: el vinilo,
 // anillos que giran; el casete, líneas de cinta con un hueco; el metrónomo,
 // columnas que caen de un lado y del otro, como su péndulo. Al vencer a uno
-// llega el siguiente, más duro. Con la música en pausa, todo se queda quieto.
+// llega el siguiente, más duro. Las notas no vuelan a velocidad fija: dan un
+// empujón en cada golpe y se frenan hasta el siguiente, y la batería de la
+// canción manda refuerzos (la caja, notas que te buscan; los platillos, un
+// anillo); el bombo sacude la caja. Con la música en pausa, todo se queda
+// quieto.
 
 const (
 	duBoxW, duBoxH = 160, 80
@@ -79,7 +83,11 @@ type duelGame struct {
 	frozen     bool
 	line       string
 	fallback   float64
-	swing      int // el metrónomo: de qué lado cae ahora
+	swing      int                // el metrónomo: de qué lado cae ahora
+	atkStart   float64            // el golpe en que el cursor sale (reloj del ritmo)
+	seen       [drumCount]float64 // el último golpe de batería ya atendido
+	kickAt     float64            // el último bombo, para sacudir la caja (reloj de la interfaz)
+	snareAt    float64            // la última caja que lanzó notas (reloj del ritmo)
 }
 
 func (a *App) duelBestPath() string { return filepath.Join(a.paths.Data, "duelo.json") }
@@ -163,12 +171,13 @@ func (a *App) updateDuel() {
 	switch g.phase {
 	case duIntro:
 		if a.t-g.phaseAt > 1.6 || (in.Pressed(ActConfirm) && a.t-g.phaseAt > 0.3) {
-			g.phase, g.phaseAt, g.cursor = duAttack, a.t, 0
+			a.duelAttack(g)
 		}
 	case duAttack:
-		// El cursor cruza la barra en dos golpes.
-		g.cursor += 1 / (2 * per * 60)
-		if in.Pressed(ActConfirm) || g.cursor >= 1 {
+		// El cursor cruza la barra en dos golpes, contados con el reloj del
+		// ritmo: sale en un golpe y pasa por el centro en el siguiente.
+		g.cursor = math.Max(0, math.Min(1, (now-g.atkStart)/(2*per)))
+		if (in.Pressed(ActConfirm) && g.cursor > 0) || g.cursor >= 1 {
 			a.duelStrike(g)
 		}
 	case duResult:
@@ -186,13 +195,25 @@ func (a *App) updateDuel() {
 			g.hx, g.hy = 0, 0
 		}
 	case duDodge:
-		a.duelDodge(g, newBeat, per)
+		a.duelDodge(g, newBeat, per, anchor, now)
 	case duWin:
 		if a.t-g.phaseAt > 1.8 {
 			g.level++
 			a.duelFoe(g)
 		}
 	}
+}
+
+// duelAttack empieza tu turno: el cursor saldrá en el próximo golpe (o en el
+// otro, si el próximo está demasiado cerca para verlo venir).
+func (a *App) duelAttack(g *duelGame) {
+	per, anchor := a.duelGrid(g)
+	now := a.beatClock()
+	next := anchor + math.Ceil((now-anchor)/per)*per
+	if next-now < per*0.4 {
+		next += per
+	}
+	g.phase, g.phaseAt, g.cursor, g.atkStart = duAttack, a.t, 0, next
 }
 
 // duelStrike es el golpe de tu turno: cuanto más cerca del centro de la
@@ -204,7 +225,7 @@ func (a *App) duelStrike(g *duelGame) {
 	if g.cursor < 1 {
 		dmg = max(1, int(math.Round(8*(1-off*2))))
 	}
-	g.crit = dmg > 0 && a.steadyOnBeat(0.1)
+	g.crit = dmg > 0 && off < 0.2 && a.steadyOnBeat(0.1)
 	if g.crit {
 		dmg = dmg * 3 / 2
 	}
@@ -221,8 +242,9 @@ func (a *App) duelStrike(g *duelGame) {
 }
 
 // duelDodge es el turno del enemigo: el corazón se mueve, las notas salen en
-// cada golpe y vuelan; un roce quita vida.
-func (a *App) duelDodge(g *duelGame, newBeat bool, per float64) {
+// cada golpe y avanzan a empujones, uno por golpe; la batería manda más. Un
+// roce quita vida.
+func (a *App) duelDodge(g *duelGame, newBeat bool, per, anchor, now float64) {
 	in := &a.input
 	hw, hh := float64(duBoxW/2-5), float64(duBoxH/2-5)
 	if in.duration(ActLeft) > 0 {
@@ -242,13 +264,21 @@ func (a *App) duelDodge(g *duelGame, newBeat bool, per float64) {
 	if newBeat {
 		g.turnBeats++
 		if g.turnBeats > duTurnBeats {
-			g.phase, g.phaseAt, g.cursor = duAttack, a.t, 0
+			a.duelAttack(g)
 			g.bullets = nil
 			return
 		}
 		a.duelPattern(g, per)
 	}
-	speed := 1 + 0.15*float64(g.level)
+	a.duelDrums(g, per, now)
+	// El empujón: rápido justo en el golpe, casi quietas al final. La media
+	// por golpe es 1, así la dificultad no cambia.
+	ph := math.Mod((now-anchor)/per, 1)
+	if ph < 0 {
+		ph++
+	}
+	surge := 0.3 + 3.5*math.Exp(-5*ph)
+	speed := (1 + 0.15*float64(g.level)) * surge
 	keep := g.bullets[:0]
 	for _, b := range g.bullets {
 		b.x += b.vx * speed
@@ -273,6 +303,43 @@ func (a *App) duelDodge(g *duelGame, newBeat bool, per float64) {
 	g.bullets = keep
 	if a.t-g.hurtAt > 0.8 && newBeat {
 		g.score += 5 // sobrevivir un golpe también suma
+	}
+}
+
+// duelDrums atiende los golpes de batería que reconoció el medidor: el bombo
+// sacude la caja, la caja lanza notas que buscan el corazón desde las
+// esquinas de arriba y los platillos, un abanico desde donde está el enemigo.
+func (a *App) duelDrums(g *duelGame, per, now float64) {
+	dr := &a.beat.drums
+	var hit [drumCount]bool
+	for k := range hit {
+		if dr.last[k] != g.seen[k] {
+			g.seen[k] = dr.last[k]
+			hit[k] = now-dr.last[k] < 0.15 // uno viejo (de otra fase) no cuenta
+		}
+	}
+	w, h := float64(duBoxW/2), float64(duBoxH/2)
+	if hit[drumKick] || (a.beatHit && !dr.any) {
+		g.kickAt = a.t
+	}
+	if hit[drumSnare] && now-g.snareAt > per/2 {
+		g.snareAt = now
+		corners := []float64{-w + 4, w - 4}
+		if g.level == 0 {
+			corners = corners[rand.IntN(2):][:1]
+		}
+		for _, x := range corners {
+			dx, dy := g.hx-x, g.hy+h-4
+			d := math.Max(1, math.Hypot(dx, dy))
+			g.bullets = append(g.bullets, duBullet{x, -h + 4, dx / d * 1.1, dy / d * 1.1})
+		}
+	}
+	if hit[drumCrash] {
+		const n = 10
+		for i := 0; i < n; i++ {
+			an := math.Pi * (0.1 + 0.8*float64(i)/float64(n-1)) // hacia abajo, en abanico
+			g.bullets = append(g.bullets, duBullet{0, -h - 2, math.Cos(an) * 0.8, math.Sin(an) * 0.8})
+		}
 	}
 }
 
@@ -345,7 +412,8 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 	const k = 2
 	iw, ih := img.Bounds().Dx()*k, img.Bounds().Dy()*k
 	ex := w/2 - iw/2 + int(3*math.Sin(a.t*2))
-	ey := topH + 6 + int(-3*pulse)
+	kick := math.Max(0, 1-(a.t-g.kickAt)/0.2) // el bombo: 1 justo al sonar
+	ey := topH + 6 + int(-3*pulse-3*kick)
 	if g.phase == duWin {
 		ey += int(math.Min(1, (a.t-g.phaseAt)/1.2) * 40) // se hunde y se va
 	}
@@ -380,8 +448,14 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 	rect(dst, w/2+4, ny+1, bw, 5, th.Bg2)
 	rect(dst, w/2+4, ny+1, bw*g.foeHP/max(1, g.foeMax), 5, th.Accent)
 	// La caja.
+	// La caja late con el golpe (el borde se ilumina y engorda) y el bombo la
+	// sacude un poco.
 	bx, by := w/2-duBoxW/2, ny+14
-	rect(dst, bx-2, by-2, duBoxW+4, duBoxH+4, th.Text)
+	if g.phase == duDodge {
+		bx += int(math.Round(2 * kick * math.Sin(a.t*90)))
+	}
+	bw2 := 2 + int(math.Round(pulse))
+	rect(dst, bx-bw2, by-bw2, duBoxW+2*bw2, duBoxH+2*bw2, mix(th.Text, th.Accent2, pulse*0.7))
 	rect(dst, bx, by, duBoxW, duBoxH, th.Shadow)
 	cx, cy := float64(bx+duBoxW/2), float64(by+duBoxH/2)
 	switch g.phase {
@@ -400,9 +474,18 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 			c := mix(th.Accent, th.Bg2, d*2)
 			rect(dst, bx+8+x, by+duBoxH/2-8, 1, 16, c)
 		}
-		rect(dst, bx+duBoxW/2, by+duBoxH/2-10, 1, 20, th.Text)
+		// Marcas de cada golpe (inicio, centro, final) y de las corcheas.
+		for i := 0; i <= 4; i++ {
+			mx, mh := bx+8+i*(duBoxW-16)/4, 14
+			if i%2 == 0 {
+				mh = 20
+			}
+			rect(dst, mx, by+duBoxH/2-mh/2, 1, mh, th.Text)
+		}
 		curX := bx + 8 + int(g.cursor*float64(duBoxW-16))
-		rect(dst, curX-1, by+duBoxH/2-12, 3, 24, th.Text)
+		if g.phase == duResult || g.cursor > 0 || int(a.t*8)%2 == 0 { // esperando el golpe, parpadea
+			rect(dst, curX-1, by+duBoxH/2-12, 3, 24, th.Text)
+		}
 		if g.phase == duResult {
 			msg := fmt.Sprintf("-%d", g.lastDamage)
 			switch {

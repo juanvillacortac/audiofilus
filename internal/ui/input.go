@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -90,6 +92,54 @@ type Input struct {
 	any bool
 	// swapAB intercambia A y B, para quien los quiera al revés.
 	swapAB bool
+	// stick cuenta cuántos frames lleva el joystick izquierdo empujado hacia
+	// cada dirección, igual que una cruceta: así vale en toda la app.
+	stick [4]int
+}
+
+// Umbrales del joystick izquierdo: se activa al pasar stickOn y se suelta al
+// bajar de stickOff, para que no tiemble en el borde.
+const (
+	stickOn  = 0.5
+	stickOff = 0.35
+)
+
+// stickDirs son las acciones de cada dirección del joystick, en el orden de stick.
+var stickDirs = [4]Action{ActLeft, ActRight, ActUp, ActDown}
+
+// updateStick lee el joystick izquierdo de todos los mandos.
+func (in *Input) updateStick() {
+	var h, v float64
+	for _, id := range in.pads {
+		x := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickHorizontal)
+		y := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickVertical)
+		if math.Abs(x) > math.Abs(h) {
+			h = x
+		}
+		if math.Abs(y) > math.Abs(v) {
+			v = y
+		}
+	}
+	// En diagonal manda el eje más empujado, salvo que los dos lo estén mucho.
+	vals := [4]float64{-h, h, -v, v}
+	for i, val := range vals {
+		on := val > stickOn || (in.stick[i] > 0 && val > stickOff)
+		other := math.Abs(v)
+		if i >= 2 {
+			other = math.Abs(h)
+		}
+		if on && in.stick[i] == 0 && other > val*1.5 {
+			on = false // apenas roza este eje: cuenta el otro
+		}
+		if !on {
+			in.stick[i] = 0
+			continue
+		}
+		in.stick[i]++
+		if in.stick[i] == 1 {
+			in.usingPad, in.decided, in.any = true, true, true
+		}
+	}
 }
 
 // update se llama una vez por frame, antes de preguntar.
@@ -117,6 +167,7 @@ func (in *Input) update() {
 			}
 		}
 	}
+	in.updateStick()
 }
 
 // buttons son los botones de una acción, con A y B intercambiados si se pidió.
@@ -141,6 +192,11 @@ func (in *Input) duration(a Action) int {
 	for _, id := range in.pads {
 		for _, b := range in.buttons(a) {
 			d = max(d, inpututil.StandardGamepadButtonPressDuration(id, b))
+		}
+	}
+	for i, sa := range stickDirs {
+		if sa == a {
+			d = max(d, in.stick[i])
 		}
 	}
 	return d
