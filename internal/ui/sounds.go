@@ -87,7 +87,7 @@ func (a *App) soundFromInput() {
 	}
 	s.hadMenu, s.hadDock, s.hadPrompt = menu, dock, prompt
 	// En los juegos, sin menú, los botones son del juego: sin sonidos.
-	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter) && !menu && !dock && !prompt
+	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel) && !menu && !dock && !prompt
 	typing := prompt || a.searchTyping()
 	switch {
 	case inGame || a.sleeping || a.guideAt > 0:

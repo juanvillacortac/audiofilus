@@ -50,6 +50,8 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>^v", "sn_h_turn"}, {"Y", "g_pause"}, {"START", "h_pause"}}
 	case a.screen == Shooter:
 		own = []hint{{"<>^v", "sh_h_move"}, {"Y", "g_pause"}, {"START", "h_pause"}}
+	case a.screen == Duel:
+		own = []hint{{"A", "du_g_hit"}, {"<>^v", "du_g_dodge"}, {"Y", "g_pause"}, {"START", "h_pause"}}
 	case a.screen == Games:
 		own = []hint{{"<>", "gm_choose"}, {"A", "gm_play"}, {"B", "h_back"}}
 	case a.screen == Visual:
@@ -64,7 +66,7 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>^v", "g_dock_move"}, {"A", "h_change"}, {"B", "h_back"}}
 	}
 	all = []hint{{"SEL", "g_screens"}, {"SEL SEL", "g_prev_screen"}, {"START", "g_more"}, {"Y", "g_pause"}, {"L1/R1", "g_skip"}, {"L2/R2", "g_seek"}}
-	if a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Quiz || a.screen == Snake || a.screen == Shooter {
+	if a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel {
 		all[2] = hint{"START", "h_pause"}
 	}
 	return own, all

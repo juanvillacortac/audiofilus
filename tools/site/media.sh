@@ -38,6 +38,7 @@ magick "$tmp/s/juegos-3x2.png" -sample 33.3334% -sample 400% -strip "$out/games.
 anim 5 "$tmp/f/tracker/f*.png" tracker.webp
 anim 5 "$tmp/f/serpiente/f*.png" snake.webp
 anim 5 "$tmp/f/naves/f*.png" ships.webp
+anim 5 "$tmp/f/duelo/f*.png" duel.webp
 magick "$tmp/s/adivina-3x2.png" -sample 33.3334% -sample 400% -strip "$out/quiz.png"
 
 # El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo

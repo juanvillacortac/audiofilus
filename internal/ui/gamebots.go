@@ -69,3 +69,38 @@ func (a *App) botShooter() {
 		g.x += 2
 	}
 }
+
+// botDuel ataca cuando el cursor pasa cerca del centro y, en el turno del
+// enemigo, aparta el corazón de la nota más cercana (sin salirse de la caja).
+func (a *App) botDuel() {
+	g := a.duel
+	if g == nil {
+		return
+	}
+	if g.over {
+		a.duel = a.newDuel()
+		return
+	}
+	switch g.phase {
+	case duAttack:
+		if math.Abs(g.cursor-0.5) < 0.03 {
+			a.duelStrike(g)
+		}
+	case duDodge:
+		var nx, ny, nd float64 = 0, 0, 1e9
+		for _, b := range g.bullets {
+			if d := math.Hypot(b.x-g.hx, b.y-g.hy); d < nd {
+				nx, ny, nd = b.x, b.y, d
+			}
+		}
+		if nd < 22 {
+			dx, dy := g.hx-nx, g.hy-ny
+			l := math.Max(1, math.Hypot(dx, dy))
+			g.hx += dx / l * duHeartSpeed
+			g.hy += dy / l * duHeartSpeed
+		} else {
+			g.hx *= 0.97 // de vuelta al centro
+			g.hy *= 0.97
+		}
+	}
+}
