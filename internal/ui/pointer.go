@@ -15,9 +15,15 @@ import (
 // las acciones de siempre (las de la cruceta), así cualquier pantalla los
 // entiende sin hacer nada:
 //
-//   - arrastrar: ↑/↓ (o ←/→) por cada paso arrastrado (una fila; una
-//     portada en la cuadrícula), con inercia al soltar, como en un móvil;
-//   - la rueda del ratón: ↑/↓;
+//   - arrastrar en una lista que se desplaza sola (scrollArea: las de la
+//     biblioteca, la cuadrícula de portadas, la cola, Ajustes): el contenido
+//     sigue al dedo píxel a píxel, con inercia al soltar, como en un móvil;
+//     la rueda del ratón la desplaza igual;
+//   - en un juego, deslizar es una sola pulsación hacia donde va el dedo
+//     (en Bloques, a los lados la pieza sigue al dedo casilla a casilla,
+//     abajo la suelta y arriba la guarda; tocar el pozo la gira);
+//   - arrastrar en lo demás: ↑/↓ (o ←/→) por cada paso arrastrado, también
+//     con inercia; la rueda, ↑/↓;
 //   - mantener pulsado (sin moverse): START, el menú Más;
 //   - clic derecho: B (atrás); clic central: pausa.
 
@@ -27,6 +33,48 @@ type zone struct {
 	x, y, w, h int
 	tap        func(px, py int)
 }
+
+// scrollZone es una zona que se desplaza con el dedo: by la mueve d píxeles
+// (positivo: hacia abajo en el contenido).
+type scrollZone struct {
+	x, y, w, h int
+	by         func(d float64)
+}
+
+// scroller es el desplazamiento libre de una lista: en píxeles desde
+// arriba. Lo mueve el dedo (free); en cuanto la selección cambia por otra
+// vía (la cruceta), la vista vuelve a seguirla.
+type scroller struct {
+	px    float64
+	max   float64
+	free  bool
+	drawn int // la selección del último dibujo
+}
+
+// place da la primera fila visible y cuánto se ve cortada (en píxeles)
+// para una lista de n filas de rowH, de las que caben rows, con la selección
+// en sel. Sin desplazamiento libre, la selección va hacia el centro.
+func (s *scroller) place(sel, rows, n, rowH int) (first, off int) {
+	if sel != s.drawn {
+		s.free, s.drawn = false, sel
+	}
+	s.max = float64(max(0, n-rows) * rowH)
+	if !s.free {
+		s.px = float64(max(0, min(sel-rows/2, n-rows)) * rowH)
+	}
+	s.px = max(0, min(s.max, s.px))
+	p := int(s.px)
+	return p / rowH, p % rowH
+}
+
+// by mueve la lista d píxeles (con el dedo o la rueda).
+func (s *scroller) by(d float64) {
+	s.free = true
+	s.px = max(0, min(s.max, s.px+d))
+}
+
+// pick elige la fila idx sin que la vista salte (la eligió el dedo).
+func (s *scroller) pick(sel *int, idx int) { *sel, s.drawn = idx, idx }
 
 // Los umbrales de los gestos, en píxeles del lienzo y segundos.
 const (
@@ -40,7 +88,11 @@ const (
 // pointer es el estado del ratón o del dedo.
 type pointer struct {
 	zones, next  []zone // las del cuadro que se ve, y las que se van registrando
-	stepX, stepY int    // el paso del arrastre en la pantalla que se ve (0: el de siempre)
+	scrolls      []scrollZone
+	nextScrolls  []scrollZone
+	scroll       func(d float64) // la zona que se arrastra ahora (o nil)
+	flingScroll  func(d float64)
+	stepX, stepY int // el paso del arrastre en la pantalla que se ve (0: el de siempre)
 	nextSX       int
 	nextSY       int
 
@@ -56,7 +108,9 @@ type pointer struct {
 	vel      float64 // px/s en el eje del arrastre, para la inercia
 	lastT    float64
 	long     bool
-	pending  int // pasos que quedan por mandar (+: abajo/derecha)
+	swiped   bool // en un juego, el deslizamiento ya dio su pulsación
+	pending  int  // pasos que quedan por mandar (+: abajo/derecha)
+	pendAx   int  // en qué eje son (1 horizontal, 2 vertical)
 	flingVel float64
 	flingAx  int
 	wheel    float64
@@ -65,6 +119,22 @@ type pointer struct {
 // zone registra una zona tocable del cuadro que se está dibujando.
 func (a *App) zone(x, y, w, h int, tap func(px, py int)) {
 	a.ptr.next = append(a.ptr.next, zone{x, y, w, h, tap})
+}
+
+// scrollArea registra una zona que se desplaza con el dedo y la rueda.
+func (a *App) scrollArea(x, y, w, h int, by func(d float64)) {
+	a.ptr.nextScrolls = append(a.ptr.nextScrolls, scrollZone{x, y, w, h, by})
+}
+
+// scrollAt es la zona desplazable bajo x, y (o nil).
+func (p *pointer) scrollAt(x, y int) func(float64) {
+	for i := len(p.scrolls) - 1; i >= 0; i-- {
+		z := p.scrolls[i]
+		if x >= z.x && x < z.x+z.w && y >= z.y && y < z.y+z.h {
+			return z.by
+		}
+	}
+	return nil
 }
 
 // tapZone registra una zona que al tocarla hace do (sin importar dónde).
@@ -79,6 +149,7 @@ func (a *App) dragStep(x, y int) { a.ptr.nextSX, a.ptr.nextSY = x, y }
 // beginZones empieza a registrar las zonas de un cuadro.
 func (a *App) beginZones() {
 	a.ptr.next = a.ptr.next[:0]
+	a.ptr.nextScrolls = a.ptr.nextScrolls[:0]
 	a.ptr.nextSX, a.ptr.nextSY = 0, 0
 }
 
@@ -86,6 +157,7 @@ func (a *App) beginZones() {
 func (a *App) endZones() {
 	p := &a.ptr
 	p.zones, p.next = p.next, p.zones
+	p.scrolls, p.nextScrolls = p.nextScrolls, p.scrolls
 	p.stepX, p.stepY = p.nextSX, p.nextSY
 }
 
@@ -104,16 +176,20 @@ func (a *App) updatePointer() {
 	}
 	// La rueda: un paso por muesca (las de los touchpads llegan en trozos).
 	if _, wy := ebiten.Wheel(); wy != 0 {
-		p.wheel += wy
 		in.mouseUsed()
+		if by := p.scrollAt(ebiten.CursorPosition()); by != nil {
+			by(-wy * 24) // suave, en píxeles, sobre una lista
+		} else {
+			p.wheel += wy
+		}
 	}
 	for p.wheel >= 1 {
 		p.wheel--
-		p.pending--
+		p.pending, p.pendAx = p.pending-1, 2
 	}
 	for p.wheel <= -1 {
 		p.wheel++
-		p.pending++
+		p.pending, p.pendAx = p.pending+1, 2
 	}
 
 	// El dedo o el botón izquierdo.
@@ -150,16 +226,20 @@ func (a *App) updatePointer() {
 
 	// La inercia de un arrastre soltado.
 	if !p.down && p.flingAx != 0 {
-		p.acc += p.flingVel * dt
+		if p.flingScroll != nil {
+			p.flingScroll(p.flingVel * dt)
+		} else {
+			p.acc += p.flingVel * dt
+			a.dragSteps(p.flingAx)
+		}
 		p.flingVel *= math.Exp(-flingDecay * dt)
-		a.dragSteps(p.flingAx)
 		if math.Abs(p.flingVel) < flingStop {
-			p.flingAx, p.flingVel, p.acc = 0, 0, 0
+			p.flingAx, p.flingVel, p.acc, p.flingScroll = 0, 0, 0, nil
 		}
 	}
 
 	// Un paso por fotograma (Pressed ve una pulsación por fotograma).
-	axisH := p.flingAx == 1 || p.down && p.axis == 1
+	axisH := p.pendAx == 1
 	switch {
 	case p.pending > 0:
 		p.pending--
@@ -173,8 +253,10 @@ func (a *App) updatePointer() {
 // pointerDown empieza un toque o un clic en x, y.
 func (a *App) pointerDown(x, y int, touch bool, id ebiten.TouchID) {
 	p := &a.ptr
-	*p = pointer{zones: p.zones, next: p.next, stepX: p.stepX, stepY: p.stepY, nextSX: p.nextSX, nextSY: p.nextSY,
+	*p = pointer{zones: p.zones, next: p.next, scrolls: p.scrolls, nextScrolls: p.nextScrolls,
+		stepX: p.stepX, stepY: p.stepY, nextSX: p.nextSX, nextSY: p.nextSY,
 		down: true, touch: touch, id: id, sx: x, sy: y, x: x, y: y, at: a.t, lastT: a.t}
+	p.scroll = p.scrollAt(x, y) // tocar una lista frena su inercia (se reinició arriba)
 	a.input.any = true
 }
 
@@ -195,13 +277,53 @@ func (a *App) pointerMove(x, y int, dt float64) {
 	if !p.moved {
 		return
 	}
+	// En un juego, deslizar es una sola pulsación hacia donde va el dedo
+	// (como una cruceta), sin pasos ni inercia: en Cripta cada paso de más
+	// era un movimiento fuera del golpe.
+	if a.swipeMode() {
+		// Bloques: a los lados, la pieza sigue al dedo casilla a casilla
+		// (stepX es una casilla del pozo); abajo, soltarla; arriba, guardarla.
+		if a.screen == Blocks && p.axis == 1 {
+			p.acc += float64(dx)
+			a.dragSteps(1)
+			return
+		}
+		if a.screen == Blocks && !p.swiped {
+			p.swiped = true
+			if y > p.sy {
+				a.input.inject(ActUp) // soltar (↑ en la cruceta)
+			} else {
+				a.input.inject(ActShuffle) // guardar
+			}
+			return
+		}
+		if !p.swiped {
+			p.swiped = true
+			ddx, ddy := x-p.sx, y-p.sy
+			switch {
+			case p.axis == 1 && ddx > 0:
+				a.input.inject(ActRight)
+			case p.axis == 1:
+				a.input.inject(ActLeft)
+			case ddy > 0:
+				a.input.inject(ActDown)
+			default:
+				a.input.inject(ActUp)
+			}
+		}
+		return
+	}
 	// El contenido sigue al dedo: subir el dedo es bajar por la lista.
 	d := -float64(dy)
 	if p.axis == 1 {
 		d = -float64(dx)
 	}
-	p.acc += d
 	p.vel = p.vel*0.6 + d/dt*0.4
+	if p.axis == 2 && p.scroll != nil {
+		p.scroll(d) // la lista sigue al dedo, píxel a píxel
+		return
+	}
+	p.acc += d
 	a.dragSteps(p.axis)
 }
 
@@ -213,6 +335,9 @@ func (a *App) dragSteps(axis int) {
 		step = float64(p.stepX)
 	} else if axis == 2 && p.stepY > 0 {
 		step = float64(p.stepY)
+	}
+	if p.pendAx != axis {
+		p.pending, p.pendAx = 0, axis
 	}
 	for p.acc >= step {
 		p.acc -= step
@@ -240,9 +365,19 @@ func (a *App) pointerUp() {
 				return
 			}
 		}
+	case p.swiped:
 	case math.Abs(p.vel) > flingStop*4:
 		p.flingAx, p.flingVel = p.axis, p.vel
+		if p.axis == 2 {
+			p.flingScroll = p.scroll
+		}
 	}
+}
+
+// swipeMode dice si se está en un juego (sin menú encima): ahí deslizar es
+// una sola pulsación, no un desplazamiento.
+func (a *App) swipeMode() bool {
+	return isGame(a.screen) && a.screen != Games && a.menu == nil && !a.dock.open
 }
 
 // hintActions son las acciones de los botones de la ayuda de abajo: tocar

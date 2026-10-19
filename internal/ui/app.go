@@ -71,10 +71,12 @@ type App struct {
 
 	// El sleep de la app: pantalla apagada (la apaga el servicio) y la
 	// interfaz casi parada.
-	quitting  bool    // se pidió salir: Update termina el bucle
-	ptr       pointer // el ratón o el dedo y las zonas tocables (pointer.go)
-	splashing bool    // se está mostrando el splash
-	splashT   float64 // segundos de splash
+	quitting    bool     // se pidió salir: Update termina el bucle
+	ptr         pointer  // el ratón o el dedo y las zonas tocables (pointer.go)
+	queueScr    scroller // el desplazamiento de la cola con el dedo
+	settingsScr scroller // y el de Ajustes (su posición va en settingsScroll)
+	splashing   bool     // se está mostrando el splash
+	splashT     float64  // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
 	// volumen en la escala única (0..2: el sistema hasta 1, el refuerzo de la

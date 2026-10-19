@@ -590,6 +590,10 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 	}
 	drawRhythm(dst, th, bx+bw/2, by+bh/2, a.t, since, a.beat.period(), level, fever, clearSince, sy(g.clearY))
 
+	// Con el dedo: tocar el pozo gira la pieza; arrastrar a los lados la
+	// mueve una casilla por casilla arrastrada (pointer.go).
+	a.tapZone(bx-3, by-3, bw+5, bh+5, func() { a.input.inject(ActConfirm) })
+	a.dragStep(cell, cell)
 	// El pozo, un panel como los de la interfaz; su filo de abajo late con
 	// los graves.
 	panel(dst, bx-3, by-3, bw+5, bh+5, withAlpha(th.Bg2, 0xd0))

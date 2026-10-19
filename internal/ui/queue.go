@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"image"
 	"path/filepath"
 	"strings"
 
@@ -71,15 +72,24 @@ func (a *App) drawQueue(dst *ebiten.Image) {
 	if !a.queueMoved {
 		sel = max(0, cur)
 	}
-	first := max(0, min(sel-rows/2, len(q)-rows))
-	for i := 0; i < rows && first+i < len(q); i++ {
+	// Con el dedo, la cola se desplaza píxel a píxel; recortada a su zona.
+	first, off := a.queueScr.place(sel, rows, len(q), rowH)
+	a.scrollArea(x-3, y-4, cw+6, rows*rowH, a.queueScr.by)
+	whole := dst
+	dst = dst.SubImage(image.Rect(0, y-4, w, y-4+rows*rowH)).(*ebiten.Image)
+	for i := 0; i <= rows && first+i < len(q); i++ {
 		idx := first + i
+		a.tapZone(x-3, y+i*rowH-off-4, cw+6, rowH, func() {
+			a.queueScr.pick(&a.queueSel, idx)
+			a.queueMoved = true
+			a.input.inject(ActConfirm)
+		})
 		p := q[idx]
 		title, artist := strings.TrimSuffix(filepath.Base(p), filepath.Ext(p)), ""
 		if s, ok := a.lib.Song(p); ok {
 			title, artist = s.Title, s.Artist
 		}
-		ry := y + i*rowH
+		ry := y + i*rowH - off
 		mainCol, subCol := th.Text, th.Dim
 		if idx < cur {
 			mainCol = th.Dim // ya sonaron
@@ -98,6 +108,7 @@ func (a *App) drawQueue(dst *ebiten.Image) {
 		drawTextW(dst, title, SmallFace, x+20, ry, mainW-22, mainCol)
 		drawTextW(dst, artist, SmallFace, x+mainW, ry, cw-mainW, subCol)
 	}
+	dst = whole
 	a.scrollBar(dst, x+cw+4, y-3, rows*rowH, first, rows, len(q))
 	if len(q) == 0 {
 		msg := T("nothing")

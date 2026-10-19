@@ -45,3 +45,44 @@ func TestPointerTapAndDrag(t *testing.T) {
 		t.Errorf("a fast flick has no fling (axis %d, vel %.0f)", a.ptr.flingAx, a.ptr.flingVel)
 	}
 }
+
+// TestScrollerFollowsFinger comprueba el desplazamiento libre de una lista:
+// el dedo la mueve píxel a píxel sin cambiar la elegida, no se pasa de los
+// bordes, y en cuanto la elegida cambia por la cruceta la vista la sigue.
+func TestScrollerFollowsFinger(t *testing.T) {
+	var s scroller
+	sel := 0
+	first, off := s.place(sel, 10, 100, 13)
+	if first != 0 || off != 0 {
+		t.Fatalf("start at %d+%d", first, off)
+	}
+	s.by(13*5 + 4) // cinco filas y un poco
+	if first, off = s.place(sel, 10, 100, 13); first != 5 || off != 4 {
+		t.Errorf("after dragging: first %d off %d, want 5 and 4", first, off)
+	}
+	s.by(1e6)
+	if first, _ = s.place(sel, 10, 100, 13); first != 90 {
+		t.Errorf("dragged past the end: first %d, want 90", first)
+	}
+	sel = 50 // la cruceta
+	if first, off = s.place(sel, 10, 100, 13); first != 45 || off != 0 {
+		t.Errorf("after the D-pad: first %d off %d, want 45 and 0 (centered on 50)", first, off)
+	}
+}
+
+// TestSwipeInGames comprueba que en un juego deslizar es una sola pulsación
+// hacia donde va el dedo (no una ola de pasos, que en Cripta eran MISS).
+func TestSwipeInGames(t *testing.T) {
+	a := &App{offline: true, t: 1, screen: Crypt}
+	a.pointerDown(100, 100, true, 0)
+	for x := 100; x <= 200; x += 5 {
+		a.pointerMove(x, 100, 1.0/60)
+	}
+	if !a.input.virt[ActRight] || a.ptr.pending != 0 {
+		t.Errorf("swipe right: right %v, pending %d", a.input.virt[ActRight], a.ptr.pending)
+	}
+	a.pointerUp()
+	if a.ptr.flingAx != 0 {
+		t.Error("a swipe in a game kept moving after release")
+	}
+}

@@ -420,17 +420,30 @@ func (a *App) drawSettings(dst *ebiten.Image) {
 
 	// El desplazamiento sigue a la baldosa elegida (con su título, si es la
 	// primera de su sección) y se acerca suave, como las listas.
-	want := a.settingsScroll
-	if t := tiles[sel]; t.y-secH < int(want) {
-		want = float64(t.y - secH)
-	} else if t.y+t.h > int(want)+view {
-		want = float64(t.y + t.h - view)
+	// Con el dedo se desplaza libre, píxel a píxel; en cuanto la elegida
+	// cambia por la cruceta, vuelve a seguirla.
+	sc := &a.settingsScr
+	if sel != sc.drawn {
+		sc.free, sc.drawn = false, sel
 	}
-	want = max(0, min(want, float64(total-view)))
-	a.settingsScroll += (want - a.settingsScroll) * 0.35
-	if abs(int(want-a.settingsScroll)) < 1 {
-		a.settingsScroll = want
+	sc.max = float64(max(0, total-view))
+	if sc.free {
+		a.settingsScroll = max(0, min(sc.max, sc.px))
+	} else {
+		want := a.settingsScroll
+		if t := tiles[sel]; t.y-secH < int(want) {
+			want = float64(t.y - secH)
+		} else if t.y+t.h > int(want)+view {
+			want = float64(t.y + t.h - view)
+		}
+		want = max(0, min(want, float64(total-view)))
+		a.settingsScroll += (want - a.settingsScroll) * 0.35
+		if abs(int(want-a.settingsScroll)) < 1 {
+			a.settingsScroll = want
+		}
+		sc.px = a.settingsScroll
 	}
+	a.scrollArea(0, top, w, view, sc.by)
 	oy := top - int(a.settingsScroll+0.5)
 
 	area := dst.SubImage(image.Rect(0, top, w, bottom)).(*ebiten.Image)
@@ -455,7 +468,7 @@ func (a *App) drawSettings(dst *ebiten.Image) {
 		// abierta, la cierra).
 		idx := i
 		vy0, vy1 := max(y, top), min(y+t.h, bottom)
-		a.tapZone(t.x, vy0, t.w, vy1-vy0, func() { a.settingsSel = idx; a.input.inject(ActConfirm) })
+		a.tapZone(t.x, vy0, t.w, vy1-vy0, func() { sc.pick(&a.settingsSel, idx); a.input.inject(ActConfirm) })
 	}
 	a.scrollBar(dst, w-4, top, view, int(a.settingsScroll), view, total)
 

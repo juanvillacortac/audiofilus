@@ -53,6 +53,7 @@ type view struct {
 	pl        *Playlist // la lista que se ve (vPlaylist), para editarla
 	dir       string
 	dirs      []string
+	scr       scroller // el desplazamiento con el dedo (pointer.go)
 }
 
 // count es cuántos elementos se pueden elegir en la vista.
@@ -462,11 +463,14 @@ func (a *App) drawList(dst *ebiten.Image, v *view, x, y, w, h int) {
 	const rowH = 13
 	rows := max(1, h/rowH)
 	n := v.count()
-	first := max(0, min(v.sel-rows/2, n-rows))
-	for i := 0; i < rows && first+i < n; i++ {
+	// Con el dedo, la lista se desplaza píxel a píxel (off: lo que se ve
+	// cortada la primera fila); con la cruceta, sigue a la elegida.
+	first, off := v.scr.place(v.sel, rows, n, rowH)
+	a.scrollArea(x-3, y-4, w+6, h, v.scr.by)
+	for i := 0; i <= rows && first+i < n; i++ {
 		idx := first + i
 		r := a.rowFor(v, idx)
-		ry := y + i*rowH
+		ry := y + i*rowH - off
 		mainCol, subCol := th.Text, th.Dim
 		if idx == v.sel {
 			if a.tabFocus {
@@ -493,11 +497,15 @@ func (a *App) drawList(dst *ebiten.Image, v *view, x, y, w, h int) {
 		drawTextW(dst, r.main, SmallFace, tx, ry, mainW-(tx-x)-4, mainCol)
 		drawTextW(dst, r.sub, SmallFace, x+mainW, ry, w-mainW, subCol)
 	}
-	// Tocar una fila la elige y la abre.
+	// Tocar una fila la elige y la abre (sin que la vista salte).
 	a.dragStep(0, rowH)
-	for i := 0; i < rows && first+i < n; i++ {
+	for i := 0; i <= rows && first+i < n; i++ {
 		idx := first + i
-		a.tapZone(x-3, y+i*rowH-4, w+6, rowH, func() { a.tabFocus, v.sel = false, idx; a.input.inject(ActConfirm) })
+		a.tapZone(x-3, y+i*rowH-off-4, w+6, rowH, func() {
+			a.tabFocus = false
+			v.scr.pick(&v.sel, idx)
+			a.input.inject(ActConfirm)
+		})
 	}
 	a.scrollBar(dst, x+w+4, y-3, h, first, rows, n)
 }
@@ -530,13 +538,18 @@ func (a *App) drawGrid(dst *ebiten.Image, v *view, x, y, w, h int) {
 	gy := y + 30
 	row := v.sel / cols
 	visible := max(1, (h-30)/(gridTile+gridGap))
-	first := max(0, row-max(0, visible-1))
+	// Con el dedo, la cuadrícula se desplaza píxel a píxel; con la cruceta,
+	// sigue a la elegida.
+	step := gridTile + gridGap
+	first, off := v.scr.place(row, visible, (n+cols-1)/cols, step)
+	gy -= off
+	a.scrollArea(x, y+28, w, h-28, v.scr.by)
 	// Se piden ya las portadas de la fila de arriba y la de abajo.
 	for i := max(0, (first-1)*cols); i < n && i < (first+visible+2)*cols; i++ {
 		a.cover(v.albums[i], gridTile)
 	}
 	for i := first * cols; i < n && i < (first+visible+1)*cols; i++ {
-		if i == v.sel {
+		if i == v.sel && row >= first && row <= first+visible {
 			continue // se dibuja encima, al final
 		}
 		tx := x0 + (i%cols)*(gridTile+gridGap)
@@ -546,6 +559,10 @@ func (a *App) drawGrid(dst *ebiten.Image, v *view, x, y, w, h int) {
 	}
 	tx := x0 + (v.sel%cols)*(gridTile+gridGap)
 	ty := gy + (row-first)*(gridTile+gridGap) - 1
+	if row < first || row > first+visible { // el dedo la dejó fuera de la vista
+		a.gridZones(v, x0, gy, cols, gridTile, first, visible, n)
+		return
+	}
 	rect(dst, tx+3, ty+3, gridTile, gridTile, th.Shadow)
 	if img, alpha := a.cover(sel, gridTile); img != nil && alpha >= 1 {
 		drawShine(dst, img, tx, ty, math.Mod(a.t*0.5, 1.4))
@@ -555,13 +572,23 @@ func (a *App) drawGrid(dst *ebiten.Image, v *view, x, y, w, h int) {
 	if !a.tabFocus {
 		marching(dst, tx-2, ty-2, gridTile+4, gridTile+4, a.t, th.Accent)
 	}
-	// Tocar una portada la abre; arrastrar mueve de portada en portada.
-	a.dragStep(gridTile+gridGap, gridTile+gridGap)
+	a.gridZones(v, x0, gy, cols, gridTile, first, visible, n)
+}
+
+// gridZones hace tocables las portadas que se ven: tocar una la abre.
+func (a *App) gridZones(v *view, x0, gy, cols, gridTile, first, visible, n int) {
+	step := gridTile + gridGap
+	a.dragStep(step, step)
 	for i := first * cols; i < n && i < (first+visible+1)*cols; i++ {
 		idx := i
-		tx := x0 + (i%cols)*(gridTile+gridGap)
-		ty := gy + (i/cols-first)*(gridTile+gridGap)
-		a.tapZone(tx, ty, gridTile, gridTile, func() { a.tabFocus, v.sel = false, idx; a.input.inject(ActConfirm) })
+		tx := x0 + (i%cols)*step
+		ty := gy + (i/cols-first)*step
+		a.tapZone(tx, ty, gridTile, gridTile, func() {
+			a.tabFocus = false
+			v.scr.pick(&v.sel, idx)
+			v.scr.drawn = idx / cols // place sigue la fila, no la portada
+			a.input.inject(ActConfirm)
+		})
 	}
 }
 
