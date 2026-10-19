@@ -83,25 +83,27 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">
   <img src="site/img/vis-trench.webp" alt="Trench" width="320">
-  <img src="site/img/vis-tunnel.webp" alt="Tunnel" width="320">
+  <img src="site/img/vis-ridges.webp" alt="Ridges" width="320">
 </p>
 <p align="center">
   <img src="site/img/crypt.webp" alt="Crypt" width="320">
-  <img src="site/img/blocks.webp" alt="Blocks" width="320">
-  <img src="site/img/rhythm.webp" alt="Rhythm" width="320">
+  <img src="site/img/runner.webp" alt="Runner" width="320">
+  <img src="site/img/duel.webp" alt="Duel" width="320">
 </p>
 <p align="center">
-  <img src="site/img/runner.webp" alt="Runner" width="320">
-  <img src="site/img/vis-ridges.webp" alt="Ridges" width="320">
-  <img src="site/img/duel.webp" alt="Duel" width="320">
+  <img src="site/img/blocks.webp" alt="Blocks" width="320">
+  <img src="site/img/rhythm.webp" alt="Rhythm" width="320">
+  <img src="site/img/snake.webp" alt="Snake" width="320">
 </p>
 
 ### Interface
 
 - `SELECT` opens a dock with every screen; double `SELECT` returns to the previous one. `START` opens the More menu.
 - Hold `FN` on any screen to see its controls.
+- The left analog stick works like the D-pad everywhere, menus and games included.
+- On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
 - The layout follows the screen's real width, from 1:1 to 21:9.
-- Optional chiptune sounds, with separate switches for menus and for music actions.
+- Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
 - English and Spanish, 12 h (AM/PM) or 24 h clock.
 - On desktop: fullscreen with sharp pixels.
 
@@ -159,7 +161,7 @@ With Docker, nothing else needed:
 docker build --target dist --output dist .
 ```
 
-Or with Go (see `go.mod` for the version; the desktop UI needs the X11, OpenGL and ALSA headers, e.g. `libgl1-mesa-dev xorg-dev libasound2-dev`):
+Or with Go (see `go.mod` for the version; the desktop build needs the X11, OpenGL and ALSA headers, e.g. `libgl1-mesa-dev xorg-dev libasound2-dev`):
 
 ```sh
 ./build.sh
@@ -194,7 +196,8 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 
 ## Roadmap
 
-- **Desktop:** mouse and keyboard controls, media keys (MPRIS on Linux, system media controls on Windows), window-sized layouts.
+- **Handhelds:** an OpenGL ES 2.0 path for devices without GLES 3 (for now it needs OpenGL ES 3.2).
+- **Desktop:** mouse controls, Windows system media controls, window-sized layouts.
 - **Android** and **iOS**: touch controls and system media controls.
 
 ## Support
