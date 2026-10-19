@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
@@ -50,6 +52,9 @@ type Client struct {
 	// keepPlaying: al cerrarse la interfaz, la música sigue (Ajustes). Se le
 	// dice al servicio al cambiar y en cada attach (que lo reinicia).
 	keepPlaying bool
+	// quit: el servicio avisó de que se cierra del todo (Salir en la bandeja,
+	// `audiofilus quit`...): la interfaz se cierra y no lo vuelve a arrancar.
+	quit atomic.Bool
 
 	// OnWake se llama (desde otro hilo) cuando el servicio sale del sleep: la
 	// interfaz no dibuja nada en sleep y necesita que la despierten.
@@ -98,8 +103,16 @@ func (c *Client) attach() {
 			// el estado cambió (control.Notify): se pregunta ya.
 			buf := make([]byte, 16)
 			for {
-				if _, err := conn.Read(buf); err != nil {
+				n, err := conn.Read(buf)
+				if err != nil {
 					break
+				}
+				if bytes.IndexByte(buf[:n], 'q') >= 0 {
+					c.quit.Store(true)
+					if c.OnWake != nil {
+						c.OnWake() // para que la interfaz lo vea aunque esté quieta
+					}
+					return
 				}
 				c.Send("status")
 			}
@@ -111,6 +124,9 @@ func (c *Client) attach() {
 		}
 	}
 }
+
+// QuitRequested dice si el servicio avisó de que se cierra del todo.
+func (c *Client) QuitRequested() bool { return c.quit.Load() }
 
 // Background le dice al servicio que siga sonando cuando la interfaz se cierre.
 func (c *Client) Background() {
@@ -202,8 +218,9 @@ func (c *Client) loop() {
 // do ejecuta una petición y guarda el estado que devuelve.
 func (c *Client) do(req control.Request) {
 	resp, err := control.Call(c.paths.Socket, req)
-	if errors.Is(err, control.ErrNotRunning) {
-		// El servicio murió (o lo pararon): se vuelve a arrancar.
+	if errors.Is(err, control.ErrNotRunning) && !c.quit.Load() {
+		// El servicio murió: se vuelve a arrancar (si lo cerraron a
+		// propósito, avisó antes y la interfaz se cierra).
 		if err2 := c.startDaemon(); err2 == nil {
 			resp, err = control.Call(c.paths.Socket, req)
 		}

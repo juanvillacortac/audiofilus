@@ -116,6 +116,18 @@ func Notify() {
 	}
 }
 
+// NotifyQuit avisa a las interfaces conectadas de que el servicio se cierra
+// del todo (por "quit": la interfaz, la línea de comandos, la bandeja,
+// MPRIS): que se cierren también, en vez de volver a arrancarlo.
+func NotifyQuit() {
+	attached.Lock()
+	defer attached.Unlock()
+	for c := range attached.conns {
+		_ = c.SetWriteDeadline(time.Now().Add(100 * time.Millisecond))
+		_, _ = c.Write([]byte("q"))
+	}
+}
+
 // Attach abre la conexión que dice "la interfaz sigue viva". Hay que mantenerla
 // abierta (y cerrarla al salir).
 func Attach(socket string) (net.Conn, error) {

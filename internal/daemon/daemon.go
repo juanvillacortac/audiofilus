@@ -233,6 +233,9 @@ loop:
 			}
 		}
 	}
+	// La interfaz que siga abierta se cierra con el servicio (si lo cerraron
+	// desde la bandeja o la línea de comandos, no lo vuelve a arrancar).
+	control.NotifyQuit()
 
 	stopInput()
 	stopPower()

@@ -326,6 +326,9 @@ func (a *App) exit(background bool) {
 
 // Update atiende los botones y sigue al servicio.
 func (a *App) Update() error {
+	if a.client != nil && a.client.QuitRequested() {
+		a.quitting = true // cerraron el servicio desde fuera: la interfaz también
+	}
 	if a.quitting {
 		return ebiten.Termination
 	}
