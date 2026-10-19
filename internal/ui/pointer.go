@@ -32,6 +32,8 @@ import (
 type zone struct {
 	x, y, w, h int
 	tap        func(px, py int)
+	press      bool             // responde al tocar, sin esperar a soltar (los juegos de ritmo)
+	drag       func(dx, dy int) // en vez de tocar: recibe lo que se mueve el dedo (mover la nave)
 }
 
 // scrollZone es una zona que se desplaza con el dedo: by la mueve d píxeles
@@ -108,9 +110,11 @@ type pointer struct {
 	vel      float64 // px/s en el eje del arrastre, para la inercia
 	lastT    float64
 	long     bool
-	swiped   bool // en un juego, el deslizamiento ya dio su pulsación
-	pending  int  // pasos que quedan por mandar (+: abajo/derecha)
-	pendAx   int  // en qué eje son (1 horizontal, 2 vertical)
+	used     bool             // una zona "al pulsar" ya se usó: soltar no hace nada más
+	dragFn   func(dx, dy int) // la zona de arrastre bajo el dedo
+	swiped   bool             // en un juego, el deslizamiento ya dio su pulsación
+	pending  int              // pasos que quedan por mandar (+: abajo/derecha)
+	pendAx   int              // en qué eje son (1 horizontal, 2 vertical)
 	flingVel float64
 	flingAx  int
 	wheel    float64
@@ -118,7 +122,7 @@ type pointer struct {
 
 // zone registra una zona tocable del cuadro que se está dibujando.
 func (a *App) zone(x, y, w, h int, tap func(px, py int)) {
-	a.ptr.next = append(a.ptr.next, zone{x, y, w, h, tap})
+	a.ptr.next = append(a.ptr.next, zone{x: x, y: y, w: w, h: h, tap: tap})
 }
 
 // scrollArea registra una zona que se desplaza con el dedo y la rueda.
@@ -137,9 +141,38 @@ func (p *pointer) scrollAt(x, y int) func(float64) {
 	return nil
 }
 
+// pressZone registra una zona que responde al tocar (no al soltar), con la
+// posición del toque relativa a la zona: en los juegos de ritmo, esperar a
+// levantar el dedo llega tarde al golpe.
+func (a *App) pressZone(x, y, w, h int, press func(px, py int)) {
+	a.ptr.next = append(a.ptr.next, zone{x: x, y: y, w: w, h: h, tap: press, press: true})
+}
+
+// dragArea registra una zona en la que arrastrar mueve algo del juego
+// directamente (la nave, el corazón): drag recibe cuánto se movió el dedo.
+func (a *App) dragArea(x, y, w, h int, drag func(dx, dy int)) {
+	a.ptr.next = append(a.ptr.next, zone{x: x, y: y, w: w, h: h, drag: drag})
+}
+
+// held dice si hay un dedo (o el botón del ratón) apoyado ahora, y dónde
+// empezó: Carrera salta más mientras se mantiene.
+func (a *App) held() (down bool, x, y int) { return a.ptr.down, a.ptr.sx, a.ptr.sy }
+
 // tapZone registra una zona que al tocarla hace do (sin importar dónde).
 func (a *App) tapZone(x, y, w, h int, do func()) {
 	a.zone(x, y, w, h, func(int, int) { do() })
+}
+
+// zoneAt es la zona de encima en x, y (la última registrada que lo
+// contenga), o nil.
+func (p *pointer) zoneAt(x, y int) *zone {
+	for i := len(p.zones) - 1; i >= 0; i-- {
+		z := &p.zones[i]
+		if x >= z.x && x < z.x+z.w && y >= z.y && y < z.y+z.h {
+			return z
+		}
+	}
+	return nil
 }
 
 // dragStep dice cuánto hay que arrastrar por paso en la pantalla que se está
@@ -218,7 +251,7 @@ func (a *App) updatePointer() {
 		a.pointerMove(x, y, dt)
 		if up {
 			a.pointerUp()
-		} else if !p.moved && !p.long && a.t-p.at >= longPress {
+		} else if !p.moved && !p.long && !p.used && p.dragFn == nil && !a.swipeMode() && a.t-p.at >= longPress {
 			p.long = true
 			in.inject(ActMenu) // mantener pulsado: el menú Más
 		}
@@ -258,6 +291,14 @@ func (a *App) pointerDown(x, y int, touch bool, id ebiten.TouchID) {
 		down: true, touch: touch, id: id, sx: x, sy: y, x: x, y: y, at: a.t, lastT: a.t}
 	p.scroll = p.scrollAt(x, y) // tocar una lista frena su inercia (se reinició arriba)
 	a.input.any = true
+	switch z := p.zoneAt(x, y); {
+	case z == nil:
+	case z.press:
+		p.used = true
+		z.tap(x-z.x, y-z.y)
+	case z.drag != nil:
+		p.dragFn = z.drag
+	}
 }
 
 // pointerMove sigue al dedo: pasado tapSlop es un arrastre, en el eje en que
@@ -266,6 +307,16 @@ func (a *App) pointerMove(x, y int, dt float64) {
 	p := &a.ptr
 	dx, dy := x-p.x, y-p.y
 	p.x, p.y = x, y
+	if p.dragFn != nil { // arrastrar algo del juego: tal cual, sin gestos
+		if dx != 0 || dy != 0 {
+			p.dragFn(dx, dy)
+		}
+		p.moved = true
+		return
+	}
+	if p.used {
+		return
+	}
 	if !p.moved && (abs(x-p.sx) > tapSlop || abs(y-p.sy) > tapSlop) {
 		p.moved = true
 		p.axis = 2
@@ -355,15 +406,12 @@ func (a *App) pointerUp() {
 	p := &a.ptr
 	p.down = false
 	switch {
-	case p.long:
+	case p.long, p.used, p.dragFn != nil:
 	case !p.moved:
-		for i := len(p.zones) - 1; i >= 0; i-- {
-			z := p.zones[i]
-			if p.x >= z.x && p.x < z.x+z.w && p.y >= z.y && p.y < z.y+z.h {
-				a.input.any = true
-				z.tap(p.x-z.x, p.y-z.y)
-				return
-			}
+		if z := p.zoneAt(p.x, p.y); z != nil && z.tap != nil && !z.press {
+			a.input.any = true
+			z.tap(p.x-z.x, p.y-z.y)
+			return
 		}
 	case p.swiped:
 	case math.Abs(p.vel) > flingStop*4:

@@ -74,6 +74,7 @@ type App struct {
 	quitting    bool     // se pidió salir: Update termina el bucle
 	ptr         pointer  // el ratón o el dedo y las zonas tocables (pointer.go)
 	queueScr    scroller // el desplazamiento de la cola con el dedo
+	runnerDuckY int      // en Carrera, desde dónde un dedo apoyado agacha
 	settingsScr scroller // y el de Ajustes (su posición va en settingsScroll)
 	splashing   bool     // se está mostrando el splash
 	splashT     float64  // segundos de splash

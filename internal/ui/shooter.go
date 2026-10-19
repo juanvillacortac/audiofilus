@@ -263,6 +263,13 @@ func (a *App) drawShooter(dst *ebiten.Image) {
 	g, th := a.shooter, a.theme
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	rect(dst, 0, topH, w, h-topH-bottomH, withAlpha(th.Shadow, 0xb0))
+	// Con el dedo: arrastrar mueve la nave tal cual (dispara sola); al
+	// acabar, tocar empieza otra.
+	if g.over {
+		a.pressZone(0, topH, w, h-topH-bottomH, func(int, int) { a.input.inject(ActConfirm) })
+	} else {
+		a.dragArea(0, topH, w, h-topH-bottomH, func(dx, dy int) { g.x += float64(dx); g.y += float64(dy) })
+	}
 	_, bass, _, _ := a.meterNow()
 	for i := 0; i < 50; i++ {
 		f := float64(i)

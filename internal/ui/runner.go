@@ -275,8 +275,12 @@ func (a *App) updateRunner() {
 	if in.Pressed(ActConfirm) || in.Pressed(ActUp) {
 		a.runnerJump(g)
 	}
-	g.held = in.duration(ActConfirm) > 0 || in.duration(ActUp) > 0
-	g.duck = in.duration(ActDown) > 0
+	// Con el dedo (ver drawRunner): mantenerlo arriba salta más alto;
+	// apoyado en el tercio de abajo, agacha.
+	touch, _, ty := a.held()
+	duckTouch := touch && ty >= a.runnerDuckY
+	g.held = in.duration(ActConfirm) > 0 || in.duration(ActUp) > 0 || touch && !duckTouch
+	g.duck = in.duration(ActDown) > 0 || duckTouch
 	a.stepRunner(g)
 }
 
@@ -620,6 +624,15 @@ func (a *App) drawRunner(dst *ebiten.Image) {
 	op.GeoM.Scale(2, 2)
 	op.GeoM.Translate(0, float64(top))
 	dst.DrawImage(cv, op)
+	// Con el dedo: tocar arriba salta (al tocar: el salto va al ritmo) y
+	// apoyarlo en el tercio de abajo agacha (updateRunner).
+	area := h - bottomH - top
+	a.runnerDuckY = top + area*2/3
+	a.pressZone(0, top, w, area, func(_, py int) {
+		if py+top < a.runnerDuckY {
+			a.input.inject(ActConfirm)
+		}
+	})
 	// El marcador, como el del dinosaurio: el récord y los puntos en cinco
 	// cifras, que parpadean al pasar cada centena.
 	sc := fmt.Sprintf("%05d", g.score)

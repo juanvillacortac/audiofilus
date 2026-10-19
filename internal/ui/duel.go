@@ -406,6 +406,14 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 	g, th := a.duel, a.theme
 	w := dst.Bounds().Dx()
 	off := max(0, (dst.Bounds().Dy()-ScreenH)/2) // en vertical, centrado en el alto
+	// Con el dedo: al esquivar, arrastrar mueve el corazón; en lo demás,
+	// tocar es A (atacar, seguir), en el momento de tocar (el golpe va al
+	// ritmo).
+	if gh := dst.Bounds().Dy(); g.phase == duDodge && !g.over {
+		a.dragArea(0, topH, w, gh-topH-bottomH, func(dx, dy int) { g.hx += float64(dx); g.hy += float64(dy) })
+	} else {
+		a.pressZone(0, topH, w, gh-topH-bottomH, func(int, int) { a.input.inject(ActConfirm) })
+	}
 	pulse := a.beatPulse()
 	f := duFoes[g.foe]
 	// El enemigo, al doble, meciéndose; parpadea al recibir un golpe.

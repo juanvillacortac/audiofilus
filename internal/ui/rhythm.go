@@ -287,6 +287,10 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 	fx := (w - fw - side - margin) / 2
 	top, bottom := topH+6, h-bottomH-4
 	hitY := bottom - 26
+	// Con el dedo: tocar un carril es pulsar su botón, en el momento de tocar.
+	for lane := range rhLanes {
+		a.pressZone(fx+lane*laneW, top, laneW, bottom-top, func(int, int) { a.input.inject(rhLaneActs[lane][0]) })
+	}
 
 	// Los carriles: solo sus bordes, tenues.
 	for lane := 0; lane <= rhLanes; lane++ {

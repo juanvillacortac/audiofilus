@@ -243,6 +243,11 @@ func (a *App) drawQuiz(dst *ebiten.Image) {
 		}
 		panel(dst, x, yy, cw, ch, bg)
 		frame(dst, x-1, yy-1, cw+2, ch+2, border)
+		// Tocar una opción es elegirla y responder.
+		if g.chosen == -1 {
+			idx := i
+			a.tapZone(x, yy, cw, ch, func() { g.sel = idx; a.input.inject(ActConfirm) })
+		}
 		cs := min(ch-8, 36)
 		al := a.local.byPath[s.Path]
 		a.drawCover(dst, al, x+4, yy+(ch-cs)/2, cs, 1)

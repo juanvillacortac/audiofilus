@@ -925,6 +925,22 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 	}
 	ox := w/2 - int(math.Round(g.camX)) + sx
 	oy := (top+bottom)/2 - int(math.Round(g.camY)) + sy
+	// Con el dedo: tocar a un lado del héroe es dar un paso hacia ahí, en el
+	// momento de tocar (no al soltar: el paso va al golpe).
+	heroX, heroY := ox+g.px*crTile+crTile/2, oy+g.py*crTile+crTile/2
+	a.pressZone(0, top, w, bottom-top, func(px, py int) {
+		dx, dy := px-heroX, py+top-heroY
+		switch {
+		case abs(dx) >= abs(dy) && dx > 0:
+			a.input.inject(ActRight)
+		case abs(dx) >= abs(dy):
+			a.input.inject(ActLeft)
+		case dy > 0:
+			a.input.inject(ActDown)
+		default:
+			a.input.inject(ActUp)
+		}
+	})
 	pulse, beatN := a.cryptPulse(g)
 	fever := g.mult() == 4
 	lit1, lit2 := th.Accent, th.Accent2
