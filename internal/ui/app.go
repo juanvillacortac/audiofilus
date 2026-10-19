@@ -114,7 +114,6 @@ type App struct {
 	shooter *shooterGame  // Naves (shooter.go)
 	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
 	gamesSel    int
-	gamesPos    float64 // el carrusel, deslizándose hacia gamesSel
 	gamesBest   map[string]int
 	gamesBestAt float64
 	search      searchState  // Buscar (search.go)
@@ -1472,7 +1471,7 @@ func (a *App) writeShots() error {
 	}
 	a.shotDay = dayNone
 	// Juegos y una partida de Cripta jugada por el bot unos segundos.
-	a.screen, a.gamesSel = Games, 3
+	a.screen, a.gamesSel = Games, 6 // el tracker
 	if err := shot("juegos"); err != nil {
 		return err
 	}
