@@ -117,3 +117,12 @@ func (a *App) writeLogoFrames(dir string) error {
 	}
 	return nil
 }
+
+// writeIcon guarda el icono de la app (el CD del logo, 32×32 sin ampliar) con
+// fondo transparente: es el de la ventana, del lanzador y de MPRIS
+// (internal/desktop/icon.png sale de aquí, ampliado ×8).
+func (a *App) writeIcon(path string) error {
+	return a.render(path, 32, func(dst *ebiten.Image) {
+		drawLogoDisc(dst, 16, 16, 1, 2.35, DefaultTheme)
+	})
+}

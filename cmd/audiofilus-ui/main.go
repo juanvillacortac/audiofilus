@@ -14,8 +14,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"image"
+	"image/png"
 	"log"
 	"os"
 	"path/filepath"
@@ -26,6 +29,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/desktop"
 	"github.com/juanvillacortac/audiofilus/internal/ui"
 )
 
@@ -91,7 +95,7 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 	app.ScrollTest = scroll
 	app.BenchVisual = bench
 	app.BenchProfile = benchProf
-	ebiten.SetWindowTitle("audiofilus")
+	ebiten.SetWindowTitle("Audiofilus")
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	// Dentro de gamescope (como se prueba en el PC un formato de consola), la
@@ -100,7 +104,11 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 	if os.Getenv("GAMESCOPE_WAYLAND_DISPLAY") != "" && !offline {
 		ebiten.SetFullscreen(true)
 	}
-	if err := ebiten.RunGame(app); err != nil {
+	ebiten.SetWindowIcon(windowIcons())
+	// La clase de la ventana es la de la entrada del lanzador (StartupWMClass):
+	// así Hyprland y la barra la asocian a audiofilus y a su icono.
+	opts := &ebiten.RunGameOptions{X11ClassName: desktop.ID, X11InstanceName: desktop.ID}
+	if err := ebiten.RunGameWithOptions(app, opts); err != nil {
 		return err
 	}
 	return app.Err()
@@ -126,4 +134,20 @@ func profileCPU(path string) {
 		pprof.StopCPUProfile()
 		log.Printf("cpu profile written to %s", path)
 	}()
+}
+
+// windowIcons son el icono de la app a 256 y a 32 píxeles (este tomando un
+// píxel de cada ocho: el original es pixel art ampliado ×8).
+func windowIcons() []image.Image {
+	big, err := png.Decode(bytes.NewReader(desktop.Icon))
+	if err != nil {
+		return nil
+	}
+	small := image.NewRGBA(image.Rect(0, 0, 32, 32))
+	for y := 0; y < 32; y++ {
+		for x := 0; x < 32; x++ {
+			small.Set(x, y, big.At(x*8+4, y*8+4))
+		}
+	}
+	return []image.Image{big, small}
 }

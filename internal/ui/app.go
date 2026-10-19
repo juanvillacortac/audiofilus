@@ -1330,6 +1330,9 @@ func (a *App) writeShots() error {
 	if err := a.writeLogo(filepath.Join(a.ShotsDir, "logo.png")); err != nil {
 		return err
 	}
+	if err := a.writeIcon(filepath.Join(a.ShotsDir, "icono.png")); err != nil {
+		return err
+	}
 	return nil
 }
 

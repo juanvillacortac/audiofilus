@@ -44,6 +44,8 @@ const usage = `usage:
   audiofilus ytm search|fetch|download <text>
                                   YouTube Music: search, get the first result to listen
                                   or save it to the library (needs yt-dlp next to the binary)
+  audiofilus desktop install|uninstall
+                                  add audiofilus to the Linux app launcher (Omarchy, GNOME, KDE...)
 
 Config lives next to the binary: audiofilus.json and data/.
 `
@@ -68,6 +70,8 @@ func main() {
 		os.Exit(runPad())
 	case "ytm":
 		os.Exit(runYTM(args))
+	case "desktop":
+		os.Exit(runDesktop(args))
 	case "help", "-h", "--help":
 		fmt.Print(usage)
 	default:

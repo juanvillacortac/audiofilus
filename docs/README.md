@@ -9,4 +9,5 @@
 | [rocknix-arkos.md](rocknix-arkos.md) | The same on ROCKNIX, ArkOS and dArkOS |
 | [power.md](power.md) | CPU and battery measurements, and how to measure |
 | [interface.md](interface.md) | The Ebitengine UI: screens, controls, remote sources and visualizers |
+| [linux-desktop.md](linux-desktop.md) | Linux desktop and Omarchy: launcher entry, icon, window class, media keys |
 | [portmaster.md](portmaster.md) | The PortMaster port: launcher, metadata, packaging |

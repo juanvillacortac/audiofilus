@@ -106,7 +106,8 @@ func (s *Server) propMap() prop.Map {
 			"CanQuit":             {Value: true, Emit: prop.EmitConst},
 			"CanRaise":            {Value: false, Emit: prop.EmitConst},
 			"HasTrackList":        {Value: false, Emit: prop.EmitConst},
-			"Identity":            {Value: "audiofilus", Emit: prop.EmitConst},
+			"Identity":            {Value: "Audiofilus", Emit: prop.EmitConst},
+			"DesktopEntry":        {Value: "audiofilus", Emit: prop.EmitConst}, // audiofilus.desktop: su nombre e icono
 			"SupportedUriSchemes": {Value: []string{"file"}, Emit: prop.EmitConst},
 			"SupportedMimeTypes":  {Value: []string{"audio/mpeg", "audio/ogg", "audio/flac", "audio/wav"}, Emit: prop.EmitConst},
 		},
