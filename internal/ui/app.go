@@ -1614,6 +1614,28 @@ func (a *App) writeFrames() error {
 		}
 	}
 	a.tracker = nil
+	// Los días especiales (eggs.go): la celebración entera sobre el
+	// reproductor, fingiendo la fecha.
+	for _, day := range []struct {
+		dir  string
+		kind int
+	}{{"dia-anio-nuevo", dayNewYear}, {"dia-audiofilus", dayAppBirthday}, {"dia-26-octubre", dayWifeBirthday}} {
+		dir := filepath.Join(a.FramesDir, day.dir)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+		a.screen, a.w = NowPlaying, 360
+		start := a.t + 1
+		a.shotDay, a.celebrateAt = day.kind, start
+		for i := 0; float64(i)/20 < celebrateFor; i++ {
+			a.t = start + float64(i)/20
+			a.position = 64 + float64(i)/20
+			if err := a.renderShot(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
+				return err
+			}
+		}
+		a.shotDay = dayNone
+	}
 	// Serpiente y Naves: sus bots, 12 s cada uno.
 	for _, gm := range []struct {
 		dir  string
