@@ -58,7 +58,7 @@ GOOS=windows go vet ./...
 | `internal/sfx/` | The synthesized interface sounds and the splash jingle |
 | `internal/desktop/` | The Linux launcher entry and icon (`audiofilus desktop install`); see [docs/linux-desktop.md](docs/linux-desktop.md) |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
-| `internal/tray/` | The Linux desktop tray icon (StatusNotifierItem and its menu over D-Bus) |
+| `internal/tray/` | The desktop tray icon: StatusNotifierItem over D-Bus on Linux, `Shell_NotifyIcon` on Windows |
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |

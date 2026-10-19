@@ -47,11 +47,11 @@ On the desktop the service publishes a tray icon (`internal/tray`) with the Stat
 
 - The icon is the logo's CD: `IconName=audiofilus` (installed by `desktop install`) plus the same image embedded as pixmaps (32 and 64 px, scaled without smoothing), so it shows even without the installed icon.
 - Click: open the interface (the same binary, no arguments, in its own session; nothing if one is already open). Middle click: pause or resume.
-- Menu (`com.canonical.dbusmenu`): what's playing, Play/Pause, Next, Previous, Open Audiofilus and Quit (stops everything, like Quit in the interface), in the interface's language. The tooltip shows what's playing; both refresh on every song and pause change.
+- Menu (`com.canonical.dbusmenu`): what's playing, Play/Pause, Next, Previous, Shuffle (a checkmark), Open Audiofilus and Quit (stops everything, like Quit in the interface), in the interface's language. The tooltip shows what's playing; both refresh on every song and pause change.
 - If the tray appears later or restarts (the bar reloads), the icon registers again (`NameOwnerChanged` of `org.kde.StatusNotifierWatcher`).
 - Opening the interface while the service is already playing skips the splash.
 
-Not on Windows yet (that would be `Shell_NotifyIcon` with its own message loop).
+On Windows the same icon, clicks and menu live in the notification area (`internal/tray/tray_windows.go`): `Shell_NotifyIcon` with a hidden window that receives the clicks and a popup menu, in pure Go (no cgo), its message loop on a goroutine locked to its own thread; it re-adds the icon when Explorer restarts (`TaskbarCreated`). The menu, labels and actions are shared (`internal/tray/tray.go`).
 
 ## Omarchy
 
