@@ -111,9 +111,18 @@ func (a *App) drawGames(dst *ebiten.Image) {
 		}
 		op.ColorScale.ScaleWithColor(c)
 		dst.DrawImage(img, op)
-		name := T(gc.name)
-		drawTextShadow(dst, name, BigFace, x+(cw-textWidth(name, BigFace))/2, yy+62, th.Text, th.Shadow)
-		drawTextWrap(dst, T(gc.desc), SmallFace, x+8, yy+84, cw-16, 10, th.Dim)
+		// El nombre, centrado; si no cabe, en dos líneas (y la descripción
+		// baja).
+		ny := yy + 62
+		lines := wrapLines(T(gc.name), BigFace, cw-10)
+		if len(lines) > 1 {
+			ny -= 6
+		}
+		for _, l := range lines {
+			drawTextShadow(dst, l, BigFace, x+(cw-textWidth(l, BigFace))/2, ny, th.Text, th.Shadow)
+			ny += 15
+		}
+		drawTextWrap(dst, T(gc.desc), SmallFace, x+8, max(yy+84, ny+7), cw-16, 10, th.Dim)
 		if gc.best == "" {
 			continue
 		}
@@ -139,9 +148,9 @@ func (a *App) readBestCached(file string) int {
 	return v
 }
 
-// drawTextWrap pinta s partido por palabras en líneas de como mucho w
-// píxeles, separadas lh.
-func drawTextWrap(dst *ebiten.Image, s string, face text.Face, x, y, w, lh int, c color.Color) {
+// wrapLines parte s por palabras en líneas de como mucho w píxeles.
+func wrapLines(s string, face text.Face, w int) []string {
+	var out []string
 	line := ""
 	for _, word := range strings.Fields(s) {
 		next := word
@@ -149,13 +158,22 @@ func drawTextWrap(dst *ebiten.Image, s string, face text.Face, x, y, w, lh int, 
 			next = line + " " + word
 		}
 		if line != "" && textWidth(next, face) > w {
-			drawText(dst, line, face, x, y, c)
-			y += lh
+			out = append(out, line)
 			next = word
 		}
 		line = next
 	}
 	if line != "" {
-		drawText(dst, line, face, x, y, c)
+		out = append(out, line)
+	}
+	return out
+}
+
+// drawTextWrap pinta s partido por palabras en líneas de como mucho w
+// píxeles, separadas lh.
+func drawTextWrap(dst *ebiten.Image, s string, face text.Face, x, y, w, lh int, c color.Color) {
+	for _, l := range wrapLines(s, face, w) {
+		drawText(dst, l, face, x, y, c)
+		y += lh
 	}
 }

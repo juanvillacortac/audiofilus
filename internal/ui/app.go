@@ -1471,7 +1471,7 @@ func (a *App) writeShots() error {
 	}
 	a.shotDay = dayNone
 	// Juegos y una partida de Cripta jugada por el bot unos segundos.
-	a.screen, a.gamesSel = Games, 0
+	a.screen, a.gamesSel = Games, 3
 	if err := shot("juegos"); err != nil {
 		return err
 	}
