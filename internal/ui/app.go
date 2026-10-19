@@ -101,6 +101,7 @@ type App struct {
 
 	juice   juiceState // las animaciones de la pantalla de reproducción (juice.go)
 	beat    beat       // el ritmo de la canción (meter.go)
+	steady  steadyGrid // su rejilla suave, para los juegos (meter.go)
 	beatHit bool       // en este fotograma hay un golpe
 
 	tetris *tetris     // Bloques (tetris.go): la partida, que se queda al cambiar de pantalla

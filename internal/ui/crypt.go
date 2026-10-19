@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // Cripta: un roguelike de ritmo. Una mazmorra por pisos donde solo se puede
@@ -100,8 +101,7 @@ type crypt struct {
 	// nuevo podía parecer ya usado (MISS sin fin).
 	lastPlayerT   float64 // el golpe en que se movió
 	lastResolvedT float64 // el último golpe resuelto (los enemigos ya actuaron)
-	pulseAt       float64 // el último golpe (para el suelo)
-	beatN         int     // cuántos golpes van (el suelo alterna)
+	goodAt        float64 // el último paso a tiempo (el aviso de la barra)
 	missAt        float64
 	frozen        bool    // la música está en pausa
 	bannerAt      float64 // el cartel del piso
@@ -315,23 +315,7 @@ func (a *App) syncCryptGrid(g *crypt) {
 		}
 		return
 	}
-	// El ancla, al último golpe: así cambiar el periodo no mueve los cercanos.
-	g.anchor += math.Floor((now-g.anchor)/g.per) * g.per
-	if tp == 0 {
-		return
-	}
-	if math.Abs(tp-g.per)/g.per > 0.08 {
-		g.per, g.anchor = tp, ta+math.Floor((now-ta)/tp)*tp
-		return
-	}
-	g.per += (tp - g.per) * 0.02
-	e := math.Mod(ta-g.anchor, g.per) // el desfase, entre -per/2 y per/2
-	if e > g.per/2 {
-		e -= g.per
-	} else if e < -g.per/2 {
-		e += g.per
-	}
-	g.anchor += e * 0.05
+	followGrid(&g.per, &g.anchor, tp, ta, now)
 }
 
 // cryptTol es cuánto antes o después del golpe vale un paso.
@@ -413,7 +397,7 @@ func (a *App) updateCrypt() {
 	}
 	if dx != 0 || dy != 0 {
 		if beat, ok := a.cryptCanStep(g); ok {
-			g.lastPlayerT = beat
+			g.lastPlayerT, g.goodAt = beat, a.t
 			a.cryptAct(dx, dy)
 		} else {
 			a.cryptMiss()
@@ -423,7 +407,6 @@ func (a *App) updateCrypt() {
 	// saltaron varios, no se ponen al día de golpe).
 	if closed > g.lastResolvedT+half && !g.over {
 		g.lastResolvedT = closed
-		g.pulseAt, g.beatN = a.t, g.beatN+1
 		a.cryptEnemies(closed)
 	}
 	// La cámara sigue al jugador.
@@ -674,6 +657,18 @@ var crArt = map[string][]string{
 		"...#..#...",
 		"..##..##..",
 	},
+	"stairs": {
+		"##########",
+		"#********#",
+		"#oooooooo#",
+		"#.******.#",
+		"#.oooooo.#",
+		"#..****..#",
+		"#..oooo..#",
+		"#...**...#",
+		"#........#",
+		"##########",
+	},
 	"coin": {
 		"..........",
 		"..........",
@@ -733,7 +728,10 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 	g, th := a.crypt, a.theme
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	top, bottom := topH, h-bottomH-22 // la barra de ritmo va abajo
-	rect(dst, 0, top, w, bottom-top, th.Shadow)
+	// Detrás de la mazmorra, la música: el fondo animado de la app (ya está
+	// pintado) algo oscurecido, y un sello que la escucha (drawCryptViz).
+	rect(dst, 0, top, w, bottom-top, withAlpha(th.Shadow, 0xa8))
+	a.drawCryptViz(dst, top, bottom)
 	// El temblor de un golpe.
 	sx, sy := 0, 0
 	if d := a.t - g.shakeAt; d >= 0 && d < 0.18 {
@@ -742,7 +740,7 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 	}
 	ox := w/2 - int(math.Round(g.camX)) + sx
 	oy := (top+bottom)/2 - int(math.Round(g.camY)) + sy
-	pulse := math.Max(0, 1-(a.t-g.pulseAt)/0.22)
+	pulse, beatN := a.cryptPulse(g)
 	fever := g.mult() == 4
 	lit1, lit2 := th.Accent, th.Accent2
 	if !fever {
@@ -777,9 +775,9 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 				// El suelo de discoteca: las baldosas se encienden por
 				// turnos en cada golpe, con más color en FEVER.
 				c := mix(th.Bg2, th.Text, 0.05)
-				if (x+y+g.beatN)%2 == 0 {
+				if (x+y+beatN)%2 == 0 {
 					lc := lit1
-					if (x/2+y/2+g.beatN)%2 == 0 {
+					if (x/2+y/2+beatN)%2 == 0 {
 						lc = lit2
 					}
 					amt := 0.16 + 0.34*pulse
@@ -795,10 +793,12 @@ func (a *App) drawCrypt(dst *ebiten.Image) {
 	// La escalera.
 	if g.seen[g.stairY][g.stairX] {
 		px, py := ox+g.stairX*crTile, oy+g.stairY*crTile
-		rect(clip, px+1, py+1, crTile-1, crTile-1, th.Shadow)
-		for i := 0; i < 4; i++ {
-			rect(clip, px+2+i*2, py+3+i*2, crTile-3-i*2, 1, mix(th.Text, th.Bg, float64(i)*0.2))
-		}
+		// Un hueco con peldaños que bajan hacia lo oscuro; brilla en el golpe.
+		rect(clip, px+1, py+1, crTile-1, crTile-1, color.RGBA{0, 0, 0, 0xff})
+		edge := mix(th.Bg2, th.Text, 0.3+0.3*pulse)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(px+1), float64(py+1))
+		clip.DrawImage(crSprite("stairs", edge, mix(th.Text, th.Accent, 0.3*pulse)), op)
 	}
 	// Las cosas, con su paso animado (un saltito).
 	for _, e := range g.ents {
@@ -912,26 +912,39 @@ func (a *App) drawCryptHUD(dst *ebiten.Image, top, bottom int) {
 		}
 		drawTextShadow(dst, s, SmallFace, w-margin-textWidth(s, SmallFace), top+16, c, th.Shadow)
 	}
-	// La barra de ritmo.
+	// La barra de ritmo: las marcas de los próximos golpes llegan al corazón
+	// justo en cada golpe; la zona clara alrededor es la ventana en la que un
+	// paso vale, y una marca se enciende al entrar en ella. La del golpe que
+	// ya se usó desaparece. Todo con el mismo reloj que el juego.
 	by := bottom + 4
 	rect(dst, 0, bottom, w, 22, th.Bg)
 	rect(dst, 0, bottom, w, 1, withAlpha(th.Accent, 0x50))
 	cx := w / 2
 	per, anchor := g.per, g.anchor
 	now := a.beatClock()
+	tol := cryptTol(per)
 	span := float64(min(w/2-20, 150))
-	for k := 0; k < 4; k++ {
-		next := anchor + (math.Floor((now-anchor)/per)+float64(k)+1)*per
-		d := (next - now) / (per * 4) // 0 en el golpe, 1 a cuatro golpes
-		if d < 0 || d > 1 || g.frozen {
+	pxs := span / (per * 4) // píxeles por segundo
+	win := int(tol * pxs)
+	rect(dst, cx-win, by+1, 2*win, 13, withAlpha(th.Accent, 0x22))
+	rect(dst, cx-win, by+1, 1, 13, withAlpha(th.Accent, 0x90))
+	rect(dst, cx+win-1, by+1, 1, 13, withAlpha(th.Accent, 0x90))
+	base := math.Floor((now - anchor) / per)
+	for k := 0; k <= 4 && !g.frozen; k++ {
+		bt := anchor + (base+float64(k))*per
+		d := bt - now // segundos que faltan (negativo: ya pasó)
+		if d < -tol || d > per*4 || math.Abs(bt-g.lastPlayerT) < per/2 {
 			continue
 		}
-		off := int(d * span)
-		c := withAlpha(th.Accent, uint8(255*(1-d*0.7)))
-		rect(dst, cx-off-2, by+3, 2, 9, c)
-		rect(dst, cx+off, by+3, 2, 9, c)
+		off := int(math.Round(d * pxs))
+		c := withAlpha(th.Accent, uint8(255*(1-math.Max(0, d)/(per*4)*0.7)))
+		if math.Abs(d) <= tol {
+			c = th.Text
+		}
+		rect(dst, cx-off-3, by+3, 2, 9, c)
+		rect(dst, cx+off+1, by+3, 2, 9, c)
 	}
-	pulse := math.Max(0, 1-(a.t-g.pulseAt)/0.2)
+	pulse, _ := a.cryptPulse(g)
 	hc := th.Accent2
 	if a.t-g.missAt < 0.25 {
 		hc = th.Dim
@@ -947,6 +960,30 @@ func (a *App) drawCryptHUD(dst *ebiten.Image, top, bottom int) {
 	op.GeoM.Scale(k, k)
 	op.GeoM.Translate(float64(cx), float64(by+7))
 	dst.DrawImage(crSprite("heart", hc, th.Text), op)
+	// El aviso del último paso, sobre el corazón.
+	label, lc, at := "", th.Text, math.Max(g.goodAt, g.missAt)
+	switch {
+	case a.t-at > 0.35:
+	case g.missAt > g.goodAt:
+		label, lc = "MISS", th.Dim
+	default:
+		label, lc = "GOOD", th.Accent
+	}
+	if label != "" {
+		drawTextShadow(dst, label, SmallFace, cx-textWidth(label, SmallFace)/2, bottom-10, lc, th.Shadow)
+	}
+}
+
+// cryptPulse es el latido del golpe (1 justo en él, 0 a los 0,2 s) y el
+// número del último golpe, con el reloj del juego: el suelo y el corazón
+// laten a la vez que las marcas llegan al centro.
+func (a *App) cryptPulse(g *crypt) (float64, int) {
+	if g.frozen || g.per == 0 {
+		return 0, 0
+	}
+	n := math.Floor((a.beatClock() - g.anchor) / g.per)
+	since := a.beatClock() - (g.anchor + n*g.per)
+	return math.Max(0, 1-since/0.2), int(n)
 }
 
 // drawCryptOver es el cartel de fin de partida.
@@ -984,4 +1021,59 @@ func isign(v int) int {
 		return -1
 	}
 	return 0
+}
+
+// drawCryptViz pinta, detrás de la mazmorra y casi transparente, un sello
+// que escucha la música: un círculo con una estrella de siete puntas que gira
+// despacio (más deprisa con más música) y palpita con los graves, doce runas
+// alrededor que se encienden con cada banda del espectro, y unas brasas que
+// suben. Líneas de un píxel, sin suavizar, como el resto.
+func (a *App) drawCryptViz(dst *ebiten.Image, top, bottom int) {
+	g, th := a.crypt, a.theme
+	w, h := dst.Bounds().Dx(), bottom-top
+	_, bass, bands, ok := a.meterNow()
+	if !ok || g.frozen {
+		bass = 0
+	}
+	pulse, _ := a.cryptPulse(g)
+	cx, cy := float32(w)/2, float32(top)+float32(h)/2
+	r := float32(min(w, h))*0.42 + float32(bass*4+pulse*2)
+	ring := withAlpha(th.Accent, uint8(28+40*pulse))
+	vector.StrokeCircle(dst, cx, cy, r, 1, ring, false)
+	vector.StrokeCircle(dst, cx, cy, r*0.82, 1, withAlpha(th.Accent, 22), false)
+	vector.StrokeCircle(dst, cx, cy, r*0.3, 1, withAlpha(th.Accent2, uint8(18+30*bass)), false)
+	// La estrella {7/3}: siete puntas unidas de tres en tres.
+	rot := a.t*0.08 + float64(bass)*0.3
+	pt := func(i int, rr float32) (float32, float32) {
+		an := rot + float64(i)*2*math.Pi/7 - math.Pi/2
+		return cx + rr*float32(math.Cos(an)), cy + rr*float32(math.Sin(an))
+	}
+	star := withAlpha(th.Accent2, uint8(20+36*pulse))
+	for i := 0; i < 7; i++ {
+		x0, y0 := pt(i, r*0.82)
+		x1, y1 := pt(i+3, r*0.82)
+		vector.StrokeLine(dst, x0, y0, x1, y1, 1, star, false)
+	}
+	// Las runas: una marca por banda en el anillo de fuera, al revés que la
+	// estrella; más larga y más clara cuanto más suena su banda.
+	for i := 0; i < 12; i++ {
+		v := 0.0
+		if ok {
+			v = bands[i*len(bands)/12]
+		}
+		an := -rot*0.6 + float64(i)*2*math.Pi/12
+		c, sn := float32(math.Cos(an)), float32(math.Sin(an))
+		l := 3 + float32(v)*7
+		vector.StrokeLine(dst, cx+c*(r+2), cy+sn*(r+2), cx+c*(r+2+l), cy+sn*(r+2+l), 1, withAlpha(th.Text, uint8(24+90*v)), false)
+	}
+	// Brasas: suben despacio, cada una a su ritmo, sin estado (su posición
+	// sale del tiempo y de su número).
+	for i := 0; i < 14; i++ {
+		f := float64(i)
+		speed := 6 + math.Mod(f*7.3, 9)
+		y := float64(h) - math.Mod(a.t*speed+f*37, float64(h))
+		x := math.Mod(f*97.1, float64(w)) + 4*math.Sin(a.t*0.7+f)
+		al := uint8(30 + 50*math.Sin(math.Pi*y/float64(h)))
+		rect(dst, int(x), top+int(y), 1, 1, withAlpha(th.Accent2, al))
+	}
 }

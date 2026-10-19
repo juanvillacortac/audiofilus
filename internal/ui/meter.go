@@ -343,6 +343,67 @@ func (a *App) fakeBeat() bool {
 	return false
 }
 
+// followGrid acerca una rejilla de ritmo (per, anchor) a la del medidor (tp,
+// ta): el tempo y la fase poco a poco, sin saltos que se vean ni se sientan, y
+// de golpe solo si el tempo es otro de verdad (otra canción). Sin tempo del
+// medidor (tp 0) se queda como está.
+func followGrid(per, anchor *float64, tp, ta, now float64) {
+	// El ancla, al último golpe: así cambiar el periodo no mueve los cercanos.
+	*anchor += math.Floor((now-*anchor) / *per) * *per
+	if tp == 0 {
+		return
+	}
+	if math.Abs(tp-*per) / *per > 0.08 {
+		*per, *anchor = tp, ta+math.Floor((now-ta)/tp)*tp
+		return
+	}
+	*per += (tp - *per) * 0.02
+	e := math.Mod(ta-*anchor, *per) // el desfase, entre -per/2 y per/2
+	if e > *per/2 {
+		e -= *per
+	} else if e < -*per/2 {
+		e += *per
+	}
+	*anchor += e * 0.05
+}
+
+// steadyGrid es la rejilla suave de los juegos (Bloques y Ritmo; Cripta
+// lleva la suya igual): sigue al medidor con followGrid, una vez por
+// fotograma. per es 0 mientras el medidor no haya dado ningún tempo.
+type steadyGrid struct {
+	per, anchor float64
+	at          float64 // el fotograma de la última vez
+}
+
+// steadyBeat da la rejilla suave, al día.
+func (a *App) steadyBeat() (per, anchor float64) {
+	s := &a.steady
+	if s.at == a.t && s.per > 0 {
+		return s.per, s.anchor
+	}
+	s.at = a.t
+	tp, ta := a.beat.period(), a.beat.anchor
+	switch {
+	case s.per == 0 && tp > 0:
+		s.per, s.anchor = tp, ta
+	case s.per > 0:
+		followGrid(&s.per, &s.anchor, tp, ta, a.beatClock())
+	}
+	return s.per, s.anchor
+}
+
+// steadyOnBeat dice si ahora cae a menos de tol de un golpe de la rejilla
+// suave.
+func (a *App) steadyOnBeat(tol float64) bool {
+	per, anchor := a.steadyBeat()
+	if per == 0 {
+		return false
+	}
+	now := a.beatClock()
+	g := anchor + math.Round((now-anchor)/per)*per
+	return math.Abs(now-g) <= tol
+}
+
 // beatPulse va de 1 (justo en el golpe) a 0 en 0,25 s.
 func (a *App) beatPulse() float64 {
 	if a.beat.at == 0 {

@@ -42,7 +42,7 @@ type rhNote struct {
 // rhythmGame es una partida de Ritmo.
 type rhythmGame struct {
 	notes      []rhNote
-	nextBeat   float64 // el próximo golpe de la rejilla al que aún no se le puso nota
+	nextBeat   float64 // desde dónde se busca la próxima corchea sin nota
 	lastLane   int
 	sameLane   int
 	score      int
@@ -159,20 +159,26 @@ func (a *App) updateRhythm() {
 		return
 	}
 	now := a.beatClock()
-	per := a.beat.period()
+	per, anchor := a.steadyBeat()
 	if per > 0 && a.isPlaying {
 		// Notas para las corcheas que van a llegar en rhTravel: los
 		// instrumentos que sonaron en esa corchea en los últimos compases,
 		// cada uno en su carril (bombo, caja, charles, platillo). Hasta
 		// tener el patrón, una nota por golpe.
+		// Cada nota cae en la corchea de la rejilla suave que sigue a la
+		// anterior: si la rejilla se corrige, las que vienen la siguen (antes
+		// se sumaba media corchea tras otra y un desfase quedaba para siempre).
 		half := per / 2
 		if g.nextBeat < now {
-			g.nextBeat = a.beat.at + math.Ceil((now-a.beat.at)/half)*half
+			g.nextBeat = now
 		}
 		_, _, bands, _ := a.meterNow()
 		e := laneEnergy(bands)
-		for g.nextBeat <= now+rhTravel {
-			t := g.nextBeat
+		for {
+			t := anchor + math.Ceil((g.nextBeat-anchor)/half)*half
+			if t > now+rhTravel {
+				break
+			}
 			slot := a.beat.slot(t)
 			if a.beat.drums.any {
 				on := a.beat.drums.at(slot, t, per)
@@ -188,7 +194,7 @@ func (a *App) updateRhythm() {
 			} else if slot%2 == 0 {
 				g.notes = append(g.notes, rhNote{t, g.pickLane(t, e)})
 			}
-			g.nextBeat += half
+			g.nextBeat = t + half/2 // la siguiente busca después de esta
 		}
 	}
 	// Lo tocado: la nota más cercana de ese carril, si cae en la ventana.

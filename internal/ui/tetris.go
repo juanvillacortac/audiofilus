@@ -494,7 +494,7 @@ func (a *App) hardDrop() {
 		n++
 	}
 	pts := 2 * n
-	if a.beat.onBeat(a.beatClock(), 0.1) {
+	if a.steadyOnBeat(0.12) {
 		g.combo++
 		pts = (2*pts + 50*(g.level()+1)) * g.combo
 		if g.fever() {
@@ -804,17 +804,21 @@ func (a *App) drawLane(dst *ebiten.Image, x, y, w int) {
 	const h = 9
 	panel(dst, x, y, w, h, th.Bg2)
 	hit := x + 6
-	pulse := a.beatPulse()
+	per, anchor := a.steadyBeat()
+	now := a.beatClock()
+	last := anchor + math.Floor((now-anchor)/per)*per // el último golpe
+	pulse := 0.0
+	if per > 0 {
+		pulse = math.Max(0, 1-(now-last)/0.25)
+	}
 	rect(dst, hit, y+1, 2, h-2, mix(th.Accent, th.Text, pulse)) // la línea
-	p := a.beat.period()
-	if p <= 0 || a.beat.at == 0 {
+	if per <= 0 {
 		return
 	}
 	const ahead = 1.6 // segundos que se ven
-	// Los golpes que vienen, desde el último (de la rejilla).
+	// Los golpes que vienen, de la rejilla suave (la misma del juicio).
 	for k := 1; k <= 8; k++ {
-		at := a.beat.at + float64(k)*p
-		dt := at - a.beatClock()
+		dt := last + float64(k)*per - now
 		if dt < 0 || dt > ahead {
 			continue
 		}
