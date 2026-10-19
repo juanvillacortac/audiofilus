@@ -90,6 +90,10 @@ type UI struct {
 	RadioCountry string `json:"radio_country,omitempty"`
 	// GameBoy es el modo Game Boy (el código Konami): todo en cuatro verdes.
 	GameBoy bool `json:"game_boy,omitempty"`
+	// CloseToBackground: al cerrar la interfaz (la ventana, o si muere), la
+	// música sigue sonando en segundo plano. Sin poner (nil), sí en el
+	// escritorio y no en las portátiles (ver ui.App.keepPlaying).
+	CloseToBackground *bool `json:"close_to_background,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

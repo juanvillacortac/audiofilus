@@ -44,6 +44,9 @@ type Client struct {
 	queue  []string // la última cola pedida con "queue"
 
 	attachConn net.Conn // la conexión de "attach", para cerrarla al salir
+	// keepPlaying: al cerrarse la interfaz, la música sigue (Ajustes). Se le
+	// dice al servicio al cambiar y en cada attach (que lo reinicia).
+	keepPlaying bool
 
 	// OnWake se llama (desde otro hilo) cuando el servicio sale del sleep: la
 	// interfaz no dibuja nada en sleep y necesita que la despierten.
@@ -81,7 +84,11 @@ func (c *Client) attach() {
 		if err == nil {
 			c.mu.Lock()
 			c.attachConn = conn
+			keep := c.keepPlaying
 			c.mu.Unlock()
+			if keep {
+				c.Background()
+			}
 			// Bloquea hasta que se cierre. Cada byte que llega es un aviso de que
 			// el estado cambió (control.Notify): se pregunta ya.
 			buf := make([]byte, 16)
@@ -103,6 +110,24 @@ func (c *Client) attach() {
 // Background le dice al servicio que siga sonando cuando la interfaz se cierre.
 func (c *Client) Background() {
 	_, _ = control.Call(c.paths.Socket, control.Request{Cmd: "background"})
+}
+
+// SetKeepPlaying elige si la música sigue al cerrarse la interfaz de cualquier
+// forma (cerrar la ventana, o que muera): se lo dice al servicio ya y tras
+// cada attach.
+func (c *Client) SetKeepPlaying(on bool) {
+	c.mu.Lock()
+	changed := c.keepPlaying != on
+	c.keepPlaying = on
+	c.mu.Unlock()
+	if !changed {
+		return
+	}
+	if on {
+		c.Send("background")
+	} else {
+		c.Send("background", "off")
+	}
 }
 
 // daemonPath es el binario del servicio: este mismo (audiofilus es un solo

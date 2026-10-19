@@ -714,6 +714,9 @@ func (a *App) syncStatus() {
 	// Cada cambio de volumen (desde aquí, los botones de la consola o la CLI)
 	// muestra el indicador; al conectar por primera vez, no.
 	if st.Platform != "" {
+		// Al cerrar, seguir sonando: el valor por defecto depende de la
+		// plataforma, que solo se sabe con el primer estado.
+		defer func() { a.client.SetKeepPlaying(a.keepPlaying()) }()
 		if st.VolumeSeq != a.volumeSeq && a.status.Platform != "" {
 			a.showVolume()
 			// Los botones de volumen de la consola no pasan por la interfaz

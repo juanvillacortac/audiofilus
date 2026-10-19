@@ -30,6 +30,7 @@ const (
 	setSounds
 	setUISounds
 	setDonate
+	setCloseBg
 	setCount
 )
 
@@ -99,6 +100,7 @@ var settingSections = []settingSection{
 		{setDonate, "cup", tileAction},
 	}},
 	{"sec_exit", []settingTile{
+		{setCloseBg, "bg", tileToggle},
 		{setExitBg, "bg", tileAction},
 		{setExitStop, "power", tileAction},
 	}},
@@ -265,6 +267,13 @@ func (a *App) changeSetting(id, step int) {
 	case setClock:
 		a.cfg.UI.Clock24 = !a.cfg.UI.Clock24
 		a.saveConfig()
+	case setCloseBg:
+		on := !a.keepPlaying()
+		a.cfg.UI.CloseToBackground = &on
+		a.saveConfig()
+		if a.client != nil {
+			a.client.SetKeepPlaying(on)
+		}
 	case setSwapAB:
 		a.cfg.UI.SwapAB = !a.cfg.UI.SwapAB
 		a.input.swapAB = a.cfg.UI.SwapAB
@@ -352,6 +361,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.cfg.UI.Clock24)
 	case setSwapAB:
 		return onOffLabel(a.cfg.UI.SwapAB)
+	case setCloseBg:
+		return onOffLabel(a.keepPlaying())
 	case setExitBg:
 		return T("exit_bg_sub")
 	case setExitStop:
@@ -382,6 +393,8 @@ func (a *App) settingOn(id int) bool {
 		return a.cfg.UI.Clock24
 	case setSwapAB:
 		return a.cfg.UI.SwapAB
+	case setCloseBg:
+		return a.keepPlaying()
 	}
 	return false
 }
@@ -392,6 +405,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
+		T("set_close_bg"),
 	}
 }
 
@@ -628,4 +642,16 @@ func (a *App) drawChips(dst *ebiten.Image, id, n, cur, x, y, w int, sel bool) bo
 		x += cw + gap
 	}
 	return true
+}
+
+// keepPlaying dice si, al cerrarse la interfaz, la música sigue sonando
+// (Ajustes → Al cerrar, seguir sonando). Si no se eligió, sí en el escritorio
+// (cerrar la ventana de un reproductor no suele parar la música) y no en las
+// portátiles (el atajo de salida de PortMaster cierra la interfaz, y ahí se
+// espera que pare).
+func (a *App) keepPlaying() bool {
+	if v := a.cfg.UI.CloseToBackground; v != nil {
+		return *v
+	}
+	return a.status.Platform == "desktop"
 }

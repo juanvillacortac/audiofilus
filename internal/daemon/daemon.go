@@ -585,11 +585,15 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		d.mu.Unlock()
 		return nil, nil
 	case "background":
-		// La interfaz se va a cerrar pidiendo seguir sonando: segundo plano.
+		// La interfaz pide seguir sonando cuando se cierre (al salir, o desde
+		// que se conecta si así está en Ajustes); "background off" lo retira.
+		on := len(req.Args) == 0 || req.Args[0] != "off"
 		d.mu.Lock()
-		d.background = true
+		d.background = on
 		d.mu.Unlock()
-		log.Print("UI going to background: music keeps playing")
+		if on {
+			log.Print("UI going to background: music keeps playing")
+		}
 	case "detached":
 		// Se cerró la conexión de una interfaz (al salir o porque murió). Si no
 		// pidió segundo plano, la música no se queda sonando sola: se pausa,
