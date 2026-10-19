@@ -10,8 +10,9 @@ Releases are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
 | Asset | What it is |
 |---|---|
 | `audiofilus-portmaster.zip` | The PortMaster port (`dist/audiofilus.zip`) |
-| `audiofilus-linux-amd64.tar.gz` | Desktop service + UI, with licenses |
-| `audiofilus-linux-arm64.tar.gz` | Handheld service + UI, with licenses |
+| `audiofilus-linux-amd64.tar.gz` | The desktop binary (UI, service and CLI in one), with licenses |
+| `audiofilus-linux-arm64.tar.gz` | The same for arm64 |
+| `audiofilus-windows-amd64.zip` | `audiofilus.exe`, with licenses |
 | `SHA256SUMS` | Checksums of the above |
 
 ## Steps
