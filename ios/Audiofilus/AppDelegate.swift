@@ -52,9 +52,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // zona segura (se la dice sendSafeArea). Abre
 // también el selector de carpetas cuando audiofilus lo pide (Ajustes →
 // Carpeta).
-class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPickerDelegate {
+class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPickerDelegate, UITextFieldDelegate {
     let game = GameViewController()
     private static let bookmarkKey = "musicFolderBookmark"
+    // keyboardField es invisible: enfocarlo abre el teclado del sistema, y lo
+    // que se escribe va a audiofilus (showKeyboard).
+    private let keyboardField = UITextField(frame: CGRect(x: 0, y: -100, width: 10, height: 10))
+    private var closingKeyboard = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +68,48 @@ class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPicker
         game.view.frame = view.bounds
         game.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         game.didMove(toParent: self)
+
+        keyboardField.autocorrectionType = .no
+        keyboardField.autocapitalizationType = .none
+        keyboardField.spellCheckingType = .no
+        keyboardField.returnKeyType = .done
+        keyboardField.keyboardAppearance = .dark
+        keyboardField.delegate = self
+        keyboardField.addTarget(self, action: #selector(keyboardChanged), for: .editingChanged)
+        view.addSubview(keyboardField)
+    }
+
+    // showKeyboard lo llama audiofilus (desde su hilo) cuando empieza o deja
+    // de escribirse algo: la búsqueda, un nombre, una dirección o una
+    // contraseña (secret).
+    func showKeyboard(_ show: Bool, text: String?, secret: Bool) {
+        DispatchQueue.main.async {
+            if show {
+                self.keyboardField.isSecureTextEntry = secret
+                self.keyboardField.text = text ?? ""
+                self.keyboardField.becomeFirstResponder()
+            } else if self.keyboardField.isFirstResponder {
+                self.closingKeyboard = true
+                self.keyboardField.resignFirstResponder()
+                self.closingKeyboard = false
+            }
+        }
+    }
+
+    @objc private func keyboardChanged() {
+        MobileKeyboardText(keyboardField.text ?? "")
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        MobileKeyboardDone()
+        return false
+    }
+
+    // Si el usuario baja el teclado (no audiofilus), se deja de escribir.
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if !closingKeyboard {
+            MobileKeyboardClosed()
+        }
     }
 
     // La barra de estado del sistema (hora, batería), en claro sobre el

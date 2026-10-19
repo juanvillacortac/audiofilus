@@ -359,7 +359,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 
 	// El teclado en pantalla, abajo, mientras se escribe con el mando.
 	kbTop := bottom
-	if s.typing && !a.tabFocus && (a.input.usingPad || a.offline || a.input.touch) {
+	if s.typing && !a.tabFocus && !a.nativeKeyboard() && (a.input.usingPad || a.offline || a.input.touch) {
 		const keyH = 13
 		kbTop = bottom - len(oskKeys)*keyH
 		kw := w / 10

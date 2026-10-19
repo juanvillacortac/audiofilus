@@ -313,6 +313,11 @@ func (a *App) updatePrompt() {
 		}
 		p.text = p.text[:len(p.text)-1]
 	}
+	if a.promptAccept { // Intro en el teclado del sistema (keyboard.go)
+		a.promptAccept = false
+		accept()
+		return
+	}
 	// Con el teclado del PC se escribe directamente.
 	if chars := ebiten.AppendInputChars(nil); len(chars) > 0 {
 		for _, r := range chars {
@@ -422,6 +427,9 @@ func (a *App) drawPrompt(dst *ebiten.Image) {
 	keys := p.keys()
 	kbTop := h - bottomH - 6 - len(keys)*keyH
 	kw := bw / 10
+	if a.nativeKeyboard() {
+		keys = nil // se escribe con el teclado del sistema (keyboard.go)
+	}
 	for r, row := range keys {
 		for c, k := range row {
 			kx, ky := x+c*kw, kbTop+r*keyH
@@ -436,5 +444,9 @@ func (a *App) drawPrompt(dst *ebiten.Image) {
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg)
+	if a.nativeKeyboard() {
+		a.drawHints(dst, []hint{{"START", T("h_ok")}})
+		return
+	}
 	a.drawHints(dst, []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_ok")}})
 }

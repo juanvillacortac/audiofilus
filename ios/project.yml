@@ -47,6 +47,8 @@ targets:
       path: Audiofilus/Info.plist
       properties:
         CFBundleDisplayName: Audiofilus
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.music
         UILaunchScreen: {}
         UIRequiresFullScreen: true

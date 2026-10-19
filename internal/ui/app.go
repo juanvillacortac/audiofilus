@@ -80,13 +80,16 @@ type App struct {
 	// pantalla (el móvil, con DrawBackdrop): la interfaz no pinta el suyo y
 	// no se nota el borde de la zona segura.
 	ExternalBackdrop bool
-	artSent          string     // la canción cuya portada ya se mandó (sendArt)     // el ratón o el dedo y las zonas tocables (pointer.go)
-	drawer           *tabDrawer // el desplegable de pestañas abierto (touchui.go)
-	queueScr         scroller   // el desplazamiento de la cola con el dedo
-	runnerDuckY      int        // en Carrera, desde dónde un dedo apoyado agacha
-	settingsScr      scroller   // y el de Ajustes (su posición va en settingsScroll)
-	splashing        bool       // se está mostrando el splash
-	splashT          float64    // segundos de splash
+	artSent          string       // la canción cuya portada ya se mandó (sendArt)     // el ratón o el dedo y las zonas tocables (pointer.go)
+	drawer           *tabDrawer   // el desplegable de pestañas abierto (touchui.go)
+	kbEvents         chan kbEvent // lo que llega del teclado del sistema (keyboard.go)
+	kbField          string       // el campo con el teclado del sistema abierto ("" ninguno)
+	promptAccept     bool         // Intro en el teclado del sistema: aceptar el nombre
+	queueScr         scroller     // el desplazamiento de la cola con el dedo
+	runnerDuckY      int          // en Carrera, desde dónde un dedo apoyado agacha
+	settingsScr      scroller     // y el de Ajustes (su posición va en settingsScroll)
+	splashing        bool         // se está mostrando el splash
+	splashT          float64      // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
 	// volumen en la escala única (0..2: el sistema hasta 1, el refuerzo de la
@@ -240,6 +243,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
+		kbEvents: make(chan kbEvent, 64),
 	}
 	a.input.swapAB = cfg.UI.SwapAB
 	// En el móvil se empieza con el dedo (AUDIOFILUS_TOUCH lo fuerza, para
@@ -423,6 +427,7 @@ func (a *App) Update() error {
 
 	a.syncStatus()
 	a.sendArt()
+	a.updateKeyboard()
 	if a.drawer != nil {
 		a.updateDrawer()
 		return nil

@@ -40,6 +40,10 @@ import (
 // (MPNowPlayingInfoCenter; sus botones vuelven con Toggle, Next...).
 type Host interface {
 	PickFolder()
+	// ShowKeyboard abre (show) o cierra el teclado del sistema, con el texto
+	// que ya hay y si es una contraseña; lo que se escribe vuelve con
+	// KeyboardText, Intro con KeyboardDone y bajarlo con KeyboardClosed.
+	ShowKeyboard(show bool, text string, secret bool)
 	// NowPlaying es lo que suena: la duración y la posición en segundos, si
 	// suena o está en pausa, y la portada (JPEG o PNG; vacía si no hay).
 	NowPlaying(title, artist, album string, duration, position float64, playing bool, artwork []byte)
@@ -333,6 +337,7 @@ func start(home, tmp, langs string) error {
 	}
 	if host != nil {
 		ui.PickFolder = host.PickFolder
+		ui.ShowKeyboard = host.ShowKeyboard
 	}
 	go g.watch(filepath.Join(home, "data"))
 	if err := ui.LoadFonts(); err != nil {
@@ -357,6 +362,7 @@ func SetHost(h Host) {
 	host = h
 	if h != nil {
 		ui.PickFolder = h.PickFolder
+		ui.ShowKeyboard = h.ShowKeyboard
 	}
 }
 
@@ -434,3 +440,24 @@ func Previous() { call("prev") }
 
 // SeekTo salta a seconds (la barra de la pantalla bloqueada).
 func SeekTo(seconds float64) { call("seek", strconv.FormatFloat(seconds, 'f', 1, 64)) }
+
+// KeyboardText es el texto entero del teclado del sistema, tras cada cambio.
+func KeyboardText(text string) {
+	if a := g.current(); a != nil {
+		a.SetKeyboardText(text)
+	}
+}
+
+// KeyboardDone es Intro en el teclado del sistema.
+func KeyboardDone() {
+	if a := g.current(); a != nil {
+		a.KeyboardDone()
+	}
+}
+
+// KeyboardClosed es que el usuario bajó el teclado sin Intro.
+func KeyboardClosed() {
+	if a := g.current(); a != nil {
+		a.KeyboardClosed()
+	}
+}
