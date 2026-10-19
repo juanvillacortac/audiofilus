@@ -44,6 +44,9 @@ type Client struct {
 	queue  []string // la última cola pedida con "queue"
 
 	attachConn net.Conn // la conexión de "attach", para cerrarla al salir
+	// WasRunning dice si el servicio ya corría al abrir la interfaz (la
+	// música seguía en segundo plano): entonces no hay splash.
+	WasRunning bool
 	// keepPlaying: al cerrarse la interfaz, la música sigue (Ajustes). Se le
 	// dice al servicio al cambiar y en cada attach (que lo reinicia).
 	keepPlaying bool
@@ -64,7 +67,9 @@ func NewClient(paths config.Paths) *Client {
 
 // Start se asegura de que el servicio corre y empieza a seguir su estado.
 func (c *Client) Start() error {
-	if _, err := control.Call(c.paths.Socket, control.Request{Cmd: "status"}); errors.Is(err, control.ErrNotRunning) {
+	_, err := control.Call(c.paths.Socket, control.Request{Cmd: "status"})
+	c.WasRunning = err == nil
+	if errors.Is(err, control.ErrNotRunning) {
 		if err := c.startDaemon(); err != nil {
 			return err
 		}

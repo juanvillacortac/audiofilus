@@ -33,6 +33,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/queue"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
+	"github.com/juanvillacortac/audiofilus/internal/tray"
 )
 
 // defaultLease es lo que dura "awake on" si no se dice otra cosa. La interfaz
@@ -99,11 +100,34 @@ func Run(paths config.Paths) error {
 	} else {
 		defer mp.Close()
 	}
+	// La bandeja del sistema, solo en el escritorio (las portátiles no tienen).
+	var tr *tray.Tray
+	if d.plat.Name() == "desktop" {
+		tr, err = tray.Start(eng, tray.Options{
+			Home: paths.Base,
+			UIOpen: func() bool {
+				d.mu.Lock()
+				defer d.mu.Unlock()
+				return d.attached > 0
+			},
+			Quit: func() { d.quitOnce.Do(func() { close(d.quit) }) },
+			Lang: cfg.Language,
+		})
+		if err != nil {
+			log.Printf("system tray disabled: %v", err)
+			tr = nil
+		} else {
+			defer tr.Close()
+		}
+	}
 	eng.OnPlayingChanged = func(playing bool) {
 		d.updateAwake()
 		d.saveState()
 		if mp != nil {
 			mp.Update()
+		}
+		if tr != nil {
+			tr.Update()
 		}
 	}
 	// Lo remoto (Subsonic): se baja a data/cache sin parar el audio, y sus
@@ -165,6 +189,9 @@ func Run(paths config.Paths) error {
 		log.Printf("now playing: %s - %s", t.Artist, t.Title)
 		if mp != nil {
 			mp.Update()
+		}
+		if tr != nil {
+			tr.Update()
 		}
 	}
 	d.restore()

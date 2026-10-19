@@ -41,6 +41,18 @@ The window's class (X11 `WM_CLASS`, which Hyprland shows as `class`) is `audiofi
 
 The service registers `org.mpris.MediaPlayer2.audiofilus` on the session bus (`internal/mpris`): Identity "Audiofilus", `DesktopEntry` "audiofilus" (so bars show the right name and icon), metadata with the cover, play/pause, next, previous, seek, shuffle, repeat and volume. On a desktop without a session bus (Windows, a bare console) it's skipped.
 
+## System tray
+
+On the desktop the service publishes a tray icon (`internal/tray`) with the StatusNotifierItem standard over D-Bus, the one Omarchy's bar (`omarchy.tray`), Waybar, KDE and GNOME with AppIndicator understand. It lives in the service, so it stays while the window is closed and the music plays in the background:
+
+- The icon is the logo's CD: `IconName=audiofilus` (installed by `desktop install`) plus the same image embedded as pixmaps (32 and 64 px, scaled without smoothing), so it shows even without the installed icon.
+- Click: open the interface (the same binary, no arguments, in its own session; nothing if one is already open). Middle click: pause or resume.
+- Menu (`com.canonical.dbusmenu`): what's playing, Play/Pause, Next, Previous, Open Audiofilus and Quit (stops everything, like Quit in the interface), in the interface's language. The tooltip shows what's playing; both refresh on every song and pause change.
+- If the tray appears later or restarts (the bar reloads), the icon registers again (`NameOwnerChanged` of `org.kde.StatusNotifierWatcher`).
+- Opening the interface while the service is already playing skips the splash.
+
+Not on Windows yet (that would be `Shell_NotifyIcon` with its own message loop).
+
 ## Omarchy
 
 - **Launcher:** after `audiofilus desktop install`, "Audiofilus" appears in the app launcher (Super + Space) with its icon.

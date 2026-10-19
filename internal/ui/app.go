@@ -238,6 +238,9 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		if err := a.client.Start(); err != nil {
 			return nil, err
 		}
+		// Volver de segundo plano (el servicio ya sonaba) es volver a la
+		// app, no abrirla: sin splash.
+		a.splashing = !a.client.WasRunning
 	}
 	a.initYT()
 	a.initServers()

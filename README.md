@@ -119,6 +119,8 @@ On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy]
 - **App launcher:** Audiofilus shows up with its icon, with Play/Pause, Next and Previous actions.
 - **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
 - **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
+- **System tray:** the audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous and quit.
+- **Closing the window keeps the music playing** (a setting, on by default on the desktop); Quit stops everything.
 
 Details in [docs/linux-desktop.md](docs/linux-desktop.md).
 
