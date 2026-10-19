@@ -174,6 +174,10 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 	}
 }
 
+// actRandom es el botón táctil "Al azar" (no es una acción del mando: es X
+// dos veces).
+const actRandom = actCount
+
 // drawTouchHints es la ayuda de abajo para el dedo: sin teclas ni botones
 // del mando, cada acción es un botón con su nombre que se toca. Las de las
 // flechas no salen (con el dedo se toca o se desliza).
@@ -188,6 +192,9 @@ func (a *App) drawTouchHints(dst *ebiten.Image, hints []hint, y int) {
 	total := 0
 	for _, hn := range hints {
 		act, ok := hintActions[hn.btn]
+		if hn.btn == "XX" {
+			act, ok = actRandom, true
+		}
 		if !ok || act == ActLeft || act == ActRight || act == ActUp || act == ActDown {
 			continue
 		}
@@ -208,7 +215,13 @@ func (a *App) drawTouchHints(dst *ebiten.Image, hints []hint, y int) {
 		panel(dst, x, y+2, bw, bottomH-4, withAlpha(th.Bg2, 0xe0))
 		drawText(dst, it.label, SmallFace, x+(bw-textWidth(it.label, SmallFace))/2, y+(bottomH-smallCap)/2, th.Text)
 		act := it.act
-		a.tapZone(x, y, bw, bottomH, func() { a.input.inject(act) })
+		a.tapZone(x, y, bw, bottomH, func() {
+			if act == actRandom {
+				a.playRandomSong()
+				return
+			}
+			a.input.inject(act)
+		})
 		x += bw + gap
 	}
 }
@@ -452,7 +465,13 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	a.drawSpectrum(dst, margin, vy0, w-2*margin, vy1-vy0)
 	a.drawProgress(dst, margin+a.seekNudge(), vy1+8, w-2*margin)
 
-	a.drawHints(dst, []hint{{"A", T("h_pause")}, {"X", T("h_shuffle")}, {"START", T("h_more")}, {"SEL", T("h_menu")}})
+	hints := []hint{{"A", T("h_pause")}, {"X", T("h_shuffle")}, {"START", T("h_more")}, {"SEL", T("h_menu")}}
+	if a.input.touch {
+		// Con el dedo, aleatorio ya está en los controles: el botón de abajo
+		// pone una canción al azar (lo que hace X dos veces).
+		hints[1] = hint{"XX", T("h_random")}
+	}
+	a.drawHints(dst, hints)
 }
 
 // drawNothing es la pantalla de reproducción cuando no suena nada.
