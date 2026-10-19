@@ -187,6 +187,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 		screen.Fill(color.Black)
 	} else {
 		a.DrawBackdrop(screen)
+		// Arriba y abajo, el oscuro de las barras: llegan hasta el borde.
+		a.DrawInsets(screen, g.padT, g.padB)
 	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(g.padL), float64(g.padT))

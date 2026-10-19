@@ -1171,6 +1171,20 @@ func (a *App) Asleep() bool { return a.sleeping }
 // no va contenido).
 func (a *App) DrawBackdrop(dst *ebiten.Image) { drawBackground(dst, a.theme, a.t) }
 
+// DrawInsets pinta las franjas de la zona segura de arriba (top) y abajo
+// (bottom) del oscuro de las barras de la interfaz (la de arriba y la de la
+// ayuda), sobre el fondo: las barras parecen llegar hasta el borde, detrás
+// de la hora y la isla y bajo la raya de inicio.
+func (a *App) DrawInsets(dst *ebiten.Image, top, bottom int) {
+	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
+	bar := withAlpha(a.theme.Shadow, 0x99) // el de drawTopBar y drawHints
+	if a.sleeping {
+		bar = color.RGBA{0, 0, 0, 0xff}
+	}
+	rect(dst, 0, 0, w, top, bar)
+	rect(dst, 0, h-bottom, w, bottom, bar)
+}
+
 // SetPointerOffset dice dónde empieza la interfaz dentro de la pantalla (en
 // el móvil, tras la zona segura): se resta a los toques.
 func (a *App) SetPointerOffset(x, y int) { a.ptrOX, a.ptrOY = x, y }
@@ -2050,6 +2064,7 @@ func (a *App) render(path string, w int, draw func(*ebiten.Image)) error {
 		draw(inner)
 		a.ExternalBackdrop = false
 		drawBackground(canvas, a.theme, a.t)
+		a.DrawInsets(canvas, top, bot)
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(0, float64(top))
 		canvas.DrawImage(inner, op)
