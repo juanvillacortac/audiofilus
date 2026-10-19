@@ -121,7 +121,29 @@ type tileRect struct {
 
 // settingsLayout coloca las baldosas para un ancho w: dos columnas en pantallas
 // estrechas y tres en las anchas. Devuelve también el alto total.
-func settingsLayout(w int) ([]tileRect, []int, int) {
+// sections son las secciones de Ajustes que tienen sentido aquí: el sleep
+// de la app (apagar la pantalla, los gestos del bolsillo) es de las
+// portátiles, y en el móvil la música ya sigue al salir de la app (sin
+// "Segundo plano" ni "Al cerrar, seguir"). Una sección sin baldosas no sale.
+func (a *App) sections() []settingSection {
+	hide := map[int]bool{setSleep: !a.canSleep(), setSleepMode: !a.canSleep(),
+		setExitBg: a.mobile(), setCloseBg: a.mobile()}
+	var out []settingSection
+	for _, sec := range settingSections {
+		s := settingSection{title: sec.title}
+		for _, t := range sec.tiles {
+			if !hide[t.id] {
+				s.tiles = append(s.tiles, t)
+			}
+		}
+		if len(s.tiles) > 0 {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+func settingsLayout(w int, secs []settingSection) ([]tileRect, []int, int) {
 	cols := 2
 	if w >= 380 {
 		cols = 3
@@ -130,7 +152,7 @@ func settingsLayout(w int) ([]tileRect, []int, int) {
 	var out []tileRect
 	var heads []int
 	y := 0
-	for _, sec := range settingSections {
+	for _, sec := range secs {
 		heads = append(heads, y)
 		y += secH
 		for i, t := range sec.tiles {
@@ -148,7 +170,7 @@ func settingsLayout(w int) ([]tileRect, []int, int) {
 // updateSettings atiende los botones en Ajustes.
 func (a *App) updateSettings() {
 	in := &a.input
-	tiles, _, _ := settingsLayout(a.w)
+	tiles, _, _ := settingsLayout(a.w, a.sections())
 	a.settingsSel = min(a.settingsSel, len(tiles)-1)
 	cur := tiles[a.settingsSel].tile
 	if a.settingsQR {
@@ -417,7 +439,8 @@ func settingNames() [setCount]string {
 func (a *App) drawSettings(dst *ebiten.Image) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	th := a.theme
-	tiles, heads, total := settingsLayout(w)
+	secs := a.sections()
+	tiles, heads, total := settingsLayout(w, secs)
 	sel := min(a.settingsSel, len(tiles)-1)
 	top, bottom := topH+4, h-bottomH-2
 	view := bottom - top
@@ -451,7 +474,7 @@ func (a *App) drawSettings(dst *ebiten.Image) {
 	oy := top - int(a.settingsScroll+0.5)
 
 	area := dst.SubImage(image.Rect(0, top, w, bottom)).(*ebiten.Image)
-	for i, sec := range settingSections {
+	for i, sec := range secs {
 		y := oy + heads[i]
 		if y+secH < top || y > bottom {
 			continue

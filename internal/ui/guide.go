@@ -107,6 +107,11 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 		{{"g_here", own}, {"g_everywhere", all}},
 		{{"g_sleep_head", guideSleep}, {"g_bg_head", guideBackground}},
 	}
+	if !a.canSleep() {
+		// Los gestos del sleep y los atajos de FN en segundo plano son de
+		// las portátiles.
+		cols = cols[:1]
+	}
 	// En vertical, si todo cabe en una columna, va en una: en dos, a 240 de
 	// ancho, no se leen.
 	tall := 0

@@ -489,8 +489,21 @@ func (a *App) maybeSleep() {
 	a.enterSleep()
 }
 
+// canSleep dice si hay sleep de la app (apagar la pantalla y controlar con
+// gestos desde el bolsillo): en las portátiles, no en el escritorio ni en el
+// móvil (ahí lo hace el sistema).
+func (a *App) canSleep() bool {
+	return a.offline || !a.mobile() && a.status.Platform != "desktop"
+}
+
+// mobile dice si es la app del móvil (el servicio va en el mismo proceso).
+func (a *App) mobile() bool { return StartService != nil }
+
 // enterSleep empieza a apagar la pantalla: primero se disuelve en negro.
 func (a *App) enterSleep() {
+	if !a.canSleep() {
+		return
+	}
 	a.menu = nil
 	a.fadingOut, a.fadingIn, a.sleepFade = true, false, 0
 	a.woke.Store(false)

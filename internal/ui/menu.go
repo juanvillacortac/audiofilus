@@ -233,9 +233,16 @@ func (a *App) openNowMenu() {
 			},
 			active: func() bool { return orDefault(a.status.Repeat, "off") != "off" },
 			value:  func() string { return T("repeat_" + orDefault(a.status.Repeat, "off")) }},
-		menuItem{label: T("t_sleep"), icon: "moon", do: func() { a.enterSleep() }},
-		menuItem{label: T("t_bg"), icon: "bg", do: func() { a.exit(true) }},
-		menuItem{label: T("t_quit"), icon: "power", do: func() { a.exit(false) }, danger: true})
+	)
+	// Apagar la pantalla, solo en las portátiles; segundo plano, no en el
+	// móvil (ahí la música ya sigue al salir de la app).
+	if a.canSleep() {
+		m.items = append(m.items, menuItem{label: T("t_sleep"), icon: "moon", do: func() { a.enterSleep() }})
+	}
+	if !a.mobile() {
+		m.items = append(m.items, menuItem{label: T("t_bg"), icon: "bg", do: func() { a.exit(true) }})
+	}
+	m.items = append(m.items, menuItem{label: T("t_quit"), icon: "power", do: func() { a.exit(false) }, danger: true})
 	a.menu = m
 }
 
