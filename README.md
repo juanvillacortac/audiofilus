@@ -100,6 +100,7 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 
 - `SELECT` opens a dock with every screen; double `SELECT` returns to the previous one. `START` opens the More menu.
 - Hold `FN` on any screen to see its controls.
+- Mouse and touch: tap rows, covers, tabs, menus and the player's buttons; drag lists with your finger (with momentum) or use the wheel; long-press for the More menu, right-click to go back; even the button hints at the bottom can be tapped.
 - The left analog stick works like the D-pad everywhere, menus and games included.
 - On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
 - The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.

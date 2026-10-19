@@ -72,6 +72,7 @@ type App struct {
 	// El sleep de la app: pantalla apagada (la apaga el servicio) y la
 	// interfaz casi parada.
 	quitting  bool    // se pidió salir: Update termina el bucle
+	ptr       pointer // el ratón o el dedo y las zonas tocables (pointer.go)
 	splashing bool    // se está mostrando el splash
 	splashT   float64 // segundos de splash
 
@@ -327,6 +328,7 @@ func (a *App) Update() error {
 		return ebiten.Termination
 	}
 	a.input.update()
+	a.updatePointer()
 	a.covers.collect(a.t)
 	a.updateTheme()
 	if a.ShotsDir != "" {
@@ -861,6 +863,8 @@ func (a *App) Draw(screen *ebiten.Image) {
 	if a.BenchVisual != "" {
 		return // la prueba pinta en su lienzo; pintar aquí también falsearía la medida
 	}
+	a.beginZones()
+	defer a.endZones()
 	if a.splashing {
 		a.drawSplash(screen)
 		return

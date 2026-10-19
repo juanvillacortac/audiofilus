@@ -86,8 +86,10 @@ func (a *App) drawGames(dst *ebiten.Image) {
 	n := len(gameCards)
 	rowH := min(23, (avail-8+3)/n)
 	y0 := topH + (avail-(n*rowH-3))/2
+	a.dragStep(0, rowH)
 	for i, gc := range gameCards {
 		y := y0 + i*rowH
+		a.tapZone(margin, y, lw, rowH-3, func() { a.gamesSel = i; a.input.inject(ActConfirm) })
 		c, tc := th.Dim, th.Dim
 		if i == a.gamesSel {
 			panel(dst, margin, y, lw, rowH-3, mix(th.Bg2, th.Accent, 0.14))

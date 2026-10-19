@@ -444,12 +444,18 @@ func (a *App) drawSettings(dst *ebiten.Image) {
 		rect(area, margin+tw+5, y+5, w-2*margin-tw-5, 1, withAlpha(th.Dim, 0x40))
 	}
 	names := settingNames()
+	a.dragStep(0, tileH+tileGap)
 	for i, t := range tiles {
 		y := oy + t.y
 		if y+t.h < top || y > bottom {
 			continue
 		}
 		a.drawTile(area, t, names[t.tile.id], t.x, y, i == sel)
+		// Tocar una baldosa la elige y la usa (una elección: la abre; ya
+		// abierta, la cierra).
+		idx := i
+		vy0, vy1 := max(y, top), min(y+t.h, bottom)
+		a.tapZone(t.x, vy0, t.w, vy1-vy0, func() { a.settingsSel = idx; a.input.inject(ActConfirm) })
 	}
 	a.scrollBar(dst, w-4, top, view, int(a.settingsScroll), view, total)
 

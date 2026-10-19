@@ -51,6 +51,8 @@ const (
 func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 	w := dst.Bounds().Dx()
 	th := a.theme
+	// Tocar el título abre la barra de pantallas (como SELECT).
+	a.tapZone(0, 0, w*2/3, topH+2, func() { a.input.inject(ActSelect) })
 	rect(dst, 0, 0, w, topH, withAlpha(th.Shadow, 0x99))
 	rect(dst, 0, topH, w, 1, withAlpha(th.Accent, 0x55))
 	drawIcon(dst, "note", margin-2, 4, th.Accent)
@@ -125,8 +127,11 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 	th := a.theme
 	y := h - bottomH
 	rect(dst, 0, y, w, bottomH, withAlpha(th.Shadow, 0x99))
-	// Si lo último que se usó fue el teclado, se muestran las teclas.
+	// Si lo último que se usó fue el teclado, se muestran las teclas. Tocar
+	// un chip es pulsar su botón (hintActions); lo de antes de traducirlo.
+	orig := make([]string, len(hints))
 	for i := range hints {
+		orig[i] = hints[i].btn
 		hints[i].btn = a.btn(hints[i].btn)
 	}
 	total := 0
@@ -134,10 +139,14 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 		total += btnChipWidth(hn.btn) + 3 + textWidth(hn.label, SmallFace) + 10
 	}
 	x := (w - total + 10) / 2
-	for _, hn := range hints {
+	for i, hn := range hints {
+		x0 := x
 		x += a.drawBtnChip(dst, hn.btn, x, y+2) + 3
 		drawText(dst, hn.label, SmallFace, x, y+4, th.Dim)
 		x += textWidth(hn.label, SmallFace) + 10
+		if act, ok := hintActions[orig[i]]; ok {
+			a.tapZone(x0-4, y, x-x0, bottomH, func() { a.input.inject(act) })
+		}
 	}
 }
 
@@ -468,6 +477,16 @@ func (a *App) drawControls(dst *ebiten.Image, x, y int) {
 		rect(dst, x+84, y+13, 3, 1, th.Accent)
 	}
 	drawIcon(dst, "repeat", x+82, y+4, repeatCol)
+	// Los botones, tocables (con algo de margen, son pequeños).
+	a.tapZone(x-3, y-4, 21, 23, func() { a.send("prev") })
+	a.tapZone(x+18, y-4, 21, 23, func() { a.send("toggle") })
+	a.tapZone(x+39, y-4, 21, 23, func() { a.send("next") })
+	a.tapZone(x+60, y-4, 18, 23, func() { a.send("shuffle", onOffArg(!a.status.Shuffle)); a.status.Shuffle = !a.status.Shuffle })
+	a.tapZone(x+78, y-4, 18, 23, func() {
+		next := map[string]string{"off": "all", "all": "one", "one": "off"}[orDefault(a.status.Repeat, "off")]
+		a.send("repeat", next)
+		a.status.Repeat = next
+	})
 	if a.status.Repeat == "one" {
 		drawText(dst, "1", SmallFace, x+90, y+1, th.Accent)
 	}
@@ -548,6 +567,11 @@ func (a *App) drawProgress(dst *ebiten.Image, x, y, w int) {
 	fill := int(float64(bw) * a.shownPos / math.Max(a.duration, 1))
 	rect(dst, bx, y+1, fill, 3, th.Accent)
 	panel(dst, bx+fill-2, y-1, 5, 7, th.Text)
+	// Tocar la barra salta a ese punto.
+	dur := a.duration
+	a.zone(bx, y-5, bw, 15, func(px, _ int) {
+		a.send("seek", fmt.Sprintf("%.1f", dur*float64(max(0, min(bw, px)))/float64(bw)))
+	})
 }
 
 // drawLiveBar es la barra de lo que no tiene duración (una radio): lo que

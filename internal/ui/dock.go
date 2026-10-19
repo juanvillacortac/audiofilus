@@ -175,6 +175,11 @@ func (a *App) drawDock(dst *ebiten.Image) {
 		by += int(math.Round(float64(tileH+bottomH+14) * (1 - easeOutBack(math.Max(0, p)))))
 	}
 	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, 0x90))
+	// Tocar fuera la cierra; tocar una pantalla va a ella.
+	a.tapZone(0, 0, w, h, func() { a.input.inject(ActBack) })
+	for i := range a.docks() {
+		a.tapZone(bx+4+i*tw, by, tw, tileH+8, func() { d.sel = i; a.input.inject(ActSelect) })
+	}
 	rect(dst, bx+2, by+2, bw, tileH+8, th.Shadow)
 	panel(dst, bx, by, bw, tileH+8, th.Bg2)
 	rect(dst, bx+1, by, bw-2, 1, th.Accent)

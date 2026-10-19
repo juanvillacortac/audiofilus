@@ -96,7 +96,20 @@ type Input struct {
 	// stick cuenta cuántos frames lleva el joystick izquierdo empujado hacia
 	// cada dirección, igual que una cruceta: así vale en toda la app.
 	stick [4]int
+	// virt son las acciones de este fotograma que vienen del ratón o de un
+	// dedo (pointer.go): cuentan como recién pulsadas.
+	virt [actCount]bool
 }
+
+// inject pulsa la acción a en este fotograma (un toque, un gesto).
+func (in *Input) inject(a Action) {
+	in.virt[a] = true
+	in.any = true
+}
+
+// mouseUsed dice que lo último que se usó fue el ratón (la ayuda muestra
+// las teclas, no los botones del mando).
+func (in *Input) mouseUsed() { in.usingPad, in.decided = false, true }
 
 // Umbrales del joystick izquierdo (cuánto se empuja, de 0 a 1): se activa al
 // pasar stickOn (el de Trancazo: hay sticks que hacia algún lado no llegan ni
@@ -158,6 +171,7 @@ func (in *Input) update() {
 		in.usingPad = len(in.pads) > 0
 	}
 	in.any = false
+	in.virt = [actCount]bool{}
 	if in.keys = inpututil.AppendJustPressedKeys(in.keys[:0]); len(in.keys) > 0 {
 		in.usingPad, in.decided, in.any = false, true, true
 	}
@@ -199,6 +213,9 @@ func (in *Input) duration(a Action) int {
 		if sa == a {
 			d = max(d, in.stick[i])
 		}
+	}
+	if in.virt[a] && d == 0 {
+		d = 1
 	}
 	return d
 }

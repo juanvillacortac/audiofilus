@@ -268,6 +268,7 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 		dy = int(math.Round(float64(ph+bottomH) * (1 - easeOutBack(math.Max(0, p)))))
 	}
 	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, 0xa0))
+	a.tapZone(0, 0, w, h, func() { a.input.inject(ActBack) }) // tocar fuera lo cierra
 	py += dy
 	rect(dst, px+3, py+3, pw, ph, th.Shadow)
 	panel(dst, px, py, pw, ph, th.Bg2)
@@ -299,6 +300,8 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 		}
 		it := m.items[i]
 		t.y += dy
+		idx := i
+		a.tapZone(t.x, t.y, t.w, t.h, func() { m.sel = idx; a.input.inject(ActConfirm) })
 		sel := i == m.sel
 		on := it.active != nil && it.active()
 		bg, fg := withAlpha(th.Bg, 0xc0), th.Text

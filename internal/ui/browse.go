@@ -352,6 +352,12 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 	th := a.theme
 	x0, top := a.contentX(), topH+8
 	drawTab := func(x, y, tw int, t string, i int) {
+		a.tapZone(x-3, y-4, tw, 13, func() {
+			a.libTab, a.tabFocus = i, false
+			if i == tabSearch {
+				a.search.typing = true
+			}
+		})
 		switch {
 		case i == a.libTab && a.tabFocus:
 			panel(dst, x-3, y-4, tw, 13, th.Accent)
@@ -391,7 +397,8 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 	v := a.cur()
 	cw := w - x0 - margin
 	if len(a.stacks[a.libTab]) > 1 || v.kind == vAlbum {
-		// Ruta de vuelta: "< Título".
+		// Ruta de vuelta: "< Título" (tocarla es volver).
+		a.tapZone(x0-3, top-4, cw+6, 13, func() { a.input.inject(ActBack) })
 		drawText(dst, "<", SmallFace, x0, top, th.Accent2)
 		drawTextW(dst, v.title, SmallFace, x0+8, top, cw-10, th.Accent2)
 		top += 12
@@ -486,6 +493,12 @@ func (a *App) drawList(dst *ebiten.Image, v *view, x, y, w, h int) {
 		drawTextW(dst, r.main, SmallFace, tx, ry, mainW-(tx-x)-4, mainCol)
 		drawTextW(dst, r.sub, SmallFace, x+mainW, ry, w-mainW, subCol)
 	}
+	// Tocar una fila la elige y la abre.
+	a.dragStep(0, rowH)
+	for i := 0; i < rows && first+i < n; i++ {
+		idx := first + i
+		a.tapZone(x-3, y+i*rowH-4, w+6, rowH, func() { a.tabFocus, v.sel = false, idx; a.input.inject(ActConfirm) })
+	}
 	a.scrollBar(dst, x+w+4, y-3, h, first, rows, n)
 }
 
@@ -541,6 +554,14 @@ func (a *App) drawGrid(dst *ebiten.Image, v *view, x, y, w, h int) {
 	}
 	if !a.tabFocus {
 		marching(dst, tx-2, ty-2, gridTile+4, gridTile+4, a.t, th.Accent)
+	}
+	// Tocar una portada la abre; arrastrar mueve de portada en portada.
+	a.dragStep(gridTile+gridGap, gridTile+gridGap)
+	for i := first * cols; i < n && i < (first+visible+1)*cols; i++ {
+		idx := i
+		tx := x0 + (i%cols)*(gridTile+gridGap)
+		ty := gy + (i/cols-first)*(gridTile+gridGap)
+		a.tapZone(tx, ty, gridTile, gridTile, func() { a.tabFocus, v.sel = false, idx; a.input.inject(ActConfirm) })
 	}
 }
 
