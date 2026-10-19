@@ -34,6 +34,13 @@ The interface will be a separate process, written in Go with the author's Ebiten
 
 It must look good and be **readable** at any aspect ratio: 1:1, 4:3, 16:9, 16:10, 3:2, etc. The target handhelds are 640×480 and 720×480 (RG34XX-SP, 3:2) and 720×720; also the PC in a window.
 
+## Games
+
+The minigames share one **Games** entry in the screens dock (`games.go`): a screen of cards (icon, name, what it's about and the record from `data/`), ←/→ to choose, A to play, B to go back. "Back to games" in each game's pause menu returns there, and the dock highlights Games while any of them is open.
+
+- **Crypt** (`crypt.go`): a rhythm roguelike. Random floors of rooms joined by corridors (44×30 tiles of 12 px), lit around the player, with stairs in the farthest room. A step (or an attack, stepping into an enemy) only counts within `min(0.14 s, 30 % of the period)` of a beat of the grid from `meter.go`; off the beat it's a MISS. Enemies act when each beat's window closes, after the player: slimes bounce every two beats, bats flutter at random every beat, skeletons raise their arms one beat and chase the next (armored ones, from depth 3, take two hits). On-beat steps in a row raise the multiplier (×2 every 8, FEVER ×4 at 24) and a beat without a step or a hit taken resets it. Kills drop coins; hearts heal up to five. The floor flashes in a checker on each beat with the cover's colors (two accents in FEVER). With the music paused the game freezes; without a tempo yet it uses a 110 BPM metronome. Record in `data/cripta.json`. `cryptbot.go` plays it for the screenshots and the website animation.
+- **Blocks** (`tetris.go`) and **Rhythm** (`rhythm.go`), as before.
+
 ## Splash, Settings and screen off
 
 - **Closing the lid enters sleep** immediately, with no fade, on any screen (`lidClosed`: Insert on Anbernics with a lid; not on the PC). Opening it doesn't wake: Start does.

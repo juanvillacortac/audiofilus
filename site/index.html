@@ -163,8 +163,8 @@ figure { margin: 0; }
 .vis-grid figure { display: grid; gap: 0.5rem; }
 .vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
 .vis-grid figcaption span { color: var(--muted); font-weight: 400; }
-.games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
-@media (max-width: 640px) { .games { grid-template-columns: 1fr; } }
+.games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+@media (max-width: 900px) { .games { grid-template-columns: 1fr; } }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
@@ -322,7 +322,7 @@ footer img { height: 56px; width: auto; }
       <div class="copy">
         <span class="eyebrow">Music player for Linux handhelds</span>
         <h1>Your music keeps playing <em>while you game.</em></h1>
-        <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers and a couple of games. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
+        <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers and three arcade games. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
         <div class="cta">
           <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download for PortMaster</a>
           <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Source on GitHub</a>
@@ -395,9 +395,25 @@ footer img { height: 56px; width: auto; }
         <figure><img class="shot px" src="img/vis-bars.webp" alt="Bars visualizer: spectrum bars with falling peaks" width="320" height="240" loading="lazy"><figcaption>Bars <span>spectrum</span></figcaption></figure>
       </div>
       <div class="games">
+        <figure class="figure"><img class="shot px" src="img/crypt.webp" alt="Crypt: a hooded hero steps through a dungeon whose floor tiles flash on every beat, with slimes, coins and a rhythm bar" width="320" height="240" loading="lazy"><figcaption><strong>Crypt.</strong> A rhythm roguelike: step, fight and dive deeper, but only on the beat of your song. Enemies move to the music too.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="img/blocks.webp" alt="Blocks: a falling-blocks game played next to the mini player" width="320" height="240" loading="lazy"><figcaption><strong>Blocks.</strong> Falling blocks with hold, next piece and a record, while the album keeps playing.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="img/rhythm.webp" alt="Rhythm: notes fall down lanes built from the song's beats, with a PERFECT hit message" width="320" height="240" loading="lazy"><figcaption><strong>Rhythm.</strong> Notes are generated from whatever song is playing. Hit them on time for combos.</figcaption></figure>
       </div>
+      <p class="note">All three live behind one <strong>Games</strong> entry in the screens dock, each with its own record.</p>
+    </div>
+  </section>
+
+  <section class="band" id="colors">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Colors</span>
+          <h2>Every album paints it</h2>
+          <p class="lede">The interface takes its colors from the cover that's playing. Change the album and the whole player, the visualizers and the games follow.</p>
+        </div>
+        <p class="note">Shown with four albums from a real library: each cover gives two accents and a tint for the background.</p>
+      </div>
+      <figure class="figure"><img class="shot px" src="img/colors.webp" alt="The player switching between four albums, its accent going orange, blue, green and pink with each cover" width="360" height="240" loading="lazy"></figure>
     </div>
   </section>
 

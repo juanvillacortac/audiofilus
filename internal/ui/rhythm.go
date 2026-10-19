@@ -250,7 +250,7 @@ func (a *App) openRhythmPause() {
 			{label: T("tet_resume"), icon: "play", do: func() {}},
 			{label: T("rh_music"), icon: "pause", do: func() { a.send("toggle") }},
 			{label: T("tet_new"), icon: "repeat", do: func() { a.saveRhythmBest(); a.rhythm = a.newRhythm() }},
-			{label: T("tet_leave"), icon: "bg", do: func() { a.saveRhythmBest(); a.screen = NowPlaying }},
+			{label: T("gm_leave"), icon: "pad", do: func() { a.saveRhythmBest(); a.screen = Games }},
 		},
 	}
 }

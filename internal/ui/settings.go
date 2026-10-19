@@ -29,6 +29,7 @@ const (
 	setServers
 	setSounds
 	setUISounds
+	setDonate
 	setCount
 )
 
@@ -95,6 +96,7 @@ var settingSections = []settingSection{
 	}},
 	{"sec_about", []settingTile{
 		{setGitHub, "gh", tileAction},
+		{setDonate, "cup", tileAction},
 	}},
 	{"sec_exit", []settingTile{
 		{setExitBg, "bg", tileAction},
@@ -191,7 +193,9 @@ func (a *App) updateSettings() {
 		case setExitBg, setExitStop:
 			a.exit(cur.id == setExitBg)
 		case setGitHub:
-			a.settingsQR = true
+			a.settingsQR, a.qrURL = true, projectURL
+		case setDonate:
+			a.settingsQR, a.qrURL = true, donateURL
 		case setServers:
 			a.openServersMenu()
 		}
@@ -353,7 +357,9 @@ func (a *App) settingValue(i int) string {
 	case setExitStop:
 		return T("exit_stop_sub")
 	case setGitHub:
-		return authorURL[len("https://"):]
+		return projectURL[len("https://"):]
+	case setDonate:
+		return donateURL[len("https://"):]
 	case setSounds:
 		return T("snd_" + orDefault(a.cfg.UI.Sounds, "mid"))
 	case setUISounds:
@@ -385,7 +391,7 @@ func settingNames() [setCount]string {
 	return [setCount]string{
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
-		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"),
+		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 	}
 }
 

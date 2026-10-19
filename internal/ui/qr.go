@@ -8,19 +8,23 @@ import (
 	qrcode "github.com/skip2/go-qrcode"
 )
 
-// authorURL es el GitHub del autor: sale en Ajustes, con su QR.
-const authorURL = "https://github.com/juanvillacortac"
+// projectURL es el repositorio de audiofilus y donateURL la página de
+// donaciones del autor: salen en Ajustes, cada uno con su QR.
+const (
+	projectURL = "https://github.com/juanvillacortac/audiofilus"
+	donateURL  = "https://ko-fi.com/juanvillacortac"
+)
 
-// qrImage es el QR de authorURL, un píxel por módulo, con su margen blanco
-// (los lectores lo necesitan). Se hace la primera vez que se pide.
-var qrImage *ebiten.Image
+// qrImages son los QR ya hechos, un píxel por módulo, con su margen blanco
+// (los lectores lo necesitan). Cada uno se hace la primera vez que se pide.
+var qrImages = map[string]*ebiten.Image{}
 
-// authorQR devuelve qrImage, haciéndolo si hace falta.
-func authorQR() *ebiten.Image {
-	if qrImage != nil {
-		return qrImage
+// qrFor devuelve el QR de url, haciéndolo si hace falta.
+func qrFor(url string) *ebiten.Image {
+	if img, ok := qrImages[url]; ok {
+		return img
 	}
-	q, err := qrcode.New(authorURL, qrcode.Medium)
+	q, err := qrcode.New(url, qrcode.Medium)
 	if err != nil {
 		return nil
 	}
@@ -39,18 +43,18 @@ func authorQR() *ebiten.Image {
 			}
 		}
 	}
-	qrImage = ebiten.NewImageFromImage(img)
-	return qrImage
+	qrImages[url] = ebiten.NewImageFromImage(img)
+	return qrImages[url]
 }
 
-// drawQR pinta, sobre Ajustes, un panel con el QR del GitHub del autor y la
-// dirección debajo. Los módulos se amplían a un número entero de píxeles para
+// drawQR pinta, sobre Ajustes, un panel con el QR de a.qrURL (el repositorio o
+// las donaciones) y la dirección debajo. Los módulos se amplían a un número entero de píxeles para
 // que se lean bien.
 func (a *App) drawQR(dst *ebiten.Image) {
 	th := a.theme
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	rect(dst, 0, 0, w, h, withAlpha(th.Bg, 0xc0))
-	qr := authorQR()
+	qr := qrFor(a.qrURL)
 	if qr == nil {
 		return
 	}
@@ -58,7 +62,7 @@ func (a *App) drawQR(dst *ebiten.Image) {
 	room := h - topH - bottomH - 40
 	s := max(1, min(room/n, 5))
 	size := n * s
-	url := authorURL[len("https://"):]
+	url := a.qrURL[len("https://"):]
 	pw := max(size, textWidth(url, SmallFace)) + 16
 	ph := size + 36
 	px, py := (w-pw)/2, topH+(h-topH-bottomH-ph)/2

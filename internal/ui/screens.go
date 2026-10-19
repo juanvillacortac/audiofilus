@@ -26,11 +26,13 @@ const (
 	Radio     // la radio por internet (radio.go)
 	Podcasts  // los podcasts (podcasts.go)
 	Settings
+	Games // los minijuegos juntos (games.go)
+	Crypt // Cripta, el roguelike de ritmo (crypt.go)
 	screenCount
 )
 
 func (s Screen) String() string {
-	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes"}[s]
+	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes", "juegos", "cripta"}[s]
 }
 
 const (

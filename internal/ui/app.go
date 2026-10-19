@@ -57,7 +57,8 @@ type App struct {
 	screen         Screen
 	settingsSel    int
 	settingsEdit   bool    // se está eligiendo el valor de la baldosa
-	settingsQR     bool    // se ve el QR del GitHub del autor
+	settingsQR     bool    // se ve un QR (el de qrURL)
+	qrURL          string  // el repositorio o las donaciones
 	settingsScroll float64 // desplazamiento del mosaico, en píxeles
 	libTab         int     // sección de la biblioteca
 	tabFocus       bool    // el foco está en las secciones, no en la vista
@@ -102,14 +103,19 @@ type App struct {
 	beat    beat       // el ritmo de la canción (meter.go)
 	beatHit bool       // en este fotograma hay un golpe
 
-	tetris *tetris      // Bloques (tetris.go): la partida, que se queda al cambiar de pantalla
-	rhythm *rhythmGame  // Ritmo (rhythm.go), igual
-	search searchState  // Buscar (search.go)
-	drift  *driftState  // Derrape (drift.go)
-	trench *trenchState // Trinchera (trench.go)
-	lake   *lakeState   // Lago (lake.go)
-	vis    visState     // los visualizadores (visual.go)
-	batch  rectBatch    // rectángulos en un solo dibujo (icons.go)
+	tetris *tetris     // Bloques (tetris.go): la partida, que se queda al cambiar de pantalla
+	rhythm *rhythmGame // Ritmo (rhythm.go), igual
+	crypt  *crypt      // Cripta (crypt.go), igual
+	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
+	gamesSel    int
+	gamesBest   map[string]int
+	gamesBestAt float64
+	search      searchState  // Buscar (search.go)
+	drift       *driftState  // Derrape (drift.go)
+	trench      *trenchState // Trinchera (trench.go)
+	lake        *lakeState   // Lago (lake.go)
+	vis         visState     // los visualizadores (visual.go)
+	batch       rectBatch    // rectángulos en un solo dibujo (icons.go)
 
 	dock       dockState         // la barra de pantallas (Select)
 	prompt     *promptState      // un nombre que se está escribiendo (playlists.go)
@@ -420,7 +426,7 @@ func (a *App) maybeSleep() {
 	// Sonando, solo en la pantalla de reproducción (navegando o en Ajustes, no).
 	// Sin música, en cualquiera: con la app abierta la consola no se suspende,
 	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca.
-	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
+	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
 		return
 	}
 	a.enterSleep()
@@ -524,6 +530,17 @@ func (a *App) updateMain() {
 			a.rhythm = a.newRhythm()
 		}
 		a.updateRhythm()
+		return
+	}
+	if a.screen == Crypt && a.menu == nil {
+		if a.crypt == nil {
+			a.crypt = a.newCrypt()
+		}
+		a.updateCrypt()
+		return
+	}
+	if a.screen == Games && a.menu == nil {
+		a.updateGames()
 		return
 	}
 	if a.screen == Visual && a.menu == nil {
@@ -845,6 +862,15 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			}
 			a.drawRhythmGame(dst)
 			a.drawTopBar(dst, T("rh_title"))
+		case Crypt:
+			if a.crypt == nil {
+				a.crypt = a.newCrypt()
+			}
+			a.drawCrypt(dst)
+			a.drawTopBar(dst, T("cr_title"))
+		case Games:
+			a.drawGames(dst)
+			a.drawTopBar(dst, T("gm_title"))
 		case Visual:
 			a.drawVisual(dst)
 			a.drawTopBar(dst, T("vis_title")+" · "+T(visNames[a.vis.kind]))
@@ -1106,7 +1132,7 @@ func (a *App) writeShots() error {
 	if err := shot("ajustes"); err != nil {
 		return err
 	}
-	a.settingsQR = true
+	a.settingsQR, a.qrURL = true, projectURL
 	if err := shot("ajustes-qr"); err != nil {
 		return err
 	}
@@ -1324,6 +1350,21 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.rhythm = nil
+	// Juegos y una partida de Cripta jugada por el bot unos segundos.
+	a.screen, a.gamesSel = Games, 0
+	if err := shot("juegos"); err != nil {
+		return err
+	}
+	a.screen, a.crypt = Crypt, a.newCrypt()
+	for i := 0; i < 60*9; i++ {
+		a.t += 1.0 / 60
+		a.beatHit = a.updateBeat()
+		a.botStepCrypt()
+	}
+	if err := shot("cripta"); err != nil {
+		return err
+	}
+	a.crypt = nil
 	if err := a.writePortCover(filepath.Join(a.ShotsDir, "portada-portmaster.png")); err != nil {
 		return err
 	}
@@ -1405,6 +1446,29 @@ func (a *App) writeFrames() error {
 	// soltando las piezas al ritmo de la maqueta. Empieza con una pila de
 	// cinco filas con un pozo a la derecha, para que se vean líneas, combos y
 	// un TETRA.
+	// Los colores de cuatro discos distintos (colorshow.go).
+	keepAl, keepSong, keepTheme := a.playing, a.playingSong, a.theme
+	if err := a.writeColorShow(filepath.Join(a.FramesDir, "colores")); err != nil {
+		return err
+	}
+	a.playing, a.playingSong, a.theme = keepAl, keepSong, keepTheme
+	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
+	crDir := filepath.Join(a.FramesDir, "cripta")
+	if err := os.MkdirAll(crDir, 0o755); err != nil {
+		return err
+	}
+	a.screen, a.crypt = Crypt, a.newCrypt()
+	for i := 0; i < 240; i++ {
+		for k := 0; k < 3; k++ {
+			a.t = 20 + float64(i*3+k)/60
+			a.beatHit = a.updateBeat()
+			a.botStepCrypt()
+		}
+		if err := a.renderShot(filepath.Join(crDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
+			return err
+		}
+	}
+	a.crypt = nil
 	tetDir := filepath.Join(a.FramesDir, "bloques")
 	if err := os.MkdirAll(tetDir, 0o755); err != nil {
 		return err

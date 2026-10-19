@@ -41,6 +41,10 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - The interface colors come from the album cover.
 
 <p align="center">
+  <img src="site/img/colors.webp" alt="Colors following four album covers" width="360">
+</p>
+
+<p align="center">
   <img src="site/img/albums.png" alt="Albums" width="360">
   <img src="site/img/queue.png" alt="Queue" width="360">
 </p>
@@ -64,7 +68,11 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 
 ### Visualizers and games
 
-Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus two games that run next to the mini player: **Blocks** (falling blocks) and **Rhythm** (notes generated from the song that's playing).
+Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus three arcade games, together under **Games** in the screens dock:
+
+- **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
+- **Blocks**: falling blocks, with hard drops on the beat for combos.
+- **Rhythm**: notes generated from the song that's playing.
 
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">
@@ -72,6 +80,7 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
   <img src="site/img/vis-tunnel.webp" alt="Tunnel" width="320">
 </p>
 <p align="center">
+  <img src="site/img/crypt.webp" alt="Crypt" width="320">
   <img src="site/img/blocks.webp" alt="Blocks" width="320">
   <img src="site/img/rhythm.webp" alt="Rhythm" width="320">
 </p>

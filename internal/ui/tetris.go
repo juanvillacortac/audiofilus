@@ -772,7 +772,7 @@ func (a *App) openTetrisPause() {
 		items: []menuItem{
 			{label: T("tet_resume"), icon: "play", do: func() {}},
 			{label: T("tet_new"), icon: "repeat", do: func() { a.saveTetBest(); a.tetris = a.newTetris() }},
-			{label: T("tet_leave"), icon: "bg", do: func() { a.saveTetBest(); a.screen = NowPlaying }},
+			{label: T("gm_leave"), icon: "pad", do: func() { a.saveTetBest(); a.screen = Games }},
 		},
 	}
 }

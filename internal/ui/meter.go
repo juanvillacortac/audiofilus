@@ -368,7 +368,7 @@ func (a *App) updatePump() {
 	// Con fuerza en Reproduciendo y Ritmo, donde manda la música; más suave
 	// en el resto, para no molestar al leer.
 	gain := 0.55
-	if a.screen == NowPlaying || a.screen == Rhythm || a.screen == Visual {
+	if a.screen == NowPlaying || a.screen == Rhythm || a.screen == Crypt || a.screen == Visual {
 		gain = 1
 	}
 	var bass, treble float64

@@ -31,6 +31,9 @@ for v in lake drift trench plasma tunnel waves bars; do anim 5 "$tmp/f/visual/$v
 anim 5 "$tmp/f/ritmo/f*.png" rhythm.webp
 anim 5 "$tmp/f/bloques/f*.png" blocks.webp
 anim 5 "$tmp/f/f0*.png" player.webp
+anim 5 "$tmp/f/cripta/f*.png" crypt.webp
+anim 5 "$tmp/f/colores/f*.png" colors.webp
+magick "$tmp/s/juegos-3x2.png" -sample 33.3334% -sample 400% -strip "$out/games.png"
 
 # El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo
 # de encima, sobre transparente), a 30 cuadros por segundo y a 1:1, que se

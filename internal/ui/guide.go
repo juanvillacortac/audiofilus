@@ -38,6 +38,10 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>", "g_move"}, {"v", "g_soft"}, {"^", "g_hard"}, {"A/B", "h_rotate"}, {"X", "h_hold"}, {"START", "h_pause"}}
 	case a.screen == Rhythm:
 		own = []hint{{"< v B A", "g_lanes"}, {"START", "h_pause"}}
+	case a.screen == Crypt:
+		own = []hint{{"<>^v", "g_cr_move"}, {"<>^v", "g_cr_attack"}, {"START", "h_pause"}}
+	case a.screen == Games:
+		own = []hint{{"<>", "gm_choose"}, {"A", "gm_play"}, {"B", "h_back"}}
 	case a.screen == Visual:
 		own = []hint{{"<>", "h_visual"}, {"A", "g_camera"}, {"B", "h_back"}}
 	case a.screen == Podcasts:
@@ -50,7 +54,7 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>^v", "g_dock_move"}, {"A", "h_change"}, {"B", "h_back"}}
 	}
 	all = []hint{{"SEL", "g_screens"}, {"SEL SEL", "g_prev_screen"}, {"START", "g_more"}, {"Y", "g_pause"}, {"L1/R1", "g_skip"}, {"L2/R2", "g_seek"}}
-	if a.screen == Blocks || a.screen == Rhythm {
+	if a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt {
 		all[2] = hint{"START", "h_pause"}
 	}
 	return own, all

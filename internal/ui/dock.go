@@ -33,8 +33,7 @@ var dockEntries = []dockEntry{
 	{screen: Queue, search: false, icon: "list", label: "scr_queue"},
 	{screen: Visual, search: false, icon: "visual", label: "scr_visual"},
 	{screen: Downloads, search: false, icon: "download", label: "ytm_jobs"},
-	{screen: Blocks, search: false, icon: "blocks", label: "scr_blocks"},
-	{screen: Rhythm, search: false, icon: "note", label: "scr_rhythm"},
+	{screen: Games, search: false, icon: "pad", label: "scr_games"},
 	{screen: Settings, search: false, icon: "gear", label: "scr_settings"},
 }
 
@@ -93,7 +92,7 @@ func (a *App) openDock() {
 	}
 	sel := 0
 	for i, e := range a.docks() {
-		if e.screen == prev && !e.search {
+		if (e.screen == prev || e.screen == Games && isGame(prev)) && !e.search {
 			sel = i
 			break
 		}
@@ -132,6 +131,7 @@ func (a *App) goDock(e dockEntry) {
 	a.dock.open = false
 	a.saveTetBest()
 	a.saveRhythmBest()
+	a.saveCryptBest()
 	a.screen, a.tabFocus = e.screen, false
 	if e.screen == LibraryScreen && !e.search {
 		a.setSource(e.source)
@@ -147,6 +147,7 @@ func (a *App) goDock(e dockEntry) {
 func (a *App) goBack() {
 	a.saveTetBest()
 	a.saveRhythmBest()
+	a.saveCryptBest()
 	to := a.prevScreen
 	if to == a.screen {
 		to = NowPlaying
@@ -181,7 +182,7 @@ func (a *App) drawDock(dst *ebiten.Image) {
 		x := bx + 4 + i*tw
 		y := by + 4
 		sel := i == d.sel
-		cur := e.screen == a.screen && (!e.search || a.libTab == tabSearch) && (e.search || e.screen != LibraryScreen || a.libTab != tabSearch && e.source == a.source)
+		cur := (e.screen == a.screen || e.screen == Games && isGame(a.screen)) && (!e.search || a.libTab == tabSearch) && (e.search || e.screen != LibraryScreen || a.libTab != tabSearch && e.source == a.source)
 		ic := th.Dim
 		if sel {
 			panel(dst, x+1, y, tw-2, tileH, th.Accent)
