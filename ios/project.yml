@@ -32,6 +32,7 @@ targets:
       - sdk: AudioToolbox.framework
       - sdk: CoreHaptics.framework
       - sdk: UniformTypeIdentifiers.framework
+      - sdk: MediaPlayer.framework
       - sdk: libresolv.tbd
     settings:
       base:

@@ -12,21 +12,30 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/dhowden/tag"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/mobile"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/daemon"
+	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/ui"
 )
 
 // Host es lo que la app (Swift) hace por audiofilus: abrir el selector de
-// carpetas del sistema. Lo elegido vuelve con SetMusicFolder.
+// carpetas del sistema (lo elegido vuelve con SetMusicFolder) y mostrar lo
+// que suena en la pantalla bloqueada y el Centro de control
+// (MPNowPlayingInfoCenter; sus botones vuelven con Toggle, Next...).
 type Host interface {
 	PickFolder()
+	// NowPlaying es lo que suena: la duración y la posición en segundos, si
+	// suena o está en pausa, y la portada (JPEG o PNG; vacía si no hay).
+	NowPlaying(title, artist, album string, duration, position float64, playing bool, artwork []byte)
 }
 
 // game espera a Start: hasta entonces no hay App que correr.
@@ -36,9 +45,15 @@ type game struct {
 }
 
 var (
-	g    = &game{}
-	host Host
-	once sync.Once
+	g      = &game{}
+	host   Host
+	once   sync.Once
+	socket string // el del servicio, para los botones del sistema
+	art    struct {
+		sync.Mutex
+		path string
+		data []byte
+	}
 )
 
 func init() { mobile.SetGame(g) }
@@ -105,6 +120,8 @@ func start(home, tmp, langs string) error {
 		_ = os.MkdirAll(cfg.MusicDirs[0], 0o755)
 		_ = config.Save(paths, cfg)
 	}
+	socket = paths.Socket
+	daemon.NowPlayingHook = nowPlaying
 	ui.StartService = func(p config.Paths) error {
 		go func() {
 			if err := daemon.Run(p); err != nil {
@@ -148,3 +165,64 @@ func SetMusicFolder(path string) {
 		a.SetMusicFolder(path)
 	}
 }
+
+// nowPlaying le pasa a la app lo que suena (lo llama el servicio en cada
+// cambio).
+func nowPlaying(st engine.Status) {
+	if host == nil {
+		return
+	}
+	t := st.Track
+	title := t.Title
+	if title == "" && t.Path != "" {
+		title = strings.TrimSuffix(filepath.Base(t.Path), filepath.Ext(t.Path))
+	}
+	host.NowPlaying(title, t.Artist, t.Album, st.Duration, st.Position, st.State == "playing", artwork(t.Path))
+}
+
+// artwork es la portada de la canción en path: la que lleva dentro o, si no,
+// la imagen de su carpeta (cover.jpg, folder.jpg...). Se recuerda la última.
+func artwork(path string) []byte {
+	art.Lock()
+	defer art.Unlock()
+	if path == art.path {
+		return art.data
+	}
+	art.path, art.data = path, nil
+	if f, err := os.Open(path); err == nil {
+		if m, err := tag.ReadFrom(f); err == nil && m.Picture() != nil {
+			art.data = m.Picture().Data
+		}
+		f.Close()
+	}
+	if art.data == nil && path != "" {
+		for _, name := range []string{"cover.jpg", "cover.png", "folder.jpg", "folder.png", "front.jpg", "Cover.jpg", "Folder.jpg"} {
+			if b, err := os.ReadFile(filepath.Join(filepath.Dir(path), name)); err == nil {
+				art.data = b
+				break
+			}
+		}
+	}
+	return art.data
+}
+
+// call manda un comando al servicio (los botones del sistema).
+func call(cmd string, args ...string) {
+	if socket == "" {
+		return
+	}
+	if _, err := control.Call(socket, control.Request{Cmd: cmd, Args: args}); err != nil {
+		log.Printf("audiofilus: %s: %v", cmd, err)
+	}
+}
+
+// Play, Pause, Toggle, Next y Previous son los botones de la pantalla
+// bloqueada, el Centro de control y los auriculares.
+func Play()     { call("resume") }
+func Pause()    { call("pause") }
+func Toggle()   { call("toggle") }
+func Next()     { call("next") }
+func Previous() { call("prev") }
+
+// SeekTo salta a seconds (la barra de la pantalla bloqueada).
+func SeekTo(seconds float64) { call("seek", strconv.FormatFloat(seconds, 'f', 1, 64)) }

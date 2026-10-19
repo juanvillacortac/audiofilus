@@ -129,6 +129,7 @@ func Run(paths config.Paths) error {
 		if tr != nil {
 			tr.Update()
 		}
+		nowPlayingChanged(eng)
 	}
 	// Lo remoto (Subsonic): se baja a data/cache sin parar el audio, y sus
 	// etiquetas salen del índice que escribe la interfaz. Los servidores se
@@ -193,6 +194,7 @@ func Run(paths config.Paths) error {
 		if tr != nil {
 			tr.Update()
 		}
+		nowPlayingChanged(eng)
 	}
 	d.restore()
 
@@ -565,6 +567,7 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		} else {
 			e.SeekTo(v)
 		}
+		nowPlayingChanged(e)
 	case "shuffle":
 		on, err := onOff(req.Args, !e.Status().Shuffle)
 		if err != nil {
@@ -668,6 +671,23 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		return nil, fmt.Errorf("unknown command %q", req.Cmd)
 	}
 	return d.status(), nil
+}
+
+// NowPlayingHook, si está, se llama (en su goroutine) cada vez que cambia
+// lo que suena: otra canción, pausa o play, un salto. Lo usa el móvil para la
+// pantalla bloqueada y el Centro de control (mobile/).
+var NowPlayingHook func(engine.Status)
+
+// nowPlayingChanged avisa a NowPlayingHook.
+func nowPlayingChanged(e *engine.Engine) {
+	if h := NowPlayingHook; h != nil {
+		// Un salto o un cambio de canción se aplican al vaciar el búfer, un
+		// momento después: el estado, ya con ellos.
+		go func() {
+			time.Sleep(150 * time.Millisecond)
+			h(e.Status())
+		}()
+	}
 }
 
 // FullStatus es el estado del engine más el del daemon.

@@ -289,3 +289,20 @@ func TestALAC24Mono(t *testing.T) {
 		}
 	}
 }
+
+// TestESDSCookie comprueba la "magic cookie" de AAC para AudioToolbox (iOS):
+// la AudioSpecificConfig dentro de un descriptor ES con sus tamaños, como la
+// arma FFmpeg.
+func TestESDSCookie(t *testing.T) {
+	asc := []byte{0x12, 0x10} // AAC-LC, 44,1 kHz, estéreo
+	c := esdsCookie(asc)
+	if len(c) != 5+3+5+13+5+len(asc) {
+		t.Fatalf("cookie is %d bytes", len(c))
+	}
+	if c[0] != 0x03 || c[4] != byte(3+5+13+5+len(asc)) || c[8] != 0x04 || c[13] != 0x40 || c[26] != 0x05 || c[30] != byte(len(asc)) {
+		t.Errorf("bad descriptors: % x", c)
+	}
+	if string(c[len(c)-2:]) != string(asc) {
+		t.Errorf("the config is not at the end: % x", c)
+	}
+}

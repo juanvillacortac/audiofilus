@@ -15,10 +15,10 @@ audiofilus runs on iPhone and iPad as an unsigned app (`audiofilus-ios-unsigned.
 - **Where the music is.** Settings and the library live in the app's Documents folder (`AUDIOFILUS_HOME`), which shows up in the Files app as *On My iPhone → Audiofilus*: anything copied into its `Music` folder plays (it's the default music folder). Settings → Folder opens the system's folder picker (`ui.PickFolder`, `MobileHostProtocol` in Swift) for iCloud Drive, *On My iPhone* or another app's folder; the app keeps a security-scoped bookmark so it can read that folder again on the next launch.
 - **Quit** stops the music instead of closing (an iOS app doesn't close itself); "Go to background" isn't needed, leaving the app already does it.
 - The view sits inside the safe area (no notch or home indicator over it), and the interface follows portrait and landscape.
-- Formats: those decoded in pure Go (MP3, FLAC, Ogg Vorbis, WAV, AIFF, ALAC, MP4/M4A with ALAC). The C libraries (fdk-aac, opusfile, libxmp) aren't there; AAC through Apple's AudioToolbox is pending.
+- **Lock screen and Control Center.** The service calls `daemon.NowPlayingHook` on every song, pause/play and seek change; `mobile` passes title, artist, album, duration, position, state and cover (embedded, or the folder's `cover.jpg`/`folder.jpg`) to Swift (`Host.NowPlaying`), which fills `MPNowPlayingInfoCenter`. `MPRemoteCommandCenter`'s play, pause, toggle, next, previous and position commands (lock screen, Control Center, headphones, CarPlay) call `MobilePlay`, `MobileToggle`... which send the command to the service over its socket.
+- **Formats.** Those decoded in pure Go (MP3, FLAC, Ogg Vorbis, WAV, AIFF, ALAC) plus **AAC in M4A/MP4** (iTunes purchases) with Apple's decoder: an AudioConverter from AudioToolbox (`internal/decode/aac_ios.go`, cgo, iOS only), fed the track's AudioSpecificConfig wrapped in an ES descriptor as its magic cookie (as FFmpeg does). The AAC source uses an `aacCodec`: libfdk-aac where it exists, the system's otherwise. AAC internet radio streams (ADTS) still need libfdk-aac, and Opus and tracker modules aren't there.
 
 ## Pending
 
-- Lock screen and Control Center controls (`MPRemoteCommandCenter`, `MPNowPlayingInfoCenter`).
-- AAC through AudioToolbox.
+- AAC radio streams through AudioToolbox.
 - Android (`ebitenmobile bind -target android`, the same `mobile/` package).

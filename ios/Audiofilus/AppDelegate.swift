@@ -1,8 +1,10 @@
 // La app de iOS: la vista de Ebitengine con audiofilus (el framework Mobile,
 // hecho con ebitenmobile desde mobile/), dentro de la zona segura, y lo que
 // audiofilus no puede hacer desde Go: la sesión de audio para que la música
-// siga en segundo plano y el selector de carpetas del sistema.
+// siga en segundo plano, el selector de carpetas del sistema y los controles
+// de la pantalla bloqueada y el Centro de control.
 import AVFoundation
+import MediaPlayer
 import Mobile
 import UIKit
 import UniformTypeIdentifiers
@@ -24,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         MobileStart(docs.path, NSTemporaryDirectory(), Locale.preferredLanguages.joined(separator: ","))
         root.restoreFolder()
+        RemoteControls.install()
 
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = root
@@ -98,6 +101,49 @@ class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPicker
             UserDefaults.standard.set(fresh, forKey: Self.bookmarkKey)
         }
         MobileSetMusicFolder(url.path)
+    }
+}
+
+extension RootViewController {
+    // nowPlaying lo llama audiofilus (desde su hilo) cada vez que cambia lo
+    // que suena: lo que muestran la pantalla bloqueada y el Centro de
+    // control.
+    func nowPlaying(_ title: String?, artist: String?, album: String?, duration: Double,
+                    position: Double, playing: Bool, artwork: Data?) {
+        var info: [String: Any] = [
+            MPMediaItemPropertyTitle: title ?? "",
+            MPMediaItemPropertyArtist: artist ?? "",
+            MPMediaItemPropertyAlbumTitle: album ?? "",
+            MPMediaItemPropertyPlaybackDuration: duration,
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: position,
+            MPNowPlayingInfoPropertyPlaybackRate: playing ? 1.0 : 0.0,
+        ]
+        if let data = artwork, let image = UIImage(data: data) {
+            info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        }
+        DispatchQueue.main.async {
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+            MPNowPlayingInfoCenter.default().playbackState = playing ? .playing : .paused
+        }
+    }
+}
+
+// RemoteControls son los botones del sistema (pantalla bloqueada, Centro de
+// control, auriculares, CarPlay): cada uno manda su orden a audiofilus.
+enum RemoteControls {
+    static func install() {
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        let c = MPRemoteCommandCenter.shared()
+        c.playCommand.addTarget { _ in MobilePlay(); return .success }
+        c.pauseCommand.addTarget { _ in MobilePause(); return .success }
+        c.togglePlayPauseCommand.addTarget { _ in MobileToggle(); return .success }
+        c.nextTrackCommand.addTarget { _ in MobileNext(); return .success }
+        c.previousTrackCommand.addTarget { _ in MobilePrevious(); return .success }
+        c.changePlaybackPositionCommand.addTarget { event in
+            guard let e = event as? MPChangePlaybackPositionCommandEvent else { return .commandFailed }
+            MobileSeekTo(e.positionTime)
+            return .success
+        }
     }
 }
 
