@@ -7,19 +7,19 @@ import (
 	"testing"
 )
 
-// TestInstall comprueba que la entrada apunte a los binarios, con su clase de
-// ventana y sus acciones, y que Uninstall la quite.
+// TestInstall comprueba que la entrada apunte al binario (y sus acciones a sus
+// comandos), con su clase de ventana, y que Uninstall la quite.
 func TestInstall(t *testing.T) {
 	t.Setenv("XDG_DATA_HOME", t.TempDir())
 	dir := filepath.Join(t.TempDir(), "con espacio")
 	os.MkdirAll(dir, 0o755)
-	os.WriteFile(filepath.Join(dir, "audiofilus-ui"), nil, 0o755)
-	entry, icon, err := Install(dir)
+	bin := filepath.Join(dir, "audiofilus")
+	entry, icon, err := Install(bin)
 	if err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(entry)
-	for _, want := range []string{`Exec="` + filepath.Join(dir, "audiofilus-ui") + `"`, "StartupWMClass=audiofilus", `toggle`, "Icon=audiofilus"} {
+	for _, want := range []string{`Exec="` + bin + `"` + "\n", "StartupWMClass=audiofilus", `Exec="` + bin + `" toggle`, "Icon=audiofilus"} {
 		if !strings.Contains(string(b), want) {
 			t.Errorf("entry lacks %q:\n%s", want, b)
 		}

@@ -12,7 +12,7 @@ album=${2:-}
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 ./build.sh >/dev/null
-dist/audiofilus-ui -music "$music" -album "$album" -lang en -shots "$tmp" # en inglés: lo que ve la mayoría en PortMaster
+dist/audiofilus -music "$music" -album "$album" -lang en -shots "$tmp" # en inglés: lo que ve la mayoría en PortMaster
 for pair in portada-portmaster:cover reproduciendo-4x3:screenshot; do
   magick "$tmp/${pair%%:*}.png" -sample 33.3334% -sample 200% "portmaster/audiofilus/${pair##*:}.png"
 done

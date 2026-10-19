@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -106,29 +105,17 @@ func (c *Client) Background() {
 	_, _ = control.Call(c.paths.Socket, control.Request{Cmd: "background"})
 }
 
-// daemonPath busca el binario del servicio junto al de la interfaz, con su
-// mismo sufijo (en el port de PortMaster, audiofilus-ui.aarch64 lanza
-// audiofilus.aarch64; en Windows, .exe); si no, en la carpeta de audiofilus
-// o en el PATH.
+// daemonPath es el binario del servicio: este mismo (audiofilus es un solo
+// binario: la interfaz, el servicio y la línea de comandos).
 func (c *Client) daemonPath() (string, error) {
-	if exe, err := os.Executable(); err == nil {
-		if real, err := filepath.EvalSymlinks(exe); err == nil {
-			exe = real
-		}
-		suffix := strings.TrimPrefix(filepath.Base(exe), "audiofilus-ui")
-		p := filepath.Join(filepath.Dir(exe), "audiofilus"+suffix)
-		if _, err := os.Stat(p); err == nil {
-			return p, nil
-		}
+	exe, err := os.Executable()
+	if err != nil {
+		return "", fmt.Errorf("finding the audiofilus binary: %w", err)
 	}
-	p := filepath.Join(c.paths.Base, proc.Exe("audiofilus"))
-	if _, err := os.Stat(p); err == nil {
-		return p, nil
+	if real, err := filepath.EvalSymlinks(exe); err == nil {
+		exe = real
 	}
-	if p, err := exec.LookPath("audiofilus"); err == nil {
-		return p, nil
-	}
-	return "", fmt.Errorf("audiofilus (the audio service) not found next to the UI in %s", c.paths.Base)
+	return exe, nil
 }
 
 // startDaemon lanza `audiofilus daemon -detach`, que se separa en su propia

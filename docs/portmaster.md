@@ -8,18 +8,18 @@ gameinfo.xml               for the EmulationStation menu
 audiofilus/port.json       the port metadata for PortMaster
 audiofilus/cover.png       the cover (640×480)
 audiofilus/screenshot.png  a screenshot (640×480)
-audiofilus/audiofilus.aarch64, audiofilus-ui.aarch64   the service and the UI for arm64 handhelds
-audiofilus/audiofilus.x86_64, audiofilus-ui.x86_64     the same for x86_64 ones
+audiofilus/audiofilus.aarch64  the UI, the service and the CLI in one binary, for arm64 handhelds
+audiofilus/audiofilus.x86_64   the same for x86_64 ones
 audiofilus/licenses/       MIT (audiofilus), OFL for Jersey 10 and Tiny5
 ```
 
 ## The launcher
 
 - It uses PortMaster's `control.txt` like any other port (`get_controls`, `$GPTOKEYB`, `pm_finish`).
-- It runs `audiofilus-ui.$DEVICE_ARCH` (PortMaster's variable; `uname -m` if missing): `x86_64` there, `aarch64` otherwise, as PortMaster ports usually name their binaries. The UI starts the service with its own suffix, `audiofilus.<arch>` (`Client.daemonPath`). Both architectures are built without cgo: they only need libc and load SDL2 at runtime (the desktop x86_64 UI uses GLFW with cgo instead, and links X11).
+- It runs `audiofilus.$DEVICE_ARCH` (PortMaster's variable; `uname -m` if missing): `x86_64` there, `aarch64` otherwise, as PortMaster ports usually name their binaries. It is one binary for everything (one instead of two saves about 10 MB per architecture): with no arguments it is the UI, which starts the service by running itself again as `audiofilus daemon -detach` (`Client.daemonPath`); the detached service names itself `audiofilusd` in its command line. Both architectures are built without cgo: they only need libc and load SDL2 at runtime (the desktop x86_64 build uses GLFW with cgo instead).
 - `AUDIOFILUS_HOME` points to the port folder: `audiofilus.json`, `data/` and the service log (`data/audiofilus.log`) live there. `log.txt` is the UI output.
 - `EBITENGINE_UI_BACKEND=sdl2` and `SDL_GAMECONTROLLERCONFIG` with PortMaster's mapping for the console. The service starts the UI, so it inherits that environment.
-- gptokeyb only provides PortMaster's exit shortcut (Select+Start): it kills the UI and, since background mode was not requested, the service stops the music.
+- gptokeyb only provides PortMaster's exit shortcut (Select+Start): it runs `pkill -f audiofilus.<arch>`, which kills the UI; the service doesn't match (its command line is `audiofilusd daemon`), so it isn't killed abruptly: it notices the UI is gone and, since background mode was not requested, stops the music and cleans up its mounts.
 - On ArkOS and dArkOS it restores `~/.asoundrc` if it is missing: there is no PulseAudio there and audio goes through ALSA.
 
 ## The images

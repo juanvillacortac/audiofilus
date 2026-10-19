@@ -1,5 +1,8 @@
-// Command audiofilus es el servicio de audio y su cliente de línea de comandos.
+// Command audiofilus es todo audiofilus en un binario: la interfaz (sin
+// argumentos, ver ui.go), el servicio de audio y su cliente de línea de
+// comandos. Uno solo en vez de dos ahorra espacio en las portátiles.
 //
+//	audiofilus                    la interfaz
 //	audiofilus daemon [-detach]   el servicio (en primer plano por defecto)
 //	audiofilus play [rutas...]    reproduce archivos, carpetas o .m3u (arranca el servicio si hace falta)
 //	audiofilus <comando> [args]   status, toggle, pause, resume, next, prev, seek,
@@ -26,6 +29,7 @@ import (
 )
 
 const usage = `usage:
+  audiofilus                      open the player (the interface; starts the service)
   audiofilus daemon [-detach]     run the audio service
   audiofilus play [paths...]      play files, folders or .m3u (default: music_dirs)
   audiofilus add <paths...>       append to the queue
@@ -52,9 +56,9 @@ Config lives next to the binary: audiofilus.json and data/.
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-	if len(os.Args) < 2 {
-		fmt.Fprint(os.Stderr, usage)
-		os.Exit(2)
+	if len(os.Args) < 2 || strings.HasPrefix(os.Args[1], "-") && os.Args[1] != "-h" && os.Args[1] != "--help" {
+		runUI(os.Args[1:])
+		return
 	}
 	paths, err := config.Locate()
 	if err != nil {
@@ -111,6 +115,10 @@ func startDetached(paths config.Paths) error {
 		return err
 	}
 	c := exec.Command(exe, "daemon")
+	// Con otro nombre en su línea de comandos: el servicio y la interfaz son
+	// el mismo binario, y el atajo de salida de PortMaster (gptokeyb) cierra
+	// la interfaz con pkill -f <binario>; así no se lleva la música.
+	c.Args[0] = "audiofilusd"
 	c.Stdout, c.Stderr = logf, logf
 	c.SysProcAttr = detachAttr()
 	c.Env = append(os.Environ(), "AUDIOFILUS_HOME="+paths.Base)

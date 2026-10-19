@@ -24,7 +24,6 @@ jobs:
       - name: Build for arm64 without cgo
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus-ui
 
   windows:
     runs-on: windows-latest
@@ -38,8 +37,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          go build -o bin/audiofilus.exe ./cmd/audiofilus
-          go build -ldflags=-H=windowsgui -o bin/audiofilus-ui.exe ./cmd/audiofilus-ui
+          go build -ldflags=-H=windowsgui -o bin/audiofilus.exe ./cmd/audiofilus
       - name: Virtual sound card (the runner has none)
         uses: LABSN/sound-ci-helpers@v1
       - name: Smoke test (service, socket, playback, quit)

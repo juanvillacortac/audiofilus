@@ -21,17 +21,19 @@ get_controls
 
 GAMEDIR="/$directory/ports/audiofilus"
 
-# The binaries for this machine: audiofilus-ui.aarch64 or .x86_64. The UI
-# starts the service with the same suffix (audiofilus.<arch>).
+# The binary for this machine: audiofilus.aarch64 or .x86_64. It is the UI, the
+# service and the command line in one: the UI starts the service by running
+# itself again (named audiofilusd, so gptokeyb's exit hotkey, which kills by
+# command line, leaves the music playing).
 ARCH="${DEVICE_ARCH:-$(uname -m)}"
 case "$ARCH" in
   x86_64 | amd64) ARCH=x86_64 ;;
   *) ARCH=aarch64 ;;
 esac
-BINARY="audiofilus-ui.${ARCH}"
+BINARY="audiofilus.${ARCH}"
 
 cd "$GAMEDIR"
-chmod +x "audiofilus.${ARCH}" "$BINARY" 2>/dev/null
+chmod +x "$BINARY" 2>/dev/null
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
 # The settings and the library cache live next to the binaries

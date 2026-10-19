@@ -1,16 +1,19 @@
-// Command audiofilus-ui es la interfaz de audiofilus. Habla con el servicio de
-// audio (el binario audiofilus de la misma carpeta, que arranca si hace falta);
-// al cerrarla, la música sigue sonando en segundo plano.
+// La interfaz de audiofilus, en el mismo binario que el servicio: sin
+// argumentos (o con opciones que empiezan por "-") se abre la interfaz, que
+// habla con el servicio y lo arranca si hace falta (relanzando este mismo
+// binario con "daemon"); al cerrarla, la música sigue sonando en segundo
+// plano.
 //
-//	audiofilus-ui                              la interfaz
-//	audiofilus-ui -shots <carpeta> -music <m>  capturas de cada pantalla y formato (sin servicio;
-//	                                           -album elige qué suena, -frames añade animaciones)
-//	audiofilus-ui -scrolltest -music <m>       recorre los álbumes y muestra la memoria (sin servicio)
-//	audiofilus-ui -bench lake -music <m>       mide la CPU de un visualizador (sin servicio)
+//	audiofilus                              la interfaz
+//	audiofilus -shots <carpeta> -music <m>  capturas de cada pantalla y formato (sin servicio;
+//	                                        -album elige qué suena, -frames añade animaciones)
+//	audiofilus -scrolltest -music <m>       recorre los álbumes y muestra la memoria (sin servicio)
+//	audiofilus -bench lake -music <m>       mide la CPU de un visualizador (sin servicio)
 //
 // Teclado: flechas, Enter (A), Esc (B), S (X, aleatorio), Tab (Select, pantallas), M (Start, más),
 // Espacio (pausa), Q/E (anterior/siguiente), coma/punto (retroceder/adelantar),
 // F1 (FN, guía de controles), R (volver a lo que suena).
+
 package main
 
 import (
@@ -38,19 +41,21 @@ import (
 // portátiles de 512 MB junto al sistema, el frontend y el servicio de audio.
 const memoryLimit = 96 << 20
 
-func main() {
-	music := flag.String("music", "", "carpeta de música para -shots y -scrolltest")
-	shots := flag.String("shots", "", "guarda capturas de cada pantalla y formato aquí y termina")
-	scroll := flag.Bool("scrolltest", false, "recorre todos los álbumes solo y muestra la memoria usada")
-	bench := flag.String("bench", "", "mide la CPU de un visualizador (drift, lake, trench...) y termina")
-	benchProf := flag.String("benchprof", "", "con -bench, guarda aquí un perfil de CPU")
-	frames := flag.String("frames", "", "con -shots, guarda también una secuencia de la pantalla de reproducción aquí")
-	album := flag.String("album", "", "con -shots, el álbum que suena: el primero cuyo artista o título lo contiene")
-	language := flag.String("lang", "", "con -shots, el idioma de las capturas (es, en)")
-	flag.Parse()
+// runUI atiende la interfaz (ver arriba): args son las opciones.
+func runUI(args []string) {
+	fs := flag.NewFlagSet("audiofilus", flag.ExitOnError)
+	music := fs.String("music", "", "carpeta de música para -shots y -scrolltest")
+	shots := fs.String("shots", "", "guarda capturas de cada pantalla y formato aquí y termina")
+	scroll := fs.Bool("scrolltest", false, "recorre todos los álbumes solo y muestra la memoria usada")
+	bench := fs.String("bench", "", "mide la CPU de un visualizador (drift, lake, trench...) y termina")
+	benchProf := fs.String("benchprof", "", "con -bench, guarda aquí un perfil de CPU")
+	frames := fs.String("frames", "", "con -shots, guarda también una secuencia de la pantalla de reproducción aquí")
+	album := fs.String("album", "", "con -shots, el álbum que suena: el primero cuyo artista o título lo contiene")
+	language := fs.String("lang", "", "con -shots, el idioma de las capturas (es, en)")
+	_ = fs.Parse(args)
 
 	if err := run(*music, *shots, *frames, *album, *language, *scroll, *bench, *benchProf); err != nil {
-		fmt.Fprintln(os.Stderr, "audiofilus-ui:", err)
+		fmt.Fprintln(os.Stderr, "audiofilus:", err)
 		os.Exit(1)
 	}
 }

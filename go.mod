@@ -30,4 +30,4 @@ require (
 	golang.org/x/text v0.41.0 // indirect
 )
 
-replace github.com/hajimehoshi/ebiten/v2 => github.com/juanvillacortac/ebiten/v2 v2.0.0-20261018024935-8de2498b1e21
+replace github.com/hajimehoshi/ebiten/v2 => github.com/juanvillacortac/ebiten/v2 v2.0.0-20261019160141-d7293e442b76

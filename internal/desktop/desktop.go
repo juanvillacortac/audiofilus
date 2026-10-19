@@ -46,8 +46,9 @@ func Paths() (entry, icon string, err error) {
 		filepath.Join(d, "icons", "hicolor", "256x256", "apps", ID+".png"), nil
 }
 
-// Entry es el contenido del .desktop para la interfaz ui y el servicio cli.
-func Entry(ui, cli string) string {
+// Entry es el contenido del .desktop para el binario bin (la interfaz sin
+// argumentos; las acciones, sus comandos).
+func Entry(bin string) string {
 	q := func(p string) string { return `"` + strings.ReplaceAll(p, `"`, `\"`) + `"` }
 	return fmt.Sprintf(`[Desktop Entry]
 Type=Application
@@ -73,25 +74,20 @@ Exec=%s next
 [Desktop Action Previous]
 Name=Previous track
 Exec=%s prev
-`, q(ui), ID, ID, q(cli), q(cli), q(cli))
+`, q(bin), ID, ID, q(bin), q(bin), q(bin))
 }
 
-// Install escribe la entrada y el icono para los binarios de dir (la carpeta
-// donde están audiofilus y audiofilus-ui) y avisa a las cachés del escritorio
-// si sus herramientas están.
-func Install(dir string) (entry, icon string, err error) {
+// Install escribe la entrada y el icono para el binario bin (audiofilus) y
+// avisa a las cachés del escritorio si sus herramientas están.
+func Install(bin string) (entry, icon string, err error) {
 	entry, icon, err = Paths()
 	if err != nil {
 		return "", "", err
 	}
-	ui := filepath.Join(dir, "audiofilus-ui")
-	if _, err := os.Stat(ui); err != nil {
-		return "", "", fmt.Errorf("audiofilus-ui not found next to audiofilus in %s", dir)
-	}
 	for _, f := range []struct {
 		path string
 		data []byte
-	}{{entry, []byte(Entry(ui, filepath.Join(dir, "audiofilus")))}, {icon, Icon}} {
+	}{{entry, []byte(Entry(bin))}, {icon, Icon}} {
 		if err := os.MkdirAll(filepath.Dir(f.path), 0o755); err != nil {
 			return "", "", err
 		}

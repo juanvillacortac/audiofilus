@@ -23,14 +23,13 @@ Filter the "post-quantum key exchange" warning out of the output. If `knulli.loc
 
 ## Installing
 
-The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster), with the console's binaries named `audiofilus.aarch64` and `audiofilus-ui.aarch64` and the launcher at `/userdata/roms/ports/Audiofilus.sh`.
+The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaster), with the console's binary named `audiofilus.aarch64` (the UI, the service and the CLI in one) and the launcher at `/userdata/roms/ports/Audiofilus.sh`.
 
 ```sh
-./build.sh                                   # dist/audiofilus-arm64 and dist/audiofilus-ui-arm64
+./build.sh                                   # dist/audiofilus-arm64
 D=/userdata/roms/ports/audiofilus
 kcp dist/audiofilus-arm64 root@knulli.local:$D/audiofilus.aarch64.new
-kcp dist/audiofilus-ui-arm64 root@knulli.local:$D/audiofilus-ui.aarch64.new
-k "cd $D && mv -f audiofilus.aarch64.new audiofilus.aarch64 && mv -f audiofilus-ui.aarch64.new audiofilus-ui.aarch64 && chmod +x audiofilus.aarch64 audiofilus-ui.aarch64"
+k "cd $D && mv -f audiofilus.aarch64.new audiofilus.aarch64 && chmod +x audiofilus.aarch64 && rm -f audiofilus-ui.aarch64"
 ```
 
 Check the upload with `md5sum` on both sides. If the service is running, `./audiofilus quit` makes the next launch use the new binary.

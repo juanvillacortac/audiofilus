@@ -22,14 +22,12 @@ jobs:
             d=audiofilus-linux-$arch
             mkdir -p "$d/licenses"
             cp "dist/audiofilus-$arch" "$d/audiofilus"
-            cp "dist/audiofilus-ui-$arch" "$d/audiofilus-ui"
             cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
             tar -czf "out/$d.tar.gz" "$d"
           done
           d=audiofilus-windows-amd64
           mkdir -p "$d/licenses"
           cp dist/audiofilus-windows-amd64.exe "$d/audiofilus.exe"
-          cp dist/audiofilus-ui-windows-amd64.exe "$d/audiofilus-ui.exe"
           cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)
           (cd out && sha256sum * > SHA256SUMS)

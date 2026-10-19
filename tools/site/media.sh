@@ -13,7 +13,7 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 out=site/img
 ./build.sh >/dev/null
-dist/audiofilus-ui -music "$music" -album "$album" -lang en -shots "$tmp/s" -frames "$tmp/f"
+dist/audiofilus -music "$music" -album "$album" -lang en -shots "$tmp/s" -frames "$tmp/f"
 
 # Capturas fijas, a ×4 (1440×960).
 for pair in reproduciendo:player albumes:albums buscar-youtube:search-youtube \

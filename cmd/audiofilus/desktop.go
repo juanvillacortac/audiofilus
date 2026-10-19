@@ -31,7 +31,7 @@ func runDesktop(args []string) int {
 		fmt.Fprintln(os.Stderr, "audiofilus:", err)
 		return 1
 	}
-	entry, icon, err := desktop.Install(filepath.Dir(exe))
+	entry, icon, err := desktop.Install(exe)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "audiofilus:", err)
 		return 1

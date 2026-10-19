@@ -138,18 +138,18 @@ Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh
 ```
 
-It downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus`, links `audiofilus` and `audiofilus-ui` into `~/.local/bin`, and adds Audiofilus to the app launcher. Run it again to update; settings are kept. To uninstall:
+It downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus`, links `audiofilus` into `~/.local/bin`, and adds Audiofilus to the app launcher. Run it again to update; settings are kept. To uninstall:
 
 ```sh
 audiofilus quit; audiofilus desktop uninstall
-rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus ~/.local/bin/audiofilus-ui
+rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus
 ```
 
 Or by hand: grab `audiofilus-linux-amd64.tar.gz` (or `-arm64`), unzip it anywhere, run `./audiofilus desktop install` once and open it from the launcher.
 
 ### Windows
 
-On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus-ui.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
+On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
 
 ## Build
 
@@ -169,9 +169,8 @@ Both leave in `dist/`:
 
 | File | What it is |
 |---|---|
-| `audiofilus-amd64`, `audiofilus-arm64` | The audio service and CLI |
-| `audiofilus-ui-amd64`, `audiofilus-ui-arm64` | The interface |
-| `audiofilus-windows-amd64.exe`, `audiofilus-ui-windows-amd64.exe` | The service and the interface for Windows |
+| `audiofilus-amd64`, `audiofilus-arm64` | Everything in one binary: the player (run it with no arguments), the audio service (`audiofilus daemon`, which the player starts itself) and the CLI |
+| `audiofilus-windows-amd64.exe` | The same for Windows |
 | `audiofilus.zip` | The PortMaster port |
 
 The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile and libxmp are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.

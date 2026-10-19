@@ -21,10 +21,10 @@ go vet ./... && go test ./...                          # the tests (no real audi
 go run ./cmd/audiofilus play ~/Music                   # listen on the PC (starts the service)
 go run ./cmd/audiofilus status                         # what's playing
 go run ./cmd/audiofilus bench <file.mp3>               # how much CPU decoding it costs
-./build.sh                                             # service and UI, PC and arm64, and dist/audiofilus.zip (PortMaster)
-dist/audiofilus-ui                                     # the interface (starts the service from dist/)
-dist/audiofilus-ui -shots /tmp/s -music ~/Music        # screenshots of every screen and aspect ratio
-dist/audiofilus-ui -bench lake -music ~/Music          # CPU and memory per frame of a visualizer
+./build.sh                                             # PC and arm64 binaries, and dist/audiofilus.zip (PortMaster)
+dist/audiofilus                                        # the interface (starts the service: itself, as `daemon`)
+dist/audiofilus -shots /tmp/s -music ~/Music           # screenshots of every screen and aspect ratio
+dist/audiofilus -bench lake -music ~/Music             # CPU and memory per frame of a visualizer
 docker build --target dist --output dist .             # same as build.sh, nothing to install
 ```
 
@@ -41,7 +41,7 @@ GOOS=windows go vet ./...
 
 | Folder | What's in it |
 |---|---|
-| `cmd/audiofilus/` | The binary: `daemon`, the CLI commands and `bench` |
+| `cmd/audiofilus/` | The one binary: the interface with no arguments (`ui.go`), `daemon`, the CLI commands and `bench` |
 | `internal/decode/` | Decoders to stereo float32: pure Go (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) and C libraries through purego (mpg123, opusfile, fdk-aac, libxmp) |
 | `internal/resample/` | Linear resampling to the output rate (48 kHz) |
 | `internal/engine/` | Playback with `oto`: one player, the queue, gapless transitions |
@@ -60,7 +60,6 @@ GOOS=windows go vet ./...
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
-| `cmd/audiofilus-ui/` | The interface binary |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
 | `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
 | `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
@@ -71,8 +70,8 @@ GOOS=windows go vet ./...
 
 Architecture rules:
 
-- **Audio and everything that saves power live in the service**, not in the interface. The interface is a separate process that talks over the socket; it can be closed and the music goes on. See [docs/architecture.md](docs/architecture.md).
-- **No cgo.** Everything builds with `CGO_ENABLED=0`, like Trancazo. The C libraries (SDL2, mpg123, opusfile, fdk-aac, libxmp) are loaded at runtime with purego, and if they're missing the program carries on without them ([docs/architecture.md](docs/architecture.md#formats)). The only exception is the desktop UI build, which uses GLFW.
+- **Audio and everything that saves power live in the service**, not in the interface. The interface is a separate process that talks over the socket (the same binary, started without arguments; the service is that binary run as `daemon`); it can be closed and the music goes on. See [docs/architecture.md](docs/architecture.md).
+- **No cgo.** Everything builds with `CGO_ENABLED=0`, like Trancazo. The C libraries (SDL2, mpg123, opusfile, fdk-aac, libxmp) are loaded at runtime with purego, and if they're missing the program carries on without them ([docs/architecture.md](docs/architecture.md#formats)). The only exception is the desktop (amd64) build, whose interface uses GLFW.
 - **Configuration is portable**: `audiofilus.json` and `data/` sit next to the binary (`config.Locate`). The only exception is the socket, which goes in `/tmp` because `/userdata` on Knulli is exFAT and doesn't support sockets.
 - **In the background the console suspends as usual.** Preventing that is up to the open app (`awake`, a permission that expires), never the service on its own.
 - **Buttons come from the SDL mapping**, not hardcoded codes: each console uses its own.

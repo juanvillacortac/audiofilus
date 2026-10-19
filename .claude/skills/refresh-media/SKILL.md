@@ -5,7 +5,7 @@ description: Regenerate the screenshots, GIFs and logo used by the website (site
 
 # Refresh media
 
-All images are rendered by the interface itself (`-shots` and `-frames` in `cmd/audiofilus-ui`), at 3× of 320×240, and scaled down without smoothing so pixels stay sharp.
+All images are rendered by the interface itself (`-shots` and `-frames` in `cmd/audiofilus/ui.go`), at 3× of 320×240, and scaled down without smoothing so pixels stay sharp.
 
 ## Website and README (`site/img`)
 

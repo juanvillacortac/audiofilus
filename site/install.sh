@@ -5,12 +5,13 @@
 # - Downloads the latest release for this machine (x86_64 or aarch64).
 # - Puts it in ~/.local/share/audiofilus. Settings (audiofilus.json) and state
 #   (data/) live there too and are kept on updates.
-# - Links audiofilus and audiofilus-ui into ~/.local/bin.
+# - Links audiofilus (the player, the audio service and the command line, in
+#   one binary) into ~/.local/bin.
 # - Adds Audiofilus to the app launcher (audiofilus desktop install).
 #
 # Uninstall:
 #   audiofilus quit; audiofilus desktop uninstall
-#   rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus ~/.local/bin/audiofilus-ui
+#   rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus
 set -eu
 
 repo=juanvillacortac/audiofilus
@@ -43,16 +44,16 @@ fetch "https://github.com/$repo/releases/latest/download/$name.tar.gz" "$tmp/a.t
 	die "download failed"
 tar -xzf "$tmp/a.tar.gz" -C "$tmp"
 
-# Each file is copied next to its destination and then renamed over it: the
+# The binary is copied next to its destination and then renamed over it: the
 # service may be running, and a running binary can be replaced but not
 # overwritten.
 mkdir -p "$dest/licenses" "$bin"
-for f in audiofilus audiofilus-ui; do
-	cp "$tmp/$name/$f" "$dest/.$f.new"
-	chmod 755 "$dest/.$f.new"
-	mv -f "$dest/.$f.new" "$dest/$f"
-	ln -sf "$dest/$f" "$bin/$f"
-done
+cp "$tmp/$name/audiofilus" "$dest/.audiofilus.new"
+chmod 755 "$dest/.audiofilus.new"
+mv -f "$dest/.audiofilus.new" "$dest/audiofilus"
+ln -sf "$dest/audiofilus" "$bin/audiofilus"
+# Up to 0.2.x the interface was a second binary, audiofilus-ui.
+rm -f "$dest/audiofilus-ui" "$bin/audiofilus-ui"
 cp "$tmp/$name/licenses/"* "$dest/licenses/"
 
 if "$dest/audiofilus" desktop install >/dev/null 2>&1; then
@@ -61,8 +62,8 @@ fi
 say "Installed in $dest"
 case ":$PATH:" in
 *":$bin:"*) ;;
-*) say "Note: $bin is not in your PATH; open Audiofilus from the launcher or run $dest/audiofilus-ui" ;;
+*) say "Note: $bin is not in your PATH; open Audiofilus from the launcher or run $dest/audiofilus" ;;
 esac
-if pgrep -x audiofilus >/dev/null 2>&1; then
+if pgrep -f '^audiofilusd daemon' >/dev/null 2>&1 || pgrep -f "^$dest/audiofilus daemon" >/dev/null 2>&1; then
 	say "The audio service is running the old version: run 'audiofilus quit' to restart it on the next launch."
 fi

@@ -8,12 +8,12 @@ On a Linux desktop audiofilus behaves like any other app: it shows up in the lau
 curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh
 ```
 
-`site/install.sh` (served by GitHub Pages) downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus` (`$AUDIOFILUS_DIR`), links both binaries into `~/.local/bin` (`$AUDIOFILUS_BIN`), and runs `audiofilus desktop install`. Each binary is copied next to its destination and renamed over it, so updating works while the service runs; `audiofilus.json` and `data/` in that folder are left alone.
+`site/install.sh` (served by GitHub Pages) downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus` (`$AUDIOFILUS_DIR`), links `audiofilus` (the player, the service and the CLI in one binary) into `~/.local/bin` (`$AUDIOFILUS_BIN`), removes the old `audiofilus-ui` from 0.2.x, and runs `audiofilus desktop install`. The binary is copied next to its destination and renamed over it, so updating works while the service runs; `audiofilus.json` and `data/` in that folder are left alone.
 
 ## Launcher entry and icon
 
 ```sh
-./audiofilus desktop install     # next to audiofilus-ui
+./audiofilus desktop install
 ./audiofilus desktop uninstall
 ```
 
@@ -21,7 +21,7 @@ curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh
 
 | File | What it is |
 |---|---|
-| `~/.local/share/applications/audiofilus.desktop` | Name "Audiofilus", `Exec` pointing at `audiofilus-ui`, `StartupWMClass=audiofilus`, and three actions (Play/Pause, Next track, Previous track) that call `audiofilus toggle|next|prev` |
+| `~/.local/share/applications/audiofilus.desktop` | Name "Audiofilus", `Exec` pointing at `audiofilus`, `StartupWMClass=audiofilus`, and three actions (Play/Pause, Next track, Previous track) that call `audiofilus toggle|next|prev` |
 | `~/.local/share/icons/hicolor/256x256/apps/audiofilus.png` | The icon: the logo's CD, pixel art scaled ×8 (`internal/desktop/icon.png`) |
 
 `$XDG_DATA_HOME` replaces `~/.local/share` when set. If `update-desktop-database` and `gtk-update-icon-cache` exist, they're run; otherwise the desktop picks the files up by itself. Moving the binaries means running `install` again, since `Exec` is an absolute path.
@@ -49,7 +49,7 @@ The service registers `org.mpris.MediaPlayer2.audiofilus` on the session bus (`i
 
   ```lua
   hl.unbind("SUPER + SHIFT + M")
-  o.bind("SUPER + SHIFT + M", "Music", { launch = "/path/to/audiofilus-ui", focus = "^audiofilus$" })
+  o.bind("SUPER + SHIFT + M", "Music", { launch = "/path/to/audiofilus", focus = "^audiofilus$" })
   ```
 
   Then check it with `hyprctl reload` and `hyprctl configerrors`.

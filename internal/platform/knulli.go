@@ -277,7 +277,7 @@ func uiKeyMappers() []int {
 			continue
 		}
 		cmd, err := os.ReadFile(filepath.Join(filepath.Dir(d), "cmdline"))
-		if err != nil || !bytes.Contains(cmd, []byte("audiofilus-ui")) {
+		if err != nil || !bytes.Contains(cmd, []byte("audiofilus")) {
 			continue
 		}
 		if pid, err := strconv.Atoi(filepath.Base(filepath.Dir(d))); err == nil {
