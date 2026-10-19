@@ -42,6 +42,15 @@ anim 5 "$tmp/f/duelo/f*.png" duel.webp
 anim 5 "$tmp/f/carrera/f*.png" runner.webp
 magick "$tmp/s/adivina-3x2.png" -sample 33.3334% -sample 400% -strip "$out/quiz.png"
 
+# El móvil: como en un iPhone 15 (zona segura simulada, modo táctil y sin lo
+# que muestra el sistema), Reproduciendo, la biblioteca y el desplegable de
+# pestañas.
+AUDIOFILUS_MOBILE=1 AUDIOFILUS_TOUCH=1 AUDIOFILUS_SAFE=36,21 \
+  dist/audiofilus -music "$music" -album "$album" -lang en -shots "$tmp/m" -frames "$tmp/mf"
+magick "$tmp/m/reproduciendo-iphone.png" -sample 33.3334% -sample 200% -strip "$out/phone-player.png"
+magick "$tmp/m/canciones-iphone.png" -sample 33.3334% -sample 200% -strip "$out/phone-library.png"
+anim 5 "$tmp/mf/pestanas/f*.png" phone-tabs.webp
+
 # El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo
 # de encima, sobre transparente), a 30 cuadros por segundo y a 1:1, que se
 # reproducen una vez (WebP sin pérdida).

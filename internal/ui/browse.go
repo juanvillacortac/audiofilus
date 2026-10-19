@@ -623,11 +623,17 @@ func (a *App) drawAlbumView(dst *ebiten.Image, v *view, x, y, w, h int) {
 	const rowH = 13
 	rows := max(1, (h-size-10)/rowH)
 	n := len(v.songs)
-	first := max(0, min(v.sel-rows/2, n-rows))
-	for i := 0; i < rows && first+i < n; i++ {
+	// Con el dedo se desplaza píxel a píxel y tocar una canción la pone.
+	first, off, clip := a.touchList(dst, &v.scr, &v.sel, n, x-3, ly-4, w+6, rows*rowH, rowH, func() {
+		a.tabFocus = false
+		a.input.inject(ActConfirm)
+	})
+	whole := dst
+	dst = clip
+	for i := 0; i <= rows && first+i < n; i++ {
 		idx := first + i
 		s := v.songs[idx]
-		ry := ly + i*rowH
+		ry := ly + i*rowH - off
 		col := th.Text
 		if idx == v.sel {
 			panel(dst, x-3, ry-4, w+6, rowH, mix(th.Bg2, th.Accent, 0.35))
@@ -644,5 +650,6 @@ func (a *App) drawAlbumView(dst *ebiten.Image, v *view, x, y, w, h int) {
 		}
 		drawTextW(dst, s.Title, SmallFace, x+14, ry, w-16, col)
 	}
+	dst = whole
 	a.scrollBar(dst, x+w+4, ly-3, rows*rowH, first, rows, n)
 }

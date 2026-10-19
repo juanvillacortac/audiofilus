@@ -19,7 +19,7 @@
   <img src="site/img/vis-lake.webp" alt="Lake visualizer" width="320">
 </p>
 
-Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), and on **Linux and Windows** desktops.
+Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), on **Linux and Windows** desktops, and on **iPhone and iPad**.
 
 ## Features
 
@@ -125,6 +125,20 @@ On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy]
 
 Details in [docs/linux-desktop.md](docs/linux-desktop.md).
 
+### iPhone and iPad
+
+The same player on iOS, touch first: every row, cover, tab and button is tappable, lists scroll under your thumb with momentum, the bottom bar has real buttons, the games have touch controls, and in portrait the tabs open from a button.
+
+- Background playback, with the cover and controls on the lock screen, in Control Center, on headphones and in CarPlay.
+- Music from the Files app (*On My iPhone → Audiofilus*), any folder picked from iCloud Drive or another app, or none at all: Subsonic, Navidrome, Jellyfin, radio, podcasts and YouTube Music work without local music.
+- AAC from iTunes and AAC radio play through Apple's own decoder.
+
+<p align="center">
+  <img src="site/img/phone-player.png" alt="Now Playing on an iPhone" width="200">
+  <img src="site/img/phone-library.png" alt="The library on an iPhone" width="200">
+  <img src="site/img/phone-tabs.webp" alt="Library tabs dropping down" width="200">
+</p>
+
 ## Install
 
 ### Handhelds (PortMaster)
@@ -151,6 +165,10 @@ rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus
 ```
 
 Or by hand: grab `audiofilus-linux-amd64.tar.gz` (or `-arm64`), unzip it anywhere, run `./audiofilus desktop install` once and open it from the launcher.
+
+### iPhone and iPad
+
+Every release has an unsigned `audiofilus-ios-unsigned.ipa`. Install it with [Sideloadly](https://sideloadly.io) or [AltStore](https://altstore.io), which sign it with your own Apple ID. Details in [docs/ios.md](docs/ios.md).
 
 ### Windows
 
@@ -200,8 +218,9 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 ## Roadmap
 
 - **Handhelds:** an OpenGL ES 2.0 path for devices without GLES 3 (for now it needs OpenGL ES 3.2).
-- **Desktop:** mouse controls, Windows system media controls, window-sized layouts.
-- **Android** and **iOS**: touch controls and system media controls.
+- **Desktop:** Windows system media controls, layouts made for big windows.
+- **iOS:** a signed build.
+- **Android:** the same mobile app (the `mobile/` package already builds for it with ebitenmobile).
 
 ## Support
 

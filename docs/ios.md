@@ -6,6 +6,7 @@ audiofilus runs on iPhone and iPad as an unsigned app (`audiofilus-ios-unsigned.
 
 - `mobile/` is audiofilus as a Go package for [ebitenmobile](https://ebitengine.org/en/documents/mobile.html): `ebitenmobile bind -target ios` turns it into `ios/Mobile.xcframework`. The ebitenmobile binary is built from the same commit of the Ebitengine fork that `go.mod` uses (its `replace`).
 - `ios/project.yml` is the Xcode project for XcodeGen (no `.xcodeproj` in the repo); `ios/Audiofilus/AppDelegate.swift` is the app.
+- The app icon is pixel art made by `tools/ios/icon.sh` (the logo's CD over a dithered background with the splash's glows, drawn at 128 px and scaled ×8).
 - `.github/workflows/ios.yml` builds it on macOS (by hand from the Actions tab, or from `release.yml` on every release, which attaches the `.ipa`). The repo is public, so macOS minutes are free.
 
 ## Differences from the desktop and the handhelds

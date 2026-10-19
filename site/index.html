@@ -173,7 +173,9 @@ figure { margin: 0; }
 .source .tag { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
 .source p { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
 .trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
-@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } }
+.trio.phones { max-width: 760px; margin-inline: auto; gap: 1.5rem; }
+.trio.phones img { border-radius: 18px; }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } .trio.phones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; } .trio.phones img { border-radius: 10px; } }
 
 /* Screens gallery */
 .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
@@ -309,6 +311,7 @@ footer img { height: 56px; width: auto; }
       <a href="#sources">Sources</a>
       <a href="#install">Install</a>
       <a href="#desktop">Desktop</a>
+      <a href="#mobile">iPhone</a>
       <a href="#support">Support</a>
       <a class="gh" href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
     </nav>
@@ -326,7 +329,7 @@ footer img { height: 56px; width: auto; }
           <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download for PortMaster</a>
           <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Source on GitHub</a>
         </div>
-        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — also on Linux and Windows desktops.</p>
+        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — also on Linux and Windows desktops, and on iPhone.</p>
       </div>
       <div class="device">
         <span class="led" aria-hidden="true"></span>
@@ -580,17 +583,38 @@ docker build --target dist --output dist .
     </div>
   </section>
 
+  <section class="band" id="mobile">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">iPhone and iPad</span>
+        <h2>In your pocket, for real</h2>
+        <p class="lede">The same pixel player on iOS, made for your fingers: everything is tappable, lists scroll under your thumb with momentum, and the music keeps playing with the screen locked.</p>
+      </div>
+      <div class="trio phones">
+        <figure class="figure"><img class="shot px" src="img/phone-player.png" alt="Now Playing on an iPhone: a big album cover with the vinyl peeking out, the song, the controls and the spectrum, with large touch buttons at the bottom" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="img/phone-library.png" alt="The library on an iPhone: a tabs button at the top, the song list, and a mini player with previous, back 10 seconds, pause, forward 10 seconds and next" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="img/phone-tabs.webp" alt="The library tabs drop down from the top bar when tapped, Albums is picked and the menu slides back up" width="240" height="520" loading="lazy"></figure>
+      </div>
+      <div class="trio">
+        <div class="point"><h3>Touch first</h3><p>Tap rows, covers, tabs and buttons; drag lists with your thumb; the button bar has real buttons, and the games have touch controls of their own. In portrait, tabs open from a button.</p></div>
+        <div class="point"><h3>Lock screen and Control Center</h3><p>The cover, the song and the controls on the lock screen, in Control Center, on your headphones and in CarPlay. AAC from iTunes and AAC radio play through Apple's own decoder.</p></div>
+        <div class="point"><h3>Your music, your way</h3><p>Copy songs into <em>On My iPhone → Audiofilus</em> in the Files app, pick any folder from iCloud Drive, or skip local music and stream from Subsonic, Navidrome or Jellyfin, radio, podcasts and YouTube Music.</p></div>
+      </div>
+      <p class="note">An unsigned <strong>audiofilus-ios-unsigned.ipa</strong> comes with every <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">release</a>: install it with <a href="https://sideloadly.io">Sideloadly</a> or <a href="https://altstore.io">AltStore</a>, which sign it with your own Apple ID.</p>
+    </div>
+  </section>
+
   <section class="band" id="roadmap">
     <div class="wrap">
       <div class="head">
         <span class="eyebrow">Roadmap</span>
         <h2>Beyond handhelds</h2>
-        <p class="lede">The same player, tuned for bigger screens and phones.</p>
+        <p class="lede">The same player on every screen you have.</p>
       </div>
       <div class="road">
-        <div class="stop"><span class="state now">Runs today</span><h3>Desktop</h3><p>Already runs on Linux and Windows, with launcher, media keys and crisp pixel scaling. Next: mouse controls and layouts made for big windows.</p></div>
-        <div class="stop"><span class="state next">Planned</span><h3>Android</h3><p>Touch controls, a lock-screen player and background playback through the system's media session.</p></div>
-        <div class="stop"><span class="state next">Planned</span><h3>iOS</h3><p>The same pixel interface on iPhone and iPad, with Control Center and AirPods controls.</p></div>
+        <div class="stop"><span class="state now">Runs today</span><h3>Desktop</h3><p>Linux and Windows, with launcher, tray, media keys, mouse and touch, and crisp pixel scaling at any window shape. Next: layouts made for big windows.</p></div>
+        <div class="stop"><span class="state now">Runs today</span><h3>iOS</h3><p>iPhone and iPad as an unsigned app: touch-first interface, background playback, lock screen and Control Center. Next: a signed build.</p></div>
+        <div class="stop"><span class="state next">Planned</span><h3>Android</h3><p>The same mobile app on Android, with background playback through the system's media session.</p></div>
       </div>
     </div>
   </section>
