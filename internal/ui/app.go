@@ -73,12 +73,17 @@ type App struct {
 	// interfaz casi parada.
 	quitting      bool // se pidió salir: Update termina el bucle
 	ptr           pointer
-	pendingFolder atomic.Pointer[string] // una carpeta elegida fuera (SetMusicFolder)  // el ratón o el dedo y las zonas tocables (pointer.go)
-	queueScr      scroller               // el desplazamiento de la cola con el dedo
-	runnerDuckY   int                    // en Carrera, desde dónde un dedo apoyado agacha
-	settingsScr   scroller               // y el de Ajustes (su posición va en settingsScroll)
-	splashing     bool                   // se está mostrando el splash
-	splashT       float64                // segundos de splash
+	pendingFolder atomic.Pointer[string] // una carpeta elegida fuera (SetMusicFolder)
+	ptrOX, ptrOY  int                    // dónde empieza la interfaz en la pantalla (SetPointerOffset)
+	// ExternalBackdrop: el fondo lo pinta quien la contiene, en toda la
+	// pantalla (el móvil, con DrawBackdrop): la interfaz no pinta el suyo y
+	// no se nota el borde de la zona segura.
+	ExternalBackdrop bool     // el ratón o el dedo y las zonas tocables (pointer.go)
+	queueScr         scroller // el desplazamiento de la cola con el dedo
+	runnerDuckY      int      // en Carrera, desde dónde un dedo apoyado agacha
+	settingsScr      scroller // y el de Ajustes (su posición va en settingsScroll)
+	splashing        bool     // se está mostrando el splash
+	splashT          float64  // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
 	// volumen en la escala única (0..2: el sistema hasta 1, el refuerzo de la
@@ -377,15 +382,18 @@ func (a *App) Update() error {
 	switch a.mode {
 	case modeScan:
 		if lib, err, ok := a.scan.Result(); ok {
-			if err != nil || len(lib.Songs) == 0 {
-				if err != nil {
-					a.flash(err.Error())
-				} else {
-					a.flash(T("no_music"))
-				}
-				a.picker = newPicker(firstOr(a.cfg.MusicDirs, ""))
-				a.mode = modePicker
-				break
+			// Sin música en la carpeta (o sin poder leerla) se entra igual:
+			// los servidores, la radio, los podcasts y YouTube Music no la
+			// necesitan, y la carpeta se cambia en Ajustes. Antes se quedaba
+			// en el explorador, sin forma de llegar a ellos.
+			switch {
+			case err != nil:
+				a.flash(err.Error())
+			case lib == nil || len(lib.Songs) == 0:
+				a.flash(T("no_music"))
+			}
+			if lib == nil {
+				lib = &Library{}
 			}
 			a.setLocal(lib) // y lo que suena se vuelve a buscar en la biblioteca nueva
 			a.mode = modeMain
@@ -825,6 +833,9 @@ func (a *App) syncStatus() {
 
 // simulatePlaying hace que "suene" un álbum, para la maqueta sin servicio.
 func (a *App) simulatePlaying() {
+	if a.lib == nil || len(a.lib.Albums) == 0 {
+		return // sin música: no suena nada (así se ve la app vacía)
+	}
 	sel := -1
 	for i, al := range a.lib.Albums {
 		want := a.ShotsAlbum == "" || strings.Contains(strings.ToLower(al.Artist+" "+al.Title), strings.ToLower(a.ShotsAlbum))
@@ -950,7 +961,9 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 		dst.Fill(color.Black) // apagada: negro (en una OLED, píxeles apagados)
 		return
 	}
-	drawBackground(dst, a.theme, a.t)
+	if !a.ExternalBackdrop {
+		drawBackground(dst, a.theme, a.t)
+	}
 	switch a.mode {
 	case modeScan:
 		a.drawScan(dst)
@@ -1096,6 +1109,18 @@ func (a *App) Layout(w, h int) (int, int) {
 	a.w, a.h = ViewSize(w, h)
 	return a.w, a.h
 }
+
+// Asleep dice si la pantalla está "apagada" (el sleep de la app: negro).
+func (a *App) Asleep() bool { return a.sleeping }
+
+// DrawBackdrop pinta el fondo animado de la interfaz en dst (en el móvil,
+// en toda la pantalla: también bajo la barra de estado y la muesca, donde
+// no va contenido).
+func (a *App) DrawBackdrop(dst *ebiten.Image) { drawBackground(dst, a.theme, a.t) }
+
+// SetPointerOffset dice dónde empieza la interfaz dentro de la pantalla (en
+// el móvil, tras la zona segura): se resta a los toques.
+func (a *App) SetPointerOffset(x, y int) { a.ptrOX, a.ptrOY = x, y }
 
 // portrait dice si la pantalla está en vertical (más alta que ancha).
 func (a *App) portrait() bool { return a.h > ScreenH }
@@ -1269,9 +1294,11 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.cur().sel, a.letter = sel, ""
-	a.openAlbum(a.playing)
-	if err := shot("album"); err != nil {
-		return err
+	if a.playing != nil { // sin música no hay álbum que abrir
+		a.openAlbum(a.playing)
+		if err := shot("album"); err != nil {
+			return err
+		}
 	}
 	a.screen = Queue
 	if err := shot("cola"); err != nil {

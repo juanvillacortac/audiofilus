@@ -46,9 +46,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// RootViewController pone la vista de audiofilus dentro de la zona segura
-// (sin la muesca ni la raya de inicio encima) y abre el selector de carpetas
-// cuando audiofilus lo pide (Ajustes → Carpeta).
+// RootViewController pone la vista de audiofilus a pantalla completa, sin
+// barra de estado: el fondo llega a los bordes y bajo la isla, y audiofilus
+// pone su contenido dentro de la zona segura (se la dice sendSafeArea). Abre
+// también el selector de carpetas cuando audiofilus lo pide (Ajustes →
+// Carpeta).
 class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPickerDelegate {
     let game = GameViewController()
     private static let bookmarkKey = "musicFolderBookmark"
@@ -58,18 +60,31 @@ class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPicker
         view.backgroundColor = .black
         addChild(game)
         view.addSubview(game.view)
-        game.view.translatesAutoresizingMaskIntoConstraints = false
-        let safe = view.safeAreaLayoutGuide
-        NSLayoutConstraint.activate([
-            game.view.topAnchor.constraint(equalTo: safe.topAnchor),
-            game.view.bottomAnchor.constraint(equalTo: safe.bottomAnchor),
-            game.view.leadingAnchor.constraint(equalTo: safe.leadingAnchor),
-            game.view.trailingAnchor.constraint(equalTo: safe.trailingAnchor),
-        ])
+        game.view.frame = view.bounds
+        game.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         game.didMove(toParent: self)
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    override var prefersStatusBarHidden: Bool { true }
+    override var prefersHomeIndicatorAutoHidden: Bool { true }
+    override var childForStatusBarHidden: UIViewController? { nil }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        sendSafeArea()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        sendSafeArea()
+    }
+
+    // sendSafeArea le dice a audiofilus qué tapan la isla, las esquinas y la
+    // raya de inicio, para dejar ahí solo el fondo.
+    private func sendSafeArea() {
+        let i = view.safeAreaInsets
+        MobileSetSafeArea(Double(i.top), Double(i.left), Double(i.bottom), Double(i.right))
+    }
 
     // pickFolder lo llama audiofilus (desde su hilo): el selector de
     // carpetas de Archivos (iCloud Drive, En mi iPhone, otras apps).

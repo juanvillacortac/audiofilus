@@ -210,7 +210,7 @@ func (a *App) updatePointer() {
 	// La rueda: un paso por muesca (las de los touchpads llegan en trozos).
 	if _, wy := ebiten.Wheel(); wy != 0 {
 		in.mouseUsed()
-		if by := p.scrollAt(ebiten.CursorPosition()); by != nil {
+		if by := p.scrollAt(a.cursorPos()); by != nil {
 			by(-wy * 24) // suave, en píxeles, sobre una lista
 		} else {
 			p.wheel += wy
@@ -228,10 +228,10 @@ func (a *App) updatePointer() {
 	// El dedo o el botón izquierdo.
 	if !p.down {
 		if ids := inpututil.AppendJustPressedTouchIDs(nil); len(ids) > 0 {
-			x, y := ebiten.TouchPosition(ids[0])
+			x, y := a.touchPos(ids[0])
 			a.pointerDown(x, y, true, ids[0])
 		} else if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-			x, y := ebiten.CursorPosition()
+			x, y := a.cursorPos()
 			a.pointerDown(x, y, false, 0)
 			in.mouseUsed()
 		}
@@ -239,13 +239,13 @@ func (a *App) updatePointer() {
 		var x, y int
 		var up bool
 		if p.touch {
-			x, y = ebiten.TouchPosition(p.id)
+			x, y = a.touchPos(p.id)
 			up = inpututil.IsTouchJustReleased(p.id)
 			if up {
 				x, y = p.x, p.y // al soltar, TouchPosition ya no lo sabe
 			}
 		} else {
-			x, y = ebiten.CursorPosition()
+			x, y = a.cursorPos()
 			up = !ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
 		}
 		a.pointerMove(x, y, dt)
@@ -281,6 +281,18 @@ func (a *App) updatePointer() {
 		p.pending++
 		in.inject(map[bool]Action{true: ActLeft, false: ActUp}[axisH])
 	}
+}
+
+// touchPos y cursorPos son las posiciones en el lienzo de la interfaz (en el
+// móvil empieza tras la zona segura: SetPointerOffset).
+func (a *App) touchPos(id ebiten.TouchID) (int, int) {
+	x, y := ebiten.TouchPosition(id)
+	return x - a.ptrOX, y - a.ptrOY
+}
+
+func (a *App) cursorPos() (int, int) {
+	x, y := ebiten.CursorPosition()
+	return x - a.ptrOX, y - a.ptrOY
 }
 
 // pointerDown empieza un toque o un clic en x, y.

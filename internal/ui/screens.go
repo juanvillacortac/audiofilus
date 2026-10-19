@@ -402,6 +402,9 @@ func (a *App) drawNothing(dst *ebiten.Image) {
 	a.drawCover(dst, nil, cx, cy, size, 1)
 	frame(dst, cx-1, cy-1, size+2, size+2, withAlpha(th.Text, 0x40))
 	msg, hintMsg := T("nothing"), T("nothing_hint")
+	if a.lib == nil || len(a.lib.Songs) == 0 {
+		hintMsg = T("nothing_empty") // sin música propia: dónde conseguirla
+	}
 	drawTextShadow(dst, msg, BigFace, (w-textWidth(msg, BigFace))/2, cy+size+12, th.Text, th.Shadow)
 	drawText(dst, hintMsg, SmallFace, (w-textWidth(hintMsg, SmallFace))/2, cy+size+30, th.Accent)
 	a.drawHints(dst, []hint{{"B", T("library")}, {"SEL", T("h_menu")}})

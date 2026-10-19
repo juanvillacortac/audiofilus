@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -55,6 +56,23 @@ type game struct {
 	// Cuándo fueron el último Update y el último Draw (UnixNano), para el
 	// vigilante (watch).
 	lastUpdate, lastDraw atomic.Int64
+	// La zona segura (en puntos, de SetSafeArea) y lo que ocupa en el
+	// lienzo: la vista llena la pantalla (el fondo llega a los bordes, bajo
+	// la isla) y la interfaz va dentro, en su propio lienzo (frame).
+	safe                   [4]float64 // arriba, izquierda, abajo, derecha
+	padT, padL, padB, padR int
+	appW, appH             int
+	frame                  *ebiten.Image
+}
+
+// SetSafeArea pone la zona segura: cuántos puntos tapan la isla o la
+// muesca, las esquinas y la raya de inicio, desde arriba, la izquierda,
+// abajo y la derecha. La app la llama al empezar y cada vez que cambia
+// (al girar el teléfono).
+func SetSafeArea(top, left, bottom, right float64) {
+	g.mu.Lock()
+	g.safe = [4]float64{top, left, bottom, right}
+	g.mu.Unlock()
 }
 
 // watch vigila que la interfaz siga viva: si pasan 4 s sin Update o sin Draw
@@ -143,11 +161,33 @@ func (g *game) Draw(screen *ebiten.Image) {
 		ebitenutil.DebugPrint(screen, "audiofilus stopped:\n"+wrap(msg, screen.Bounds().Dx()/6))
 		return
 	}
-	if a := g.current(); a != nil {
+	a := g.current()
+	if a == nil {
+		screen.Fill(color.Black)
+		return
+	}
+	if g.padT+g.padL+g.padB+g.padR == 0 {
 		a.Draw(screen)
 		return
 	}
-	screen.Fill(color.Black)
+	// El fondo en toda la pantalla y la interfaz encima, en la zona segura.
+	if g.frame == nil || g.frame.Bounds().Dx() != g.appW || g.frame.Bounds().Dy() != g.appH {
+		if g.frame != nil {
+			g.frame.Deallocate()
+		}
+		g.frame = ebiten.NewImage(g.appW, g.appH)
+	}
+	g.frame.Clear()
+	a.ExternalBackdrop = true
+	a.Draw(g.frame)
+	if a.Asleep() {
+		screen.Fill(color.Black)
+	} else {
+		a.DrawBackdrop(screen)
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(g.padL), float64(g.padT))
+	screen.DrawImage(g.frame, op)
 }
 
 // wrap parte msg en líneas de n caracteres como mucho (para DebugPrint).
@@ -164,10 +204,28 @@ func wrap(msg string, n int) string {
 }
 
 func (g *game) Layout(w, h int) (int, int) {
-	if a := g.current(); a != nil {
-		return a.Layout(w, h)
+	g.mu.Lock()
+	s := g.safe
+	g.mu.Unlock()
+	// El lienzo de la interfaz es el de la zona segura; el de la pantalla,
+	// ese más los márgenes, a la misma escala.
+	aw, ah := w-int(s[1]+s[3]), h-int(s[0]+s[2])
+	if aw <= 0 || ah <= 0 {
+		aw, ah, s = w, h, [4]float64{}
 	}
-	return ui.ViewSize(w, h)
+	if a := g.current(); a != nil {
+		aw, ah = a.Layout(aw, ah)
+	} else {
+		aw, ah = ui.ViewSize(aw, ah)
+	}
+	scale := float64(aw) / float64(max(1, w-int(s[1]+s[3])))
+	px := func(v float64) int { return int(math.Round(v * scale)) }
+	g.padT, g.padL, g.padB, g.padR = px(s[0]), px(s[1]), px(s[2]), px(s[3])
+	g.appW, g.appH = aw, ah
+	if a := g.current(); a != nil {
+		a.SetPointerOffset(g.padL, g.padT)
+	}
+	return aw + g.padL + g.padR, ah + g.padT + g.padB
 }
 
 // Start arranca audiofilus: home es la carpeta de sus datos (la de

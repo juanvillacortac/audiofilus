@@ -73,7 +73,7 @@ func (a *App) drawSplashLayers(dst *ebiten.Image, bg, fg bool) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	t := a.splashT
 	th := DefaultTheme
-	if bg {
+	if bg && !a.ExternalBackdrop {
 		drawBackground(dst, th, t)
 	}
 	if !fg {
