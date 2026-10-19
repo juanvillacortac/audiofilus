@@ -121,8 +121,11 @@ var (
 	socket string // el del servicio, para los botones del sistema
 	art    struct {
 		sync.Mutex
-		path string
-		data []byte
+		path   string
+		data   []byte
+		uiPath string // la portada que mandó la interfaz, y de qué canción
+		uiData []byte
+		last   *engine.Status // lo último que sonó, para volver a mandarlo con su portada
 	}
 )
 
@@ -289,6 +292,17 @@ func start(home, tmp, langs string) error {
 	}
 	socket = paths.Socket
 	daemon.NowPlayingHook = nowPlaying
+	// La portada que tiene la interfaz (logos de radio, Subsonic...): se
+	// guarda para esa canción y se vuelve a mandar lo que suena con ella.
+	ui.NowPlayingArt = func(path string, png []byte) {
+		art.Lock()
+		art.uiPath, art.uiData = path, png
+		last := art.last
+		art.Unlock()
+		if last != nil && last.Track.Path == path {
+			nowPlaying(*last)
+		}
+	}
 	// Un solo contexto de audio por proceso: la interfaz suena por el del
 	// servicio (lo espera hasta 10 s; sin él, sin sonidos).
 	engines := make(chan *engine.Engine, 1)
@@ -358,6 +372,9 @@ func nowPlaying(st engine.Status) {
 	if host == nil {
 		return
 	}
+	art.Lock()
+	art.last = &st
+	art.Unlock()
 	t := st.Track
 	title := t.Title
 	if title == "" && t.Path != "" {
@@ -371,6 +388,9 @@ func nowPlaying(st engine.Status) {
 func artwork(path string) []byte {
 	art.Lock()
 	defer art.Unlock()
+	if path == art.uiPath && art.uiData != nil {
+		return art.uiData // la que tiene la interfaz (radios, servidores...)
+	}
 	if path == art.path {
 		return art.data
 	}

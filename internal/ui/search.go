@@ -50,8 +50,9 @@ type searchResult struct {
 // searchState es la búsqueda en curso.
 type searchState struct {
 	query     []rune
-	typing    bool // el teclado está a la vista (si no, se navega por los resultados)
-	row, col  int  // la tecla elegida
+	typing    bool     // el teclado está a la vista (si no, se navega por los resultados)
+	row, col  int      // la tecla elegida
+	scr       scroller // el desplazamiento de los resultados con el dedo
 	results   []searchResult
 	sel       int
 	lastQuery string
@@ -316,6 +317,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 		box = mix(th.Bg2, th.Accent, 0.3)
 	}
 	panel(dst, x-3, top-4, w+6, 14, box)
+	a.tapZone(x-3, top-4, w+6, 14, func() { s.typing, a.tabFocus = true, false }) // tocar la caja: a escribir
 	drawIcon(dst, "search", x, top-1, th.Accent)
 	q := string(s.query)
 	if q == "" && !s.typing {
@@ -343,6 +345,9 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 				bg, fg = th.Accent, th.Bg
 			}
 			panel(dst, fx, y-2, lw, 10, bg)
+			if d := i - s.scope; d != 0 {
+				a.tapZone(fx, y-3, lw, 12, func() { a.searchScope(d) })
+			}
 			if i == scopeYT {
 				drawIcon(dst, "ytm", fx+3, y-1, ytRed)
 			}
@@ -354,7 +359,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 
 	// El teclado en pantalla, abajo, mientras se escribe con el mando.
 	kbTop := bottom
-	if s.typing && !a.tabFocus && (a.input.usingPad || a.offline) {
+	if s.typing && !a.tabFocus && (a.input.usingPad || a.offline || a.input.touch) {
 		const keyH = 13
 		kbTop = bottom - len(oskKeys)*keyH
 		kw := w / 10
@@ -368,6 +373,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 				}
 				panel(dst, kx, ky, kw-2, keyH-2, bg)
 				drawText(dst, k, SmallFace, kx+(kw-2-textWidth(k, SmallFace))/2, ky+(keyH-2-smallCap)/2, fg)
+				a.tapZone(kx, ky, kw, keyH, func() { s.row, s.col = r, c; a.input.inject(ActConfirm) })
 			}
 		}
 		kbTop -= 4
@@ -386,14 +392,20 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 		}
 		return
 	}
-	first := 0
-	if !s.typing {
-		first = max(0, min(s.sel-rows/2, n-rows))
+	// Con el dedo, los resultados se desplazan y tocar uno lo abre.
+	first, off, clip := a.touchList(dst, &s.scr, &s.sel, n, x-3, y, w+6, kbTop-y, rowH, func() {
+		s.typing, a.tabFocus = false, false
+		a.input.inject(ActConfirm)
+	})
+	if s.typing {
+		first, off = 0, 0
 	}
+	whole := dst
+	dst = clip
 	icons := [4]string{"user", "disc", "note", "ytm"}
-	for i := 0; i < rows && first+i < n; i++ {
+	for i := 0; i <= rows && first+i < n; i++ {
 		r := s.results[first+i]
-		ry := y + 4 + i*rowH
+		ry := y + 4 + i*rowH - off
 		subCol := th.Dim
 		if !s.typing && first+i == s.sel && !a.tabFocus {
 			panel(dst, x-3, ry-4, w+6, rowH, mix(th.Bg2, th.Accent, 0.35))
@@ -419,6 +431,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 		}
 		drawTextW(dst, r.sub, SmallFace, sx, ry, x+w-sx, subCol)
 	}
+	dst = whole
 	a.scrollBar(dst, x+w+4, y, kbTop-y, first, rows, n)
 }
 

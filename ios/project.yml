@@ -50,9 +50,10 @@ targets:
         LSApplicationCategoryType: public.app-category.music
         UILaunchScreen: {}
         UIRequiresFullScreen: true
-        # Sin barra de estado: audiofilus a pantalla completa (lleva su hora y
-        # su batería en su propia barra).
-        UIStatusBarHidden: true
+        # La barra de estado del sistema, en claro sobre el fondo de
+        # audiofilus (que no pinta su hora ni su batería en el móvil).
+        UIStatusBarHidden: false
+        UIStatusBarStyle: UIStatusBarStyleLightContent
         UIViewControllerBasedStatusBarAppearance: true
         # La música sigue con la app en segundo plano o la pantalla
         # bloqueada (con la sesión de audio de reproducción: AppDelegate).

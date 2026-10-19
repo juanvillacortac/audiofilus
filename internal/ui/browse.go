@@ -376,6 +376,15 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 			drawTab(margin, topH+8+i*16, 72, t, i)
 		}
 		rect(dst, margin+75, topH+5, 1, h-topH-bottomH-44, withAlpha(th.Dim, 0x40))
+	} else if a.input.touch {
+		// En estrecho y con el dedo: un botón que abre las pestañas en un
+		// desplegable (la tira de abajo hay que arrastrarla).
+		top += a.tabsButton(dst, margin, top, w-2*margin, tabs(), a.libTab, func(i int) {
+			a.libTab, a.tabFocus = i, false
+			if i == tabSearch {
+				a.search.typing = true
+			}
+		}) - 2
 	} else {
 		x := margin - max(0, a.libTab-1)*56
 		for i, t := range tabs() {

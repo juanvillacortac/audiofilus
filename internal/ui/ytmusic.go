@@ -120,6 +120,7 @@ type ytState struct {
 	cancel  context.CancelFunc // para la escucha en curso
 	bgScan  *Scan              // la biblioteca, poniéndose al día tras descargar
 	sel     int                // la fila elegida en Descargas
+	scr     scroller           // su desplazamiento con el dedo
 	// Para "ya la tienes": los youtube_id de .library.json y las canciones por
 	// artista y título, de la biblioteca keysOf.
 	ids    map[string]bool
@@ -536,9 +537,15 @@ func (a *App) drawDownloads(dst *ebiten.Image) {
 	if n == 0 && a.yt.bin != "" {
 		drawText(dst, T("ytm_jobs_none"), SmallFace, x, top+6, th.Dim)
 	}
-	first := max(0, min(a.yt.sel-rows/2, n-rows))
-	for i := 0; i < rows && first+i < n; i++ {
-		y := top + 6 + i*rowH
+	// Con el dedo: se desplaza, y tocar una fila hace lo de A (guardar lo
+	// que suena, abrir la descargada, reintentar la que falló).
+	first, off, clip := a.touchList(dst, &a.yt.scr, &a.yt.sel, n, x-3, top+3, w-2*x+6, rows*rowH, rowH, func() {
+		a.input.inject(ActConfirm)
+	})
+	whole := dst
+	dst = clip
+	for i := 0; i <= rows && first+i < n; i++ {
+		y := top + 6 + i*rowH - off
 		if first+i == a.yt.sel {
 			panel(dst, x-3, y-3, w-2*x+6, rowH-2, mix(th.Bg2, th.Accent, 0.3))
 		}
@@ -581,6 +588,7 @@ func (a *App) drawDownloads(dst *ebiten.Image) {
 			a.drawJobBar(dst, w-x-50, y+11, 50, f)
 		}
 	}
+	dst = whole
 	a.drawHints(dst, []hint{{"A", T("ytm_jobs_open")}, {"B", T("h_back")}, {"SEL", T("h_menu")}})
 }
 

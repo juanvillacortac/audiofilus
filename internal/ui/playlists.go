@@ -432,6 +432,7 @@ func (a *App) drawPrompt(dst *ebiten.Image) {
 			}
 			panel(dst, kx, ky, kw-2, keyH-2, bg)
 			drawText(dst, k, SmallFace, kx+(kw-2-textWidth(k, SmallFace))/2, ky+(keyH-2-smallCap)/2, fg)
+			a.tapZone(kx, ky, kw, keyH, func() { p.row, p.col = r, c; a.input.inject(ActConfirm) })
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg)

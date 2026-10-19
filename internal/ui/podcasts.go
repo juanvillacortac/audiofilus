@@ -65,6 +65,8 @@ type podState struct {
 	progress map[string]epProgress // por archivo del episodio
 	open     *subscription         // el podcast abierto (sus episodios)
 	epSel    int
+	scr      [ptCount]scroller // el desplazamiento con el dedo de cada lista
+	epScr    scroller          // y el de los episodios
 	loaded   bool
 	savedAt  float64
 	dirty    bool
@@ -559,10 +561,23 @@ func (a *App) drawPodcasts(dst *ebiten.Image) {
 	th := a.theme
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	x0, top := a.contentX(), topH+8
+	// Elegir una pestaña (tocándola o en el desplegable): como bajar con la
+	// cruceta y entrar.
+	pickTab := func(i int) {
+		p.tab, p.tabFocus, p.open = i, false, nil
+		if i == ptSearch && len(p.lists[ptSearch]) == 0 {
+			a.podAskSearch()
+		}
+	}
+	names := make([]string, ptCount)
+	for i := range names {
+		names[i] = T(podTabKeys[i])
+	}
 	if w >= 320 {
 		for i := 0; i < ptCount; i++ {
 			y := topH + 8 + i*16
 			t := T(podTabKeys[i])
+			a.tapZone(margin-3, y-4, 72, 13, func() { pickTab(i) })
 			switch {
 			case i == p.tab && p.tabFocus && p.open == nil:
 				panel(dst, margin-3, y-4, 72, 13, th.Accent)
@@ -584,14 +599,19 @@ func (a *App) drawPodcasts(dst *ebiten.Image) {
 	if p.open != nil {
 		sub := p.open
 		title = T("scr_podcasts") + " · " + sub.Show.Title
+		a.tapZone(x0-3, top-4, cw+6, 13, func() { p.open = nil }) // "< Programa": volver
 		drawTextW(dst, "< "+sub.Show.Title, SmallFace, x0, top, cw, th.Accent2)
 		top += 12
 		rows := max(1, (bottom-top)/rowH)
 		n := len(sub.Episodes)
-		first := max(0, min(p.epSel-rows/2, n-rows))
-		for i := 0; i < rows && first+i < n; i++ {
+		first, off, clip := a.touchList(dst, &p.epScr, &p.epSel, n, x0-3, top-1, cw+6, bottom-top, rowH, func() {
+			a.input.inject(ActConfirm)
+		})
+		whole := dst
+		dst = clip
+		for i := 0; i <= rows && first+i < n; i++ {
 			e := sub.Episodes[first+i]
-			y := top + 3 + i*rowH
+			y := top + 3 + i*rowH - off
 			if first+i == p.epSel {
 				panel(dst, x0-3, y-3, cw+6, rowH-2, mix(th.Bg2, th.Accent, 0.35))
 				rect(dst, x0-3, y-3, 2, rowH-2, th.Accent)
@@ -627,13 +647,16 @@ func (a *App) drawPodcasts(dst *ebiten.Image) {
 			}
 			drawTextW(dst, strings.Join(sub, " · "), SmallFace, x0+11, y+9, cw-11, th.Dim)
 		}
+		dst = whole
 		a.scrollBar(dst, x0+cw+4, top, bottom-top, first, rows, n)
 		if n == 0 {
 			drawText(dst, T("empty"), SmallFace, x0+(cw-textWidth(T("empty"), SmallFace))/2, top+30, th.Dim)
 		}
 		hints = []hint{{"A", T("h_listen")}, {"START", T("h_more")}, {"B", T("h_back")}}
 	} else {
-		if w < 320 {
+		if w < 320 && a.input.touch {
+			top += a.tabsButton(dst, x0, top, cw, names, p.tab, pickTab)
+		} else if w < 320 {
 			drawText(dst, T(podTabKeys[p.tab]), SmallFace, x0, top, th.Accent)
 			top += 13
 		}
@@ -649,10 +672,15 @@ func (a *App) drawPodcasts(dst *ebiten.Image) {
 		rows := max(1, (bottom-top)/rowH)
 		n := len(list)
 		sel := p.sel[p.tab]
-		first := max(0, min(sel-rows/2, n-rows))
-		for i := 0; i < rows && first+i < n; i++ {
+		first, off, clip := a.touchList(dst, &p.scr[p.tab], &p.sel[p.tab], n, x0-3, top-1, cw+6, bottom-top, rowH, func() {
+			p.tabFocus = false
+			a.input.inject(ActConfirm)
+		})
+		whole := dst
+		dst = clip
+		for i := 0; i <= rows && first+i < n; i++ {
 			s := list[first+i]
-			y := top + 3 + i*rowH
+			y := top + 3 + i*rowH - off
 			if first+i == sel && !p.tabFocus {
 				panel(dst, x0-3, y-3, cw+6, rowH-2, mix(th.Bg2, th.Accent, 0.35))
 				rect(dst, x0-3, y-3, 2, rowH-2, th.Accent)
@@ -665,6 +693,7 @@ func (a *App) drawPodcasts(dst *ebiten.Image) {
 			drawTextW(dst, s.Title, SmallFace, x0+11, y, cw-11, th.Text)
 			drawTextW(dst, s.Author, SmallFace, x0+11, y+9, cw-11, th.Dim)
 		}
+		dst = whole
 		a.scrollBar(dst, x0+cw+4, top, bottom-top, first, rows, n)
 		msg := ""
 		switch {

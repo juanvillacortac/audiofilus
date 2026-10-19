@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -78,12 +79,14 @@ type App struct {
 	// ExternalBackdrop: el fondo lo pinta quien la contiene, en toda la
 	// pantalla (el móvil, con DrawBackdrop): la interfaz no pinta el suyo y
 	// no se nota el borde de la zona segura.
-	ExternalBackdrop bool     // el ratón o el dedo y las zonas tocables (pointer.go)
-	queueScr         scroller // el desplazamiento de la cola con el dedo
-	runnerDuckY      int      // en Carrera, desde dónde un dedo apoyado agacha
-	settingsScr      scroller // y el de Ajustes (su posición va en settingsScroll)
-	splashing        bool     // se está mostrando el splash
-	splashT          float64  // segundos de splash
+	ExternalBackdrop bool
+	artSent          string     // la canción cuya portada ya se mandó (sendArt)     // el ratón o el dedo y las zonas tocables (pointer.go)
+	drawer           *tabDrawer // el desplegable de pestañas abierto (touchui.go)
+	queueScr         scroller   // el desplazamiento de la cola con el dedo
+	runnerDuckY      int        // en Carrera, desde dónde un dedo apoyado agacha
+	settingsScr      scroller   // y el de Ajustes (su posición va en settingsScroll)
+	splashing        bool       // se está mostrando el splash
+	splashT          float64    // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
 	// volumen en la escala única (0..2: el sistema hasta 1, el refuerzo de la
@@ -239,6 +242,9 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 	}
 	a.input.swapAB = cfg.UI.SwapAB
+	// En el móvil se empieza con el dedo (AUDIOFILUS_TOUCH lo fuerza, para
+	// probarlo y para las capturas).
+	a.input.touch = StartService != nil || os.Getenv("AUDIOFILUS_TOUCH") != ""
 	a.splashing = !offline
 	if !offline {
 		a.client = NewClient(paths)
@@ -365,6 +371,7 @@ func (a *App) Update() error {
 	}
 	a.input.update()
 	a.updatePointer()
+	a.setBottomH()
 	a.covers.collect(a.t)
 	a.updateTheme()
 	if a.ShotsDir != "" {
@@ -415,6 +422,11 @@ func (a *App) Update() error {
 	}
 
 	a.syncStatus()
+	a.sendArt()
+	if a.drawer != nil {
+		a.updateDrawer()
+		return nil
+	}
 	a.updateYT()
 	a.updateServers()
 	a.updateRadioResults()
@@ -920,6 +932,7 @@ func (a *App) Draw(screen *ebiten.Image) {
 	}
 	a.beginZones()
 	defer a.endZones()
+	a.setBottomH()
 	if a.splashing {
 		a.drawSplash(screen)
 		return
@@ -930,6 +943,7 @@ func (a *App) Draw(screen *ebiten.Image) {
 	a.watchScreen() // aquí, después de Update: así no asoma la nueva sin cortina
 	a.drawScreen(screen, a.screen)
 	a.drawTransition(screen)
+	a.drawDrawer(screen)
 	if a.mode == modeMain {
 		a.drawCelebration(screen)
 	}
@@ -1121,6 +1135,32 @@ func (a *App) drawMessage(dst *ebiten.Image) {
 func (a *App) Layout(w, h int) (int, int) {
 	a.w, a.h = ViewSize(w, h)
 	return a.w, a.h
+}
+
+// NowPlayingArt, si está, recibe la portada de lo que suena (PNG) en cuanto
+// la interfaz la tiene cargada, con la ruta de la canción: en el móvil, para
+// la pantalla bloqueada cuando la portada no está en un archivo local (el
+// logo de una radio, Subsonic, YouTube Music).
+var NowPlayingArt func(path string, png []byte)
+
+// sendArt le pasa a NowPlayingArt la portada de lo que suena, una vez por
+// canción, cuando ya está cargada.
+func (a *App) sendArt() {
+	if NowPlayingArt == nil || a.playing == nil || a.playingSong.Path == "" || a.artSent == a.playingSong.Path {
+		return
+	}
+	img, alpha := a.cover(a.playing, 160)
+	if img == nil || alpha < 1 {
+		return // aún cargando (se vuelve a mirar en el siguiente fotograma)
+	}
+	a.artSent = a.playingSong.Path
+	b := img.Bounds()
+	rgba := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+	img.ReadPixels(rgba.Pix)
+	var buf bytes.Buffer
+	if png.Encode(&buf, rgba) == nil {
+		go NowPlayingArt(a.playingSong.Path, buf.Bytes())
+	}
 }
 
 // Asleep dice si la pantalla está "apagada" (el sleep de la app: negro).

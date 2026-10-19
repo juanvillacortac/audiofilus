@@ -47,6 +47,8 @@ type radioState struct {
 	tag      string // el género abierto en Géneros ("" la lista de géneros)
 	tagList  []radio.Station
 	tagSel   int
+	scr      [rtCount]scroller // el desplazamiento con el dedo de cada lista
+	tagScr   scroller          // y el de las emisoras de un género
 	query    string
 	world    bool // Populares de todo el mundo (si no, del país)
 	loading  [rtCount]bool
@@ -391,12 +393,25 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	x0, top := a.contentX(), topH+8
 	tabW := 72
+	// Elegir una pestaña (tocándola o en el desplegable): como bajar con la
+	// cruceta y entrar.
+	pickTab := func(i int) {
+		r.tab, r.tabFocus = i, false
+		if i == rtSearch && len(r.lists[rtSearch]) == 0 {
+			a.radioAskSearch()
+		}
+	}
+	names := make([]string, rtCount)
+	for i := range names {
+		names[i] = T(radioTabKeys[i])
+	}
 	for i := 0; i < rtCount; i++ {
 		y := topH + 8 + i*16
 		t := T(radioTabKeys[i])
 		if w < 320 {
 			continue
 		}
+		a.tapZone(margin-3, y-4, tabW, 13, func() { pickTab(i) })
 		switch {
 		case i == r.tab && r.tabFocus:
 			panel(dst, margin-3, y-4, tabW, 13, th.Accent)
@@ -410,6 +425,8 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 	}
 	if w >= 320 {
 		rect(dst, margin+75, topH+5, 1, h-topH-bottomH-44, withAlpha(th.Dim, 0x40))
+	} else if a.input.touch {
+		top += a.tabsButton(dst, x0, top, w-x0-margin, names, r.tab, pickTab)
 	} else {
 		drawText(dst, T(radioTabKeys[r.tab]), SmallFace, x0, top, th.Accent)
 		top += 13
@@ -431,6 +448,9 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 		head = "< " + r.tag
 	}
 	if head != "" {
+		if r.tab == rtTags && r.tag != "" { // "< Género": tocarlo es volver a los géneros
+			a.tapZone(x0-3, top-4, cw+6, 13, func() { a.input.inject(ActBack) })
+		}
 		drawTextW(dst, head, SmallFace, x0, top, cw, th.Accent2)
 		top += 12
 	}
@@ -439,13 +459,15 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 	msg := ""
 	if r.tab == rtTags && r.tag == "" {
 		n := len(r.tags)
-		first := max(0, min(r.sel[rtTags]-rows/2, n-rows))
-		for i := 0; i < rows*2 && first+i < n; i++ {
+		first, off, clip := a.touchList(dst, &r.scr[rtTags], &r.sel[rtTags], n, x0-3, top-2, cw+6, bottom-top, 11, func() {
+			r.tabFocus = false
+			a.input.inject(ActConfirm)
+		})
+		whole := dst
+		dst = clip
+		for i := 0; i <= (bottom-top)/11 && first+i < n; i++ {
 			t := r.tags[first+i]
-			y := top + 2 + i*11
-			if y > bottom-8 {
-				break
-			}
+			y := top + 2 + i*11 - off
 			if first+i == r.sel[rtTags] && !r.tabFocus {
 				panel(dst, x0-3, y-3, cw+6, 11, mix(th.Bg2, th.Accent, 0.35))
 			}
@@ -453,16 +475,26 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 			c := fmt.Sprint(t.Stations)
 			drawText(dst, c, SmallFace, x0+cw-textWidth(c, SmallFace), y, th.Dim)
 		}
+		dst = whole
 		if n == 0 {
 			msg = T("rd_loading")
 		}
 	} else {
 		list, sel := a.radioList()
 		n := len(list)
-		first := max(0, min(*sel-rows/2, n-rows))
-		for i := 0; i < rows && first+i < n; i++ {
+		scr := &r.scr[r.tab]
+		if r.tab == rtTags && r.tag != "" {
+			scr = &r.tagScr
+		}
+		first, off, clip := a.touchList(dst, scr, sel, n, x0-3, top-1, cw+6, bottom-top, rowH, func() {
+			r.tabFocus = false
+			a.input.inject(ActConfirm)
+		})
+		whole := dst
+		dst = clip
+		for i := 0; i <= rows && first+i < n; i++ {
 			s := list[first+i]
-			y := top + 3 + i*rowH
+			y := top + 3 + i*rowH - off
 			if first+i == *sel && !r.tabFocus {
 				panel(dst, x0-3, y-3, cw+6, rowH-2, mix(th.Bg2, th.Accent, 0.35))
 				rect(dst, x0-3, y-3, 2, rowH-2, th.Accent)
@@ -479,6 +511,7 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 			drawTextW(dst, strings.TrimSpace(name), SmallFace, x0+11, y, cw-11, th.Text)
 			drawTextW(dst, stationSub(s), SmallFace, x0+11, y+9, cw-11, th.Dim)
 		}
+		dst = whole
 		a.scrollBar(dst, x0+cw+4, top, bottom-top, first, rows, n)
 		switch {
 		case r.loading[r.tab]:

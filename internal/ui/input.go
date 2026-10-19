@@ -96,6 +96,9 @@ type Input struct {
 	// stick cuenta cuántos frames lleva el joystick izquierdo empujado hacia
 	// cada dirección, igual que una cruceta: así vale en toda la app.
 	stick [4]int
+	// touch: lo último que se usó fue el dedo (o es el móvil): la ayuda sale
+	// como botones, sin teclas ni botones del mando.
+	touch bool
 	// virt son las acciones de este fotograma que vienen del ratón o de un
 	// dedo (pointer.go): cuentan como recién pulsadas.
 	virt [actCount]bool
@@ -173,12 +176,12 @@ func (in *Input) update() {
 	in.any = false
 	in.virt = [actCount]bool{}
 	if in.keys = inpututil.AppendJustPressedKeys(in.keys[:0]); len(in.keys) > 0 {
-		in.usingPad, in.decided, in.any = false, true, true
+		in.usingPad, in.decided, in.any, in.touch = false, true, true, false
 	}
 	for _, id := range in.pads {
 		for b := ebiten.StandardGamepadButton(0); b <= ebiten.StandardGamepadButtonMax; b++ {
 			if inpututil.IsStandardGamepadButtonJustPressed(id, b) {
-				in.usingPad, in.decided, in.any = true, true, true
+				in.usingPad, in.decided, in.any, in.touch = true, true, true, false
 			}
 		}
 	}

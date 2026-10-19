@@ -282,8 +282,16 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 	pulse := a.beatPulse()
 
 	laneW := 22
+	if a.input.touch {
+		// Con el dedo los carriles se tocan: tan anchos como quepan junto a
+		// un panel más estrecho.
+		laneW = max(22, min(70, (w-70-3*margin)/rhLanes))
+	}
 	fw := rhLanes * laneW
 	side := max(80, min(120, w-fw-3*margin))
+	if a.input.touch {
+		side = max(70, min(120, w-fw-3*margin))
+	}
 	fx := (w - fw - side - margin) / 2
 	top, bottom := topH+6, h-bottomH-4
 	hitY := bottom - 26
@@ -344,7 +352,10 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 		x := fx + lane*laneW
 		cx := x + laneW/2
 		c := a.rhLaneColor(lane)
-		const bs = 13
+		bs := 13
+		if a.input.touch {
+			bs = max(13, min(24, laneW-8)) // con el dedo, del ancho del carril
+		}
 		bx, by := cx-bs/2, hitY+4
 		good := g.laneGood[lane] > 0 && a.t-g.laneGood[lane] < 0.18
 		pressed := a.t-g.laneHit[lane] < 0.1
@@ -380,6 +391,9 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 		label := rhLaneLabels[lane][0]
 		if !usePad {
 			label = rhLaneLabels[lane][1]
+		}
+		if a.input.touch {
+			label = "" // con el dedo se toca el carril: sin botón ni tecla
 		}
 		// Las flechas, dibujadas (en la fuente, "<" y "v" no se leían como
 		// flechas: la "v" parecía una Y).
@@ -452,7 +466,7 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 
 // updateRhythmFrame avanza Ritmo sin botones (para la maqueta).
 func (a *App) updateRhythmFrame() {
-	a.input = Input{}
+	a.input = Input{touch: a.input.touch}
 	a.beatHit = a.updateBeat()
 	a.updateRhythm()
 }

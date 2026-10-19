@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -490,12 +491,13 @@ func (a *App) drawSettings(dst *ebiten.Image) {
 		if y+t.h < top || y > bottom {
 			continue
 		}
-		a.drawTile(area, t, names[t.tile.id], t.x, y, i == sel)
 		// Tocar una baldosa la elige y la usa (una elección: la abre; ya
-		// abierta, la cierra).
+		// abierta, la cierra). Antes de pintarla: sus chips y su barra van
+		// encima y se tocan directamente.
 		idx := i
 		vy0, vy1 := max(y, top), min(y+t.h, bottom)
 		a.tapZone(t.x, vy0, t.w, vy1-vy0, func() { sc.pick(&a.settingsSel, idx); a.input.inject(ActConfirm) })
+		a.drawTile(area, t, names[t.tile.id], t.x, y, i == sel)
 	}
 	a.scrollBar(dst, w-4, top, view, int(a.settingsScroll), view, total)
 
@@ -580,6 +582,11 @@ func (a *App) drawTile(dst *ebiten.Image, t tileRect, name string, x, y int, sel
 			rect(dst, bx, vy+3, bw, 2, withAlpha(th.Dim, 0x50))
 			rect(dst, bx, vy+3, int(float64(bw)*min(a.volume, 2)/2), 2, th.Accent)
 			rect(dst, bx+bw/2, vy+1, 1, 6, withAlpha(th.Text, 0x80)) // el 100 %
+			// Tocar la barra pone el volumen ahí (de 0 a 200 %).
+			a.zone(bx, vy-4, bw, 15, func(px, _ int) {
+				want := float64(max(0, min(bw, px))) / float64(bw) * 2
+				a.changeVolume(int(math.Round((want - a.volume) * 100)))
+			})
 		}
 	case tileChoice:
 		n, cur := a.settingChoice(id)
@@ -685,6 +692,9 @@ func (a *App) drawChips(dst *ebiten.Image, id, n, cur, x, y, w int, sel bool) bo
 		}
 		panel(dst, x, y, cw, 11, bg)
 		drawText(dst, choiceLabel(id, i), SmallFace, x+pad, y+2, fg)
+		if d := i - cur; d != 0 { // tocar una opción la elige
+			a.tapZone(x, y-2, cw+gap, 15, func() { a.changeSetting(id, d) })
+		}
 		x += cw + gap
 	}
 	return true

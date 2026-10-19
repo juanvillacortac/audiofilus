@@ -301,6 +301,9 @@ func (a *App) pointerDown(x, y int, touch bool, id ebiten.TouchID) {
 	*p = pointer{zones: p.zones, next: p.next, scrolls: p.scrolls, nextScrolls: p.nextScrolls,
 		stepX: p.stepX, stepY: p.stepY, nextSX: p.nextSX, nextSY: p.nextSY,
 		down: true, touch: touch, id: id, sx: x, sy: y, x: x, y: y, at: a.t, lastT: a.t}
+	if touch {
+		a.input.touch = true // la ayuda pasa a botones para el dedo
+	}
 	p.scroll = p.scrollAt(x, y) // tocar una lista frena su inercia (se reinició arriba)
 	a.input.any = true
 	switch z := p.zoneAt(x, y); {

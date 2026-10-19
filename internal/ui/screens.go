@@ -42,10 +42,28 @@ func (s Screen) String() string {
 }
 
 const (
-	topH    = 15 // barra de arriba
-	bottomH = 13 // barra de ayuda de botones
-	margin  = 10
+	topH   = 15 // barra de arriba
+	margin = 10
 )
+
+// bottomH es el alto de la barra de ayuda de abajo: 13 con mando o teclado y
+// más con el dedo (sus botones se tocan). Lo pone setBottomH en cada
+// fotograma, antes de colocar nada; toda la interfaz se coloca con él.
+var bottomH = 13
+
+// Los altos de la barra de abajo.
+const (
+	bottomPad   = 13
+	bottomTouch = 22
+)
+
+// setBottomH pone el alto de la barra de abajo según con qué se maneja.
+func (a *App) setBottomH() {
+	bottomH = bottomPad
+	if a.input.touch {
+		bottomH = bottomTouch
+	}
+}
 
 // drawTopBar pinta el título de la pantalla, la hora y la batería.
 func (a *App) drawTopBar(dst *ebiten.Image, title string) {
@@ -71,7 +89,7 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 		drawIcon(dst, "download", right, 3, th.Accent)
 		right -= 6
 	}
-	if a.battery >= 0 {
+	if a.battery >= 0 && !a.mobile() {
 		// Batería: contorno de 11×7 con el nivel dentro.
 		right -= 13
 		frame(dst, right, 4, 11, 7, th.Dim)
@@ -92,8 +110,10 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 		drawText(dst, pct, SmallFace, right, 5, th.Dim)
 		right -= 6
 	}
-	right -= textWidth(clock, SmallFace)
-	drawText(dst, clock, SmallFace, right, 5, th.Dim)
+	if !a.mobile() { // en el móvil están la hora y la batería del sistema, en su barra
+		right -= textWidth(clock, SmallFace)
+		drawText(dst, clock, SmallFace, right, 5, th.Dim)
+	}
 	// Audífonos: de cable o bluetooth (con el altavoz no se pinta nada).
 	switch a.status.Output {
 	case "wired":
@@ -127,6 +147,10 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 	th := a.theme
 	y := h - bottomH
 	rect(dst, 0, y, w, bottomH, withAlpha(th.Shadow, 0x99))
+	if a.input.touch {
+		a.drawTouchHints(dst, hints, y)
+		return
+	}
 	// Si lo último que se usó fue el teclado, se muestran las teclas. Tocar
 	// un chip es pulsar su botón (hintActions); lo de antes de traducirlo.
 	orig := make([]string, len(hints))
@@ -147,6 +171,45 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 		if act, ok := hintActions[orig[i]]; ok {
 			a.tapZone(x0-4, y, x-x0, bottomH, func() { a.input.inject(act) })
 		}
+	}
+}
+
+// drawTouchHints es la ayuda de abajo para el dedo: sin teclas ni botones
+// del mando, cada acción es un botón con su nombre que se toca. Las de las
+// flechas no salen (con el dedo se toca o se desliza).
+func (a *App) drawTouchHints(dst *ebiten.Image, hints []hint, y int) {
+	w := dst.Bounds().Dx()
+	th := a.theme
+	type item struct {
+		label string
+		act   Action
+	}
+	var items []item
+	total := 0
+	for _, hn := range hints {
+		act, ok := hintActions[hn.btn]
+		if !ok || act == ActLeft || act == ActRight || act == ActUp || act == ActDown {
+			continue
+		}
+		items = append(items, item{hn.label, act})
+		total += textWidth(hn.label, SmallFace) + 12
+	}
+	gap := 4
+	// Si sobra ancho, los botones crecen a partes iguales (más fáciles de
+	// tocar); si falta, se aprietan.
+	extra := 0
+	if n := len(items); n > 0 {
+		extra = max(0, min(30, (w-2*margin-total-gap*(n-1))/n))
+		total += extra * n
+	}
+	x := (w - total - gap*(len(items)-1)) / 2
+	for _, it := range items {
+		bw := textWidth(it.label, SmallFace) + 12 + extra
+		panel(dst, x, y+2, bw, bottomH-4, withAlpha(th.Bg2, 0xe0))
+		drawText(dst, it.label, SmallFace, x+(bw-textWidth(it.label, SmallFace))/2, y+(bottomH-smallCap)/2, th.Text)
+		act := it.act
+		a.tapZone(x, y, bw, bottomH, func() { a.input.inject(act) })
+		x += bw + gap
 	}
 }
 
@@ -480,12 +543,17 @@ func (a *App) drawControls(dst *ebiten.Image, x, y int) {
 		rect(dst, x+84, y+13, 3, 1, th.Accent)
 	}
 	drawIcon(dst, "repeat", x+82, y+4, repeatCol)
-	// Los botones, tocables (con algo de margen, son pequeños).
-	a.tapZone(x-3, y-4, 21, 23, func() { a.send("prev") })
-	a.tapZone(x+18, y-4, 21, 23, func() { a.send("toggle") })
-	a.tapZone(x+39, y-4, 21, 23, func() { a.send("next") })
-	a.tapZone(x+60, y-4, 18, 23, func() { a.send("shuffle", onOffArg(!a.status.Shuffle)); a.status.Shuffle = !a.status.Shuffle })
-	a.tapZone(x+78, y-4, 18, 23, func() {
+	// Los botones, tocables (con algo de margen, son pequeños; con el dedo,
+	// más altos todavía).
+	zy, zh := y-4, 23
+	if a.input.touch {
+		zy, zh = y-10, 35
+	}
+	a.tapZone(x-3, zy, 21, zh, func() { a.send("prev") })
+	a.tapZone(x+18, zy, 21, zh, func() { a.send("toggle") })
+	a.tapZone(x+39, zy, 21, zh, func() { a.send("next") })
+	a.tapZone(x+60, zy, 18, zh, func() { a.send("shuffle", onOffArg(!a.status.Shuffle)); a.status.Shuffle = !a.status.Shuffle })
+	a.tapZone(x+78, zy, 18, zh, func() {
 		next := map[string]string{"off": "all", "all": "one", "one": "off"}[orDefault(a.status.Repeat, "off")]
 		a.send("repeat", next)
 		a.status.Repeat = next
@@ -619,8 +687,13 @@ func (a *App) drawMiniPlayer(dst *ebiten.Image) {
 		return
 	}
 	a.drawCover(dst, a.playing, margin, my+4, 22, 1)
+	// Tocarlo abre Reproduciendo (los botones, encima, hacen lo suyo).
+	a.tapZone(margin-4, my, w-2*margin+8, miniH, func() { a.screen = NowPlaying })
 	mx := margin + 28
 	mw := w - mx - margin - 22
+	if a.input.touch {
+		mw = w - mx - margin - 5*miniBtn - 2
+	}
 	drawTextW(dst, a.playingSong.Title, SmallFace, mx, my+6, mw, th.Text)
 	drawTextW(dst, a.playingSong.Artist, SmallFace, mx, my+16, mw, th.Accent)
 	rect(dst, margin-3, my+miniH-2, w-2*margin+6, 1, withAlpha(th.Dim, 0x50))
@@ -636,9 +709,41 @@ func (a *App) drawMiniPlayer(dst *ebiten.Image) {
 	if !a.isPlaying {
 		icon = "play"
 	}
-	drawIcon(dst, icon, w-margin-12, my+11, th.Text)
-
+	if !a.input.touch {
+		drawIcon(dst, icon, w-margin-12, my+11, th.Text)
+		a.tapZone(w-margin-18, my, 22, miniH, func() { a.send("toggle") })
+		return
+	}
+	// Con el dedo, los controles a mano: anterior, -10 s, pausa, +10 s y
+	// siguiente, con zonas del alto del reproductor (los iconos son
+	// pequeños).
+	bx := w - margin - 5*miniBtn + 2
+	for _, b := range []struct {
+		icon, text string
+		do         func()
+	}{
+		{"prev", "", func() { a.send("prev") }},
+		{"", "-10", func() { a.send("seek", "-10") }},
+		{icon, "", func() { a.send("toggle") }},
+		{"", "+10", func() { a.send("seek", "+10") }},
+		{"next", "", func() { a.send("next") }},
+	} {
+		cx := bx + miniBtn/2
+		if b.icon == icon && b.text == "" {
+			panel(dst, cx-8, my+7, 16, 16, th.Accent)
+			drawIcon(dst, b.icon, cx-3, my+11, th.Bg)
+		} else if b.icon != "" {
+			drawIcon(dst, b.icon, cx-3, my+11, th.Text)
+		} else {
+			drawText(dst, b.text, SmallFace, cx-textWidth(b.text, SmallFace)/2, my+12, th.Dim)
+		}
+		a.tapZone(bx, my, miniBtn, miniH, b.do)
+		bx += miniBtn
+	}
 }
+
+// miniBtn es el ancho de cada botón del mini reproductor con el dedo.
+const miniBtn = 19
 
 // volumeShow es cuánto se ve el indicador de volumen después de un cambio.
 const volumeShow = 1.6

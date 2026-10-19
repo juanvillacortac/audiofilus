@@ -46,9 +46,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// RootViewController pone la vista de audiofilus a pantalla completa, sin
-// barra de estado: el fondo llega a los bordes y bajo la isla, y audiofilus
-// pone su contenido dentro de la zona segura (se la dice sendSafeArea). Abre
+// RootViewController pone la vista de audiofilus a pantalla completa, con la
+// barra de estado del sistema encima: el fondo llega a los bordes y sube por
+// detrás de la hora y la isla, y audiofilus pone su contenido dentro de la
+// zona segura (se la dice sendSafeArea). Abre
 // también el selector de carpetas cuando audiofilus lo pide (Ajustes →
 // Carpeta).
 class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPickerDelegate {
@@ -65,9 +66,13 @@ class RootViewController: UIViewController, MobileHostProtocol, UIDocumentPicker
         game.didMove(toParent: self)
     }
 
-    override var prefersStatusBarHidden: Bool { true }
+    // La barra de estado del sistema (hora, batería), en claro sobre el
+    // fondo de audiofilus, que sube hasta arriba por detrás.
+    override var prefersStatusBarHidden: Bool { false }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var prefersHomeIndicatorAutoHidden: Bool { true }
     override var childForStatusBarHidden: UIViewController? { nil }
+    override var childForStatusBarStyle: UIViewController? { nil }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()

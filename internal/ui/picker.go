@@ -15,7 +15,8 @@ import (
 // abre la primera vez y desde Ajustes. Se maneja con la cruceta: A entra, B
 // sube, X usa la carpeta actual.
 type Picker struct {
-	dir     string // carpeta actual; "" es la lista de lugares
+	scr     scroller // el desplazamiento con el dedo
+	dir     string   // carpeta actual; "" es la lista de lugares
 	entries []pickEntry
 	sel     int
 	songs   int // canciones directamente en dir
@@ -147,7 +148,11 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 		drawTextShadow(dst, T("welcome"), BigFace, margin, y, th.Text, th.Shadow)
 		y += 18
 	}
-	drawText(dst, T("pick_hint", a.btn("X")), SmallFace, margin, y, th.Accent)
+	use := a.btn("X")
+	if a.input.touch {
+		use = "\"" + T("h_use") + "\"" // con el dedo, el botón de abajo
+	}
+	drawText(dst, T("pick_hint", use), SmallFace, margin, y, th.Accent)
 	y += 13
 
 	// La ruta, recortada por el principio si no cabe.
@@ -166,10 +171,15 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 	if len(p.entries) == 0 {
 		drawText(dst, T("pick_empty"), SmallFace, margin+10, y+2, th.Dim)
 	}
-	first0 := max(0, min(p.sel-rows/2, len(p.entries)-rows))
-	for i := 0; i < rows && first0+i < len(p.entries); i++ {
+	// Con el dedo: se desplaza y tocar una carpeta la abre.
+	first0, off, clip := a.touchList(dst, &p.scr, &p.sel, len(p.entries), margin-3, y-4, w-2*margin+6, rows*rowH, rowH, func() {
+		a.input.inject(ActConfirm)
+	})
+	whole := dst
+	dst = clip
+	for i := 0; i <= rows && first0+i < len(p.entries); i++ {
 		e := p.entries[first0+i]
-		ry := y + i*rowH
+		ry := y + i*rowH - off
 		col := th.Text
 		if first0+i == p.sel {
 			panel(dst, margin-3, ry-4, w-2*margin+6, rowH, mix(th.Bg2, th.Accent, 0.35))
@@ -180,6 +190,7 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 		drawIcon(dst, "folder", margin+2, ry-1, th.Accent)
 		drawTextW(dst, e.name, SmallFace, margin+12, ry, w-2*margin-16, col)
 	}
+	dst = whole
 
 	// Cuántas canciones hay aquí: ayuda a saber si es la carpeta buena.
 	count := T("pick_none")
