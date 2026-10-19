@@ -50,7 +50,7 @@ Since then, sleep sets `powersave` by default (`sleep.governor`). audiofilus's C
 
 ### Playing in sleep (October 18, 2026)
 
-With MP3 playing, sleep, `powersave` and wifi on, ~260 mA according to `time_to_empty_now` (8.9 h at 77 %), almost the same as Songo (~255 mA). Per process, 30 s:
+With MP3 playing, sleep, `powersave` and wifi on, ~260 mA according to `time_to_empty_now` (8.9 h at 77 %), almost the same as Songo (~255 mA). On the RG34XX-SP's 3300 mAh Li-Po battery (3.7 V), that is about 12.7 h from full in theory; counting what a cell doesn't really deliver, around 11 to 12 hours of music in sleep. That's the figure the README and the website give. Per process, 30 s:
 
 | Process | CPU of one core at 480 MHz |
 |---|---|

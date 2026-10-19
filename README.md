@@ -28,7 +28,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - **The audio lives in its own service.** The interface is only a remote: close it, open an emulator, and the music keeps going.
 - **Controls from inside any game:** hold `FN` and press a button to pause, skip, go back or seek.
 - **Headphone buttons**, Bluetooth or wired: one press pauses, two skip, three go back. Devices are watched with inotify, so waiting for them costs no CPU.
-- **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. About 260 mA on an RG34XX-SP (see [docs/power.md](docs/power.md)).
+- **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. On an RG34XX-SP it draws about 260 mA: around 11 to 12 hours of music on its 3300 mAh battery (see [docs/power.md](docs/power.md)).
 - Gapless playback, fade on pause, shuffle, repeat, "play next" and a queue that survives restarts.
 - Volume stays in sync with the system, including boost above 100%.
 
