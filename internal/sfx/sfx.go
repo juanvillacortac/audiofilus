@@ -80,16 +80,68 @@ var recipes = map[string][]note{
 	// Game Boy y un scratch de vinilo.
 	"gb_ding": {{1047, 1047, 0.07, 0, 0.5}, {2093, 2093, 0.38, 0, 0.45}},
 	"scratch": {{260, 1100, 0.06, 1, 0.5}, {1100, 240, 0.07, 1, 0.45}},
-	// Cripta (internal/ui/crypt.go).
-	"cr_step":   {{220, 160, 0.030, 2, 0.7}},
-	"cr_bump":   {{90, 70, 0.040, 3, 0.4}},
-	"cr_hit":    {{0, 0, 0.030, 3, 0.6}, {440, 330, 0.040, 1, 0.5}},
-	"cr_kill":   {{0, 0, 0.040, 3, 0.7}, {660, 990, 0.040, 1, 0.5}, {1320, 1320, 0.050, 1, 0.4}},
-	"cr_coin":   {{1319, 1319, 0.030, 0, 0.45}, {1976, 1976, 0.070, 0, 0.45}},
-	"cr_hurt":   {{300, 80, 0.120, 1, 0.7}, {0, 0, 0.040, 3, 0.5}},
-	"cr_dead":   {{392, 392, 0.090, 0, 0.6}, {330, 330, 0.090, 0, 0.6}, {262, 262, 0.090, 0, 0.6}, {196, 98, 0.200, 0, 0.6}},
-	"cr_miss":   {{140, 120, 0.050, 0, 0.35}},
-	"cr_stairs": {{523, 523, 0.050, 2, 0.8}, {392, 392, 0.050, 2, 0.8}, {330, 330, 0.050, 2, 0.8}, {262, 262, 0.100, 2, 0.8}},
+}
+
+// layer es una capa de un sonido de los juegos: una senoidal (que va de f0
+// a f1 Hz) o ruido filtrado (noise: f0 y f1 son el corte del filtro), que
+// empieza en at segundos y se apaga sola, con caída exponencial, en d.
+type layer struct {
+	at, f0, f1, d float64
+	noise         bool
+	amp           float64
+}
+
+// kit son los sonidos de los juegos (los de Cripta los usan todos): golpes
+// sordos y graves, roces de ruido filtrado y notas senoidales que se apagan
+// solas. Nada de ondas cuadradas: así se mezclan con cualquier música (los
+// bips de chiptune chocaban con una guitarra distorsionada) y quedan por
+// debajo de ella.
+var kit = map[string][]layer{
+	"cr_step": {{0, 160, 105, 0.040, false, 0.40}},
+	"cr_bump": {{0, 95, 60, 0.080, false, 0.45}, {0, 900, 400, 0.030, true, 0.15}},
+	"cr_hit":  {{0, 170, 90, 0.070, false, 0.45}, {0, 3000, 1200, 0.050, true, 0.30}},
+	"cr_kill": {{0, 130, 55, 0.140, false, 0.55}, {0, 5000, 1500, 0.070, true, 0.30}, {0.015, 660, 655, 0.140, false, 0.10}},
+	"cr_coin": {{0, 1319, 1319, 0.090, false, 0.22}, {0.045, 1976, 1976, 0.180, false, 0.18}},
+	"cr_hurt": {{0, 220, 70, 0.180, false, 0.55}, {0, 1800, 500, 0.110, true, 0.30}},
+	"cr_dead": {{0, 196, 49, 0.550, false, 0.55}, {0, 1200, 200, 0.400, true, 0.22}, {0.08, 147, 37, 0.550, false, 0.30}},
+	"cr_miss": {{0, 700, 500, 0.030, true, 0.45}},
+	"cr_stairs": {{0, 392, 392, 0.140, false, 0.20}, {0.07, 523, 523, 0.140, false, 0.20},
+		{0.14, 659, 659, 0.240, false, 0.20}},
+}
+
+// layered sintetiza un sonido del kit: sus capas, sumadas.
+func layered(ls []layer) []float32 {
+	end := 0.0
+	for _, l := range ls {
+		end = math.Max(end, l.at+l.d)
+	}
+	out := make([]float32, 2*int(end*Rate+1))
+	rng := rand.New(rand.NewPCG(3, 4))
+	for _, l := range ls {
+		frames := int(l.d * Rate)
+		start := int(l.at * Rate)
+		phase, lp := 0.0, 0.0
+		for i := 0; i < frames; i++ {
+			t := float64(i) / float64(frames)
+			f := l.f0 + (l.f1-l.f0)*t
+			var v float64
+			if l.noise {
+				// Ruido blanco por un filtro de un polo con el corte en f.
+				lp += (rng.Float64()*2 - 1 - lp) * (1 - math.Exp(-2*math.Pi*f/Rate))
+				v = lp * 2
+			} else {
+				phase += f / Rate
+				v = math.Sin(2 * math.Pi * phase)
+			}
+			// Ataque de 1,5 ms, caída exponencial (-60 dB al final) y los
+			// últimos cuadros a cero: sin chasquidos.
+			env := math.Min(1, float64(i)/(0.0015*Rate)) * math.Exp(-6.9*t) * math.Min(1, (1-t)*20)
+			x := float32(v * env * l.amp)
+			out[2*(start+i)] += x
+			out[2*(start+i)+1] += x
+		}
+	}
+	return out
 }
 
 var (
@@ -107,6 +159,10 @@ func Samples(name string) []float32 {
 	}
 	if name == Splash {
 		cache[name] = jingle()
+		return cache[name]
+	}
+	if ls, ok := kit[name]; ok {
+		cache[name] = layered(ls)
 		return cache[name]
 	}
 	r, ok := recipes[name]
