@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" href="img/logo.png">
-<link rel="preload" as="fetch" href="img/logo-intro.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="img/splash-web.webp" type="image/webp" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -172,7 +172,8 @@ figure { margin: 0; }
 @media (max-width: 760px) { .trio { grid-template-columns: 1fr; } }
 
 /* Screens gallery */
-.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 1.25rem; }
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
 
 /* Any width */
 .widths { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
@@ -195,6 +196,18 @@ pre {
 }
 pre .c { color: var(--muted); }
 
+/* Copyable command */
+.copy-block { display: flex; gap: 0.5rem; align-items: stretch; min-width: 0; }
+.copy-block pre { flex: 1; min-width: 0; }
+.copy {
+  flex: none;
+  font: 400 16px/16px var(--pixel); -webkit-font-smoothing: none;
+  padding: 0 0.8rem; border-radius: 6px; cursor: pointer;
+  background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+}
+.copy:hover { border-color: var(--teal); }
+.note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
+
 /* Roadmap */
 .road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 @media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
@@ -213,15 +226,14 @@ pre .c { color: var(--muted); }
 /* Splash, like the app's: the logo intro on the dark screen, then a fade. */
 .splash {
   position: fixed; inset: 0; z-index: 50;
-  display: grid; place-items: center; gap: 1rem; align-content: center;
-  padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(16px, env(safe-area-inset-left, 0px));
-  background: radial-gradient(ellipse at 50% 40%, #1a1426 0%, var(--ink) 70%);
+  display: grid; place-items: center;
+  background: #0b0a13; /* the edge of the app's splash background */
   cursor: pointer;
   transition: opacity 0.45s ease, visibility 0.45s;
 }
-.splash img { width: 702px; max-width: 100%; height: auto; visibility: hidden; }
+/* The app's own splash, rendered at 16:9 and scaled without smoothing. */
+.splash img { width: 100%; height: 100%; object-fit: contain; visibility: hidden; }
 .splash img.ready { visibility: visible; }
-.splash p { font: 400 16px/16px var(--pixel); color: var(--muted); -webkit-font-smoothing: none; }
 .splash.out { opacity: 0; visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .splash { display: none; } }
 
@@ -233,8 +245,7 @@ footer img { height: 56px; width: auto; }
 <body>
 
 <div class="splash" id="splash" hidden aria-hidden="true">
-  <img class="px" id="splash-logo" alt="" width="468" height="200">
-  <p>@juanvillacortac</p>
+  <img class="px" id="splash-logo" alt="" width="427" height="240">
 </div>
 <script>
 // The splash plays on every load, as in the app; any click or key skips it.
@@ -255,13 +266,13 @@ footer img { height: 56px; width: auto; }
     if (started) return;
     started = true;
     img.classList.add("ready");
-    setTimeout(done, 3000);
+    setTimeout(done, 2800); // splashLen in internal/ui/splash.go
   });
   img.addEventListener("error", done);
   setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
   // A blob URL is a new image each time, so the animation (which plays once)
   // starts over even when the browser already has it in its cache.
-  fetch("img/logo-intro.webp")
+  fetch("img/splash-web.webp")
     .then(function (r) { if (!r.ok) throw r.status; return r.blob(); })
     .then(function (b) { img.src = URL.createObjectURL(b); })
     .catch(done);
@@ -278,6 +289,7 @@ footer img { height: 56px; width: auto; }
       <a href="#visuals">Visualizers</a>
       <a href="#sources">Sources</a>
       <a href="#install">Install</a>
+      <a href="#desktop">Desktop</a>
       <a href="#support">Support</a>
       <a class="gh" href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
     </nav>
@@ -441,7 +453,7 @@ footer img { height: 56px; width: auto; }
           <li>Open <strong>audiofilus</strong> from Ports and pick your music folder.</li>
           <li>Optional: put a <strong>yt-dlp</strong> binary in the app's <strong>yt-dlp/</strong> folder to enable YouTube Music.</li>
         </ol>
-        <p class="note">On a Linux or Windows PC, download the desktop build from the same release and run <strong>audiofilus-ui</strong>. On Linux, <strong>audiofilus desktop install</strong> adds it to your launcher; on Omarchy the media keys and the bar control it right away.</p>
+        <p class="note">On a Linux or Windows PC, see <a href="#desktop">Desktop</a>.</p>
         <p class="note">Each system is detected at startup. Lid, power button, battery saver and volume use that system's own tools; on a desktop all of that is skipped.</p>
       </div>
       <div class="points">
@@ -462,6 +474,47 @@ docker build --target dist --output dist .
     </div>
   </section>
 
+  <section class="band" id="desktop">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Desktop</span>
+          <h2>At home on your PC</h2>
+          <p class="lede">The same player runs on Linux and Windows. On Linux it fits in like a native app on GNOME, KDE, Hyprland and Omarchy.</p>
+        </div>
+        <div class="point">
+          <h3>In your app launcher</h3>
+          <p>Audiofilus shows up with its icon, and right-clicking it offers play/pause, next and previous. Window rules and docks recognize its window.</p>
+        </div>
+        <div class="point">
+          <h3>Media keys and your bar</h3>
+          <p>It speaks MPRIS, so your keyboard's media keys, headphones and the desktop's media widget control it, with the cover and the song title. On Omarchy that works with nothing to set up.</p>
+        </div>
+        <div class="point">
+          <h3>Still plays in the background</h3>
+          <p>Close the window and the music keeps going; open it again and it picks up where it is.</p>
+        </div>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Linux</span>
+          <h2>One line to install</h2>
+        </div>
+        <div class="copy-block">
+<pre id="curl-cmd">curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</pre>
+          <button class="copy" type="button" id="copy-curl" data-target="curl-cmd">Copy</button>
+        </div>
+        <ol class="steps">
+          <li>Downloads the latest release for <strong>x86_64</strong> or <strong>aarch64</strong> into <strong>~/.local/share/audiofilus</strong>.</li>
+          <li>Links <strong>audiofilus</strong> and <strong>audiofilus-ui</strong> into <strong>~/.local/bin</strong>.</li>
+          <li>Adds Audiofilus to your app launcher. Run it again any time to update; your settings stay.</li>
+        </ol>
+        <p class="note">Uninstall: <code>audiofilus quit; audiofilus desktop uninstall; rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus*</code></p>
+        <p class="note">Windows 10 or later: download <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">audiofilus-windows-amd64.zip</a>, unzip it anywhere and run <strong>audiofilus-ui.exe</strong>.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="band" id="roadmap">
     <div class="wrap">
       <div class="head">
@@ -470,7 +523,7 @@ docker build --target dist --output dist .
         <p class="lede">The same player, tuned for bigger screens and phones.</p>
       </div>
       <div class="road">
-        <div class="stop"><span class="state now">Runs today</span><h3>Desktop</h3><p>Already runs on Linux and Windows with fullscreen and crisp pixel scaling. Next: mouse and keyboard controls, media keys and window-sized layouts.</p></div>
+        <div class="stop"><span class="state now">Runs today</span><h3>Desktop</h3><p>Already runs on Linux and Windows, with launcher, media keys and crisp pixel scaling. Next: mouse controls and layouts made for big windows.</p></div>
         <div class="stop"><span class="state next">Planned</span><h3>Android</h3><p>Touch controls, a lock-screen player and background playback through the system's media session.</p></div>
         <div class="stop"><span class="state next">Planned</span><h3>iOS</h3><p>The same pixel interface on iPhone and iPad, with Control Center and AirPods controls.</p></div>
       </div>
@@ -487,6 +540,24 @@ docker build --target dist --output dist .
     </div>
   </section>
 </main>
+<script>
+// Copy buttons: the clipboard when allowed, otherwise select the text.
+document.querySelectorAll(".copy").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.dataset.target);
+    var text = pre.textContent.trim();
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "Selected";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { b.textContent = "Copied"; }, selectIt);
+    } catch (e) { selectIt(); }
+    setTimeout(function () { b.textContent = "Copy"; }, 1800);
+  });
+});
+</script>
 
 <footer>
   <div class="wrap">

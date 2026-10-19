@@ -90,7 +90,19 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
   <img src="site/img/width-21x9.png" alt="21:9 layout" width="400">
 </p>
 
+### Linux desktop
+
+On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy](https://omarchy.org):
+
+- **App launcher:** Audiofilus shows up with its icon, with Play/Pause, Next and Previous actions.
+- **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
+- **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
+
+Details in [docs/linux-desktop.md](docs/linux-desktop.md).
+
 ## Install
+
+### Handhelds (PortMaster)
 
 1. Download `audiofilus-portmaster.zip` from the [latest release](https://github.com/juanvillacortac/audiofilus/releases/latest).
 2. Install it with PortMaster, or unzip it into your `ports` folder.
@@ -100,9 +112,24 @@ Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
 **YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds.
 
-On a Linux desktop, grab `audiofilus-linux-amd64.tar.gz` and run `./audiofilus-ui`. Run `./audiofilus desktop install` once to add it to your app launcher with its icon; media keys work through MPRIS. On [Omarchy](https://omarchy.org) that's all it takes: it shows up in the launcher and the keyboard's media keys and the bar control it (see [docs/linux-desktop.md](docs/linux-desktop.md)).
+### Linux desktop
 
-On **Windows** (10 or later), grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus-ui.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
+```sh
+curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh
+```
+
+It downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus`, links `audiofilus` and `audiofilus-ui` into `~/.local/bin`, and adds Audiofilus to the app launcher. Run it again to update; settings are kept. To uninstall:
+
+```sh
+audiofilus quit; audiofilus desktop uninstall
+rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus ~/.local/bin/audiofilus-ui
+```
+
+Or by hand: grab `audiofilus-linux-amd64.tar.gz` (or `-arm64`), unzip it anywhere, run `./audiofilus desktop install` once and open it from the launcher.
+
+### Windows
+
+On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus-ui.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
 
 ## Build
 

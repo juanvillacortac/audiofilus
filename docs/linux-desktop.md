@@ -2,6 +2,14 @@
 
 On a Linux desktop audiofilus behaves like any other app: it shows up in the launcher with its icon, the window manager recognizes its window, and the desktop's media controls drive it. Everything below works on any freedesktop desktop (GNOME, KDE, Hyprland...); [Omarchy](https://omarchy.org) is the one it's tested on.
 
+## Installing
+
+```sh
+curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh
+```
+
+`site/install.sh` (served by GitHub Pages) downloads the latest release for x86_64 or aarch64 into `~/.local/share/audiofilus` (`$AUDIOFILUS_DIR`), links both binaries into `~/.local/bin` (`$AUDIOFILUS_BIN`), and runs `audiofilus desktop install`. Each binary is copied next to its destination and renamed over it, so updating works while the service runs; `audiofilus.json` and `data/` in that folder are left alone.
+
 ## Launcher entry and icon
 
 ```sh

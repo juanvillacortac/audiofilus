@@ -1345,6 +1345,17 @@ func (a *App) writeFrames() error {
 	if err := a.writeLogoFrames(filepath.Join(a.FramesDir, "logo")); err != nil {
 		return err
 	}
+	// El splash para la web: en 16:9 y a 30 cuadros por segundo.
+	wideDir := filepath.Join(a.FramesDir, "splash-web")
+	if err := os.MkdirAll(wideDir, 0o755); err != nil {
+		return err
+	}
+	for i := 0; float64(i)/30 < splashLen; i++ {
+		a.splashT = float64(i) / 30
+		if err := a.render(filepath.Join(wideDir, fmt.Sprintf("f%04d.png", i)), 427, a.drawSplash); err != nil {
+			return err
+		}
+	}
 	// El splash, entero, en su propia carpeta.
 	splashDir := filepath.Join(a.FramesDir, "splash")
 	if err := os.MkdirAll(splashDir, 0o755); err != nil {

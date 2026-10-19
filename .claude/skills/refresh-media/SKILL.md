@@ -15,7 +15,7 @@ tools/site/media.sh ~/Music/gym "Wonder What"
 
 - Arguments: a music folder and, optionally, the album that should be playing (first match by artist or title).
 - Screenshots are in English (`-lang en`); the site and README are in English.
-- Output: stills at 720×480 (`player.png`, `albums.png`, ...), `width-*.png` for each aspect ratio, GIFs at 320×240 (`vis-*.gif`, `player.gif`, `blocks.gif`, `rhythm.gif`, `splash.gif`), `logo.png`, `logo-intro.webp` (the splash intro, plays once, transparent) and `og.png`.
+- Output: stills at 720×480 (`player.png`, `albums.png`, ...), `width-*.png` for each aspect ratio, GIFs at 320×240 (`vis-*.gif`, `player.gif`, `blocks.gif`, `rhythm.gif`, `splash.gif`), `logo.png`, `splash-web.webp` (the app's splash at 16:9, 30 fps, plays once; the site shows it full screen on load) and `og.png`.
 - The site lists its images explicitly in `site/index.html`; if you add or rename one, update the page and `README.md`.
 
 ## PortMaster (`portmaster/audiofilus`)

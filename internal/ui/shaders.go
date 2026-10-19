@@ -103,7 +103,7 @@ var Dir vec2
 var Label vec3
 ` + bayerKage + `
 func Fragment(dst vec4, src vec2, color vec4) vec4 {
-	p := dst.xy - Center
+	p := dst.xy - imageDstOrigin() - Center // dst.xy es del atlas, Center de la imagen
 	r := length(p)
 	if r > Radius {
 		return vec4(0)
@@ -126,7 +126,7 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 	h := max(dot(n, Dir), 0) + max(dot(n, -Dir), 0)
 	h = h * h * h * h
 	v := base + 0.22*h
-	v = floor(v*16 + bayer(dst.xy)) / 16
+	v = floor(v*16 + bayer(dst.xy-imageDstOrigin())) / 16
 	return vec4(v, v, v*1.1, 1)
 }
 `
@@ -179,7 +179,7 @@ func bayer8(p vec2) float {
 }
 
 func Fragment(dst vec4, src vec2, color vec4) vec4 {
-	if bayer8(dst.xy) < Progress {
+	if bayer8(dst.xy-imageDstOrigin()) < Progress {
 		return vec4(0, 0, 0, 1)
 	}
 	return vec4(0)

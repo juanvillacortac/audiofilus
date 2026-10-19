@@ -1,8 +1,8 @@
 #!/bin/sh
 # Rehace las imágenes de la web y del README (site/img): capturas en inglés,
-# GIFs de los visualizadores, juegos y reproductor, y el logo (fijo y la
-# entrada animada del splash, con fondo transparente). Todo sale de la propia
-# interfaz con -shots y -frames, ×3 de 320×240, y se reduce sin suavizar.
+# GIFs de los visualizadores, juegos y reproductor, el logo y el splash. Todo
+# sale de la propia interfaz con -shots y -frames, ×3 de 320×240, y se reduce
+# sin suavizar.
 #   tools/site/media.sh <carpeta de música> [álbum]
 set -eu
 cd "$(dirname "$0")/../.."
@@ -32,12 +32,10 @@ gif 5 "$tmp/f/ritmo/f*.png" rhythm.gif
 gif 5 "$tmp/f/bloques/f*.png" blocks.gif
 gif 5 "$tmp/f/f0*.png" player.gif
 
-# El logo: fijo (recortado) y la entrada del splash, que se reproduce una vez.
-# El recorte de la animación es el mismo en todos los frames (el de su unión)
-# para que no salte; -dispose Background evita restos de frames anteriores.
+# El logo, recortado, y el splash de la web: el de la app en 16:9 a 30
+# cuadros por segundo, a 1:1, que se reproduce una vez (WebP sin pérdida).
 magick "$tmp/s/logo.png" -trim +repage -filter point -resize 66.667% "$out/logo.png"
-box=$(magick "$tmp"/f/logo/f*.png -layers trim-bounds -flatten -trim -format '%wx%h%O' info:)
-magick -dispose Background -delay 3.333 "$tmp"/f/logo/f*.png -crop "$box" +repage \
-  -filter point -resize 66.667% -loop 1 -define webp:lossless=true "$out/logo-intro.webp"
+magick -dispose Background -delay 3.333 "$tmp"/f/splash-web/f*.png -sample 33.3334% \
+  -loop 1 -define webp:lossless=true "$out/splash-web.webp"
 magick "$tmp/s/portada-portmaster.png" -filter point -resize 50% "$out/og.png"
 ls -la "$out"
