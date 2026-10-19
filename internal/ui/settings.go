@@ -188,6 +188,10 @@ func (a *App) updateSettings() {
 	case tileAction:
 		switch cur.id {
 		case setFolder:
+			if PickFolder != nil { // el selector de carpetas del sistema (iOS)
+				PickFolder()
+				return
+			}
 			a.picker = newPicker(firstOr(a.cfg.MusicDirs, ""))
 			a.mode = modePicker
 		case setRescan:

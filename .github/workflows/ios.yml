@@ -1,0 +1,54 @@
+# The iOS app, unsigned (Audiofilus.ipa), to install with Sideloadly or
+# AltStore (see docs/ios.md). Run by hand from the Actions tab ("Run
+# workflow"); releases build it too (release.yml).
+name: iOS
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  ipa:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # ebitenmobile from the same commit of the Ebitengine fork that go.mod
+      # uses (its replace): the code it generates has to match it.
+      - name: ebitenmobile
+        run: |
+          commit=$(go list -m -f '{{.Replace.Version}}' github.com/hajimehoshi/ebiten/v2 | sed 's/.*-//')
+          git clone --filter=blob:none https://github.com/juanvillacortac/ebiten "$RUNNER_TEMP/ebiten"
+          git -C "$RUNNER_TEMP/ebiten" checkout "$commit"
+          (cd "$RUNNER_TEMP/ebiten" && go build -o "$RUNNER_TEMP/bin/ebitenmobile" ./cmd/ebitenmobile)
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: audiofilus, as a framework
+        run: ebitenmobile bind -target ios -iosversion 15.0 -trimpath -o ios/Mobile.xcframework ./mobile
+
+      - name: The Xcode project
+        run: |
+          brew install xcodegen
+          cd ios && xcodegen generate
+
+      - name: The app, unsigned
+        run: |
+          xcodebuild -project ios/Audiofilus.xcodeproj -scheme Audiofilus \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/build" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP/build/Build/Products/Release-iphoneos/Audiofilus.app" "$RUNNER_TEMP/ipa/Payload/"
+          (cd "$RUNNER_TEMP/ipa" && zip -qry "$GITHUB_WORKSPACE/audiofilus-ios-unsigned.ipa" Payload)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiofilus-ios
+          path: audiofilus-ios-unsigned.ipa
+          retention-days: 14

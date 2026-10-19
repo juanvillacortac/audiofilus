@@ -1,0 +1,73 @@
+# El proyecto de Xcode de la app de iOS, para XcodeGen (xcodegen generate):
+# así no hace falta guardar el .xcodeproj, que solo se abre con un Mac. Lo
+# genera y compila el workflow de GitHub (.github/workflows/release.yml, y
+# ios.yml a mano); audiofilus llega como Mobile.xcframework, hecho con
+# ebitenmobile desde mobile/. Ver docs/ios.md.
+name: Audiofilus
+options:
+  bundleIdPrefix: com.juanvillacortac
+  deploymentTarget:
+    iOS: "15.0"
+targets:
+  Audiofilus:
+    type: application
+    platform: iOS
+    sources:
+      - Audiofilus
+    dependencies:
+      - framework: Mobile.xcframework
+        embed: false # es estático: va dentro de la app
+      # Lo que usan Ebitengine y oto en iOS (el framework es estático y no
+      # los trae).
+      - sdk: UIKit.framework
+      - sdk: GLKit.framework
+      - sdk: QuartzCore.framework
+      - sdk: OpenGLES.framework
+      - sdk: Metal.framework
+      - sdk: CoreGraphics.framework
+      - sdk: CoreFoundation.framework
+      - sdk: Foundation.framework
+      - sdk: GameController.framework
+      - sdk: AVFoundation.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreHaptics.framework
+      - sdk: UniformTypeIdentifiers.framework
+      - sdk: libresolv.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.juanvillacortac.audiofilus
+        MARKETING_VERSION: "0.3.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_BITCODE: NO
+    info:
+      path: Audiofilus/Info.plist
+      properties:
+        CFBundleDisplayName: Audiofilus
+        LSApplicationCategoryType: public.app-category.music
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        # La música sigue con la app en segundo plano o la pantalla
+        # bloqueada (con la sesión de audio de reproducción: AppDelegate).
+        UIBackgroundModes:
+          - audio
+        # Su carpeta de Documentos se ve en Archivos ("En mi iPhone →
+        # Audiofilus"): se copia ahí la música y suena.
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        # En vertical y apaisado: la interfaz se adapta a los dos.
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Los mandos Bluetooth también manejan la interfaz.
+        GCSupportsControllerUserInteraction: true
+        GCSupportedGameControllers:
+          - ProfileName: ExtendedGamepad

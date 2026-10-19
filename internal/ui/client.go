@@ -164,9 +164,27 @@ func (c *Client) daemonPath() (string, error) {
 	return exe, nil
 }
 
+// StartService, si está, arranca el servicio en vez de lanzar otro proceso:
+// en iOS (mobile/) no se pueden lanzar procesos y el servicio corre en una
+// goroutine de la misma app. Vuelve en cuanto empezó; startDaemon espera a
+// que responda.
+var StartService func(paths config.Paths) error
+
 // startDaemon lanza `audiofilus daemon -detach`, que se separa en su propia
 // sesión: así sigue sonando cuando se cierra la interfaz.
 func (c *Client) startDaemon() error {
+	if StartService != nil {
+		if err := StartService(c.paths); err != nil {
+			return err
+		}
+		for i := 0; i < 100; i++ {
+			if _, err := control.Call(c.paths.Socket, control.Request{Cmd: "status"}); err == nil {
+				return nil
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+		return errors.New("the audio service did not start")
+	}
 	bin, err := c.daemonPath()
 	if err != nil {
 		return err

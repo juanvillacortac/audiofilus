@@ -1,5 +1,6 @@
 # When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
-# release with the PortMaster port and the Linux binaries (desktop and arm64).
+# release with the PortMaster port, the Linux and Windows binaries and the
+# unsigned iOS app (built on macOS by ios.yml, at the same time).
 name: Release
 on:
   push:
@@ -8,7 +9,11 @@ on:
 permissions:
   contents: write
 jobs:
+  ios:
+    uses: ./.github/workflows/ios.yml
+
   release:
+    needs: ios
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +35,13 @@ jobs:
           cp dist/audiofilus-windows-amd64.exe "$d/audiofilus.exe"
           cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)
-          (cd out && sha256sum * > SHA256SUMS)
+      - name: The iOS app
+        uses: actions/download-artifact@v4
+        with:
+          name: audiofilus-ios
+          path: out
+      - name: Checksums
+        run: (cd out && sha256sum * > SHA256SUMS)
       - name: Upload the files
         if: startsWith(github.ref, 'refs/tags/')
         env:

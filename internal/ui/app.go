@@ -71,13 +71,14 @@ type App struct {
 
 	// El sleep de la app: pantalla apagada (la apaga el servicio) y la
 	// interfaz casi parada.
-	quitting    bool     // se pidió salir: Update termina el bucle
-	ptr         pointer  // el ratón o el dedo y las zonas tocables (pointer.go)
-	queueScr    scroller // el desplazamiento de la cola con el dedo
-	runnerDuckY int      // en Carrera, desde dónde un dedo apoyado agacha
-	settingsScr scroller // y el de Ajustes (su posición va en settingsScroll)
-	splashing   bool     // se está mostrando el splash
-	splashT     float64  // segundos de splash
+	quitting      bool // se pidió salir: Update termina el bucle
+	ptr           pointer
+	pendingFolder atomic.Pointer[string] // una carpeta elegida fuera (SetMusicFolder)  // el ratón o el dedo y las zonas tocables (pointer.go)
+	queueScr      scroller               // el desplazamiento de la cola con el dedo
+	runnerDuckY   int                    // en Carrera, desde dónde un dedo apoyado agacha
+	settingsScr   scroller               // y el de Ajustes (su posición va en settingsScroll)
+	splashing     bool                   // se está mostrando el splash
+	splashT       float64                // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
 	// volumen en la escala única (0..2: el sistema hasta 1, el refuerzo de la
@@ -282,6 +283,16 @@ func (a *App) SetMusicDir(dir string) {
 	a.startScan()
 }
 
+// PickFolder, si está, abre el selector de carpetas del sistema en vez del
+// explorador de la app (en iOS, el de Archivos: cada app solo ve su carpeta
+// y lo que el usuario le da). Lo elegido llega con SetMusicFolder.
+var PickFolder func()
+
+// SetMusicFolder pone dir como la carpeta de música y la vuelve a leer. Se
+// puede llamar desde otro hilo (el selector del sistema): se aplica en el
+// siguiente Update.
+func (a *App) SetMusicFolder(dir string) { a.pendingFolder.Store(&dir) }
+
 // startScan busca la música de la configuración en segundo plano.
 func (a *App) startScan() {
 	a.scan = StartScan(a.paths, a.cfg.MusicDirs)
@@ -315,6 +326,15 @@ func (a *App) flash(msg string) {
 // plano; si no, se para (y el servicio se cierra). Cerrar la ventana o que la
 // interfaz muera también la para: solo se queda sonando si se pide.
 func (a *App) exit(background bool) {
+	if StartService != nil {
+		// En el móvil una app no se cierra a sí misma (iOS no lo permite):
+		// "Salir" para la música; "Segundo plano" no hace falta, la música
+		// ya sigue al salir de la app.
+		if !background {
+			a.send("pause")
+		}
+		return
+	}
 	if a.client != nil {
 		if background {
 			a.client.Background()
@@ -327,6 +347,11 @@ func (a *App) exit(background bool) {
 
 // Update atiende los botones y sigue al servicio.
 func (a *App) Update() error {
+	if dir := a.pendingFolder.Swap(nil); dir != nil {
+		a.cfg.MusicDirs = []string{*dir}
+		a.saveConfig()
+		a.startScan()
+	}
 	if a.client != nil && a.client.QuitRequested() {
 		a.quitting = true // cerraron el servicio desde fuera: la interfaz también
 	}
