@@ -79,7 +79,7 @@ type crypt struct {
 	pMovedAt   float64
 	hp         int
 	hurtAt     float64
-	invulBeat  int // hasta qué golpe no recibe daño
+	invulUntil float64 // hasta cuándo no recibe daño (reloj del ritmo)
 	ents       []*crEnt
 	stairX     int
 	stairY     int
@@ -92,23 +92,27 @@ type crypt struct {
 	floats     []crFloat
 	camX, camY float64 // la cámara (centro, en píxeles del mapa), suavizada
 	// El ritmo.
-	lastPlayerBeat int     // el último golpe en que se movió
-	lastBeat       int     // el último golpe resuelto (los enemigos ya actuaron)
-	moved          bool    // ya dio algún paso (antes, no se pierde el combo)
-	pulseAt        float64 // el último golpe (para el suelo)
-	beatN          int     // cuántos golpes van (el suelo alterna)
-	missAt         float64
-	fallback       float64 // el ancla del metrónomo propio
-	frozen         bool    // la música está en pausa
-	bannerAt       float64 // el cartel del piso
-	shakeAt        float64
+	// La rejilla propia del juego: sigue a la del medidor, pero suave, para
+	// que los golpes no salten cuando el medidor corrige la fase o el tempo.
+	per, anchor float64
+	// Los golpes se recuerdan por su hora, no por su número: la numeración
+	// del medidor vuelve a empezar al recolocarse, y con números un golpe
+	// nuevo podía parecer ya usado (MISS sin fin).
+	lastPlayerT   float64 // el golpe en que se movió
+	lastResolvedT float64 // el último golpe resuelto (los enemigos ya actuaron)
+	pulseAt       float64 // el último golpe (para el suelo)
+	beatN         int     // cuántos golpes van (el suelo alterna)
+	missAt        float64
+	frozen        bool    // la música está en pausa
+	bannerAt      float64 // el cartel del piso
+	shakeAt       float64
 }
 
 func (a *App) cryptBestPath() string { return filepath.Join(a.paths.Data, "cripta.json") }
 
 // newCrypt empieza una partida en el piso 1.
 func (a *App) newCrypt() *crypt {
-	g := &crypt{hp: crStartHP, depth: 1, fallback: a.beatClock()}
+	g := &crypt{hp: crStartHP, depth: 1}
 	if b, err := os.ReadFile(a.cryptBestPath()); err == nil {
 		var v struct{ Best int }
 		if json.Unmarshal(b, &v) == nil {
@@ -121,8 +125,9 @@ func (a *App) newCrypt() *crypt {
 	}
 	g.generate(rand.New(rand.NewPCG(seed, seed)))
 	g.bannerAt = a.t
-	_, g.lastBeat = a.cryptBeat(g)
-	g.lastPlayerBeat = g.lastBeat
+	a.syncCryptGrid(g)
+	g.lastResolvedT = a.cryptClosed(g)
+	g.lastPlayerT = g.lastResolvedT
 	g.camX, g.camY = float64(g.px*crTile+crTile/2), float64(g.py*crTile+crTile/2)
 	return g
 }
@@ -296,29 +301,63 @@ func (g *crypt) reveal() {
 // isEnemy dice si un tipo es un enemigo (no un objeto).
 func isEnemy(kind int) bool { return kind <= crArmored }
 
-// cryptBeat da la rejilla del ritmo: el periodo y el último golpe cuya
-// ventana ya cerró (los enemigos actúan al cerrarse, después del jugador).
-func (a *App) cryptBeat(g *crypt) (per float64, closed int) {
-	per, anchor := a.beat.period(), a.beat.anchor
-	if per == 0 {
-		per, anchor = 60.0/crFallbackBPM, g.fallback
+// syncCryptGrid acerca la rejilla del juego a la del medidor: el tempo y la
+// fase poco a poco (sin saltos que se vean ni se sientan) y de golpe solo si
+// el tempo es otro de verdad (otra canción). Sin tempo, la que tenía (o, al
+// empezar, un metrónomo de crFallbackBPM).
+func (a *App) syncCryptGrid(g *crypt) {
+	now := a.beatClock()
+	tp, ta := a.beat.period(), a.beat.anchor
+	if g.per == 0 {
+		g.per, g.anchor = 60.0/crFallbackBPM, now
+		if tp > 0 {
+			g.per, g.anchor = tp, ta
+		}
+		return
 	}
-	tol := cryptTol(per)
-	return per, int(math.Floor((a.beatClock() - anchor - tol) / per))
+	// El ancla, al último golpe: así cambiar el periodo no mueve los cercanos.
+	g.anchor += math.Floor((now-g.anchor)/g.per) * g.per
+	if tp == 0 {
+		return
+	}
+	if math.Abs(tp-g.per)/g.per > 0.08 {
+		g.per, g.anchor = tp, ta+math.Floor((now-ta)/tp)*tp
+		return
+	}
+	g.per += (tp - g.per) * 0.02
+	e := math.Mod(ta-g.anchor, g.per) // el desfase, entre -per/2 y per/2
+	if e > g.per/2 {
+		e -= g.per
+	} else if e < -g.per/2 {
+		e += g.per
+	}
+	g.anchor += e * 0.05
 }
 
 // cryptTol es cuánto antes o después del golpe vale un paso.
-func cryptTol(per float64) float64 { return math.Min(0.14, per*0.3) }
+func cryptTol(per float64) float64 { return math.Min(0.17, per*0.35) }
 
-// cryptNearest es el golpe más cercano a ahora y a cuánto queda (con signo).
-func (a *App) cryptNearest(g *crypt) (k int, off float64) {
-	per, anchor := a.beat.period(), a.beat.anchor
-	if per == 0 {
-		per, anchor = 60.0/crFallbackBPM, g.fallback
-	}
-	t := a.beatClock()
-	k = int(math.Round((t - anchor) / per))
-	return k, t - (anchor + float64(k)*per)
+// cryptNearest es la hora del golpe más cercano a ahora y a cuánto queda
+// (con signo: negativo si el golpe aún no llegó).
+func (a *App) cryptNearest(g *crypt) (beat, off float64) {
+	now := a.beatClock()
+	beat = g.anchor + math.Round((now-g.anchor)/g.per)*g.per
+	return beat, now - beat
+}
+
+// cryptCanStep dice si un paso ahora cae a tiempo en un golpe que aún no se
+// usó ni se resolvió, y cuál.
+func (a *App) cryptCanStep(g *crypt) (float64, bool) {
+	beat, off := a.cryptNearest(g)
+	half := g.per / 2
+	return beat, math.Abs(off) <= cryptTol(g.per) && beat > g.lastPlayerT+half && beat > g.lastResolvedT+half
+}
+
+// cryptClosed es la hora del último golpe cuya ventana ya cerró (los
+// enemigos actúan al cerrarse, después del jugador).
+func (a *App) cryptClosed(g *crypt) float64 {
+	now := a.beatClock()
+	return g.anchor + math.Floor((now-g.anchor-cryptTol(g.per))/g.per)*g.per
 }
 
 // updateCrypt juega un fotograma.
@@ -353,10 +392,12 @@ func (a *App) updateCrypt() {
 		g.frozen = true
 		return
 	}
-	per, closed := a.cryptBeat(g)
-	if g.frozen || closed-g.lastBeat > 3 { // vuelve la música, o la rejilla saltó
+	a.syncCryptGrid(g)
+	closed := a.cryptClosed(g)
+	half := g.per / 2
+	if g.frozen || closed < g.lastResolvedT-half { // vuelve la música, o la fase retrocedió
 		g.frozen = false
-		g.lastBeat, g.lastPlayerBeat = closed, closed
+		g.lastResolvedT, g.lastPlayerT = closed, math.Min(g.lastPlayerT, closed)
 	}
 	// El paso del jugador.
 	dx, dy := 0, 0
@@ -371,22 +412,19 @@ func (a *App) updateCrypt() {
 		dx = 1
 	}
 	if dx != 0 || dy != 0 {
-		k, off := a.cryptNearest(g)
-		if math.Abs(off) <= cryptTol(per) && k > g.lastPlayerBeat && k > g.lastBeat {
-			g.lastPlayerBeat = k
+		if beat, ok := a.cryptCanStep(g); ok {
+			g.lastPlayerT = beat
 			a.cryptAct(dx, dy)
 		} else {
 			a.cryptMiss()
 		}
 	}
-	// Los golpes que cerraron: los enemigos actúan.
-	for g.lastBeat < closed && !g.over {
-		g.lastBeat++
-		if g.moved && g.lastPlayerBeat < g.lastBeat {
-			g.combo = 0 // un golpe sin moverse rompe la racha
-		}
+	// El golpe que cerró: los enemigos actúan (uno por fotograma; si se
+	// saltaron varios, no se ponen al día de golpe).
+	if closed > g.lastResolvedT+half && !g.over {
+		g.lastResolvedT = closed
 		g.pulseAt, g.beatN = a.t, g.beatN+1
-		a.cryptEnemies(g.lastBeat)
+		a.cryptEnemies(closed)
 	}
 	// La cámara sigue al jugador.
 	tx, ty := float64(g.px*crTile+crTile/2), float64(g.py*crTile+crTile/2)
@@ -408,7 +446,6 @@ func (a *App) cryptMiss() {
 // cryptAct es un paso a tiempo: moverse, o atacar si hay un enemigo.
 func (a *App) cryptAct(dx, dy int) {
 	g := a.crypt
-	g.moved = true
 	g.combo++
 	if g.combo == 24 {
 		g.floats = append(g.floats, crFloat{g.px * crTile, g.py*crTile - 10, "FEVER!", a.theme.Accent2, a.t})
@@ -470,7 +507,7 @@ func (a *App) cryptDescend() {
 }
 
 // cryptEnemies mueve a los enemigos en el golpe k, cada uno con su patrón.
-func (a *App) cryptEnemies(k int) {
+func (a *App) cryptEnemies(beat float64) {
 	g := a.crypt
 	for _, e := range g.ents {
 		if e.dead || !isEnemy(e.kind) {
@@ -517,7 +554,7 @@ func (a *App) cryptEnemies(k int) {
 		}
 		nx, ny := e.x+dx, e.y+dy
 		if nx == g.px && ny == g.py {
-			a.cryptHurt(k, e)
+			a.cryptHurt(beat, e)
 			continue
 		}
 		if !g.walkable(nx, ny) || g.occupied(nx, ny) || (nx == g.stairX && ny == g.stairY) {
@@ -531,14 +568,14 @@ func (a *App) cryptEnemies(k int) {
 }
 
 // cryptHurt es un golpe de un enemigo al jugador.
-func (a *App) cryptHurt(k int, e *crEnt) {
+func (a *App) cryptHurt(beat float64, e *crEnt) {
 	g := a.crypt
-	if k <= g.invulBeat {
+	if beat < g.invulUntil {
 		return
 	}
 	g.hp--
 	g.combo = 0
-	g.hurtAt, g.shakeAt, g.invulBeat = a.t, a.t, k+1
+	g.hurtAt, g.shakeAt, g.invulUntil = a.t, a.t, beat+g.per*1.5
 	e.movedAt = a.t // un amago hacia el jugador
 	a.sound("cr_hurt", 3)
 	if g.hp <= 0 {
@@ -651,14 +688,14 @@ var crArt = map[string][]string{
 	},
 	"heart": {
 		"..........",
-		".##...##..",
-		"####.####.",
-		"#*#######.",
-		"#########.",
-		".#######..",
-		"..#####...",
-		"...###....",
-		"....#.....",
+		"..........",
+		"..##..##..",
+		".#*######.",
+		".########.",
+		"..######..",
+		"...####...",
+		"....##....",
+		"..........",
 		"..........",
 	},
 }
@@ -880,10 +917,7 @@ func (a *App) drawCryptHUD(dst *ebiten.Image, top, bottom int) {
 	rect(dst, 0, bottom, w, 22, th.Bg)
 	rect(dst, 0, bottom, w, 1, withAlpha(th.Accent, 0x50))
 	cx := w / 2
-	per, anchor := a.beat.period(), a.beat.anchor
-	if per == 0 {
-		per, anchor = 60.0/crFallbackBPM, g.fallback
-	}
+	per, anchor := g.per, g.anchor
 	now := a.beatClock()
 	span := float64(min(w/2-20, 150))
 	for k := 0; k < 4; k++ {
@@ -902,10 +936,15 @@ func (a *App) drawCryptHUD(dst *ebiten.Image, top, bottom int) {
 	if a.t-g.missAt < 0.25 {
 		hc = th.Dim
 	}
+	// Late en el golpe: a escala entera (×2, y ×3 justo en el golpe), para
+	// que los píxeles no se deformen.
 	op := &ebiten.DrawImageOptions{}
-	s := 1 + 0.35*pulse
+	k := 2.0
+	if pulse > 0.45 {
+		k = 3
+	}
 	op.GeoM.Translate(-5, -5)
-	op.GeoM.Scale(s, s)
+	op.GeoM.Scale(k, k)
 	op.GeoM.Translate(float64(cx), float64(by+7))
 	dst.DrawImage(crSprite("heart", hc, th.Text), op)
 }

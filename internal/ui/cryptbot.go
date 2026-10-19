@@ -57,10 +57,11 @@ func (a *App) botStepCrypt() {
 		a.crypt = a.newCrypt()
 		return
 	}
-	k, off := a.cryptNearest(g)
-	if off >= 0 && off < 0.04 && k > g.lastPlayerBeat && k > g.lastBeat {
+	a.syncCryptGrid(g)
+	beat, off := a.cryptNearest(g)
+	if off >= 0 && off < 0.04 && beat > g.lastPlayerT+g.per/2 && beat > g.lastResolvedT+g.per/2 {
 		if dx, dy := g.botDir(); dx != 0 || dy != 0 {
-			g.lastPlayerBeat = k
+			g.lastPlayerT = beat
 			a.cryptAct(dx, dy)
 		}
 	}

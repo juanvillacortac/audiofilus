@@ -40,10 +40,10 @@ Upload as `.new` and then `mv`: this does not corrupt a running service. The con
 ## Testing
 
 ```sh
-k '/userdata/audiofilus/audiofilus play /userdata/MUSIC'     # starts the detached service
-k '/userdata/audiofilus/audiofilus status'
-k 'tail -20 /userdata/audiofilus/data/audiofilus.log'
-k '/userdata/audiofilus/audiofilus quit'
+k '/userdata/roms/ports/audiofilus/audiofilus play /userdata/MUSIC'     # starts the detached service
+k '/userdata/roms/ports/audiofilus/audiofilus status'
+k 'tail -20 /userdata/roms/ports/audiofilus/data/audiofilus.log'
+k '/userdata/roms/ports/audiofilus/audiofilus quit'
 ```
 
 After `quit` or a crash, check that nothing was left modified:

@@ -25,8 +25,9 @@ for r in 1x1 4x3 3x2 16x9 21x9; do
   magick "$tmp/s/reproduciendo-$r.png" -sample 33.3334% -sample 400% -strip "$out/width-$r.png"
 done
 
-# Las animaciones, en WebP sin pérdida a ×4 (a 20 cuadros por segundo).
-anim() { magick -delay "$1" $2 -sample 33.3334% -sample 400% -define webp:lossless=true -loop 0 "$out/$3"; }
+# Las animaciones, en WebP sin pérdida a ×2 (a 20 cuadros por segundo): a ×4
+# el navegador tarda en decodificar varias a la vez y se ven lentas.
+anim() { magick -delay "$1" $2 -sample 33.3334% -sample 200% -define webp:lossless=true -loop 0 "$out/$3"; }
 for v in lake drift trench plasma tunnel waves bars; do anim 5 "$tmp/f/visual/$v/f*.png" "vis-$v.webp"; done
 anim 5 "$tmp/f/ritmo/f*.png" rhythm.webp
 anim 5 "$tmp/f/bloques/f*.png" blocks.webp
