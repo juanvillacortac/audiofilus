@@ -21,4 +21,4 @@ magick "$tmp/bg.png" "$tmp/shadow.png" -geometry +19+21 -compose over -composite
   -fill '#ffffff' -draw "rectangle 104,14 104,22" -draw "rectangle 100,18 108,18" \
   -fill '#ffd6ea' -draw "rectangle 20,100 20,106" -draw "rectangle 17,103 23,103" \
   -fill '#ffffff' -draw "point 112,96" -draw "point 14,30" \
-  -sample 800% -alpha off ios/Audiofilus/Assets.xcassets/AppIcon.appiconset/icon-1024.png
+  -sample 800% -alpha off -depth 8 ios/Audiofilus/Assets.xcassets/AppIcon.appiconset/icon-1024.png
