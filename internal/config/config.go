@@ -94,6 +94,9 @@ type UI struct {
 	// música sigue sonando en segundo plano. Sin poner (nil), sí en el
 	// escritorio y no en las portátiles (ver ui.App.keepPlaying).
 	CloseToBackground *bool `json:"close_to_background,omitempty"`
+	// LyricsOffline apaga la búsqueda de letras en internet (LRCLIB): solo
+	// se usan los .lrc y las etiquetas.
+	LyricsOffline bool `json:"lyrics_offline,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

@@ -342,6 +342,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 		a.drawNothing(dst)
 		return
 	}
+	if a.lyricsOn {
+		a.drawLyrics(dst)
+		return
+	}
 
 	var size, cx, cy int
 	if wide {
@@ -465,6 +469,8 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	}
 	vy1 := dst.Bounds().Dy() - bottomH - 24
 	a.drawSpectrum(dst, margin, vy0, w-2*margin, vy1-vy0)
+	// Tocar el visualizador abre la letra.
+	a.tapZone(margin, vy0, w-2*margin, vy1-vy0, a.openLyrics)
 	a.drawProgress(dst, margin+a.seekNudge(), vy1+8, w-2*margin)
 
 	hints := []hint{{"A", T("h_pause")}, {"X", T("h_shuffle")}, {"START", T("h_more")}, {"SEL", T("h_menu")}}

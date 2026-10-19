@@ -32,6 +32,7 @@ const (
 	setUISounds
 	setDonate
 	setCloseBg
+	setLyricsWeb
 	setCount
 )
 
@@ -84,6 +85,7 @@ var settingSections = []settingSection{
 		{setShuffle, "shuffle", tileToggle},
 		{setRepeat, "repeat", tileChoice},
 		{setVolume, "speaker", tileSlider},
+		{setLyricsWeb, "lyrics", tileToggle},
 	}},
 	{"sec_screen", []settingTile{
 		{setSleep, "moon", tileChoice},
@@ -301,6 +303,9 @@ func (a *App) changeSetting(id, step int) {
 		if a.client != nil {
 			a.client.SetKeepPlaying(on)
 		}
+	case setLyricsWeb:
+		a.cfg.UI.LyricsOffline = !a.cfg.UI.LyricsOffline
+		a.saveConfig()
 	case setSwapAB:
 		a.cfg.UI.SwapAB = !a.cfg.UI.SwapAB
 		a.input.swapAB = a.cfg.UI.SwapAB
@@ -390,6 +395,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.cfg.UI.SwapAB)
 	case setCloseBg:
 		return onOffLabel(a.keepPlaying())
+	case setLyricsWeb:
+		return onOffLabel(!a.cfg.UI.LyricsOffline)
 	case setExitBg:
 		return T("exit_bg_sub")
 	case setExitStop:
@@ -422,6 +429,8 @@ func (a *App) settingOn(id int) bool {
 		return a.cfg.UI.SwapAB
 	case setCloseBg:
 		return a.keepPlaying()
+	case setLyricsWeb:
+		return !a.cfg.UI.LyricsOffline
 	}
 	return false
 }
@@ -432,7 +441,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
-		T("set_close_bg"),
+		T("set_close_bg"), T("set_lyrics_web"),
 	}
 }
 

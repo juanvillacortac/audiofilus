@@ -39,6 +39,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.
 - The interface colors come from the album cover.
+- **Lyrics**, synced karaoke-style when available: from a `.lrc` or `.txt` next to the song (or in a `lyrics` folder), from the file's tags (ID3 USLT and SYLT, `LYRICS` in FLAC and Ogg, `©lyr` in M4A), or found online on [LRCLIB](https://lrclib.net). Pick a different version from the list, nudge the timing, or turn online lookups off in Settings.
 
 <p align="center">
   <img src="site/img/colors.webp" alt="Colors following four album covers" width="360">

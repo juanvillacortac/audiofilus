@@ -35,6 +35,9 @@ type menu struct {
 	items    []menuItem
 	sel      int
 	openedAt float64
+	// cols, si está, es cuántas columnas: menos y más anchas para nombres
+	// largos (la lista de letras).
+	cols int
 }
 
 // Medidas del menú.
@@ -52,6 +55,12 @@ func menuLayout(m *menu, w, h int) (px, py, pw, ph int, tiles []tileRect) {
 	cols := 3
 	if pw >= 280 {
 		cols = 4
+	}
+	if m.cols > 0 {
+		cols = m.cols
+		if pw < 280 {
+			cols = max(1, cols-1)
+		}
 	}
 	rows := (len(m.items) + cols - 1) / cols
 	tw := (pw - 12 - (cols-1)*menuGap) / cols
@@ -208,6 +217,9 @@ func (a *App) openNowMenu() {
 	if len(a.downloadJobs()) > 0 {
 		m.items = append(m.items, menuItem{label: T("ytm_jobs"), icon: "download", do: a.openDownloads})
 	}
+	if a.playingSong.Path != "" {
+		m.items = append(m.items, menuItem{label: T("lyr_title"), icon: "lyrics", do: a.openLyrics})
+	}
 	if song := a.playingSong; song.Path != "" {
 		if remote.IsRemote(song.Path) {
 			m.items = append(m.items, menuItem{label: T("ytm_download"), icon: "download", do: func() { a.downloadRemote([]Song{song}) }})
@@ -353,7 +365,7 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 			if sel {
 				vc = th.Bg
 			}
-			drawText(dst, it.note, SmallFace, t.x+(t.w-textWidth(it.note, SmallFace))/2, vy, vc)
+			drawTextW(dst, it.note, SmallFace, t.x+max(2, (t.w-textWidth(it.note, SmallFace))/2), vy, t.w-4, vc)
 		}
 		if it.value != nil {
 			v := it.value()

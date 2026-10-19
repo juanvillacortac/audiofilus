@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/juanvillacortac/audiofilus/internal/lyrics"
 	"github.com/juanvillacortac/audiofilus/internal/podcast"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
@@ -47,6 +48,12 @@ type App struct {
 	cfg     config.Config
 	client  *Client
 	offline bool // maqueta sin servicio (capturas y pruebas de memoria)
+
+	// La vista de letras de Now Playing (lyrics.go).
+	lyricsOn  bool
+	lyr       lyricsView
+	lyrCh     chan lyricsResult
+	lyrFinder *lyrics.Finder
 
 	mode           mode
 	scan           *Scan
@@ -242,6 +249,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	a := &App{
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
+		lyrCh:  make(chan lyricsResult, 4),
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 		kbEvents: make(chan kbEvent, 64),
 	}
@@ -427,6 +435,7 @@ func (a *App) Update() error {
 
 	a.syncStatus()
 	a.sendArt()
+	a.updateLyricsFetch()
 	a.updateKeyboard()
 	if a.drawer != nil {
 		a.updateDrawer()
@@ -715,6 +724,8 @@ func (a *App) updateMain() {
 	switch a.screen {
 	case NowPlaying:
 		switch {
+		case a.lyricsOn && a.playingSong.Path != "" && (in.Pressed(ActBack) || in.Pressed(ActMenu) || in.Repeat(ActUp) || in.Repeat(ActDown)):
+			a.updateLyrics()
 		case in.Pressed(ActConfirm):
 			a.send("toggle")
 		case in.Pressed(ActShuffle) && a.shuffleTwice():
@@ -1339,6 +1350,24 @@ func (a *App) writeShots() error {
 	a.screen = NowPlaying
 	if err := shot("reproduciendo"); err != nil {
 		return err
+	}
+	// La letra sincronizada (inventada) y la lista para elegir otra.
+	if a.playingSong.Path != "" {
+		a.lyricsOn = true
+		a.lyr = lyricsView{path: a.playingSong.Path, opt: shotLyrics(a.shownPos)}
+		if err := shot("letras"); err != nil {
+			return err
+		}
+		a.openLyricsPicker(lyricsResult{path: a.playingSong.Path, opts: []lyrics.Option{
+			{ID: "file:/m/song.lrc", Label: a.playingSong.Title + ".lrc", Lyrics: lyrics.Lyrics{Synced: true}},
+			a.lyr.opt,
+			{ID: "lrclib:2", Label: a.playingSong.Artist + " - " + a.playingSong.Title + " (Live)", Detail: "Live 2004 · 4:51", Lyrics: lyrics.Lyrics{Synced: true}},
+			{ID: "tag", Lyrics: lyrics.Lyrics{Lines: []lyrics.Line{{Text: "x"}}}},
+		}})
+		if err := shot("letras-elegir"); err != nil {
+			return err
+		}
+		a.menu, a.lyricsOn, a.lyr = nil, false, lyricsView{}
 	}
 	a.screen = LibraryScreen
 	for tab, name := range []string{tabSongs: "canciones", tabAlbums: "albumes", tabArtists: "artistas", tabLists: "listas", tabFolders: "carpetas"} {
@@ -2286,4 +2315,22 @@ func (a *App) drawerFrames(dir string) error {
 	}
 	a.drawer = nil
 	return nil
+}
+
+// shotLyrics es una letra inventada para las capturas, con la línea del
+// medio sonando en pos (segundos).
+func shotLyrics(pos float64) lyrics.Option {
+	words := []string{
+		"Static on the radio tonight", "Every light in town is fading out",
+		"I keep the volume low", "So the neighbors never know",
+		"Pixel hearts in a cathode glow", "Spinning records, nowhere to go",
+		"Turn it up, turn it up", "Until the speakers start to shake",
+		"", "We were never meant to sleep", "Counting beats instead of sheep",
+	}
+	start := time.Duration((pos - 13.5) * float64(time.Second))
+	var lines []lyrics.Line
+	for i, w := range words {
+		lines = append(lines, lyrics.Line{At: start + time.Duration(i)*3*time.Second, Text: w})
+	}
+	return lyrics.Option{ID: "lrclib:1", Label: "audiofilus - Demo", Detail: "Demo · 3:30", Lyrics: lyrics.Lyrics{Lines: lines, Synced: true}}
 }

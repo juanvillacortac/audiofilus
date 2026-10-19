@@ -53,6 +53,7 @@ GOOS=windows go vet ./...
 | `internal/input/` | Logical buttons from the SDL mapping, controller reading (evdev), gesture and shortcut detection, power and headset keys |
 | `internal/sdlmap/` | Asks SDL2 (through `purego`) for the controller mapping |
 | `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |
+| `internal/lyrics/` | Lyrics: LRC and ID3 SYLT parsing, `.lrc`/`.txt` files and tags, LRCLIB search, and the saved choices (`data/lyrics`) |
 | `internal/radio/`, `internal/podcast/`, `internal/ytm/` | Internet radio, podcasts, and YouTube Music search plus yt-dlp |
 | `internal/tracker/` | The tracker's song format and chiptune synth (four channels, WAV export) |
 | `internal/sfx/` | The synthesized interface sounds and the splash jingle |
