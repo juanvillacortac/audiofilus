@@ -119,6 +119,12 @@ var musicSounds = map[string]bool{sfx.Play: true, sfx.Pause: true, sfx.Next: tru
 	"cr_hurt": true, "cr_dead": true, "cr_miss": true, "cr_stairs": true,
 	"gb_ding": true, "scratch": true}
 
+// SharedAudio, si está, da la salida de audio que la interfaz debe usar en
+// vez de crear la suya, y lo que hay que hacer en reposo (dormirla si no
+// suena música). Esperar a que exista es cosa suya. Lo pone el móvil, donde
+// el servicio va en el mismo proceso (ver mobile).
+var SharedAudio func() (*oto.Context, func())
+
 // soundReq es un pedido para la goroutine del audio: tocar name con gain, o
 // cortar el jingle del splash (stop).
 type soundReq struct {
@@ -169,15 +175,27 @@ func (a *App) startSounds() {
 // soundLoop es la goroutine del audio: crea la salida (búfer de 50 ms), toca
 // lo que se pide y la suspende tras 2 s sin sonidos.
 func (a *App) soundLoop() {
-	usePulseSocket()
-	ctx, ready, err := oto.NewContext(&oto.NewContextOptions{
-		SampleRate: sfx.Rate, ChannelCount: 2, Format: oto.FormatFloat32LE,
-		BufferSize: 50 * time.Millisecond, ApplicationName: "audiofilus",
-	})
-	if err != nil {
-		return
+	var ctx *oto.Context
+	idleFn := func() { _ = ctx.Suspend() } // en reposo no gasta
+	if SharedAudio != nil {
+		// En el móvil, la salida del servicio (oto admite un solo contexto
+		// por proceso); dormirla es cosa suya: solo si no suena música.
+		ctx, idleFn = SharedAudio()
+		if ctx == nil {
+			return
+		}
+	} else {
+		usePulseSocket()
+		c, ready, err := oto.NewContext(&oto.NewContextOptions{
+			SampleRate: sfx.Rate, ChannelCount: 2, Format: oto.FormatFloat32LE,
+			BufferSize: 50 * time.Millisecond, ApplicationName: "audiofilus",
+		})
+		if err != nil {
+			return
+		}
+		<-ready
+		ctx = c
 	}
-	<-ready
 	var splash, stream *oto.Player
 	var streamSrc io.Reader
 	idle := time.NewTimer(time.Hour)
@@ -225,7 +243,7 @@ func (a *App) soundLoop() {
 			}
 		case <-idle.C:
 			if stream == nil || !stream.IsPlaying() {
-				_ = ctx.Suspend() // en reposo no gasta
+				idleFn()
 			}
 		}
 	}

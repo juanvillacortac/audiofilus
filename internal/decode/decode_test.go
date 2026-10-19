@@ -3,6 +3,7 @@ package decode
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -304,5 +305,68 @@ func TestESDSCookie(t *testing.T) {
 	}
 	if string(c[len(c)-2:]) != string(asc) {
 		t.Errorf("the config is not at the end: % x", c)
+	}
+}
+
+// fakeAAC es un aacCodec de prueba: apunta los bloques y saca uno de silencio
+// por bloque.
+type fakeAAC struct {
+	asc     []byte
+	packets *[][]byte
+}
+
+func (f *fakeAAC) decode(p []byte, out []float32) ([]float32, int, error) {
+	*f.packets = append(*f.packets, append([]byte(nil), p...))
+	return append(out, 0, 0), 44100, nil
+}
+func (f *fakeAAC) reset() {}
+func (f *fakeAAC) close() {}
+
+// adtsHeader arma una cabecera ADTS para un bloque de n bytes de datos.
+func adtsHeader(profile, sf, ch byte, n int, crc bool) []byte {
+	head := 7
+	if crc {
+		head = 9
+	}
+	size := head + n
+	h := []byte{0xff, 0xf1, profile<<6 | sf<<2 | ch>>2, (ch&3)<<6 | byte(size>>11)&3, byte(size >> 3), byte(size&7)<<5 | 0x1f, 0xfc}
+	if crc {
+		h[1] = 0xf0
+		h = append(h, 0, 0)
+	}
+	return h
+}
+
+// TestADTSStream comprueba el lector de ADTS de las radios sin libfdk-aac:
+// separa los bloques aunque lleguen partidos y con basura delante, salta el
+// CRC, saca la configuración de la cabecera (AAC-LC, 44,1 kHz, estéreo:
+// 12 10) y rehace el decodificador si cambia.
+func TestADTSStream(t *testing.T) {
+	var packets [][]byte
+	var ascs []string
+	s := &adtsStream{newCodec: func(asc []byte) (aacCodec, error) {
+		ascs = append(ascs, fmt.Sprintf("% x", asc))
+		return &fakeAAC{asc: asc, packets: &packets}, nil
+	}}
+	var flow []byte
+	flow = append(flow, 0x00, 0x13, 0x37) // basura, como al conectar a mitad
+	flow = append(flow, adtsHeader(1, 4, 2, 3, false)...)
+	flow = append(flow, 'a', 'b', 'c')
+	flow = append(flow, adtsHeader(1, 4, 2, 2, true)...)
+	flow = append(flow, 'd', 'e')
+	flow = append(flow, adtsHeader(1, 3, 1, 1, false)...) // otra configuración: 48 kHz, mono
+	flow = append(flow, 'f')
+	dst := make([]float32, 64)
+	for i := 0; i < len(flow); i += 4 { // a trozos de 4 bytes
+		s.Feed(flow[i:min(i+4, len(flow))])
+		if _, err := s.Decode(dst); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := fmt.Sprintf("%q", packets); got != `["abc" "de" "f"]` {
+		t.Errorf("packets %s", got)
+	}
+	if got := fmt.Sprint(ascs); got != "[12 10 11 88]" {
+		t.Errorf("configs %s, want [12 10 11 88]", got)
 	}
 }

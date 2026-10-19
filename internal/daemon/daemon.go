@@ -79,6 +79,9 @@ func Run(paths config.Paths) error {
 	if err != nil {
 		return fmt.Errorf("audio output: %w", err)
 	}
+	if h := OnEngine; h != nil {
+		h(eng)
+	}
 	d := &Daemon{
 		paths: paths,
 		cfg:   cfg,
@@ -672,6 +675,10 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 	}
 	return d.status(), nil
 }
+
+// OnEngine, si está, recibe el engine en cuanto se crea: en el móvil, la
+// interfaz (en el mismo proceso) suena por su salida de audio (mobile/).
+var OnEngine func(*engine.Engine)
 
 // NowPlayingHook, si está, se llama (en su goroutine) cada vez que cambia
 // lo que suena: otra canción, pausa o play, un salto. Lo usa el móvil para la

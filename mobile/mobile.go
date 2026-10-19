@@ -7,6 +7,7 @@
 package mobile
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"os"
@@ -15,9 +16,12 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/dhowden/tag"
+	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/mobile"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
@@ -38,10 +42,31 @@ type Host interface {
 	NowPlaying(title, artist, album string, duration, position float64, playing bool, artwork []byte)
 }
 
-// game espera a Start: hasta entonces no hay App que correr.
+// game espera a Start: hasta entonces no hay App que correr. Si algo falla
+// (un panic, un error de Update), lo muestra en pantalla en vez de dejar la
+// imagen congelada (Ebitengine para el bucle sin cerrar la app), y queda en
+// el log (data/audiofilus.log, en Archivos).
 type game struct {
-	mu  sync.Mutex
-	app *ui.App
+	mu     sync.Mutex
+	app    *ui.App
+	failed string
+}
+
+// fail apunta el error y lo deja a la vista.
+func (g *game) fail(msg string) {
+	log.Printf("audiofilus: %s", msg)
+	g.mu.Lock()
+	if g.failed == "" {
+		g.failed = msg
+	}
+	g.mu.Unlock()
+}
+
+// broken es el error que se muestra, si lo hay.
+func (g *game) broken() string {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	return g.failed
 }
 
 var (
@@ -65,18 +90,48 @@ func (g *game) current() *ui.App {
 }
 
 func (g *game) Update() error {
-	if a := g.current(); a != nil {
-		return a.Update()
+	defer func() {
+		if r := recover(); r != nil {
+			g.fail(fmt.Sprintf("panic: %v\n%s", r, debug.Stack()))
+		}
+	}()
+	if a := g.current(); a != nil && g.broken() == "" {
+		if err := a.Update(); err != nil && err != ebiten.Termination {
+			g.fail(err.Error())
+		}
 	}
 	return nil
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
+	defer func() {
+		if r := recover(); r != nil {
+			g.fail(fmt.Sprintf("panic while drawing: %v\n%s", r, debug.Stack()))
+		}
+	}()
+	if msg := g.broken(); msg != "" {
+		screen.Fill(color.RGBA{0x30, 0, 0x10, 0xff})
+		ebitenutil.DebugPrint(screen, "audiofilus stopped:\n"+wrap(msg, screen.Bounds().Dx()/6))
+		return
+	}
 	if a := g.current(); a != nil {
 		a.Draw(screen)
 		return
 	}
 	screen.Fill(color.Black)
+}
+
+// wrap parte msg en líneas de n caracteres como mucho (para DebugPrint).
+func wrap(msg string, n int) string {
+	var b strings.Builder
+	for _, line := range strings.Split(msg, "\n") {
+		for len(line) > n && n > 0 {
+			b.WriteString(line[:n] + "\n")
+			line = line[n:]
+		}
+		b.WriteString(line + "\n")
+	}
+	return b.String()
 }
 
 func (g *game) Layout(w, h int) (int, int) {
@@ -94,7 +149,7 @@ func (g *game) Layout(w, h int) (int, int) {
 func Start(home, tmp, langs string) {
 	once.Do(func() {
 		if err := start(home, tmp, langs); err != nil {
-			log.Printf("audiofilus: %v", err)
+			g.fail("starting: " + err.Error())
 		}
 	})
 }
@@ -105,6 +160,12 @@ func start(home, tmp, langs string) error {
 		os.Setenv("LANG", strings.ReplaceAll(lang, "-", "_")+".UTF-8")
 	}
 	os.Setenv("AUDIOFILUS_HOME", home)
+	// El log, en un archivo que se ve en Archivos (data/audiofilus.log).
+	if err := os.MkdirAll(filepath.Join(home, "data"), 0o755); err == nil {
+		if f, err := os.OpenFile(filepath.Join(home, "data", "audiofilus.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644); err == nil {
+			log.SetOutput(f)
+		}
+	}
 	// Los sockets de Unix no admiten rutas de más de 104 bytes y las de una
 	// app de iOS se acercan: relativa a la carpeta temporal.
 	if err := os.Chdir(tmp); err != nil {
@@ -122,6 +183,24 @@ func start(home, tmp, langs string) error {
 	}
 	socket = paths.Socket
 	daemon.NowPlayingHook = nowPlaying
+	// Un solo contexto de audio por proceso: la interfaz suena por el del
+	// servicio (lo espera hasta 10 s; sin él, sin sonidos).
+	engines := make(chan *engine.Engine, 1)
+	daemon.OnEngine = func(e *engine.Engine) { engines <- e }
+	var shared *engine.Engine
+	var sharedOnce sync.Once
+	ui.SharedAudio = func() (*oto.Context, func()) {
+		sharedOnce.Do(func() {
+			select {
+			case shared = <-engines:
+			case <-time.After(10 * time.Second):
+			}
+		})
+		if shared == nil {
+			return nil, nil
+		}
+		return shared.Context(), shared.Idle
+	}
 	ui.StartService = func(p config.Paths) error {
 		go func() {
 			if err := daemon.Run(p); err != nil {

@@ -670,6 +670,22 @@ func (e *Engine) Close() {
 	close(e.events)
 }
 
+// Context es la salida de audio. En el móvil, servicio e interfaz van en el
+// mismo proceso y oto admite un solo contexto: la interfaz suena por este
+// (ver mobile y ui.SharedAudio).
+func (e *Engine) Context() *oto.Context { return e.ctx }
+
+// Idle duerme la salida si no suena música: lo llama la interfaz del móvil
+// tras sus sonidos (con su propio contexto, lo dormía ella).
+func (e *Engine) Idle() {
+	e.mu.Lock()
+	playing := e.playing
+	e.mu.Unlock()
+	if !playing {
+		_ = e.ctx.Suspend()
+	}
+}
+
 // PlaySFX suena un efecto (bytes float32 estéreo, ver internal/sfx) por
 // encima de la música. Si la salida estaba parada (en pausa), se enciende
 // para el efecto y se vuelve a parar al terminar si sigue en pausa.

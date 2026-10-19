@@ -352,8 +352,8 @@ func (a *App) Update() error {
 		a.saveConfig()
 		a.startScan()
 	}
-	if a.client != nil && a.client.QuitRequested() {
-		a.quitting = true // cerraron el servicio desde fuera: la interfaz también
+	if a.client != nil && a.client.QuitRequested() && StartService == nil {
+		a.quitting = true // cerraron el servicio desde fuera: la interfaz también (no en el móvil)
 	}
 	if a.quitting {
 		return ebiten.Termination

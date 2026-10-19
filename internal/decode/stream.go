@@ -122,7 +122,14 @@ type aacStream struct {
 
 func newAACStream() (StreamDecoder, error) {
 	if err := loadFDK(); err != nil {
-		return nil, errNoLib(err)
+		// Sin libfdk-aac: los bloques se sacan de las cabeceras ADTS aquí y
+		// los decodifica el del sistema (en iOS, AudioToolbox), si lo hay.
+		probe, perr := newPlatformAAC([]byte{0x12, 0x10}) // AAC-LC, 44,1 kHz, estéreo: ¿hay?
+		if perr != nil {
+			return nil, errNoLib(err)
+		}
+		probe.close()
+		return &adtsStream{newCodec: newPlatformAAC}, nil
 	}
 	h := fdk.open(aacTTADTS, 1)
 	if h == 0 {
@@ -191,5 +198,87 @@ func (s *aacStream) Close() {
 	if s.h != 0 {
 		fdk.close(s.h)
 		s.h = 0
+	}
+}
+
+// adtsStream decodifica AAC en ADTS (el de las radios) con un aacCodec de
+// bloques sueltos: separa los bloques por sus cabeceras y saca de la primera
+// la configuración (AudioSpecificConfig) para crear el decodificador; si la
+// configuración cambia (otra emisora en el mismo flujo), lo vuelve a crear.
+type adtsStream struct {
+	newCodec func(asc []byte) (aacCodec, error)
+	codec    aacCodec
+	asc      []byte
+	rate     int
+	in       []byte
+	pending  []float32
+}
+
+func (s *adtsStream) Feed(b []byte) { s.in = append(s.in, b...) }
+
+// adtsFrame busca el primer bloque entero en b: devuelve dónde empieza la
+// cabecera, cuánto mide el bloque entero, dónde empiezan los datos y la
+// configuración que dice la cabecera. ok es false si aún no hay uno entero.
+func adtsFrame(b []byte) (start, size, data int, asc [2]byte, ok bool) {
+	for i := 0; i+7 <= len(b); i++ {
+		if b[i] != 0xff || b[i+1]&0xf6 != 0xf0 { // sincronización y capa 0
+			continue
+		}
+		profile := b[i+2] >> 6
+		sf := (b[i+2] >> 2) & 0x0f
+		ch := (b[i+2]&1)<<2 | b[i+3]>>6
+		n := int(b[i+3]&3)<<11 | int(b[i+4])<<3 | int(b[i+5])>>5
+		head := 7
+		if b[i+1]&1 == 0 {
+			head = 9 // con CRC
+		}
+		if sf > 12 || n <= head {
+			continue // no era una cabecera
+		}
+		if i+n > len(b) {
+			return i, 0, 0, asc, false // falta el resto del bloque
+		}
+		aot := profile + 1
+		asc = [2]byte{aot<<3 | sf>>1, (sf&1)<<7 | ch<<3}
+		return i, n, head, asc, true
+	}
+	return max(0, len(b)-6), 0, 0, asc, false // nada: se guarda solo la cola
+}
+
+func (s *adtsStream) Decode(dst []float32) (int, error) {
+	for len(s.pending) < len(dst) {
+		start, size, data, asc, ok := adtsFrame(s.in)
+		if !ok {
+			s.in = append(s.in[:0], s.in[start:]...) // lo de antes de una cabecera no sirve
+			break
+		}
+		if s.codec == nil || string(asc[:]) != string(s.asc) {
+			if s.codec != nil {
+				s.codec.close()
+			}
+			c, err := s.newCodec(asc[:])
+			if err != nil {
+				return 0, err
+			}
+			s.codec, s.asc, s.rate = c, asc[:], 0
+		}
+		var rate int
+		s.pending, rate, _ = s.codec.decode(s.in[start+data:start+size], s.pending)
+		if s.rate == 0 && rate > 0 {
+			s.rate = rate
+		}
+		s.in = append(s.in[:0], s.in[start+size:]...)
+	}
+	n := copy(dst[:len(dst)&^1], s.pending)
+	s.pending = append(s.pending[:0], s.pending[n:]...)
+	return n, nil
+}
+
+func (s *adtsStream) SampleRate() int { return s.rate }
+
+func (s *adtsStream) Close() {
+	if s.codec != nil {
+		s.codec.close()
+		s.codec = nil
 	}
 }
