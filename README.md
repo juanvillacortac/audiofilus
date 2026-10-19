@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="site/img/player.webp" alt="Now Playing" width="320">
+  <img src="site/img/player.webp" alt="Now Playing" width="360">
   <img src="site/img/vis-lake.webp" alt="Lake visualizer" width="320">
 </p>
 

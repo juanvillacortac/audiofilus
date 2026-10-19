@@ -1480,11 +1480,11 @@ func (a *App) writeFrames() error {
 	// cinco filas con un pozo a la derecha, para que se vean líneas, combos y
 	// un TETRA.
 	// Los colores de cuatro discos distintos (colorshow.go).
-	keepAl, keepSong, keepTheme := a.playing, a.playingSong, a.theme
+	keepAl, keepSong, keepTheme, keepDur := a.playing, a.playingSong, a.theme, a.duration
 	if err := a.writeColorShow(filepath.Join(a.FramesDir, "colores")); err != nil {
 		return err
 	}
-	a.playing, a.playingSong, a.theme = keepAl, keepSong, keepTheme
+	a.playing, a.playingSong, a.theme, a.duration = keepAl, keepSong, keepTheme, keepDur
 	// El tracker tocando Pocket Pop 12 s desde la estrofa, siguiendo la
 	// canción (el sintetizador avanza lo que dura cada cuadro).
 	tkDir := filepath.Join(a.FramesDir, "tracker")
@@ -1647,25 +1647,25 @@ func (a *App) writeFrames() error {
 		}
 	}
 	a.rhythm = nil
-	a.w = 320
+	a.w = 360
 	a.screen = NowPlaying
+	// El reproductor, en 3:2 (el de la consola): 8 s sonando, con el reloj
+	// siempre hacia delante (las secuencias de antes lo dejaron más allá: si
+	// volviera atrás, la portada saldría a medio fundir) y solo un salto como
+	// muestra del juice (un "cambio de canción" sin canción nueva destellaba
+	// la portada en blanco).
+	base := a.t + 1
 	for i := 0; i < 160; i++ {
-		a.t = float64(i) / 20
-		a.position = 64 + a.t
+		a.t = base + float64(i)/20
+		a.position = 64 + float64(i)/20
 		for k := 0; k < 3; k++ { // el fondo sigue el ritmo de la maqueta
 			a.beatHit = a.updateBeat()
 			a.updatePump()
 		}
-		// Una muestra del juice: canción siguiente, pausa y salto.
-		switch i {
-		case 30:
-			a.juiceTrack(1)
-		case 80:
-			a.juiceToggle()
-		case 110:
+		if i == 100 {
 			a.juiceSeek(1)
 		}
-		if err := a.renderShot(filepath.Join(a.FramesDir, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
+		if err := a.renderShot(filepath.Join(a.FramesDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
 		}
 	}
