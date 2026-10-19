@@ -54,7 +54,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 img { max-width: 100%; height: auto; display: block; }
-.px { image-rendering: pixelated; image-rendering: crisp-edges; }
+/* Pixel art is published at 4× with hard pixels; the browser only scales it
+   down, smoothly, so it stays sharp and even at any size and screen scaling. */
+.px { image-rendering: auto; }
 a { color: var(--teal); }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
 h1, h2, h3 { text-wrap: balance; margin: 0; }
@@ -125,9 +127,8 @@ p { margin: 0; }
   box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
   position: relative;
 }
-.device { justify-self: center; max-width: 100%; }
-.device .screen { border-radius: 6px; overflow: hidden; background: #000; max-width: 100%; }
-.device .screen img { display: block; }
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; }
+.device .screen img { display: block; width: 100%; }
 .device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
 .device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
 
@@ -158,7 +159,7 @@ kbd {
 figure { margin: 0; }
 
 /* Visualizers */
-.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
 .vis-grid figure { display: grid; gap: 0.5rem; }
 .vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
 .vis-grid figcaption span { color: var(--muted); font-weight: 400; }
@@ -180,10 +181,17 @@ figure { margin: 0; }
 @media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
 
 /* Any width */
-/* A strip at exact size, scrolled sideways: the five shapes don't fit side by
-   side at 1×, and shrinking pixel art makes it uneven. */
-.widths { display: flex; align-items: flex-end; gap: 1rem; overflow-x: auto; padding-bottom: 0.75rem; }
-.widths figure { display: grid; gap: 0.4rem; flex: none; }
+/* The five shapes side by side at the same height: each takes width in
+   proportion to its aspect (240, 320, 360, 427 and 560 px wide at 240 tall). */
+.widths { display: flex; align-items: flex-end; gap: 0.75rem; }
+.widths figure { display: grid; gap: 0.4rem; min-width: 0; }
+.widths figure:nth-child(1) { flex: 240 1 0; }
+.widths figure:nth-child(2) { flex: 320 1 0; }
+.widths figure:nth-child(3) { flex: 360 1 0; }
+.widths figure:nth-child(4) { flex: 427 1 0; }
+.widths figure:nth-child(5) { flex: 560 1 0; }
+.widths img { width: 100%; }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -235,10 +243,10 @@ pre .c { color: var(--muted); }
 /* The app's splash in two layers: its pulsing background, stretched to cover
    any screen shape, and the logo on top, whole and centered. */
 .splash img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
-.splash .bg { object-fit: cover; }
+.splash .bg { object-fit: cover; image-rendering: pixelated; }
 /* The logo layer is cropped to its content (234×161 of the app's 240-tall
    screen): as tall as the app would draw it, but never wider than the screen. */
-.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 234px; height: auto; }
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92vw, 97.5vh); height: auto; }
 .splash.ready img { visibility: visible; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash.out img { visibility: hidden; }
@@ -323,7 +331,7 @@ footer img { height: 56px; width: auto; }
       </div>
       <div class="device">
         <span class="led" aria-hidden="true"></span>
-        <div class="screen"><img class="px" src="img/player.gif" alt="The Now Playing screen: album cover, track info and a spectrum visualizer pulsing with the song" width="320" height="240"></div>
+        <div class="screen"><img class="px" src="img/player.webp" alt="The Now Playing screen: album cover, track info and a spectrum visualizer pulsing with the song" width="320" height="240"></div>
         <span class="label" aria-hidden="true">AUDIOFILUS</span>
       </div>
     </div>
@@ -378,17 +386,17 @@ footer img { height: 56px; width: auto; }
         <p class="lede">Seven visualizers that follow the beat, all drawn at low resolution and kept light on the CPU. Colors come from the album cover.</p>
       </div>
       <div class="vis-grid">
-        <figure><img class="shot px" src="img/vis-lake.gif" alt="Lake visualizer: a night lake whose lily pads ripple with the music" width="320" height="240" loading="lazy"><figcaption>Lake <span>ripples on the beat</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-drift.gif" alt="Drift visualizer: a car driving down a lit road at night" width="320" height="240" loading="lazy"><figcaption>Drift <span>three cameras</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-trench.gif" alt="Trench visualizer: flying down a city canyon" width="320" height="240" loading="lazy"><figcaption>Trench <span>city canyon</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-plasma.gif" alt="Plasma visualizer: dithered glowing plasma" width="320" height="240" loading="lazy"><figcaption>Plasma <span>dithered</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-tunnel.gif" alt="Tunnel visualizer: a pulsing ring tunnel" width="320" height="240" loading="lazy"><figcaption>Tunnel <span>pulses with bass</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-waves.gif" alt="Waves visualizer: an oscilloscope trace" width="320" height="240" loading="lazy"><figcaption>Waves <span>oscilloscope</span></figcaption></figure>
-        <figure><img class="shot px" src="img/vis-bars.gif" alt="Bars visualizer: spectrum bars with falling peaks" width="320" height="240" loading="lazy"><figcaption>Bars <span>spectrum</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-lake.webp" alt="Lake visualizer: a night lake whose lily pads ripple with the music" width="320" height="240" loading="lazy"><figcaption>Lake <span>ripples on the beat</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-drift.webp" alt="Drift visualizer: a car driving down a lit road at night" width="320" height="240" loading="lazy"><figcaption>Drift <span>three cameras</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-trench.webp" alt="Trench visualizer: flying down a city canyon" width="320" height="240" loading="lazy"><figcaption>Trench <span>city canyon</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-plasma.webp" alt="Plasma visualizer: dithered glowing plasma" width="320" height="240" loading="lazy"><figcaption>Plasma <span>dithered</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-tunnel.webp" alt="Tunnel visualizer: a pulsing ring tunnel" width="320" height="240" loading="lazy"><figcaption>Tunnel <span>pulses with bass</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-waves.webp" alt="Waves visualizer: an oscilloscope trace" width="320" height="240" loading="lazy"><figcaption>Waves <span>oscilloscope</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-bars.webp" alt="Bars visualizer: spectrum bars with falling peaks" width="320" height="240" loading="lazy"><figcaption>Bars <span>spectrum</span></figcaption></figure>
       </div>
       <div class="games">
-        <figure class="figure"><img class="shot px" src="img/blocks.gif" alt="Blocks: a falling-blocks game played next to the mini player" width="320" height="240" loading="lazy"><figcaption><strong>Blocks.</strong> Falling blocks with hold, next piece and a record, while the album keeps playing.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/rhythm.gif" alt="Rhythm: notes fall down lanes built from the song's beats, with a PERFECT hit message" width="320" height="240" loading="lazy"><figcaption><strong>Rhythm.</strong> Notes are generated from whatever song is playing. Hit them on time for combos.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/blocks.webp" alt="Blocks: a falling-blocks game played next to the mini player" width="320" height="240" loading="lazy"><figcaption><strong>Blocks.</strong> Falling blocks with hold, next piece and a record, while the album keeps playing.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="img/rhythm.webp" alt="Rhythm: notes fall down lanes built from the song's beats, with a PERFECT hit message" width="320" height="240" loading="lazy"><figcaption><strong>Rhythm.</strong> Notes are generated from whatever song is playing. Hit them on time for combos.</figcaption></figure>
       </div>
     </div>
   </section>
@@ -558,49 +566,6 @@ docker build --target dist --output dist .
     </div>
   </section>
 </main>
-<script>
-// Pixel art only looks even at whole-number scales of real screen pixels
-// (with fractional desktop scaling, a whole number of CSS pixels isn't one).
-// Each screenshot gets the largest integer multiple of its own size, in device
-// pixels, that fits its column (the hero's console: its column minus the
-// bezel); the splash logo, the largest that fits the screen. Below 1× it's
-// scaled down smoothly instead.
-function fitPixels() {
-  var dpr = window.devicePixelRatio || 1;
-  document.querySelectorAll("main img.px").forEach(function (img) {
-    var nw = img.naturalWidth || +img.getAttribute("width");
-    if (!nw) return;
-    var dev = img.closest(".device");
-    var pad = 0, box;
-    if (dev) {
-      var cs = getComputedStyle(dev);
-      pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      dev.style.width = "100%"; // the whole column, to measure it
-      box = dev.clientWidth - pad;
-    } else if (img.closest(".widths")) {
-      box = nw * Math.max(1, Math.round(dpr)) / dpr; // the strip scrolls: 1× of the screen
-    } else {
-      box = img.parentElement.clientWidth;
-    }
-    var k = Math.floor(box * dpr / nw);
-    if (dev) k = Math.min(k, Math.round(2 * dpr)); // the console stays a console, not a TV
-    var css = k * nw / dpr;
-    img.style.width = k >= 1 ? css + "px" : "100%";
-    img.style.height = "auto";
-    img.style.imageRendering = k >= 1 ? "pixelated" : "auto";
-    if (dev) dev.style.width = k >= 1 ? css + pad + "px" : "100%";
-  });
-  var fg = document.getElementById("splash-fg");
-  if (fg) {
-    var k = Math.max(1, Math.floor(Math.min(innerWidth * 0.92, innerHeight * 0.975) * dpr / 234));
-    fg.style.width = k * 234 / dpr + "px";
-  }
-}
-addEventListener("resize", fitPixels);
-addEventListener("load", fitPixels);
-document.querySelectorAll("main img.px").forEach(function (img) { img.addEventListener("load", fitPixels); });
-fitPixels();
-</script>
 <script>
 // Copy buttons: the clipboard when allowed, otherwise select the text.
 document.querySelectorAll(".copy-btn").forEach(function (b) {

@@ -15,8 +15,8 @@
 </p>
 
 <p align="center">
-  <img src="site/img/player.gif" alt="Now Playing" width="320">
-  <img src="site/img/vis-lake.gif" alt="Lake visualizer" width="320">
+  <img src="site/img/player.webp" alt="Now Playing" width="320">
+  <img src="site/img/vis-lake.webp" alt="Lake visualizer" width="320">
 </p>
 
 Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), and on **Linux and Windows** desktops.
@@ -67,13 +67,13 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus two games that run next to the mini player: **Blocks** (falling blocks) and **Rhythm** (notes generated from the song that's playing).
 
 <p align="center">
-  <img src="site/img/vis-drift.gif" alt="Drift" width="320">
-  <img src="site/img/vis-trench.gif" alt="Trench" width="320">
-  <img src="site/img/vis-tunnel.gif" alt="Tunnel" width="320">
+  <img src="site/img/vis-drift.webp" alt="Drift" width="320">
+  <img src="site/img/vis-trench.webp" alt="Trench" width="320">
+  <img src="site/img/vis-tunnel.webp" alt="Tunnel" width="320">
 </p>
 <p align="center">
-  <img src="site/img/blocks.gif" alt="Blocks" width="320">
-  <img src="site/img/rhythm.gif" alt="Rhythm" width="320">
+  <img src="site/img/blocks.webp" alt="Blocks" width="320">
+  <img src="site/img/rhythm.webp" alt="Rhythm" width="320">
 </p>
 
 ### Interface
