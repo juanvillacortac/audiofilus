@@ -405,6 +405,7 @@ func (a *App) openDuelPause() {
 func (a *App) drawDuel(dst *ebiten.Image) {
 	g, th := a.duel, a.theme
 	w := dst.Bounds().Dx()
+	off := max(0, (dst.Bounds().Dy()-ScreenH)/2) // en vertical, centrado en el alto
 	pulse := a.beatPulse()
 	f := duFoes[g.foe]
 	// El enemigo, al doble, meciéndose; parpadea al recibir un golpe.
@@ -413,7 +414,7 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 	iw, ih := img.Bounds().Dx()*k, img.Bounds().Dy()*k
 	ex := w/2 - iw/2 + int(3*math.Sin(a.t*2))
 	kick := math.Max(0, 1-(a.t-g.kickAt)/0.2) // el bombo: 1 justo al sonar
-	ey := topH + 6 + int(-3*pulse-3*kick)
+	ey := topH + 6 + off + int(-3*pulse-3*kick)
 	if g.phase == duWin {
 		ey += int(math.Min(1, (a.t-g.phaseAt)/1.2) * 40) // se hunde y se va
 	}
@@ -441,7 +442,7 @@ func (a *App) drawDuel(dst *ebiten.Image) {
 	name := T(f.name)
 	ny := ey + ih + 4
 	if g.phase == duWin {
-		ny = topH + 6 + ih + 4
+		ny = topH + 6 + off + ih + 4
 	}
 	drawTextShadow(dst, name, SmallFace, w/2-textWidth(name, SmallFace)-4, ny, th.Text, th.Shadow)
 	bw := 60

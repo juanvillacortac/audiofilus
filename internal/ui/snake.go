@@ -49,7 +49,7 @@ func (a *App) snakeBestPath() string { return filepath.Join(a.paths.Data, "serpi
 // newSnake empieza una partida del tamaño de la pantalla.
 func (a *App) newSnake() *snakeGame {
 	w := max(a.w, 240)
-	g := &snakeGame{cols: (w - 2*margin) / snCell, rows: (ScreenH - topH - bottomH - 16) / snCell, fallback: a.beatClock()}
+	g := &snakeGame{cols: (w - 2*margin) / snCell, rows: (max(a.h, ScreenH) - topH - bottomH - 16) / snCell, fallback: a.beatClock()}
 	if b, err := os.ReadFile(a.snakeBestPath()); err == nil {
 		var v struct{ Best int }
 		if json.Unmarshal(b, &v) == nil {
@@ -225,14 +225,17 @@ func (a *App) openSnakePause() {
 // drawSnake pinta la partida.
 func (a *App) drawSnake(dst *ebiten.Image) {
 	g, th := a.snake, a.theme
-	w := dst.Bounds().Dx()
+	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	bw, bh := g.cols*snCell, g.rows*snCell
-	ox, oy := (w-bw)/2, topH+14
+	// Centrado en el alto (si la partida empezó con la pantalla en otra
+	// orientación, el tablero es más bajo que lo que hay).
+	top := topH + max(0, (h-topH-bottomH-16-bh)/2)
+	ox, oy := (w-bw)/2, top+14
 	pulse := a.beatPulse()
 	head := fmt.Sprintf("%s %d", T("tet_score"), g.score)
-	drawText(dst, head, SmallFace, ox, topH+4, th.Text)
+	drawText(dst, head, SmallFace, ox, top+4, th.Text)
 	bs := fmt.Sprintf("%s %d", T("tet_best"), max(g.best, g.score))
-	drawText(dst, bs, SmallFace, ox+bw-textWidth(bs, SmallFace), topH+4, th.Dim)
+	drawText(dst, bs, SmallFace, ox+bw-textWidth(bs, SmallFace), top+4, th.Dim)
 	panel(dst, ox-2, oy-2, bw+4, bh+4, withAlpha(th.Shadow, 0xc0))
 	// La cuadrícula de puntos, que late con el golpe: una imagen hecha una
 	// vez (antes eran ~600 rectángulos por cuadro: en la consola se notaba).

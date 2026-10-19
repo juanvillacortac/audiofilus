@@ -67,7 +67,11 @@ func chromeColor(o int, th Theme) color.RGBA {
 // drawLogo pinta el logo al doble en (x, y) en el instante t del splash:
 // antes de 1,1 s las letras caen con rebote; después ondulan, y hacia 1,3 s
 // un brillo las cruza.
-func drawLogo(dst *ebiten.Image, x, y int, t float64) {
+func drawLogo(dst *ebiten.Image, x, y int, t float64) { drawLogoAt(dst, x, y, t, splashScale) }
+
+// drawLogoAt es drawLogo ampliado a la escala entera scale (1 donde el logo
+// al doble no cabe: una pantalla en vertical).
+func drawLogoAt(dst *ebiten.Image, x, y int, t float64, scale int) {
 	th := DefaultTheme
 	lw, lh := splashLogoSize()
 	if logoCanvas == nil || logoCanvas.Bounds().Dx() != lw {
@@ -173,7 +177,7 @@ func drawLogo(dst *ebiten.Image, x, y int, t float64) {
 	}
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(splashScale, splashScale)
+	op.GeoM.Scale(float64(scale), float64(scale))
 	op.GeoM.Translate(float64(x), float64(y))
 	dst.DrawImage(logoCanvas, op)
 }

@@ -13,8 +13,12 @@ import (
 )
 
 const (
-	// ScreenH es el alto lógico en todos los formatos.
+	// ScreenH es el alto lógico en horizontal (y el ancho en vertical: el lado
+	// corto de la pantalla siempre mide 240).
 	ScreenH = 240
+	// maxH es lo más alto que llega el lienzo en vertical: 9:21 (lo más
+	// alargado se queda en eso con bandas).
+	maxH = 560
 	// El ancho sale de la proporción de la ventana (ViewW), cualquiera entre
 	// minW, 1:1 (las portátiles cuadradas), y maxW, 21:9 (los móviles y
 	// pantallas más alargados; lo más ancho, como 32:9, se queda en eso con
@@ -23,7 +27,18 @@ const (
 	maxW = 560 // 21:9
 )
 
-// ViewW es el ancho lógico para una ventana de w×h.
+// ViewSize es el lienzo lógico para una ventana de w×h, siempre en pixel art
+// (se amplía sin suavizar): en horizontal (o cuadrada), 240 de alto y el ancho
+// de la proporción (ViewW); en vertical (un móvil, una ventana estrecha), 240
+// de ancho y el alto de la proporción, hasta maxH.
+func ViewSize(w, h int) (int, int) {
+	if w <= 0 || h <= 0 || w >= h {
+		return ViewW(w, h), ScreenH
+	}
+	return minW, min(maxH, int(math.Round(float64(h)*minW/float64(w))))
+}
+
+// ViewW es el ancho lógico para una ventana horizontal de w×h.
 func ViewW(w, h int) int {
 	if w <= 0 || h <= 0 {
 		return 320
@@ -35,11 +50,13 @@ func ViewW(w, h int) int {
 // Aspect es un formato de pantalla con nombre, para las capturas.
 type Aspect struct {
 	Name string
-	W    int
+	W, H int
 }
 
-// Aspects son los formatos de las capturas de las maquetas.
-var Aspects = []Aspect{{"1x1", 240}, {"4x3", 320}, {"3x2", 360}, {"16x10", 384}, {"16x9", 427}, {"2x1", 480}, {"21x9", 560}}
+// Aspects son los formatos de las capturas de las maquetas: los horizontales
+// de las portátiles y el escritorio, y los verticales de un móvil.
+var Aspects = []Aspect{{"1x1", 240, 240}, {"4x3", 320, 240}, {"3x2", 360, 240}, {"16x10", 384, 240}, {"16x9", 427, 240},
+	{"2x1", 480, 240}, {"21x9", 560, 240}, {"3x4", 240, 320}, {"9x16", 240, 427}}
 
 // Theme son los colores de la interfaz. El acento se toma de la portada que
 // suena, así cada disco tiñe la interfaz (como hace Songo con sus temas).

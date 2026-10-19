@@ -102,7 +102,7 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - Hold `FN` on any screen to see its controls.
 - The left analog stick works like the D-pad everywhere, menus and games included.
 - On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
-- The layout follows the screen's real width, from 1:1 to 21:9.
+- The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.
 - Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
 - English and Spanish, 12 h (AM/PM) or 24 h clock.
 - On desktop: fullscreen with sharp pixels.

@@ -81,7 +81,7 @@ func (a *App) updateMenu() {
 	if m.openedAt == 0 {
 		m.openedAt = a.t
 	}
-	_, _, _, _, tiles := menuLayout(m, a.w, ScreenH)
+	_, _, _, _, tiles := menuLayout(m, a.w, max(a.h, ScreenH))
 	for _, d := range []struct {
 		act    Action
 		dx, dy int

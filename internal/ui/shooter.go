@@ -50,7 +50,7 @@ type shooterGame struct {
 func (a *App) shooterBestPath() string { return filepath.Join(a.paths.Data, "naves.json") }
 
 func (a *App) newShooter() *shooterGame {
-	g := &shooterGame{x: float64(max(a.w, 240)) / 2, y: float64(ScreenH - bottomH - 26), lives: 3, fallback: a.beatClock()}
+	g := &shooterGame{x: float64(max(a.w, 240)) / 2, y: float64(max(a.h, ScreenH) - bottomH - 26), lives: 3, fallback: a.beatClock()}
 	if b, err := os.ReadFile(a.shooterBestPath()); err == nil {
 		var v struct{ Best int }
 		if json.Unmarshal(b, &v) == nil {
@@ -76,7 +76,7 @@ func (a *App) saveShooterBest() {
 func (a *App) updateShooter() {
 	g, in := a.shooter, &a.input
 	w := float64(a.w)
-	top, bottom := float64(topH+2), float64(ScreenH-bottomH-12) // la nave no pisa la ayuda
+	top, bottom := float64(topH+2), float64(max(a.h, ScreenH)-bottomH-12) // la nave no pisa la ayuda
 	switch {
 	case in.Pressed(ActMenu):
 		a.openShooterPause()

@@ -244,7 +244,10 @@ func (a *App) drawCover(dst *ebiten.Image, al *Album, x, y, size int, dim float3
 
 // drawNowPlaying es la pantalla de la canción que suena.
 func (a *App) drawNowPlaying(dst *ebiten.Image) {
-	w := dst.Bounds().Dx()
+	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
+	// En vertical (un móvil) sobra alto: la portada crece hasta llenar el
+	// ancho (con el vinilo asomando) y bajo el artista va el álbum.
+	tall := h > ScreenH+40
 	th := a.theme
 	al, song := a.playing, a.playingSong
 	wide := w >= 300
@@ -260,6 +263,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	} else {
 		size = 92
 		cx, cy = (w-size)/2-16, topH+8
+		if tall {
+			size = min(92+(h-ScreenH)/2, (w-2*margin-8)*100/134)
+			cx, cy = (w-size-size*34/100)/2+2, topH+10+min(16, (h-ScreenH)/12)
+		}
 	}
 
 	// El vinilo asoma por detrás de la portada y gira mientras suena.
@@ -351,6 +358,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	} else {
 		drawTextW(dst, artist, SmallFace, tx+max(0, (tw-textWidth(artist, SmallFace))/2), ty, tw, th.Accent)
 		ty += 13
+		if tall && album != "" {
+			drawTextW(dst, album, SmallFace, tx+max(0, (tw-textWidth(album, SmallFace))/2), ty, tw, th.Dim)
+			ty += 14
+		}
 	}
 
 	// Controles.

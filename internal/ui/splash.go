@@ -81,10 +81,17 @@ func (a *App) drawSplashLayers(dst *ebiten.Image, bg, fg bool) {
 	}
 
 	lw, lh := splashLogoSize()
-	lx := (w - lw*splashScale) / 2
+	scale := splashScale
+	if lw*scale > w-8 { // en vertical no cabe al doble
+		scale = 1
+	}
+	lx := (w - lw*scale) / 2
 	ly := h/2 - 62
-	drawLogo(dst, lx, ly, t)
-	drawLEDs(dst, w/2, ly+lh*splashScale+2, t, math.Min(1, math.Max(0, (t-0.7)/0.4)))
+	if scale == 1 {
+		ly = h/2 - 40
+	}
+	drawLogoAt(dst, lx, ly, t, scale)
+	drawLEDs(dst, w/2, ly+lh*scale+2, t, math.Min(1, math.Max(0, (t-0.7)/0.4)))
 
 	// La firma: logo de GitHub y el usuario, apareciendo por escalones.
 	if alpha := steps((t - 0.9) / 0.4); alpha > 0 {

@@ -103,11 +103,22 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 		head string
 		rows []hint
 	}
-	cols := [2][]section{
+	cols := [][]section{
 		{{"g_here", own}, {"g_everywhere", all}},
 		{{"g_sleep_head", guideSleep}, {"g_bg_head", guideBackground}},
 	}
-	colW := (w - 3*margin) / 2
+	// En vertical, si todo cabe en una columna, va en una: en dos, a 240 de
+	// ancho, no se leen.
+	tall := 0
+	for _, secs := range cols {
+		for _, sec := range secs {
+			tall += headH + 3 + len(sec.rows)*rowH
+		}
+	}
+	if w < 300 && topH+4+tall <= h-bottomH {
+		cols = [][]section{append(cols[0], cols[1]...)}
+	}
+	colW := (w - (len(cols)+1)*margin) / len(cols)
 	for c, secs := range cols {
 		x := margin + c*(colW+margin)
 		y := topH + 4

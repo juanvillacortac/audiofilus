@@ -561,10 +561,13 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	th := a.theme
 	cell := (h - topH - bottomH - 10) / tetH
+	// En vertical el alto sobra y el ancho no: el pozo se ajusta para que
+	// quepa el panel de al lado, y se centra en el alto.
+	cell = min(cell, (w-90-3*margin)/tetW)
 	bw, bh := cell*tetW, cell*tetH
 	side := max(90, min(130, w-bw-3*margin))
 	bx := (w - bw - side - margin) / 2
-	by := topH + 5
+	by := topH + 5 + max(0, (h-topH-bottomH-10-bh)/2)
 	// El saltito en los golpes y al soltar una pieza.
 	if p := (a.t - g.shakeAt) / 0.12; g.shakeAt > 0 && p < 1 {
 		by += int(math.Round(2 * math.Sin(p*math.Pi)))

@@ -212,6 +212,7 @@ type App struct {
 	startRSS     int64
 	peakHeap     uint64
 	w            int
+	h            int // el alto del lienzo: 240 en horizontal, más en vertical (ViewSize)
 }
 
 // NewApp prepara la interfaz. Con offline (las capturas y la prueba de
@@ -225,7 +226,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	a := &App{
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
-		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(),
+		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 	}
 	a.input.swapAB = cfg.UI.SwapAB
 	a.splashing = !offline
@@ -1055,11 +1056,14 @@ func (a *App) drawMessage(dst *ebiten.Image) {
 	drawText(dst, msg, SmallFace, margin, y+4, th.Bg)
 }
 
-// Layout da el lienzo lógico: 240 de alto y el ancho que pida la ventana.
+// Layout da el lienzo lógico según la orientación de la ventana (ViewSize).
 func (a *App) Layout(w, h int) (int, int) {
-	a.w = ViewW(w, h)
-	return a.w, ScreenH
+	a.w, a.h = ViewSize(w, h)
+	return a.w, a.h
 }
+
+// portrait dice si la pantalla está en vertical (más alta que ancha).
+func (a *App) portrait() bool { return a.h > ScreenH }
 
 // DrawFinalScreen pone la pantalla lógica en la ventana con FilterPixelated:
 // a cualquier escala, también no entera (pantalla completa en el PC), los
@@ -1161,8 +1165,8 @@ func rssKB() int64 {
 // que se pidan todas las portadas que saldrán en las capturas.
 func (a *App) requestShotCovers() {
 	for _, asp := range Aspects {
-		a.w = asp.W
-		tmp := ebiten.NewImage(asp.W, ScreenH)
+		a.w, a.h = asp.W, asp.H
+		tmp := ebiten.NewImage(asp.W, asp.H)
 		for s := Screen(0); s < screenCount; s++ {
 			a.drawScreen(tmp, s)
 		}
@@ -1172,6 +1176,7 @@ func (a *App) requestShotCovers() {
 		}
 		tmp.Deallocate()
 	}
+	a.h = ScreenH
 	a.libTab = tabSongs
 }
 
@@ -1187,11 +1192,12 @@ func (a *App) writeShots() error {
 	a.charging = true
 	shot := func(name string) error {
 		for _, asp := range Aspects {
-			a.w = asp.W
+			a.w, a.h = asp.W, asp.H
 			if err := a.renderShot(filepath.Join(a.ShotsDir, fmt.Sprintf("%s-%s.png", name, asp.Name)), asp.W); err != nil {
 				return err
 			}
 		}
+		a.h = ScreenH
 		return nil
 	}
 	a.screen = NowPlaying
@@ -1420,6 +1426,7 @@ func (a *App) writeShots() error {
 	a.mode, a.firstRun = modePicker, true
 	a.picker = newPicker(filepath.Dir(firstOr(a.cfg.MusicDirs, "/")))
 	for _, asp := range Aspects {
+		a.w, a.h = asp.W, asp.H
 		if err := a.renderShot(filepath.Join(a.ShotsDir, fmt.Sprintf("carpeta-%s.png", asp.Name)), asp.W); err != nil {
 			return err
 		}
@@ -1901,17 +1908,19 @@ func (a *App) renderShot(path string, w int) error {
 	})
 }
 
-// render dibuja con draw a w×240 y lo guarda ampliado ×3.
+// render dibuja con draw a w×a.h (240, salvo en las capturas verticales) y
+// lo guarda ampliado ×3.
 func (a *App) render(path string, w int, draw func(*ebiten.Image)) error {
 	a.shownPos = a.position // en las capturas no hay transición
-	canvas := ebiten.NewImage(w, ScreenH)
+	h := max(a.h, ScreenH)
+	canvas := ebiten.NewImage(w, h)
 	defer canvas.Deallocate()
 	draw(canvas)
-	pix := make([]byte, 4*w*ScreenH)
+	pix := make([]byte, 4*w*h)
 	canvas.ReadPixels(pix)
 	const k = 3
-	out := image.NewRGBA(image.Rect(0, 0, w*k, ScreenH*k))
-	for y := 0; y < ScreenH*k; y++ {
+	out := image.NewRGBA(image.Rect(0, 0, w*k, h*k))
+	for y := 0; y < h*k; y++ {
 		for x := 0; x < w*k; x++ {
 			si := ((y/k)*w + x/k) * 4
 			copy(out.Pix[y*out.Stride+x*4:], pix[si:si+4])
