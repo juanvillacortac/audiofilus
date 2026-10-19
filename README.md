@@ -73,7 +73,7 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
 - **Blocks**: falling blocks, with hard drops on the beat for combos.
 - **Rhythm**: notes generated from the song that's playing.
-- **Tracker**: make chiptune with the D-pad, Game Boy style: two pulse channels, a triangle and noise, 16-step patterns with arpeggio, duty and pitch-bend effects, and a song order. Export a song as WAV and it shows up in your library.
+- **Tracker**: make chiptune with the D-pad, Game Boy style: two pulse channels, a triangle and noise, 16-step patterns with arpeggio, duty and pitch-bend effects, and a song order. Several songs, four examples to start from, and WAV export straight into your library.
 
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">
@@ -120,7 +120,7 @@ Details in [docs/linux-desktop.md](docs/linux-desktop.md).
 
 Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
-**YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds.
+**YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds. Songs that need a signed-in account (age-restricted) are played from another upload of the same song when there is one. If YouTube asks your network to confirm it's not a bot, or you want signed-in access, put a `cookies.txt` exported from your browser in that `yt-dlp/` folder ([how](https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies)).
 
 ### Linux desktop
 

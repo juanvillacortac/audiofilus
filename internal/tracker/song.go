@@ -99,7 +99,7 @@ func NewSong() *Song {
 	p[8][Pulse1] = Cell{Note: 54, Vol: 9, Fx: FxArp, Arg: 0x37} // F-4 menor
 	p[0][Pulse2] = Cell{Note: 61, Vol: 6, Fx: FxDuty, Arg: 1}
 	p[6][Pulse2] = Cell{Note: NoteOff, Vol: -1}
-	return &Song{Name: "song", BPM: 120, Patterns: []Pattern{p}, Order: []int{0}}
+	return &Song{Name: "First steps", BPM: 120, Patterns: []Pattern{p}, Order: []int{0}}
 }
 
 // Clone copia la canción (el sintetizador toca su propia copia).

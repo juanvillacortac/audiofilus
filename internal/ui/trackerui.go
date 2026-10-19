@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -34,6 +35,7 @@ import (
 // trackerState es el tracker abierto.
 type trackerState struct {
 	song      *tracker.Song
+	file      string // dónde se guarda (en data/tracker/)
 	player    *tracker.Player
 	streaming bool // su salida de audio está abierta
 	playing   bool
@@ -54,17 +56,99 @@ type trackerState struct {
 	exported chan string // el archivo exportado (o el error), desde la goroutine
 }
 
-func (a *App) trackerPath() string { return filepath.Join(a.paths.Data, "tracker", "song.json") }
+// Las canciones del tracker van en data/tracker/, una por archivo .json;
+// "current" dice cuál estaba abierta.
+func (a *App) trackerDir() string { return filepath.Join(a.paths.Data, "tracker") }
 
-// newTracker abre la canción guardada, o una de ejemplo.
+// newTracker abre la canción que estaba abierta o, la primera vez, la de
+// ejemplo.
 func (a *App) newTracker() *trackerState {
-	s, err := tracker.Load(a.trackerPath())
+	t := &trackerState{player: tracker.NewPlayer(sfx.Rate), lastNote: 49, lastVol: 12, lastFx: tracker.FxArp, lastArg: 0x47, exported: make(chan string, 1)}
+	file := "song.json"
+	if b, err := os.ReadFile(filepath.Join(a.trackerDir(), "current")); err == nil && len(b) > 0 {
+		file = filepath.Base(string(b))
+	}
+	s, err := tracker.Load(filepath.Join(a.trackerDir(), file))
 	if err != nil {
 		s = tracker.NewSong()
 	}
-	t := &trackerState{song: s, player: tracker.NewPlayer(sfx.Rate), lastNote: 49, lastVol: 12, lastFx: tracker.FxArp, lastArg: 0x47, exported: make(chan string, 1)}
+	t.song, t.file = s, file
 	t.player.SetSong(s)
 	return t
+}
+
+// trackerSongs son las canciones guardadas: archivo y nombre.
+func (a *App) trackerSongs() [][2]string {
+	files, _ := filepath.Glob(filepath.Join(a.trackerDir(), "*.json"))
+	var out [][2]string
+	for _, f := range files {
+		if s, err := tracker.Load(f); err == nil {
+			out = append(out, [2]string{filepath.Base(f), s.Name})
+		}
+	}
+	return out
+}
+
+// openTrackerSong deja abierta s (guardada en file), guardando antes la que
+// había.
+func (a *App) openTrackerSong(s *tracker.Song, file string) {
+	t := a.tracker
+	a.saveTracker()
+	if t.playing {
+		a.trackerToggle()
+	}
+	t.song, t.file = s, file
+	t.pat, t.row, t.col, t.ord, t.ordScroll, t.songView = 0, 0, 0, 0, 0, false
+	t.player.SetSong(s)
+	t.dirty = true // se guarda ya, y queda como la abierta
+	a.saveTracker()
+}
+
+// openTrackerSongs es el menú de canciones: una nueva, las guardadas y las de
+// ejemplo (abrir un ejemplo hace una copia, o abre la copia que ya había).
+func (a *App) openTrackerSongs() {
+	t := a.tracker
+	saved := a.trackerSongs()
+	items := []menuItem{{label: T("tk_new"), icon: "tracker", do: func() {
+		name := fmt.Sprintf(T("tk_new_name"), len(saved)+1)
+		a.openTrackerSong(tracker.Empty(name), fmt.Sprintf("song-%d.json", time.Now().Unix()))
+	}}}
+	for _, f := range saved {
+		label := f[1]
+		if f[0] == t.file {
+			label = "• " + label
+		}
+		items = append(items, menuItem{label: label, icon: "note", do: func() {
+			if s, err := tracker.Load(filepath.Join(a.trackerDir(), f[0])); err == nil {
+				a.openTrackerSong(s, f[0])
+			}
+		}})
+	}
+	for _, ex := range tracker.Examples() {
+		file := "example-" + slugFile(ex.Name) + ".json"
+		items = append(items, menuItem{label: T("tk_example") + " " + ex.Name, icon: "play", do: func() {
+			if s, err := tracker.Load(filepath.Join(a.trackerDir(), file)); err == nil {
+				a.openTrackerSong(s, file)
+				return
+			}
+			a.openTrackerSong(ex, file)
+		}})
+	}
+	a.menu = &menu{title: T("tk_songs"), subtitle: t.song.Name, items: items}
+}
+
+// slugFile es un nombre para archivo: minúsculas y guiones.
+func slugFile(s string) string {
+	out := []rune{}
+	for _, r := range strings.ToLower(s) {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+			out = append(out, r)
+		case len(out) > 0 && out[len(out)-1] != '-':
+			out = append(out, '-')
+		}
+	}
+	return strings.Trim(string(out), "-")
 }
 
 // trackerChanged marca la canción como cambiada: suena así al momento y se
@@ -83,7 +167,8 @@ func (a *App) saveTracker() {
 		return
 	}
 	t.dirty = false
-	_ = t.song.Save(a.trackerPath())
+	_ = t.song.Save(filepath.Join(a.trackerDir(), t.file))
+	_ = os.WriteFile(filepath.Join(a.trackerDir(), "current"), []byte(t.file), 0o644)
 }
 
 // trackerToggle toca o para.
@@ -318,7 +403,7 @@ func (a *App) openTrackerMenu() {
 	t := a.tracker
 	a.menu = &menu{
 		title:    T("tk_title_menu"),
-		subtitle: fmt.Sprintf("%s · %d BPM · %d/%d", T("tk_song"), t.song.BPM, len(t.song.Order), len(t.song.Patterns)),
+		subtitle: fmt.Sprintf("%s · %d BPM · %d/%d", t.song.Name, t.song.BPM, len(t.song.Order), len(t.song.Patterns)),
 		items: []menuItem{
 			{label: T("tk_play_song"), icon: "play", do: func() {
 				t.songView, t.ord = true, 0
@@ -327,6 +412,7 @@ func (a *App) openTrackerMenu() {
 				}
 				a.trackerToggle()
 			}},
+			{label: T("tk_songs"), icon: "list", do: a.openTrackerSongs},
 			{label: T("tk_export"), icon: "download", do: a.exportTracker},
 			{label: T("tk_dup"), icon: "list", do: func() {
 				if len(t.song.Patterns) < tracker.MaxPatterns {
@@ -355,7 +441,7 @@ func (a *App) exportTracker() {
 	}
 	song := t.song.Clone()
 	dir := filepath.Join(a.cfg.MusicDirs[0], "audiofilus tracker")
-	name := "tracker " + time.Now().Format("2006-01-02 1504") + ".wav"
+	name := t.song.Name + " " + time.Now().Format("2006-01-02 1504") + ".wav"
 	a.flash(T("tk_exporting"))
 	go func() {
 		samples := tracker.Render(song, sfx.Rate)
@@ -418,7 +504,7 @@ func (a *App) drawTrackerPattern(dst *ebiten.Image) {
 	y0 := topH + 4
 	// La cabecera: el patrón, el tempo y si suena.
 	pat, step, _, playing := t.player.Position()
-	head := fmt.Sprintf("%s %02X/%02X   %d BPM", T("tk_pattern"), t.pat, len(t.song.Patterns)-1, t.song.BPM)
+	head := fmt.Sprintf("%s · %s %02X/%02X · %d BPM", t.song.Name, T("tk_pattern"), t.pat, len(t.song.Patterns)-1, t.song.BPM)
 	drawText(dst, head, SmallFace, x0, y0, th.Text)
 	if playing {
 		drawIcon(dst, "play", w-margin-8, y0-1, th.Accent)

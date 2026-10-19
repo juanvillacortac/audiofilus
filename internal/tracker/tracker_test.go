@@ -90,3 +90,47 @@ func TestWAV(t *testing.T) {
 		t.Errorf("bad WAV: %d bytes", b.Len())
 	}
 }
+
+// TestNoteParse comprueba que note y NoteName son inversas.
+func TestNoteParse(t *testing.T) {
+	for n := int8(1); n <= NoteMax; n++ {
+		if got := note(NoteName(n)); got != n {
+			t.Fatalf("note(%q) = %d, want %d", NoteName(n), got, n)
+		}
+	}
+	if note("OFF") != NoteOff || note("H-4") != NoteEmpty {
+		t.Error("special notes")
+	}
+}
+
+// TestExamples comprueba que las canciones de ejemplo son válidas y suenan.
+func TestExamples(t *testing.T) {
+	for _, s := range Examples() {
+		c := s.Clone()
+		c.Fix()
+		if len(c.Order) != len(s.Order) || c.BPM != s.BPM {
+			t.Errorf("%s: out of bounds", s.Name)
+		}
+		notes := 0
+		for _, p := range s.Patterns {
+			for _, row := range p {
+				for _, cell := range row {
+					if cell.Note > 0 {
+						notes++
+					}
+				}
+			}
+		}
+		if notes < 20*len(s.Patterns) {
+			t.Errorf("%s: only %d notes", s.Name, notes)
+		}
+		out := Render(s, 8000)
+		var e float64
+		for _, x := range out {
+			e += float64(x * x)
+		}
+		if e/float64(len(out)) < 1e-4 {
+			t.Errorf("%s: silent", s.Name)
+		}
+	}
+}

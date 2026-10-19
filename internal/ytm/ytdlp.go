@@ -17,6 +17,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/juanvillacortac/audiofilus/internal/proc"
@@ -48,6 +49,44 @@ func Find(base string) string {
 // 403 a menudo.
 var clients = []string{"visionos", ""}
 
+// ErrLogin es cuando YouTube pide iniciar sesión para ese video (con
+// restricción de edad, o solo para miembros): sin cuenta, se prueba otra
+// subida de la misma canción (withAlternates); con cookies.txt, yt-dlp entra
+// como el usuario.
+var ErrLogin = errors.New("YouTube asks to sign in for this video")
+
+// ErrBot es cuando YouTube pide "confirmar que no eres un bot": no es del
+// video sino de la red (la IP hizo muchas peticiones) y se pasa en unas
+// horas. Otra subida no sirve; cookies.txt sí.
+var ErrBot = errors.New("YouTube is asking this network to confirm it's not a bot")
+
+// loginKind clasifica un error de yt-dlp: ErrBot, ErrLogin o nil.
+func loginKind(msg string) error {
+	m := strings.ToLower(msg)
+	if strings.Contains(m, "not a bot") {
+		return ErrBot
+	}
+	for _, k := range []string{"sign in", "log in", "login", "age-restricted", "confirm your age", "inappropriate", "members-only", "join this channel"} {
+		if strings.Contains(m, k) {
+			return ErrLogin
+		}
+	}
+	return nil
+}
+
+// cookiesFile es el cookies.txt que el usuario puso para yt-dlp (exportado
+// de su navegador, en formato Netscape): en la carpeta de yt-dlp o una más
+// arriba (junto a audiofilus). "" si no hay.
+func cookiesFile(bin string) string {
+	dir := filepath.Dir(bin)
+	for _, p := range []string{filepath.Join(dir, "cookies.txt"), filepath.Join(filepath.Dir(dir), "cookies.txt")} {
+		if fi, err := os.Stat(p); err == nil && !fi.IsDir() {
+			return p
+		}
+	}
+	return ""
+}
+
 // Progress es cómo va un trabajo de yt-dlp.
 type Progress struct {
 	Stage       string // "resolve" (sacando la URL), "download" o "convert"
@@ -68,7 +107,12 @@ func run(ctx context.Context, bin string, progress func(Progress), args ...strin
 		}
 	}
 	var last error
-	for _, c := range clients {
+	cookies := cookiesFile(bin)
+	try := clients
+	if cookies != "" {
+		try = []string{"", "visionos"} // con sesión, primero el cliente web, que la usa
+	}
+	for _, c := range try {
 		// IPv4: la URL del audio va atada a la IP que la pidió, y si la
 		// consola sale por IPv6 a la hora de bajarlo, YouTube da 403 (o yt-dlp
 		// reintenta despacio: 33 s en vez de 16 en la consola).
@@ -77,6 +121,9 @@ func run(ctx context.Context, bin string, progress func(Progress), args ...strin
 			"download:" + progressTag + "%(progress.downloaded_bytes)s %(progress.total_bytes,progress.total_bytes_estimate)s"}
 		if c != "" {
 			full = append(full, "--extractor-args", "youtube:player_client="+c)
+		}
+		if cookies != "" {
+			full = append(full, "--cookies", cookies)
 		}
 		full = append(full, args...)
 		report(Progress{Stage: "resolve"})
@@ -135,7 +182,14 @@ func run(ctx context.Context, bin string, progress func(Progress), args ...strin
 		if msg == "" && len(errLines) > 0 {
 			msg = errLines[len(errLines)-1]
 		}
-		last = fmt.Errorf("yt-dlp: %v: %s", err, msg)
+		if kind := loginKind(msg); kind != nil {
+			last = fmt.Errorf("yt-dlp: %w: %s", kind, msg)
+			if kind == ErrBot {
+				break // es de la red: otro cliente da lo mismo
+			}
+		} else {
+			last = fmt.Errorf("yt-dlp: %v: %s", err, msg)
+		}
 	}
 	return nil, last
 }
@@ -160,7 +214,12 @@ func Fetch(ctx context.Context, bin string, t Track, dir string, keep int, progr
 	if _, err := os.Stat(path); err != nil {
 		tmp := filepath.Join(dir, t.ID+".part.m4a")
 		_ = os.Remove(tmp)
-		if _, err := run(ctx, bin, progress, "-f", "140/bestaudio[ext=m4a]", "--fixup", "never", "--no-part", "-o", tmp, watchURL(t.ID)); err != nil {
+		err := withAlternates(ctx, bin, t, func(id string) error {
+			_ = os.Remove(tmp)
+			_, err := run(ctx, bin, progress, "-f", "140/bestaudio[ext=m4a]", "--fixup", "never", "--no-part", "-o", tmp, watchURL(id))
+			return err
+		})
+		if err != nil {
 			_ = os.Remove(tmp)
 			return "", err
 		}
@@ -260,6 +319,25 @@ func Download(ctx context.Context, bin string, t Track, musicDir, cacheDir strin
 		args = append(args, "-f", "140/bestaudio[ext=m4a]/bestaudio", "--fixup", "never")
 	}
 	out, err := run(ctx, bin, progress, append(args, watchURL(t.ID))...)
+	if errors.Is(err, ErrLogin) && cacheDir != "" {
+		// Pide sesión: el audio de otra subida de la misma canción (Fetch ya
+		// la busca), con las etiquetas y la portada de la elegida.
+		if _, ferr := exec.LookPath("ffmpeg"); ferr == nil {
+			cached, ferr := Fetch(ctx, bin, t, cacheDir, 15, progress)
+			if ferr != nil {
+				return "", ferr
+			}
+			path, ferr := fromCache(ctx, t, cached, musicDir, progress)
+			if ferr != nil {
+				return "", ferr
+			}
+			if rel, err := filepath.Rel(musicDir, path); err == nil {
+				lib[t.ID] = rel
+				_ = SaveLibrary(musicDir, lib)
+			}
+			return path, nil
+		}
+	}
 	if err != nil {
 		return "", err
 	}
@@ -388,4 +466,84 @@ func safeName(s string) string {
 		s = s[:len(s)-size]
 	}
 	return s
+}
+
+// withAlternates hace do con el video de t y, si YouTube pide sesión, con
+// otras subidas de la misma canción (alternates) hasta que una funcione.
+// Si ninguna, devuelve el error del original.
+func withAlternates(ctx context.Context, bin string, t Track, do func(id string) error) error {
+	err := do(t.ID)
+	if !errors.Is(err, ErrLogin) {
+		return err
+	}
+	for _, id := range alternates(ctx, bin, t) {
+		if do(id) == nil {
+			return nil
+		}
+		if ctx.Err() != nil {
+			break
+		}
+	}
+	return err
+}
+
+// alternates busca en YouTube (con yt-dlp: el buscador normal, que trae el
+// video oficial, los de la letra y otros canales) otras subidas de la misma
+// canción: con el título dentro del del video y, si se sabe, una duración
+// parecida (±15 %; así no se cuela un directo o un remix largo).
+func alternates(ctx context.Context, bin string, t Track) []string {
+	out, err := run(ctx, bin, nil, "--flat-playlist", "--print", "%(id)s\t%(duration)s\t%(title)s", "ytsearch8:"+t.Artist()+" "+t.Title)
+	if err != nil {
+		return nil
+	}
+	want := normTitle(t.Title)
+	dur := parseClock(t.Duration)
+	var ids []string
+	for _, line := range strings.Split(string(out), "\n") {
+		f := strings.SplitN(line, "\t", 3)
+		if len(f) < 3 || f[0] == t.ID || f[0] == "" {
+			continue
+		}
+		if want != "" && !strings.Contains(normTitle(f[2]), want) {
+			continue
+		}
+		var d float64
+		fmt.Sscan(f[1], &d)
+		if dur > 0 && d > 0 && (d < dur*0.85 || d > dur*1.15) {
+			continue
+		}
+		ids = append(ids, f[0])
+	}
+	return ids
+}
+
+// normTitle deja un título para comparar: en minúsculas, sin lo que va entre
+// paréntesis o corchetes y solo con letras y números.
+func normTitle(s string) string {
+	var b strings.Builder
+	depth := 0
+	for _, r := range strings.ToLower(s) {
+		switch {
+		case r == '(' || r == '[':
+			depth++
+		case r == ')' || r == ']':
+			depth = max(0, depth-1)
+		case depth == 0 && (unicode.IsLetter(r) || unicode.IsDigit(r)):
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// parseClock lee "3:59" o "1:02:03" en segundos (0 si no se puede).
+func parseClock(s string) float64 {
+	var total float64
+	for _, p := range strings.Split(s, ":") {
+		var v float64
+		if _, err := fmt.Sscan(p, &v); err != nil {
+			return 0
+		}
+		total = total*60 + v
+	}
+	return total
 }

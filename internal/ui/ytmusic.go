@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
+	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -208,7 +209,9 @@ func (a *App) updateYT() {
 			}
 			a.yt.pending = false
 			if r.err != nil {
-				a.flash(T("ytm_error", r.err))
+				// Sin red (o YouTube no responde): sin aviso; la búsqueda se
+				// queda con lo de la biblioteca.
+				log.Printf("youtube music search: %v", r.err)
 				continue
 			}
 			a.yt.tracks = r.tracks
@@ -244,7 +247,7 @@ func (a *App) ytEvent(e ytEvent) {
 	if e.err != nil {
 		j.state = jobError
 		if !errors.Is(e.err, context.Canceled) {
-			a.flash(T("ytm_error", e.err))
+			a.flash(ytErrText(e.err))
 		}
 		return
 	}
@@ -571,7 +574,7 @@ func (a *App) drawDownloads(dst *ebiten.Image) {
 		drawText(dst, st, SmallFace, w-x-stW, y, stCol)
 		sub := j.track.Artist()
 		if j.err != nil {
-			sub = j.err.Error()
+			sub = ytErrText(j.err)
 		}
 		drawTextW(dst, sub, SmallFace, x+12, y+9, w-2*x-70, th.Dim)
 		if j.active() {
@@ -689,4 +692,16 @@ func isRemoteSongs(songs []Song) bool {
 		}
 	}
 	return len(songs) > 0
+}
+
+// ytErrText es el error de YouTube para el usuario: los que piden sesión, con
+// qué hacer; el resto, tal cual.
+func ytErrText(err error) string {
+	switch {
+	case errors.Is(err, ytm.ErrBot):
+		return T("ytm_bot")
+	case errors.Is(err, ytm.ErrLogin):
+		return T("ytm_login")
+	}
+	return T("ytm_error", err)
 }

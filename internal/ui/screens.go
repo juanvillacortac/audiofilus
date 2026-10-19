@@ -140,12 +140,13 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 var hintArrows = map[rune]string{'<': "hint_l", '>': "hint_r", '^': "hint_u", 'v': "hint_d"}
 
 // btnParts parte el nombre de un botón en trozos: cada flecha suelta es un
-// icono y el resto, texto ("<>" son dos flechas; "L1/R1", texto).
+// icono y el resto, texto ("<>" son dos flechas, también tras "+" como en
+// "A+^v"; "L1/R1", texto).
 func btnParts(b string) []string {
 	var parts []string
 	word := []rune{}
 	for _, r := range b {
-		if _, ok := hintArrows[r]; ok && (len(word) == 0 || word[len(word)-1] == ' ') {
+		if _, ok := hintArrows[r]; ok && (len(word) == 0 || word[len(word)-1] == ' ' || word[len(word)-1] == '+') {
 			if len(word) > 0 {
 				parts = append(parts, string(word))
 				word = word[:0]
