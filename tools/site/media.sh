@@ -28,7 +28,7 @@ done
 # Las animaciones, en WebP sin pérdida a ×2 (a 20 cuadros por segundo): a ×4
 # el navegador tarda en decodificar varias a la vez y se ven lentas.
 anim() { magick -delay "$1" $2 -sample 33.3334% -sample 200% -define webp:lossless=true -loop 0 "$out/$3"; }
-for v in lake drift trench plasma tunnel waves bars; do anim 5 "$tmp/f/visual/$v/f*.png" "vis-$v.webp"; done
+for v in lake drift trench plasma tunnel waves bars ridges; do anim 5 "$tmp/f/visual/$v/f*.png" "vis-$v.webp"; done
 anim 5 "$tmp/f/ritmo/f*.png" rhythm.webp
 anim 5 "$tmp/f/bloques/f*.png" blocks.webp
 anim 5 "$tmp/f/f0*.png" player.webp
@@ -39,6 +39,7 @@ anim 5 "$tmp/f/tracker/f*.png" tracker.webp
 anim 5 "$tmp/f/serpiente/f*.png" snake.webp
 anim 5 "$tmp/f/naves/f*.png" ships.webp
 anim 5 "$tmp/f/duelo/f*.png" duel.webp
+anim 5 "$tmp/f/carrera/f*.png" runner.webp
 magick "$tmp/s/adivina-3x2.png" -sample 33.3334% -sample 400% -strip "$out/quiz.png"
 
 # El logo, recortado, y el splash de la web en sus dos capas (el fondo y lo

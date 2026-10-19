@@ -2,6 +2,7 @@ package ui
 
 import (
 	"math"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -97,40 +98,40 @@ type Input struct {
 	stick [4]int
 }
 
-// Umbrales del joystick izquierdo: se activa al pasar stickOn y se suelta al
-// bajar de stickOff, para que no tiemble en el borde.
+// Umbrales del joystick izquierdo (cuánto se empuja, de 0 a 1): se activa al
+// pasar stickOn (el de Trancazo: hay sticks que hacia algún lado no llegan ni
+// a la mitad) y se suelta al bajar de stickOff, para que no tiemble en el
+// borde.
 const (
-	stickOn  = 0.5
-	stickOff = 0.35
+	stickOn  = 0.35
+	stickOff = 0.25
 )
 
-// stickDirs son las acciones de cada dirección del joystick, en el orden de stick.
+// stickDirs son las acciones de cada dirección del joystick, en el orden de
+// stick.
 var stickDirs = [4]Action{ActLeft, ActRight, ActUp, ActDown}
 
-// updateStick lee el joystick izquierdo de todos los mandos.
+// updateStick lee el joystick izquierdo de cada mando por separado (como
+// Trancazo): pasado stickOn, se ajusta a una de ocho direcciones, igual que
+// la cruceta, y vale hasta que vuelve a menos de stickOff. Las direcciones
+// de todos los mandos se suman.
 func (in *Input) updateStick() {
-	var h, v float64
+	var dirs [4]bool
 	for _, id := range in.pads {
 		x := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickHorizontal)
 		y := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickVertical)
-		if math.Abs(x) > math.Abs(h) {
-			h = x
+		held := in.stick != [4]int{}
+		if r := math.Hypot(x, y); r < stickOff || (!held && r < stickOn) {
+			continue
 		}
-		if math.Abs(y) > math.Abs(v) {
-			v = y
-		}
+		an := math.Round(math.Atan2(y, x)/(math.Pi/4)) * (math.Pi / 4)
+		dx, dy := math.Round(math.Cos(an)), math.Round(math.Sin(an))
+		dirs[0] = dirs[0] || dx < 0
+		dirs[1] = dirs[1] || dx > 0
+		dirs[2] = dirs[2] || dy < 0
+		dirs[3] = dirs[3] || dy > 0
 	}
-	// En diagonal manda el eje más empujado, salvo que los dos lo estén mucho.
-	vals := [4]float64{-h, h, -v, v}
-	for i, val := range vals {
-		on := val > stickOn || (in.stick[i] > 0 && val > stickOff)
-		other := math.Abs(v)
-		if i >= 2 {
-			other = math.Abs(h)
-		}
-		if on && in.stick[i] == 0 && other > val*1.5 {
-			on = false // apenas roza este eje: cuenta el otro
-		}
+	for i, on := range dirs {
 		if !on {
 			in.stick[i] = 0
 			continue
@@ -149,7 +150,7 @@ func (in *Input) update() {
 	in.all = ebiten.AppendGamepadIDs(in.all[:0])
 	in.pads = in.pads[:0]
 	for _, id := range in.all {
-		if ebiten.IsStandardGamepadLayoutAvailable(id) {
+		if ebiten.IsStandardGamepadLayoutAvailable(id) && !notAPad(id, in.all) {
 			in.pads = append(in.pads, id)
 		}
 	}
@@ -209,4 +210,31 @@ func (in *Input) Pressed(a Action) bool { return in.duration(a) == 1 }
 func (in *Input) Repeat(a Action) bool {
 	d := in.duration(a)
 	return d == 1 || (d > repeatDelay && (d-repeatDelay)%repeatEvery == 0)
+}
+
+// notPads son trozos del nombre de lo que el sistema presenta como mando sin
+// serlo: los sensores de movimiento y el panel táctil de un mando de
+// PlayStation (con su diseño estándar, y el giroscopio de "stick", que no
+// está en cero en reposo), y ratones y teclados virtuales.
+var notPads = []string{"motion sensors", "touchpad", "mouse", "keyboard"}
+
+// notAPad dice si id no es un mando de verdad (como en Trancazo): por su
+// nombre, o porque comparte id de SDL con otro que tiene más del doble de
+// botones (el mando, e id sus sensores o su panel táctil; Ebitengine les da
+// el nombre de su base de datos, no el del dispositivo). Dos mandos iguales
+// tienen los mismos botones y se quedan los dos.
+func notAPad(id ebiten.GamepadID, all []ebiten.GamepadID) bool {
+	name := strings.ToLower(ebiten.GamepadName(id))
+	for _, n := range notPads {
+		if strings.Contains(name, n) {
+			return true
+		}
+	}
+	sdl, buttons := ebiten.GamepadSDLID(id), ebiten.GamepadButtonCount(id)
+	for _, other := range all {
+		if other != id && ebiten.GamepadSDLID(other) == sdl && buttons*2 < ebiten.GamepadButtonCount(other) {
+			return true
+		}
+	}
+	return false
 }

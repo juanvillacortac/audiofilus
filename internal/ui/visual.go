@@ -28,6 +28,8 @@ import (
 //     música (trench.go).
 //   - Lago: un lago de noche con nenúfares, flores y animales que reaccionan
 //     a la música (lake.go).
+//   - Crestas: las líneas apiladas de Unknown Pleasures, hechas del espectro
+//     de cada momento (ridges.go).
 //
 // El servicio da el espectro, no la forma de onda: los osciloscopios la
 // sintetizan del espectro real (reaccionan a la música, pero no son la onda).
@@ -40,26 +42,31 @@ const (
 	visWaves
 	visTrench
 	visLake
+	visRidges
 	visCount
 )
 
 // visNames son las claves de los nombres de cada visualizador.
-var visNames = [visCount]string{"vis_drift", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake"}
+var visNames = [visCount]string{"vis_drift", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake", "vis_ridges"}
 
 // visState es la pantalla de visualizadores.
 type visState struct {
-	kind     int
-	variant  [visCount]int
-	switchAt float64          // cuándo se cambió (para enseñar el nombre)
-	img      *ebiten.Image    // el visualizador, en intensidad, a media resolución
-	out      *ebiten.Image    // ya en la paleta
-	fb       [2]*ebiten.Image // la realimentación (Túnel, Ondas)
-	bars     []float64
-	peaks    []float64
-	barAvg   []float64
-	phase    [engine.MeterBands]float64
-	frame    int // para redibujar a 30 fps
-	lastKind int
+	kind       int
+	variant    [visCount]int
+	switchAt   float64          // cuándo se cambió (para enseñar el nombre)
+	img        *ebiten.Image    // el visualizador, en intensidad, a media resolución
+	out        *ebiten.Image    // ya en la paleta
+	fb         [2]*ebiten.Image // la realimentación (Túnel, Ondas)
+	bars       []float64
+	peaks      []float64
+	barAvg     []float64
+	phase      [engine.MeterBands]float64
+	ridges     []ridgeRow // Crestas (ridges.go)
+	ridgeAt    float64
+	ridgeSeed  float64
+	ridgeBatch rectBatch
+	frame      int // para redibujar a 30 fps
+	lastKind   int
 }
 
 // updateVisual atiende la pantalla de visualizadores.
@@ -180,6 +187,8 @@ func (a *App) drawVisual(dst *ebiten.Image) {
 		a.drawTrenchScene(v.img)
 	case visLake:
 		a.drawLakeScene(v.img)
+	case visRidges:
+		a.drawRidges(v.img)
 	}
 	// A la paleta (con la trama a media resolución: píxeles gordos) y al
 	// doble a la pantalla.
@@ -360,6 +369,16 @@ func (a *App) drawTunnel(img *ebiten.Image) {
 // drawPlasma es el plasma: un shader de ondas que se agitan con la música.
 // Variante: más fino.
 func (a *App) drawPlasma(img *ebiten.Image) {
+	scale := 1.0
+	if a.vis.variant[visPlasma] == 1 {
+		scale = 2.2
+	}
+	a.plasmaInto(img, scale)
+}
+
+// plasmaInto pinta el plasma en intensidad en img, con la escala de sus
+// ondas (Carrera lo usa de cielo).
+func (a *App) plasmaInto(img *ebiten.Image, scale float64) {
 	lw, lh := img.Bounds().Dx(), img.Bounds().Dy()
 	level, bass, bands := a.visBands()
 	var treble float64
@@ -369,10 +388,6 @@ func (a *App) drawPlasma(img *ebiten.Image) {
 	since := 9.0
 	if a.beat.at > 0 {
 		since = math.Max(0, a.beatClock()-a.beat.at)
-	}
-	scale := 1.0
-	if a.vis.variant[visPlasma] == 1 {
-		scale = 2.2
 	}
 	op := &ebiten.DrawRectShaderOptions{}
 	op.Uniforms = map[string]any{

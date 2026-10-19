@@ -68,11 +68,12 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 
 ### Visualizers and games
 
-Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves and Bars**. Plus seven arcade games and a tracker, together under **Games** in the screens dock (and a few secrets hidden around the app):
+Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves, Bars and Ridges** (stacked spectrum lines, like the *Unknown Pleasures* cover). Plus eight arcade games and a tracker, together under **Games** in the screens dock (and a few secrets hidden around the app):
 
 - **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
 - **Blocks**: falling blocks, with hard drops on the beat for combos.
 - **Rhythm**: notes generated from the song that's playing.
+- **Runner**: like Chrome's offline dinosaur, but on the beat. Speakers arrive on the kick and flying vinyls on the snare; hold to jump higher, duck under the records, and jump on the "and" for a PERFECT. One hit and it's over.
 - **Name that song**: a few seconds of a song from your library, four choices, ten rounds.
 - **Snake**: steps on the song's beat subdivisions, so every song plays at its own speed.
 - **Ships**: a shooter that fires on every eighth note and spreads on the bass.
@@ -88,6 +89,11 @@ Seven visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
   <img src="site/img/crypt.webp" alt="Crypt" width="320">
   <img src="site/img/blocks.webp" alt="Blocks" width="320">
   <img src="site/img/rhythm.webp" alt="Rhythm" width="320">
+</p>
+<p align="center">
+  <img src="site/img/runner.webp" alt="Runner" width="320">
+  <img src="site/img/vis-ridges.webp" alt="Ridges" width="320">
+  <img src="site/img/duel.webp" alt="Duel" width="320">
 </p>
 
 ### Interface

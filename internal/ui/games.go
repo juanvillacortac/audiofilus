@@ -35,13 +35,14 @@ var gameCards = []gameCard{
 	{Snake, "snake", "scr_snake", "gm_snake_d", "serpiente.json"},
 	{Shooter, "ship", "scr_shooter", "gm_shooter_d", "naves.json"},
 	{Duel, "duel", "scr_duel", "gm_duel_d", "duelo.json"},
+	{Runner, "runner", "scr_runner", "gm_runner_d", "carrera.json"},
 	{Tracker, "tracker", "scr_tracker", "gm_tracker_d", ""},
 }
 
 // isGame dice si una pantalla es un juego (o la de Juegos): en la barra de
 // pantallas todas cuentan como el hueco de Juegos.
 func isGame(s Screen) bool {
-	return s == Games || s == Blocks || s == Rhythm || s == Crypt || s == Tracker || s == Quiz || s == Snake || s == Shooter || s == Duel
+	return s == Games || s == Blocks || s == Rhythm || s == Crypt || s == Tracker || s == Quiz || s == Snake || s == Shooter || s == Duel || s == Runner
 }
 
 // readBest lee un récord guardado (0 si no hay).
@@ -76,10 +77,15 @@ func (a *App) updateGames() {
 // grande, con de qué va y el récord.
 func (a *App) drawGames(dst *ebiten.Image) {
 	th := a.theme
-	w, _ := dst.Bounds().Dx(), dst.Bounds().Dy()
+	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	lw := min(150, w/2-margin)
-	y0 := topH + 8
-	const rowH = 23
+	// Las filas caben entre las dos barras (más bajas si hay muchos juegos)
+	// y la lista queda centrada: el mismo aire arriba que abajo. Cada fila
+	// deja 3 px de separación, que no cuentan tras la última.
+	avail := h - topH - bottomH
+	n := len(gameCards)
+	rowH := min(23, (avail-8+3)/n)
+	y0 := topH + (avail-(n*rowH-3))/2
 	for i, gc := range gameCards {
 		y := y0 + i*rowH
 		c, tc := th.Dim, th.Dim
@@ -90,10 +96,10 @@ func (a *App) drawGames(dst *ebiten.Image) {
 		}
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Scale(2, 2)
-		op.GeoM.Translate(float64(margin+8), float64(y+3))
+		op.GeoM.Translate(float64(margin+8), float64(y+(rowH-3-14)/2))
 		op.ColorScale.ScaleWithColor(c)
 		dst.DrawImage(icon(gc.icon), op)
-		drawText(dst, fit(T(gc.name), SmallFace, lw-34), SmallFace, margin+28, y+6, tc)
+		drawText(dst, fit(T(gc.name), SmallFace, lw-34), SmallFace, margin+28, y+(rowH-3-smallCap)/2, tc)
 	}
 	gc := gameCards[a.gamesSel]
 	rx := margin + lw + 16

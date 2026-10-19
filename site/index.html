@@ -163,8 +163,7 @@ figure { margin: 0; }
 .vis-grid figure { display: grid; gap: 0.5rem; }
 .vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
 .vis-grid figcaption span { color: var(--muted); font-weight: 400; }
-.games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-top: 3rem; }
-@media (max-width: 900px) { .games { grid-template-columns: 1fr; } }
+.games { margin-top: 3rem; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
@@ -322,7 +321,7 @@ footer img { height: 56px; width: auto; }
       <div class="copy">
         <span class="eyebrow">Music player for Linux handhelds</span>
         <h1>Your music keeps playing <em>while you game.</em></h1>
-        <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers, seven arcade games and a chiptune tracker. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
+        <p class="lede">audiofilus is a pixel-art music player with album covers, visualizers, eight arcade games and a chiptune tracker. Close it, open an emulator, and the music goes on. Turn the screen off and control it from your pocket.</p>
         <div class="cta">
           <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download for PortMaster</a>
           <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Source on GitHub</a>
@@ -383,7 +382,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Visualizers and games</span>
         <h2>Something to look at</h2>
-        <p class="lede">Seven visualizers that follow the beat, all drawn at low resolution and kept light on the CPU. Colors come from the album cover.</p>
+        <p class="lede">Eight visualizers that follow the beat, all drawn at low resolution and kept light on the CPU. Colors come from the album cover.</p>
       </div>
       <div class="vis-grid">
         <figure><img class="shot px" src="img/vis-lake.webp" alt="Lake visualizer: a night lake whose lily pads ripple with the music" width="320" height="240" loading="lazy"><figcaption>Lake <span>ripples on the beat</span></figcaption></figure>
@@ -393,15 +392,17 @@ footer img { height: 56px; width: auto; }
         <figure><img class="shot px" src="img/vis-tunnel.webp" alt="Tunnel visualizer: a pulsing ring tunnel" width="320" height="240" loading="lazy"><figcaption>Tunnel <span>pulses with bass</span></figcaption></figure>
         <figure><img class="shot px" src="img/vis-waves.webp" alt="Waves visualizer: an oscilloscope trace" width="320" height="240" loading="lazy"><figcaption>Waves <span>oscilloscope</span></figcaption></figure>
         <figure><img class="shot px" src="img/vis-bars.webp" alt="Bars visualizer: spectrum bars with falling peaks" width="320" height="240" loading="lazy"><figcaption>Bars <span>spectrum</span></figcaption></figure>
+        <figure><img class="shot px" src="img/vis-ridges.webp" alt="Ridges visualizer: stacked spectrum lines rising like the Unknown Pleasures cover" width="320" height="240" loading="lazy"><figcaption>Ridges <span>stacked spectrum</span></figcaption></figure>
       </div>
-      <div class="games">
-        <figure class="figure"><img class="shot px" src="img/crypt.webp" alt="Crypt: a hooded hero steps through a dungeon whose floor tiles flash on every beat, with slimes, coins and a rhythm bar" width="360" height="240" loading="lazy"><figcaption><strong>Crypt.</strong> A rhythm roguelike: step, fight and dive deeper, but only on the beat of your song. Enemies move to the music too.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/blocks.webp" alt="Blocks: a falling-blocks game played next to the mini player" width="360" height="240" loading="lazy"><figcaption><strong>Blocks.</strong> Falling blocks with hold, next piece and a record, while the album keeps playing.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/snake.webp" alt="Snake: the snake steps on the song's beat subdivisions over a grid of dots that pulse with it" width="360" height="240" loading="lazy"><figcaption><strong>Snake.</strong> It moves on the song's own beat, so every song plays at its own speed.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/ships.webp" alt="Ships: a ship firing upward at pixel aliens over a starfield" width="360" height="240" loading="lazy"><figcaption><strong>Ships.</strong> Fire on every eighth note, spread shots on the bass, enemies arriving with the beats.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/duel.webp" alt="Duel: a one-bit vinyl monster fires rings of notes while a heart dodges inside a box" width="360" height="240" loading="lazy"><figcaption><strong>Duel.</strong> Turn-based battles to the beat: strike on time, then dodge the notes each music-made monster throws.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/quiz.png" alt="Name that song: four songs from the library to choose from while one plays" width="360" height="240" loading="lazy"><figcaption><strong>Name that song.</strong> A few seconds of a song from your library, four choices, ten rounds.</figcaption></figure>
-        <figure class="figure"><img class="shot px" src="img/rhythm.webp" alt="Rhythm: notes fall down lanes built from the song's beats, with a PERFECT hit message" width="360" height="240" loading="lazy"><figcaption><strong>Rhythm.</strong> Notes are generated from whatever song is playing. Hit them on time for combos.</figcaption></figure>
+      <div class="vis-grid games">
+        <figure><img class="shot px" src="img/crypt.webp" alt="Crypt: a hooded hero steps through a dungeon whose floor tiles flash on every beat, with slimes, coins and a rhythm bar" width="360" height="240" loading="lazy"><figcaption>Crypt <span>rhythm roguelike</span></figcaption></figure>
+        <figure><img class="shot px" src="img/blocks.webp" alt="Blocks: a falling-blocks game played next to the mini player" width="360" height="240" loading="lazy"><figcaption>Blocks <span>falling blocks</span></figcaption></figure>
+        <figure><img class="shot px" src="img/rhythm.webp" alt="Rhythm: notes fall down lanes built from the song's drums, with a PERFECT hit message" width="360" height="240" loading="lazy"><figcaption>Rhythm <span>drum lanes</span></figcaption></figure>
+        <figure><img class="shot px" src="img/runner.webp" alt="Runner: a pixel runner with headphones jumps speakers and ducks under flying vinyls that arrive on the song's drums, under a dim plasma sky" width="360" height="240" loading="lazy"><figcaption>Runner <span>jump on the kick</span></figcaption></figure>
+        <figure><img class="shot px" src="img/snake.webp" alt="Snake: the snake steps on the song's beat subdivisions over a grid of dots that pulse with it" width="360" height="240" loading="lazy"><figcaption>Snake <span>moves on the beat</span></figcaption></figure>
+        <figure><img class="shot px" src="img/ships.webp" alt="Ships: a ship firing upward at pixel aliens over a starfield" width="360" height="240" loading="lazy"><figcaption>Ships <span>fires on eighths</span></figcaption></figure>
+        <figure><img class="shot px" src="img/duel.webp" alt="Duel: a one-bit vinyl monster fires notes while a heart dodges inside a box" width="360" height="240" loading="lazy"><figcaption>Duel <span>battles to the beat</span></figcaption></figure>
+        <figure><img class="shot px" src="img/quiz.png" alt="Name that song: four songs from the library to choose from while one plays" width="360" height="240" loading="lazy"><figcaption>Name that song <span>ten rounds</span></figcaption></figure>
       </div>
       <div class="split" style="margin-top: 3rem">
         <div class="points">

@@ -113,6 +113,7 @@ type App struct {
 	snake   *snakeGame    // Serpiente (snake.go)
 	shooter *shooterGame  // Naves (shooter.go)
 	duel    *duelGame     // Duelo (duel.go)
+	runner  *runnerGame   // Carrera (runner.go)
 	// La pantalla de Juegos (games.go): la tarjeta elegida y los récords leídos.
 	gamesSel    int
 	gamesBest   map[string]int
@@ -437,7 +438,7 @@ func (a *App) maybeSleep() {
 	// Sonando, solo en la pantalla de reproducción (navegando o en Ajustes, no).
 	// Sin música, en cualquiera: con la app abierta la consola no se suspende,
 	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca.
-	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
+	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Runner || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
 		return
 	}
 	a.enterSleep()
@@ -585,6 +586,13 @@ func (a *App) updateMain() {
 			a.duel = a.newDuel()
 		}
 		a.updateDuel()
+		return
+	}
+	if a.screen == Runner && a.menu == nil {
+		if a.runner == nil {
+			a.runner = a.newRunner()
+		}
+		a.updateRunner()
 		return
 	}
 	if a.screen == Games && a.menu == nil {
@@ -956,6 +964,12 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			}
 			a.drawDuel(dst)
 			a.drawTopBar(dst, T("du_title"))
+		case Runner:
+			if a.runner == nil {
+				a.runner = a.newRunner()
+			}
+			a.drawRunner(dst)
+			a.drawTopBar(dst, T("ru_title"))
 		case Games:
 			a.drawGames(dst)
 			a.drawTopBar(dst, T("gm_title"))
@@ -1490,6 +1504,18 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.duel = nil
+	// Carrera: unos compases con su bot.
+	a.screen, a.runner = Runner, a.newRunner()
+	for i := 0; i < 60*12; i++ {
+		a.t += 1.0 / 60
+		a.beatHit = a.updateBeat()
+		a.botRunner()
+		a.stepRunner(a.runner)
+	}
+	if err := shot("carrera"); err != nil {
+		return err
+	}
+	a.runner = nil
 	// Los huevos de pascua: el modo Game Boy y el 26 de octubre.
 	a.screen = NowPlaying
 	a.cfg.UI.GameBoy = true
@@ -1677,6 +1703,7 @@ func (a *App) writeFrames() error {
 		{"serpiente", func() { a.screen, a.snake = Snake, a.newSnake() }, func() { a.botSnake(); a.updateSnake() }},
 		{"naves", func() { a.screen, a.shooter = Shooter, a.newShooter() }, func() { a.beatHit = a.updateBeat(); a.botShooter(); a.updateShooter() }},
 		{"duelo", func() { a.screen, a.duel = Duel, a.newDuel() }, func() { a.beatHit = a.updateBeat(); a.botDuel(); a.updateDuel() }},
+		{"carrera", func() { a.screen, a.runner = Runner, a.newRunner() }, func() { a.beatHit = a.updateBeat(); a.botRunner(); a.stepRunner(a.runner) }},
 	} {
 		dir := filepath.Join(a.FramesDir, gm.dir)
 		if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -1694,7 +1721,7 @@ func (a *App) writeFrames() error {
 			}
 		}
 	}
-	a.snake, a.shooter, a.duel = nil, nil, nil
+	a.snake, a.shooter, a.duel, a.runner = nil, nil, nil, nil
 	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
 	crDir := filepath.Join(a.FramesDir, "cripta")
 	if err := os.MkdirAll(crDir, 0o755); err != nil {

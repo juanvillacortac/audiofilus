@@ -104,3 +104,31 @@ func (a *App) botDuel() {
 		}
 	}
 }
+
+// botRunner salta en la corchea de antes de cada bafle o vinilo bajo (salto
+// entero, así coge la nota de encima) y se agacha bajo los de media altura.
+func (a *App) botRunner() {
+	g := a.runner
+	if g == nil {
+		return
+	}
+	if g.over {
+		a.runner = a.newRunner()
+		return
+	}
+	per, _ := a.runnerGrid(g)
+	now := a.beatClock()
+	g.duck, g.held = false, g.jumpAt != 0
+	for _, it := range g.things {
+		dt := it.at - now
+		if it.done || dt < -per/2 || dt > per {
+			continue
+		}
+		switch {
+		case (it.kind == ruSpeaker || (it.kind == ruVinyl && it.alt == 0)) && dt <= per/2:
+			a.runnerJump(g)
+		case it.kind == ruVinyl && it.alt == 1 && dt < per*0.4 && g.jumpAt == 0:
+			g.duck = true
+		}
+	}
+}
