@@ -698,7 +698,11 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 		y += 21
 	}
 	// El ritmo: tempo, carril y combo.
-	drawText(dst, "BPM "+bpmLabel(a.beat.BPM()), SmallFace, sx, y, th.Dim)
+	bpm := 0
+	if per, _ := a.steadyBeat(); per > 0 {
+		bpm = int(60/per + 0.5) // el de la rejilla del juego: "--" sin música
+	}
+	drawText(dst, "BPM "+bpmLabel(bpm), SmallFace, sx, y, th.Dim)
 	a.drawLane(dst, sx, y+8, min(side-6, w-sx-margin))
 	y += 21
 	switch {

@@ -375,8 +375,12 @@ type steadyGrid struct {
 	at          float64 // el fotograma de la última vez
 }
 
-// steadyBeat da la rejilla suave, al día.
+// steadyBeat da la rejilla suave, al día. Sin música sonando no hay golpes
+// (per 0): la rejilla se guarda, pero no se inventan golpes en silencio.
 func (a *App) steadyBeat() (per, anchor float64) {
+	if !a.isPlaying && !a.offline {
+		return 0, 0
+	}
 	s := &a.steady
 	if s.at == a.t && s.per > 0 {
 		return s.per, s.anchor
