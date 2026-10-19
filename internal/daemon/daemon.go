@@ -515,6 +515,13 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 			return nil, err
 		}
 		e.Jump(i)
+	case "scratch":
+		// La mano en el disco: 1, un vaivén largo; -1, dos cortos.
+		dir := 1
+		if len(req.Args) > 0 && strings.HasPrefix(req.Args[0], "-") {
+			dir = -1
+		}
+		e.Scratch(dir)
 	case "seek":
 		if len(req.Args) != 1 {
 			return nil, errors.New("usage: seek <seconds>|+<seconds>|-<seconds>")

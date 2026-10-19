@@ -66,6 +66,12 @@ type Engine struct {
 	// cuándo se preguntó por última vez si ya llegó.
 	waiting string
 	waitAt  time.Time
+	// El scratch (scratch.go): hist guarda lo último que se generó (histN
+	// cuadros en total; vale desde histFrom) y scr es el scratch en curso.
+	hist     []float32
+	histN    int64
+	histFrom int64
+	scr      *scratch
 
 	// OpenRemote abre una pista remota ("subsonic://...", "radio://..."):
 	// ready si ya puede sonar; si no, empieza a prepararla (bajarla,
@@ -198,9 +204,13 @@ func (e *Engine) Read(p []byte) (int, error) {
 	}
 	buf := e.fbuf[:frames*2]
 	n := 0
+	if e.scr != nil {
+		n = e.scratchRead(buf)
+	}
 	for n < len(buf) {
 		got, err := e.rs.Read(buf[n:])
 		n += got
+		e.histWrite(buf[n-got : n])
 		if err == nil {
 			continue
 		}
@@ -241,7 +251,10 @@ func (e *Engine) Seek(offset int64, whence int) (int64, error) {
 // apply ejecuta op con el búfer de audio vaciado y luego sigue sonando si tocaba.
 func (e *Engine) apply(op func()) {
 	e.mu.Lock()
-	e.pending = op
+	e.pending = func() {
+		e.histReset() // lo que sonó antes ya no vale para un scratch
+		op()
+	}
 	e.mu.Unlock()
 	if _, err := e.player.Seek(0, io.SeekStart); err != nil {
 		log.Printf("player seek: %v", err)
@@ -361,6 +374,7 @@ func (e *Engine) seekLocked(seconds float64) {
 	}
 	e.rs.Reset()
 	e.ended = false
+	e.histReset()
 }
 
 // setPlayingLocked cambia el estado y avisa a OnPlayingChanged.

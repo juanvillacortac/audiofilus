@@ -53,7 +53,7 @@ The minigames share one **Games** entry in the screens dock (`games.go`): a list
 
 - **Konami code** (↑↑↓↓←→←→ B A, anywhere) toggles **Game Boy mode**: the whole frame goes through a shader (`gbSrc`) to the four DMG greens with Bayer dithering, with the boot "ding". Saved as `ui.game_boy`.
 - **Special days**: on January 1st, October 18 (audiofilus' first commit) and October 26 (a birthday), confetti or hearts fall for a few seconds after opening the app, with a banner.
-- **Scratch**: ↑/↓ on Now Playing jerk the vinyl with a scratch sound.
+- **Scratch**: ↑/↓ on Now Playing jerk the vinyl and, while music plays, scratch the song itself (`scratch` command, `internal/engine/scratch.go`): the engine keeps the last 3 s it generated, flushes the output buffer and plays that stretch back and forth with a hand's speed curve (↑ one long baby scratch, ↓ two short ones). Pitch follows the speed like a real turntable, near standstill it goes silent and slow movement sounds muffled (a one-pole filter that opens with speed); afterwards playback resumes exactly where it was heard, playing first the generated audio the flush threw away. Paused, the synthesized effect sounds instead.
 - **Crypt**: every five floors a cracked wall (`crSecret`) hides a 3×3 room with coins, a heart and a rainbow floor; an on-beat hit breaks it.
 
 ## Splash, Settings and screen off

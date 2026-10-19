@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"image/color"
 	"math"
 	"time"
@@ -151,9 +152,15 @@ func (a *App) drawCelebration(dst *ebiten.Image) {
 	drawTextShadow(dst, msg, BigFace, bx+12, by+7, withAlpha(th.Text, al), withAlpha(th.Shadow, al))
 }
 
-// scratch es ↑ o ↓ en Reproduciendo: el vinilo da un tirón hacia un lado y
-// suena a scratch.
+// scratch es ↑ o ↓ en Reproduciendo: el vinilo da un tirón hacia un lado y,
+// con música sonando, el servicio raya la propia canción (engine/scratch.go:
+// ↑ un vaivén largo, ↓ dos cortos); en pausa, suena el efecto sintetizado.
 func (a *App) scratch(dir int) {
 	a.spinVel += 0.9 * float64(dir)
+	if a.isPlaying && !a.offline {
+		a.send("scratch", fmt.Sprint(dir))
+		a.sound(soundNone, 2) // ni el bip de mover: suena la canción
+		return
+	}
 	a.sound("scratch", 2)
 }

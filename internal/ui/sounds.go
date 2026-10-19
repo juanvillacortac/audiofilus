@@ -42,6 +42,10 @@ func (a *App) sound(name string, prio int) {
 	}
 }
 
+// soundNone es un sonido que no suena: pedirlo calla los de los botones de
+// ese fotograma.
+const soundNone = "-"
+
 // soundFromSend pone el sonido de un comando de la música que se manda al
 // servicio desde aquí.
 func (a *App) soundFromSend(cmd string, args []string) {
@@ -100,7 +104,7 @@ func (a *App) soundFromInput() {
 	case in.Repeat(ActUp), in.Repeat(ActDown), in.Repeat(ActLeft), in.Repeat(ActRight):
 		a.sound(sfx.Move, 0)
 	}
-	if s.pending != "" {
+	if s.pending != "" && s.pending != soundNone {
 		a.playSound(s.pending)
 	}
 	s.pending, s.prio = "", -1
