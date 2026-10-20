@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -264,5 +265,40 @@ func TestEmbedded(t *testing.T) {
 	if len(opts) != 2 || opts[0].ID != "tag:sylt" || opts[0].Lyrics.Lines[1] != (Line{2500 * time.Millisecond, "Second line"}) ||
 		opts[1].ID != "tag" || opts[1].Lyrics.Lines[0].Text != "Unsynced words" {
 		t.Errorf("MP3 tags = %+v", opts)
+	}
+}
+
+// TestWithBreaks comprueba los huecos instrumentales: la intro larga, un
+// silencio largo entre dos líneas y no en uno corto, y que una línea vacía
+// del LRC no se duplique.
+func TestWithBreaks(t *testing.T) {
+	l := Parse("[00:10.00]One two three\n[00:13.00]Short gap\n[00:30.00]After a long gap\n[00:32.00]\n[00:45.00]Back\n").WithBreaks()
+	var got []string
+	for _, ln := range l.Lines {
+		got = append(got, fmt.Sprintf("%v %s", ln.At, ln.Text))
+	}
+	want := []string{"0s ", "10s One two three", "13s Short gap", "15s ", "30s After a long gap", "32s ", "45s Back"}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("WithBreaks = %q\nwant %q", got, want)
+	}
+	if p := Parse("plain").WithBreaks(); len(p.Lines) != 1 {
+		t.Error("unsynced lyrics should be left alone")
+	}
+}
+
+// TestInstrumental comprueba que una instrumental de LRCLIB (con su
+// duración) salga como tal cuando no hay letra, y que no se vea vacía.
+func TestInstrumental(t *testing.T) {
+	q := Query{Title: "Intro", Duration: 90}
+	f, ok := Best([]Found{{ID: 1, Duration: 300, Instrumental: true}, {ID: 2, Duration: 91, Instrumental: true}}, q)
+	if !ok || f.ID != 2 {
+		t.Fatalf("Best = %+v, %v; want the instrumental with the right duration", f, ok)
+	}
+	o, ok := OptionOf(f)
+	if !ok || !o.Lyrics.Instrumental || o.Lyrics.Empty() {
+		t.Errorf("OptionOf(instrumental) = %+v, %v", o, ok)
+	}
+	if f, _ := Best([]Found{{ID: 3, Duration: 91, Instrumental: true}, {ID: 4, Duration: 90, Synced: "[00:01.00]x"}}, q); f.ID != 4 {
+		t.Errorf("lyrics should win over an instrumental entry, got %d", f.ID)
 	}
 }

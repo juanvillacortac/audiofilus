@@ -40,6 +40,7 @@ anim 5 "$tmp/f/serpiente/f*.png" snake.webp
 anim 5 "$tmp/f/naves/f*.png" ships.webp
 anim 5 "$tmp/f/duelo/f*.png" duel.webp
 anim 5 "$tmp/f/carrera/f*.png" runner.webp
+anim 5 "$tmp/f/letras/f*.png" lyrics.webp
 magick "$tmp/s/adivina-3x2.png" -sample 33.3334% -sample 400% -strip "$out/quiz.png"
 
 # El móvil: como en un iPhone 15 (zona segura simulada, modo táctil y sin lo

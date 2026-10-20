@@ -172,7 +172,7 @@ func (fd *Finder) Find(ctx context.Context, path string, q Query) Option {
 		if f, ok := Best(found, q); ok {
 			o, _ := OptionOf(f)
 			// Una sin sincronizar de internet no gana a la que ya hay a mano.
-			if o.Synced() || len(sure(local)) == 0 {
+			if o.Synced() || o.Lyrics.Instrumental || len(sure(local)) == 0 {
 				if fd.Store.saveFound(f) == nil {
 					_ = fd.Store.Update(path, func(c *Choice) { c.Source, c.Auto, c.Missed = o.ID, true, time.Time{} })
 				}

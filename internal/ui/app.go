@@ -1368,7 +1368,7 @@ func (a *App) writeShots() error {
 	// La letra sincronizada (inventada) y la lista para elegir otra.
 	if a.playingSong.Path != "" {
 		a.lyricsOn = true
-		a.lyr = lyricsView{path: a.playingSong.Path, opt: shotLyrics(a.shownPos)}
+		a.lyr = lyricsView{path: a.playingSong.Path, opt: shotLyrics(a.shownPos-13.5, 3)}
 		if err := shot("letras"); err != nil {
 			return err
 		}
@@ -2335,9 +2335,10 @@ func (a *App) drawerFrames(dir string) error {
 	return nil
 }
 
-// lyricsFrames guarda en dir 9 s de la vista de letras sonando (la letra
-// inventada de shotLyrics), en horizontal a 30 cuadros por segundo, con un
-// golpe de ritmo cada medio segundo.
+// lyricsFrames guarda en dir 10 s de la vista de letras sonando (la letra
+// inventada de shotLyrics: una intro instrumental y luego las líneas), en
+// horizontal a 20 cuadros por segundo, con un golpe de ritmo cada medio
+// segundo.
 func (a *App) lyricsFrames(dir string) error {
 	if a.playingSong.Path == "" {
 		return nil
@@ -2353,7 +2354,7 @@ func (a *App) lyricsFrames(dir string) error {
 		a.lyricsOn, a.lyr = false, lyricsView{}
 	}()
 	a.w, a.screen, a.isPlaying, a.lyricsOn = 360, NowPlaying, true, true
-	opt := shotLyrics(a.position + 4.5)
+	opt := shotLyrics(a.position+2.5, 2.2)
 	// Con AUDIOFILUS_SHOT_LYRICS=título, la canción que suena es esa (ver
 	// simulatePlaying), con su letra
 	// de verdad (de sus archivos, etiquetas o LRCLIB), desde el segundo
@@ -2371,11 +2372,11 @@ func (a *App) lyricsFrames(dir string) error {
 		a.position, a.shownPos = at, at
 	}
 	a.lyr = lyricsView{path: a.playingSong.Path, opt: opt}
-	for i := 0; i < 270; i++ {
-		a.t += 1.0 / 30
-		a.position += 1.0 / 30
+	for i := 0; i < 200; i++ {
+		a.t += 1.0 / 20
+		a.position += 1.0 / 20
 		a.shownPos = a.position
-		if i%15 == 0 {
+		if i%10 == 0 {
 			a.beat.at = a.beatClock()
 		}
 		if err := a.renderShot(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), a.w); err != nil {
@@ -2385,9 +2386,9 @@ func (a *App) lyricsFrames(dir string) error {
 	return nil
 }
 
-// shotLyrics es una letra inventada para las capturas, con la línea del
-// medio sonando en pos (segundos).
-func shotLyrics(pos float64) lyrics.Option {
+// shotLyrics es una letra inventada para las capturas, cuya primera línea
+// empieza en el segundo start y cada una dura every segundos.
+func shotLyrics(start, every float64) lyrics.Option {
 	words := []string{
 		"Static on the radio tonight", "Every light in town is fading out",
 		"I keep the volume low", "So the neighbors never know",
@@ -2395,10 +2396,9 @@ func shotLyrics(pos float64) lyrics.Option {
 		"Turn it up, turn it up", "Until the speakers start to shake",
 		"", "We were never meant to sleep", "Counting beats instead of sheep",
 	}
-	start := time.Duration((pos - 13.5) * float64(time.Second))
 	var lines []lyrics.Line
 	for i, w := range words {
-		lines = append(lines, lyrics.Line{At: start + time.Duration(i)*3*time.Second, Text: w})
+		lines = append(lines, lyrics.Line{At: time.Duration((start + float64(i)*every) * float64(time.Second)), Text: w})
 	}
 	return lyrics.Option{ID: "lrclib:1", Label: "audiofilus - Demo", Detail: "Demo · 3:30", Lyrics: lyrics.Lyrics{Lines: lines, Synced: true}}
 }

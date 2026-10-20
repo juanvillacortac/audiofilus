@@ -181,7 +181,10 @@ func Online(ctx context.Context, c *LRCLIB, q Query) ([]Option, error) {
 // OptionOf convierte un resultado de LRCLIB en una opción (si trae letra).
 func OptionOf(f Found) (Option, bool) {
 	l := f.Lyrics()
-	if f.Instrumental || l.Empty() {
+	if f.Instrumental {
+		l = Lyrics{Instrumental: true}
+	}
+	if l.Empty() {
 		return Option{}, false
 	}
 	detail := f.Album

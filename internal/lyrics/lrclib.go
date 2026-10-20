@@ -100,6 +100,13 @@ func Best(found []Found, q Query) (Found, bool) {
 		}
 		return f, true
 	}
+	// Sin letra que case: si la base dice que es instrumental (con su
+	// duración), eso.
+	for _, f := range found {
+		if f.Instrumental && (q.Duration == 0 || f.Duration == 0 || math.Abs(f.Duration-q.Duration) <= 4) {
+			return f, true
+		}
+	}
 	return Found{}, false
 }
 

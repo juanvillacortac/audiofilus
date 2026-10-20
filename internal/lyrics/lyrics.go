@@ -23,10 +23,15 @@ type Line struct {
 type Lyrics struct {
 	Lines  []Line
 	Synced bool
+	// Instrumental: la canción no tiene letra, y se sabe (LRCLIB lo dice).
+	Instrumental bool
 }
 
-// Empty dice si no hay nada que mostrar.
+// Empty dice si no hay nada que mostrar (una instrumental sí lo tiene).
 func (l Lyrics) Empty() bool {
+	if l.Instrumental {
+		return false
+	}
 	for _, ln := range l.Lines {
 		if strings.TrimSpace(ln.Text) != "" {
 			return false
@@ -42,6 +47,46 @@ func (l Lyrics) Index(pos time.Duration) int {
 		return -1
 	}
 	return sort.Search(len(l.Lines), func(i int) bool { return l.Lines[i].At > pos }) - 1
+}
+
+// Los huecos instrumentales: la intro cuenta si la primera línea tarda al
+// menos breakIntro, y entre dos líneas, si después de cantar la primera
+// (lo que se calcula por sus palabras) quedan al menos breakGap.
+const (
+	breakIntro = 4 * time.Second
+	breakGap   = 6 * time.Second
+)
+
+// WithBreaks añade a una letra sincronizada líneas vacías donde no se canta:
+// antes de la primera (la intro) y en los silencios largos entre dos. Una
+// línea vacía es un hueco instrumental (la vista pinta ahí unos puntos que
+// se llenan hasta la siguiente).
+func (l Lyrics) WithBreaks() Lyrics {
+	if !l.Synced || len(l.Lines) == 0 {
+		return l
+	}
+	var out []Line
+	if l.Lines[0].At >= breakIntro {
+		out = append(out, Line{})
+	}
+	for i, ln := range l.Lines {
+		out = append(out, ln)
+		if ln.Text == "" || i+1 >= len(l.Lines) {
+			continue
+		}
+		next := l.Lines[i+1]
+		if next.Text == "" {
+			continue // ya trae su hueco
+		}
+		// Lo que tarda en cantarse: unos 0,4 s por palabra, más un respiro.
+		sing := time.Duration(len(strings.Fields(ln.Text)))*400*time.Millisecond + time.Second
+		sing = min(max(sing, 2*time.Second), 7*time.Second)
+		if next.At-(ln.At+sing) >= breakGap {
+			out = append(out, Line{At: ln.At + sing})
+		}
+	}
+	l.Lines = out
+	return l
 }
 
 // lrcTime es una marca de tiempo de LRC: [mm:ss], [mm:ss.xx] o [mm:ss.xxx]
