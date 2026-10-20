@@ -14,6 +14,10 @@ func TestCJKFallback(t *testing.T) {
 	if err := LoadFonts(); err != nil {
 		t.Fatal(err)
 	}
+	if w := text.Advance("初恋", SmallFace); w != text.Advance("初恋", smallBase) {
+		t.Errorf("Fusion Pixel was in use before loading in the background")
+	}
+	pollFonts(true)
 	t.Logf("fonts loaded in %v", time.Since(start))
 	for _, f := range []struct {
 		name       string

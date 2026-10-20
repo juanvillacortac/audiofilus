@@ -401,6 +401,7 @@ func (a *App) Update() error {
 	if a.quitting {
 		return ebiten.Termination
 	}
+	pollFonts(a.ShotsDir != "" || a.FramesDir != "") // las capturas, con todas las letras
 	a.input.update()
 	a.updatePointer()
 	a.setBottomH()

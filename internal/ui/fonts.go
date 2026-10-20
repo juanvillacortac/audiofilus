@@ -53,8 +53,14 @@ const (
 	smallCap    = 5
 )
 
-// LoadFonts carga las fuentes. Si Fusion Pixel no carga, sigue sin ella (el
-// japonés y el chino no se ven, como antes).
+// cjkLoaded trae las fuentes de Fusion Pixel cuando terminan de cargar en
+// segundo plano (descomprimir y leer 7 MB cuesta en las portátiles): mientras
+// tanto, durante el splash, se usan las de base solas.
+var cjkLoaded chan [2][2]text.Face
+
+// LoadFonts carga las fuentes de base y empieza a cargar las de Fusion Pixel
+// en segundo plano (llegan con pollFonts). Si Fusion Pixel no carga, sigue sin
+// ella (el japonés y el chino no se ven).
 func LoadFonts() error {
 	big, err := loadFace("fonts/Jersey10-Regular.ttf", 1400.0/75, nil)
 	if err != nil {
@@ -64,20 +70,50 @@ func LoadFonts() error {
 	if err != nil {
 		return err
 	}
-	for i, name := range cjkFonts {
-		f, err := parseFont(name)
-		if err != nil {
-			continue
+	bigBase, smallBase = text.NewGoXFace(big), text.NewGoXFace(small)
+	cjkBig, cjkSmall = [2]text.Face{}, [2]text.Face{}
+	setFontOrder()
+	cjkLoaded = make(chan [2][2]text.Face, 1)
+	go func(ch chan [2][2]text.Face) {
+		var out [2][2]text.Face // [variante][grande, pequeña]
+		for i, name := range cjkFonts {
+			f, err := parseFont(name)
+			if err != nil {
+				continue
+			}
+			b, err1 := newFace(f, name, 16, big)
+			s, err2 := newFace(f, name, 8, small)
+			if err1 == nil && err2 == nil {
+				out[i] = [2]text.Face{text.NewGoXFace(b), text.NewGoXFace(s)}
+			}
 		}
-		b, err1 := newFace(f, name, 16, big)
-		s, err2 := newFace(f, name, 8, small)
-		if err1 == nil && err2 == nil {
-			cjkBig[i], cjkSmall[i] = text.NewGoXFace(b), text.NewGoXFace(s)
+		ch <- out
+		ebiten.ScheduleFrame()
+	}(cjkLoaded)
+	return nil
+}
+
+// pollFonts pone las de Fusion Pixel en cuanto llegan (desde el hilo de la
+// interfaz, que es el que dibuja con ellas). Con wait, las espera.
+func pollFonts(wait bool) {
+	if cjkLoaded == nil {
+		return
+	}
+	var out [2][2]text.Face
+	if wait {
+		out = <-cjkLoaded
+	} else {
+		select {
+		case out = <-cjkLoaded:
+		default:
+			return
 		}
 	}
-	bigBase, smallBase = text.NewGoXFace(big), text.NewGoXFace(small)
+	cjkLoaded = nil
+	for i := range out {
+		cjkBig[i], cjkSmall[i] = out[i][0], out[i][1]
+	}
 	setFontOrder()
-	return nil
 }
 
 // setFontOrder arma BigFace y SmallFace para el idioma en uso: la base y
