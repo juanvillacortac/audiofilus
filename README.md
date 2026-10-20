@@ -80,6 +80,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a
 | **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY) |
 | **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume |
 | **YouTube Music** | Search without signing in; listen without downloading, or save songs with cover and tags. Requires your own `yt-dlp` (see below) |
+| **Module archives** | The Mod Archive, Modland, VGMRips and AMP: browse what's popular, new or random, search (also from Search), listen, save to your library or open a MOD/XM in the tracker. No account needed |
 
 Remote songs are cached on the SD card (400 MB by default, least recently used goes first) and the next track is fetched ahead of time.
 
@@ -100,7 +101,7 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - **Snake**: steps on the song's beat subdivisions, so every song plays at its own speed.
 - **Ships**: a shooter that fires on every eighth note and spreads on the bass.
 - **Duel**: turn-based battles to the beat. Strike near the center of the bar, which lands right on the beat, then dodge the notes a scratched vinyl, a tangled tape and a metronome throw at you: they surge on every beat, and the song's snares and cymbals send more.
-- **Tracker**: make chiptune with the D-pad, LSDJ style with a touch of PICO-8: songs built from chains and phrases, instruments with envelopes, tables and vibrato, grooves with swing, editable waves (the eight PICO-8 ones to start), 21 effect commands and a piano roll. Two modes per song: **Game Boy** (four channels modeled on its sound chip) or **Free** (eight channels with synths). Undo, copy, paste and clone, four examples to learn from, and WAV export straight into your library. Old songs open converted.
+- **Tracker**: make chiptune with the D-pad, LSDJ style with a touch of PICO-8: songs built from chains and phrases, instruments with envelopes, tables and vibrato, grooves with swing, editable waves (the eight PICO-8 ones to start), 21 effect commands and a piano roll. Two modes per song: **Game Boy** (four channels modeled on its sound chip) or **Free** (eight channels with synths). Undo, copy, paste and clone, and four examples to learn from. **Import** MOD and XM modules (with their samples) and LSDJ songs (`.lsdsng` or a whole `.sav`); **export** as WAV, XM or MOD straight into your library. **MIDI**: play and step-record from a USB MIDI keyboard, and follow or send MIDI clock (Linux handhelds and desktop, Windows, iOS). Old songs open converted.
 
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">

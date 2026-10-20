@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -458,7 +459,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Tracker</span>
             <h3>Make your own chiptune</h3>
           </div>
-          <p class="lede">An LSDJ style tracker for the D-pad, with a touch of PICO-8: chains and phrases, instruments with envelopes and tables, grooves with swing, editable waves, 21 effect commands and a piano roll. Write for a Game Boy's four channels or go Free with eight synth channels. Export a song as WAV and it lands in your library, ready to play in the background like anything else. <a href="docs/tracker.html">Tracker guide</a>.</p>
+          <p class="lede">An LSDJ style tracker for the D-pad, with a touch of PICO-8: chains and phrases, instruments with envelopes and tables, grooves with swing, editable waves, 21 effect commands and a piano roll. Write for a Game Boy's four channels or go Free with eight synth channels. Import MOD, XM and LSDJ songs, export as WAV, XM or MOD, and play or sync it from a USB MIDI keyboard or drum machine. Exports land in your library, ready to play in the background like anything else. <a href="docs/tracker.html">Tracker guide</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="img/tracker.webp" alt="The tracker playing Pocket Pop: a phrase with its notes, instruments and volumes lighting up as they play, then the song view with live oscilloscopes per channel" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -565,6 +566,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Live</span><h3>Internet radio</h3><p>Thousands of stations from radio-browser.info, by country or genre, with the current song title from the stream. Bring your own .m3u or .pls station lists, or add a station by its address.</p></div>
         <div class="source"><span class="tag">Episodes</span><h3>Podcasts</h3><p>Top shows for your country, search, or any RSS feed by address. Episodes download for offline listening and remember where you stopped.</p></div>
         <div class="source"><span class="tag">Bring your own</span><h3>YouTube Music</h3><p>Copy your own yt-dlp next to the app and search appears: listen without downloading, or save songs into your library with cover and tags.</p></div>
+        <div class="source wide"><span class="tag">Scene</span><h3>Module archives</h3><p>The Mod Archive, Modland, VGMRips and AMP in one screen: browse what's popular, new or random, search, listen, save to your library or open a module in the tracker. They show up in Search too.</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="img/search-youtube.png" alt="Search with All, Library and YouTube filters; songs you already have are checked" width="360" height="240" loading="lazy"><figcaption>One search for the library and YouTube. A check marks songs you already have.</figcaption></figure>
