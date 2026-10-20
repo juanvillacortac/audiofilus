@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Lyrics</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
           <li><a href="modules.html">Modules</a></li>
+          <li><a href="network.html">Network</a></li>
           <li><a href="servers.html">Servers</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>It never pushes a song past its peak, so nothing clips. Songs without ReplayGain tags (and remote songs) play unchanged.</p>
 
+<h2 id="replaygain-compute">Computing ReplayGain</h2>
+<p>For songs without ReplayGain tags, <strong>Compute ReplayGain</strong> in the menu of a song, album or artist measures them (EBU R128, the ReplayGain 2.0 way) and writes the tags into the files: per song, and for the whole album when you do an album. It runs in the background (see Downloads); on a handheld it takes a few seconds per song. Songs that already have ReplayGain are skipped; <strong>Recompute ReplayGain</strong> measures them again. Works with MP3, FLAC, Ogg, Opus and M4A in your own library.</p>
+
 <h2 id="eq">Equalizer</h2>
-<p><strong>Settings → Equalizer</strong> opens ten bands from 31&nbsp;Hz to 16&nbsp;kHz, each from −12 to +12&nbsp;dB.</p>
+<p><strong>Settings → Equalizer</strong> asks which one to use: <strong>Graphic (10 bands)</strong> or <strong>Parametric</strong> (below). The graphic one has ten bands from 31&nbsp;Hz to 16&nbsp;kHz, each from −12 to +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../img/eq.png" alt="The equalizer: ten vertical sliders with the Rock preset" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Button</th><th>Does</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Close (changes apply as you make them)</td></tr>
 </table>
 <p>Moving a band yourself turns the preset into <strong>Custom</strong>. On touch screens, tap a column to set its height. With the equalizer on, ten bands cost about 5&nbsp;% of a handheld's CPU at its lowest clock; flat, they cost nothing.</p>
+
+<h2 id="parametric-eq">Parametric equalizer</h2>
+<p>Up to eight bands you shape yourself, with a curve drawn above them. Each band has a type, <strong>Peak</strong>, <strong>Low shelf</strong>, <strong>High shelf</strong>, <strong>Low pass</strong> or <strong>High pass</strong>, a frequency (20&nbsp;Hz to 20&nbsp;kHz), a gain (±15&nbsp;dB; pass filters don't use it) and a Q (0.3, wide, to 10, narrow). The first row is the <strong>Preamp</strong>, to make room for boosts.</p>
+<table>
+<tr><th>Button</th><th>Does</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pick a row (the preamp or a band)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Pick a field: type, frequency, gain, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change it (<kbd>L1</kbd>/<kbd>R1</kbd>: bigger steps)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Add a band / remove the chosen one</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Close (changes apply as you make them)</td></tr>
+</table>
+<p>The limiter still guards against clipping. Switching back to the graphic one keeps your parametric bands for later.</p>
+
+<h2 id="resampler">Resampling</h2>
+<p>Songs at a different rate from the output (44.1&nbsp;kHz files on 48&nbsp;kHz, for example) are converted as they play. <strong>Settings → Resampling</strong>:</p>
+<ul>
+<li><strong>Battery</strong>: simple and very light, the best choice on a handheld.</li>
+<li><strong>Quality</strong>: a high-quality filter, clean up to the top of the audible range, using about five times more CPU (still little on a computer).</li>
+<li><strong>Auto</strong> (default): Quality on the desktop, Battery on handhelds.</li>
+</ul>
+<p>It applies from the next song.</p>
 
 <h2 id="crossfade">Crossfade</h2>
 <p><strong>Settings → Crossfade</strong>: Off, or 2 to 12 seconds of overlap between songs. It doesn't fade between consecutive songs of the same album played in order, so albums stay gapless. It also skips very short songs and songs from servers that haven't downloaded yet.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>DSF and DFF files play, converted to PCM. DSD64 is light enough for a handheld; DSD256 may not keep up on one.</p>
+<p>DSD can't go out "native" (DoP) to a DAC: that needs the samples to reach it bit for bit, and audiofilus's output goes through the system mixer as PCM, like any app's. The conversion is done carefully, but it is a conversion.</p>
 
     <nav class="pager" aria-label="Pages"><a href="playback.html">← Playback</a><a href="lyrics.html">Lyrics →</a></nav>
   </article>

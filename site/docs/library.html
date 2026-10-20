@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Lyrics</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
           <li><a href="modules.html">Modules</a></li>
+          <li><a href="network.html">Network</a></li>
           <li><a href="servers.html">Servers</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li><code>.m3u</code> playlists in your music folder show up in <strong>Playlists</strong>.</li>
 <li>Your own playlists are saved as <code>.m3u8</code> files in <code>data/playlists</code>. Create one with <kbd>START</kbd> on the Playlists tab, or with <strong>Add to a playlist</strong> on any song, album or artist. <strong>Save queue as playlist</strong> (Now Playing's More menu) keeps what's in the queue.</li>
 <li>Inside your own playlist, a song's menu can move it up or down or remove it; the playlist's menu renames or deletes it.</li>
+<li>Playlists on a Subsonic or Jellyfin server can be edited too; see <a href="servers.html#server-playlists">Servers</a>.</li>
 </ul>
 
 <h2 id="liked">Liked, Recent, Most played and Stats</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>A song counts as listened once half of it has played (or four minutes), whether the player was open or not. <strong>Rating</strong> goes from 1 to 5 (each <kbd>A</kbd> moves to the next value). Likes and ratings of songs from a Subsonic or Jellyfin server are also sent to the server; see <a href="servers.html">Servers</a>.</p>
 <figure><img class="px shot" src="../img/stats.png" alt="Stats: plays, hours, last month and top artists" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Smart playlists</h2>
+<p>After the lists above come <strong>smart playlists</strong>, which fill themselves from rules each time you open them. Ready-made ones: <strong>Most played (30 days)</strong>, <strong>Recently added</strong>, <strong>Never played</strong>, <strong>Liked</strong>, <strong>Top rated</strong>, <strong>Forgotten favorites</strong> (songs you played a lot but not in the last three months) and <strong>Random mix (today)</strong>, which changes once a day.</p>
+<ul>
+<li><kbd>START</kbd> on the Playlists tab → <strong>New smart playlist</strong> opens its editor: <strong>Add a rule</strong> (pick a field, a condition and a value), <strong>Match all rules</strong> or <strong>Match any rule</strong>, <strong>Sort</strong> and <strong>Limit</strong>, then <strong>Save</strong> and name it. Picking a rule in the editor removes it.</li>
+<li>Fields: title, artist, album, album artist, genre, year, length, format, bitrate, folder, path, track number, when it was added, plays, last played, liked and rating. Conditions depend on the field: <em>is</em>, <em>contains</em>, <em>starts with</em>, <em>more/less than</em>, <em>between</em>, <em>in the last … days</em> and so on.</li>
+<li>A smart playlist's menu has <strong>Edit rules</strong>, <strong>Rename</strong> and <strong>Delete playlist</strong>. They're saved in <code>data/smart.json</code>.</li>
+<li>Genre, year and date added come from the library scan; the first scan after updating reads every file once to get them.</li>
+</ul>
+
+<h2 id="edit-tags">Tags, covers and MusicBrainz</h2>
+<p>The <kbd>START</kbd> menu of a song, album or artist in your own library (files on the SD card or disk, in MP3, FLAC, Ogg, Opus or M4A) has tools to fix their details. Long jobs run in the background and show in Downloads.</p>
+<ul>
+<li><strong>Edit tags</strong> (a song): title, artist, album, album artist, genre, year, track and disc. Pick a field to type it, then <strong>Save to the files</strong>. <strong>Album tags</strong> changes album, album artist, genre and year for every song of the album at once.</li>
+<li><strong>Find cover</strong> (an album): looks it up on MusicBrainz's Cover Art Archive, then iTunes, and offers <strong>Save in the folder</strong> (as <code>cover.jpg</code>), <strong>Embed in the files</strong> or <strong>Both</strong>.</li>
+<li><strong>Look up on MusicBrainz</strong> (an album): lists matching releases (title, year, country, tracks, label); pick one and it shows how many of your songs match by track and length, then <strong>Apply</strong> or <strong>Apply with the cover</strong> writes the right titles, artists, numbers, year and genre. Songs that don't match are left alone.</li>
+<li><strong>Compute ReplayGain</strong> (song, album or artist): measures how loud each song is and writes its ReplayGain, for the songs that don't have it; see <a href="sound.html#replaygain-compute">Sound</a>.</li>
+</ul>
+<p>Only the tags change: the audio in the file stays exactly as it was, and the library picks up the changes right away.</p>
 
 <h2 id="formats">Formats</h2>
 <table>

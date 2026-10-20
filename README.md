@@ -36,7 +36,9 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a
 ### Sound
 
 - **ReplayGain** per song, per album, or automatic (album in order, song on shuffle), with preamp and clipping protection; Opus R128 gains too.
-- **10-band equalizer** with presets (rock, metal, vocal, bass, loudness...) and a band editor.
+- **10-band equalizer** with presets (rock, metal, vocal, bass, loudness...) and a band editor, or a **parametric equalizer** with up to 8 bands (peak, shelves, low/high pass), preamp and its curve on screen.
+- **Compute ReplayGain** (EBU R128) for songs that don't have it, written into the files.
+- **Resampling**: a light linear one on handhelds (battery) and a high-quality sinc one on the desktop, or pick one.
 - **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
 - **Output rate** of 44.1, 48, 96 or 192 kHz.
 
@@ -48,12 +50,15 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a
 ### Library
 
 - **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream.
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY and SAP, through libgme, which the handheld and Linux packages bring. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ (Genesis, Master System) and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme, which the handheld and Linux packages bring. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.
 - The interface colors come from the album cover.
 - **Liked songs and ratings** (1 to 5), synced with Subsonic/Navidrome and Jellyfin.
+- **Smart playlists** that fill themselves from rules (most played, never played, recently added, by genre or year...), with ready-made ones.
+- **Edit tags** of songs and albums (MP3, FLAC, Ogg, Opus, M4A), **find missing covers** (Cover Art Archive, iTunes) and **fix albums from MusicBrainz**.
+- **Send to speakers and TVs** on your network (DLNA/UPnP and Chromecast), **share your library over DLNA** and **receive music** from phones and other DLNA apps.
 - **History:** Recent and Most played lists, and stats (plays, hours, top artists, albums and songs).
 - **Scrobbling** to Last.fm and ListenBrainz (queued while offline), and play counts on your Subsonic or Jellyfin server.
 - **Lyrics**, synced karaoke-style when available (each line tints as it's sung, and dots count down the instrumental parts): from a `.lrc` or `.txt` next to the song (or in a `lyrics` folder), from the file's tags (ID3 USLT and SYLT, `LYRICS` in FLAC and Ogg, `©lyr` in M4A), or found online on [LRCLIB](https://lrclib.net), also for radio stations that send the song title. Pick a different version from the list, nudge the timing, or turn online lookups off in Settings.
@@ -75,7 +80,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a
 
 | Source | What you get |
 |---|---|
-| **Subsonic / OpenSubsonic** (Navidrome and others) | Browse, stream, cache and download |
+| **Subsonic / OpenSubsonic** (Navidrome and others) | Browse, stream, cache and download; edit their playlists |
 | **Jellyfin** | Same, with your Jellyfin user and its playlists |
 | **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY) |
 | **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume |
