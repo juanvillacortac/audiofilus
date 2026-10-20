@@ -63,7 +63,11 @@ type App struct {
 	histAt      time.Time
 	timerChoice int
 
-	lyricsOn  bool
+	lyricsOn bool
+	// radioKey es la canción de la radio que suena (lyricsKey) y radioAt,
+	// cuándo empezó (cuándo cambió el título): para la letra.
+	radioKey  string
+	radioAt   float64
 	lyr       lyricsView
 	lyrCh     chan lyricsResult
 	lyrFinder *lyrics.Finder

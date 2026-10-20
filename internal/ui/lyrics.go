@@ -83,15 +83,45 @@ func (a *App) lyricsFinder() *lyrics.Finder {
 	return a.lyrFinder
 }
 
-// lyricsQuery es lo que se sabe de la canción que suena, para buscarla.
+// lyricsQuery es lo que se sabe de la canción que suena, para buscarla. En
+// una radio, lo que dice su título ("Artista - Canción"), sin duración.
 func (a *App) lyricsQuery() lyrics.Query {
 	s := a.playingSong
+	if radio.IsRadio(s.Path) {
+		artist, title, _ := radioSong(s.Title)
+		return lyrics.Query{Title: title, Artist: artist}
+	}
 	return lyrics.Query{Title: s.Title, Artist: s.Artist, Album: s.Album, Duration: a.duration}
 }
 
-// noLyrics dice si lo que suena no puede tener letra (una radio).
+// lyricsKey es la canción para la letra: su ruta; en una radio, la emisora y
+// el título que da (cambia con cada canción).
+func (a *App) lyricsKey() string {
+	s := a.playingSong
+	if radio.IsRadio(s.Path) {
+		return s.Path + "#" + s.Title
+	}
+	return s.Path
+}
+
+// radioSong parte el título de una radio en artista y canción (casi todas
+// mandan "Artista - Canción"); ok es false si no tiene esa forma (el
+// nombre de un programa, un anuncio).
+func radioSong(t string) (artist, title string, ok bool) {
+	artist, title, ok = strings.Cut(t, " - ")
+	artist, title = strings.TrimSpace(artist), strings.TrimSpace(title)
+	return artist, title, ok && artist != "" && title != ""
+}
+
+// noLyrics dice si lo que suena no puede tener letra: un podcast, o una
+// radio cuyo título no dice qué canción es.
 func (a *App) noLyrics() bool {
-	return radio.IsRadio(a.playingSong.Path) || strings.HasPrefix(a.playingSong.Path, a.podDir())
+	s := a.playingSong
+	if radio.IsRadio(s.Path) {
+		_, _, ok := radioSong(s.Title)
+		return !ok
+	}
+	return strings.HasPrefix(s.Path, a.podDir())
 }
 
 // openLyrics abre la vista de letras.
@@ -113,10 +143,16 @@ func (a *App) updateLyricsFetch() {
 		}
 		break
 	}
-	if !a.lyricsOn || a.playingSong.Path == "" || a.lyr.path == a.playingSong.Path {
+	// En una radio, la canción empieza (más o menos) cuando cambia el título:
+	// de ahí sale por dónde va la letra. Se mira aunque la vista esté cerrada.
+	if key := a.lyricsKey(); key != a.radioKey {
+		a.radioKey, a.radioAt = key, a.t
+	}
+	key := a.lyricsKey()
+	if !a.lyricsOn || a.playingSong.Path == "" || a.lyr.path == key {
 		return
 	}
-	a.lyr = lyricsView{path: a.playingSong.Path, gen: a.lyr.gen + 1, manualAt: -100}
+	a.lyr = lyricsView{path: key, gen: a.lyr.gen + 1, manualAt: -100}
 	if a.noLyrics() {
 		a.lyr.opt = lyrics.Option{ID: "none"}
 		return
@@ -136,7 +172,7 @@ func (a *App) updateLyricsFetch() {
 func (a *App) lyricsDone(r lyricsResult) {
 	if r.menu {
 		a.lyr.loading = false
-		if r.path == a.playingSong.Path {
+		if r.path == a.lyricsKey() {
 			a.openLyricsPicker(r)
 		}
 		return
@@ -229,7 +265,7 @@ func (a *App) openLyricsMenu() {
 // findLyricsOptions busca todas las letras posibles (a mano y en internet)
 // y abre la lista para elegir cuando las tiene.
 func (a *App) findLyricsOptions() {
-	path, q, fd := a.playingSong.Path, a.lyricsQuery(), a.lyricsFinder()
+	path, q, fd := a.lyricsKey(), a.lyricsQuery(), a.lyricsFinder()
 	a.lyr.loading = true
 	a.flash(T("lyr_searching"))
 	go func() {
@@ -308,6 +344,11 @@ func lyricsIcon(o lyrics.Option) string {
 
 // lyricsPos es la posición de la canción para la letra (con el desfase).
 func (a *App) lyricsPos() time.Duration {
+	if radio.IsRadio(a.playingSong.Path) {
+		// Desde que cambió el título (la emisora lo manda con algo de
+		// retraso: el desfase lo arregla, y se guarda por canción).
+		return time.Duration((a.t-a.radioAt)*float64(time.Second)) + a.lyr.offset
+	}
 	return time.Duration(a.shownPos*float64(time.Second)) + a.lyr.offset
 }
 
