@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tracker · audiofilus docs</title>
-<meta name="description" content="Make chiptune music with the D-pad, Game Boy style.">
+<meta name="description" content="Make chiptune with the D-pad, the LSDJ way: song, chains, phrases, instruments, tables, grooves and waves, in Game Boy or Free mode.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
 <link rel="apple-touch-icon" href="../img/icon-256.png">
@@ -55,79 +55,164 @@
   </aside>
   <article>
     <h1>Tracker</h1>
-    <p class="lede">Make chiptune music with the D-pad, Game Boy style.</p>
+    <p class="lede">Make chiptune with the D-pad, the LSDJ way, with a few things borrowed from PICO-8.</p>
 
-<div class="callout"><strong>The tracker is being expanded.</strong> The next version brings a deeper song structure, instruments, tables, grooves and more, inspired by LSDJ and PICO-8. This page describes the tracker as it is today; the sections marked “Coming in the next version” will be filled in when it ships.</div>
-<figure><img class="px shot" src="../img/tracker.webp" alt="The tracker playing a song: four channels with live oscilloscopes, cells lighting up as their notes play" width="360" height="240" loading="lazy"></figure>
+<figure><img class="px shot" src="../img/tracker.webp" alt="The tracker playing a song: channels with live oscilloscopes, cells lighting up as their notes play" width="360" height="240" loading="lazy"></figure>
 
 <h2 id="overview">Overview</h2>
-<p>Open <strong>Games → Tracker</strong>. A song has four channels, like the Game Boy: two <strong>pulse</strong> channels (12.5, 25, 50 or 75 % duty), a <strong>triangle</strong> and <strong>noise</strong>. Music is written in <strong>patterns</strong> of 16 steps; the <strong>song</strong> is the order in which the patterns play, plus the tempo. Songs save themselves a second after each change.</p>
-<p>While the tracker plays, your music pauses, and the visualizers and games react to the tracker instead.</p>
+<p>Open <strong>Games → Tracker</strong>. A song is built like in LSDJ: the <strong>song</strong> is a list of rows, each row says which <strong>chain</strong> each channel plays, a chain is a list of <strong>phrases</strong>, and a phrase is 16 steps of notes. Sounds come from <strong>instruments</strong>, which can run a <strong>table</strong> with every note; the <strong>groove</strong> sets the swing, and <strong>waves</strong> are drawn by hand. From PICO-8 come its eight waveforms, an instrument on every step and a piano roll.</p>
+<p>Songs save themselves a second after each change. While the tracker plays, your music pauses, and the visualizers and games react to the tracker instead.</p>
 
-<h2 id="views">Pattern and Song views</h2>
-<p><kbd>X</kbd> switches between the two views.</p>
-<h3 id="pattern-view">Pattern</h3>
-<p>16 steps × 4 channels. Each step has a <strong>note</strong> (C-0 to B-7, or OFF), a <strong>volume</strong> (0 to F) and an <strong>effect</strong>.</p>
+<h2 id="song-modes">Song modes: Game Boy and Free</h2>
+<p>Each song has a mode, set in the <strong>PROJ</strong> view:</p>
+<ul>
+<li><strong>Game Boy</strong>: four channels, <strong>PU1</strong>, <strong>PU2</strong> (pulse), <strong>WAV</strong> (wave) and <strong>NOI</strong> (noise), with the console's limits: pulse widths of 12.5, 25, 50 and 75 %, a volume envelope that steps at 64 Hz, PU1's frequency sweep, 32-sample 4-bit waves played at 100, 50 or 25 % volume, noise from a 15- or 7-bit register, and pitches rounded to the hardware's 11-bit periods. Instruments are pulse, wave or noise.</li>
+<li><strong>Free</strong>: eight channels, <strong>CH1</strong> to <strong>CH8</strong>, without those limits. Every instrument has an ADSR envelope, and there's a fourth type, <strong>synth</strong>, with sine, triangle, saw, square, organ, phantom and noise shapes.</li>
+</ul>
+<p>Any instrument can go on any channel. Switching a song to Game Boy keeps what's on channels 5 to 8, it just doesn't play it.</p>
+
+<h2 id="structure">Song, chains and phrases</h2>
+<ul>
+<li><strong>Song</strong>: up to 256 rows; each row has a chain number (or nothing) per channel.</li>
+<li><strong>Chain</strong> (256 of them): up to 16 phrases in order, each with a <strong>transpose</strong> in semitones. The chain ends at its first empty slot.</li>
+<li><strong>Phrase</strong> (256 of them): 16 steps. Each step has a <strong>note</strong> (C-0 to B-9, or OFF), an <strong>instrument</strong>, a <strong>volume</strong> (0 to F) and <strong>two commands</strong> (a letter and a hex value).</li>
+</ul>
+<p>Each channel plays its own chain and moves on to the next row when it ends. A channel with no chain in a row rests until the channels that do have one move on, so rows stay lined up. A row with no chains at all rests for one phrase.</p>
+<p>Time runs in <strong>ticks</strong>, 24 per beat. With the default groove each step lasts 6 ticks, a sixteenth note, so a phrase is one bar.</p>
+
+<h2 id="views">The eight views</h2>
+<p>The tabs at the top are a map, left to right: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd> and <kbd>R1</kbd> move to the view next door. Moving right with <kbd>R1</kbd> opens what's under the cursor:</p>
+<table>
+<tr><th>From</th><th><kbd>R1</kbd> opens</th></tr>
+<tr><td>SONG</td><td>The chain in the cell</td></tr>
+<tr><td>CHAIN</td><td>The phrase in the step</td></tr>
+<tr><td>PHRASE</td><td>The step's instrument (or the last one above it)</td></tr>
+<tr><td>INSTR</td><td>The instrument's table</td></tr>
+<tr><td>GROOVE</td><td>The instrument's wave, if it's a wave instrument</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: the song's name (<kbd>A</kbd> opens the keyboard), mode, tempo (40 to 300 BPM) and starting groove.</li>
+<li><strong>SONG</strong>: rows × channels of chain numbers, with each channel's oscilloscope. The channel you pick here is the one chains and phrases play on.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: 16-row grids.</li>
+<li><strong>INSTR</strong>: a list of the instrument's settings.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: see below.</li>
+</ul>
+<p>On narrow screens the tabs shorten to PRJ, SNG, CHN, PHR, INS, TBL, GRV and WAV.</p>
+
+<h2 id="editing">Editing</h2>
+<p>Every view edits the same way:</p>
 <table>
 <tr><th>Button</th><th>Does</th></tr>
 <tr><td>D-pad</td><td>Move the cursor</td></tr>
-<tr><td><kbd>A</kbd></td><td>Put the last value used</td></tr>
-<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change by one</td></tr>
-<tr><td>Hold <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Change by a lot (an octave for notes)</td></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change the value by one</td></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Change it by a lot: an octave for notes, 16 for numbers, 4 for volumes</td></tr>
+<tr><td><kbd>A</kbd> on an empty cell</td><td>Put the last value used</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd> (twice, quickly)</td><td>Put a new, unused chain, phrase, instrument or table</td></tr>
+<tr><td><kbd>A</kbd> on a chain or phrase number</td><td>Open it (song and chain views)</td></tr>
 <tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Delete</td></tr>
-<tr><td><kbd>L1</kbd> / <kbd>R1</kbd></td><td>Previous / next pattern (<kbd>R1</kbd> on the last one creates a new one)</td></tr>
-<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Mute the channel under the cursor</td></tr>
-<tr><td><kbd>Y</kbd></td><td>Play or stop the pattern, looping</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>The previous / next chain, phrase, instrument, table, groove or wave</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Jump 16 rows (song view)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Play or stop: the song from the cursor's row (PROJ, SONG), the chain looping (CHAIN), or the open phrase looping (the other views)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Mute the channel you're working on</td></tr>
+<tr><td><kbd>X</kbd></td><td>Phrase view: switch to the piano roll and back</td></tr>
+<tr><td><kbd>Start</kbd></td><td>The tracker menu</td></tr>
 </table>
-<h3 id="song-view">Song</h3>
-<p>The tempo and the <strong>pattern order</strong>.</p>
+<p>A note sounds as you write it, and <kbd>A</kbd> on a note plays it. Writing a note on a step without an instrument puts the last instrument used. Below C-0 comes OFF, which releases the note. Chains, phrases, instruments and tables are created the first time you edit them.</p>
+<p>The <kbd>Start</kbd> menu has:</p>
+<ul>
+<li><strong>Play the song</strong> from the start.</li>
+<li><strong>Undo</strong>: each press of <kbd>A</kbd> is one step back, up to 64.</li>
+<li><strong>Copy</strong>, <strong>Paste</strong>, <strong>Clone into a new one</strong> and <strong>Clear</strong>, for what the view shows (a chain, phrase, instrument, table, groove or wave). Cloning copies it to the first free number, and the song cell or chain step you came from switches to the copy.</li>
+<li>In the wave view, the eight <strong>PICO-8 shapes</strong>, to copy into the open wave.</li>
+<li><strong>Songs</strong>: a new Game Boy or Free song, your saved songs and the examples.</li>
+<li><strong>Export to the library</strong>, <strong>Delete this song</strong> and <strong>Back to games</strong>.</li>
+</ul>
+<p>Hold <kbd>FN</kbd> for the controls of the view you're in.</p>
+
+<h2 id="piano-roll">Piano roll</h2>
+<p>Press <kbd>X</kbd> in the phrase view to see the phrase like PICO-8 does: steps across, pitches up and down, with each note lasting until the next one.</p>
 <table>
 <tr><th>Button</th><th>Does</th></tr>
-<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change which pattern plays at that position</td></tr>
-<tr><td><kbd>A</kbd></td><td>Open that position's pattern; on the empty slot at the end, add a position</td></tr>
-<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Delete the position</td></tr>
-<tr><td><kbd>Y</kbd></td><td>Play the song from the chosen position, following the order</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Choose the step (the cursor jumps to that step's note)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Choose the pitch</td></tr>
+<tr><td><kbd>A</kbd></td><td>Put the note, or remove it if it's already there</td></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Move the step's note up or down</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Delete the step's note</td></tr>
+<tr><td><kbd>X</kbd></td><td>Back to the step grid</td></tr>
 </table>
-<p>Each channel shows a live oscilloscope, cells light up as their notes play, and while the song plays the pattern view follows it.</p>
 
-<h2 id="effects">Effects</h2>
+<h2 id="instruments">Instruments</h2>
+<p>Up to 64. A new song comes with a pulse, a wave and a noise instrument (and a synth in Free mode). What the INSTR view shows depends on the type and the mode:</p>
 <table>
-<tr><th>Effect</th><th>Does</th></tr>
-<tr><td><code>Axy</code></td><td>Arpeggio: the note, +x and +y semitones, cycled very fast</td></tr>
-<tr><td><code>Dn</code></td><td>Pulse duty: 0 = 12.5 %, 1 = 25 %, 2 = 50 %, 3 = 75 %</td></tr>
-<tr><td><code>Bxx</code></td><td>Pitch bend: 01–7F up, 81–FF down</td></tr>
+<tr><th>Setting</th><th>What it does</th></tr>
+<tr><td>Name</td><td><kbd>A</kbd> opens the keyboard</td></tr>
+<tr><td>Type</td><td>Pulse, wave, noise, or synth (Free only). Changing it resets the instrument.</td></tr>
+<tr><td>Volume</td><td>0 to F; scales the step's volume</td></tr>
+<tr><td>Envelope, Direction, Speed</td><td>Game Boy, except wave: start level (0–F), down / flat / up, and the speed (1–7: one level every speed/64 s; 0 holds the level)</td></tr>
+<tr><td>Attack, Decay, Sustain, Release</td><td>Free: the ADSR envelope, in ticks (sustain is a level, 0–F)</td></tr>
+<tr><td>Length</td><td>Ticks until the note is cut (<code>--</code>: no cut)</td></tr>
+<tr><td>Table</td><td>The table that runs with every note (<code>--</code>: none)</td></tr>
+<tr><td>Pan</td><td>L, LR or R</td></tr>
+<tr><td>Transpose</td><td>Whether the chain's transpose affects it (turn it off for drums)</td></tr>
+<tr><td>Vibrato</td><td>Speed and depth (high and low hex digit)</td></tr>
+<tr><td>Duty</td><td>Pulse and synth square: 12.5, 25, 50 or 75 %</td></tr>
+<tr><td>Sweep</td><td>Pulse, Game Boy: PU1's frequency sweep, as the console's NR10 register (time, direction, shift)</td></tr>
+<tr><td>Wave</td><td>Wave instruments: which wave (00–FF)</td></tr>
+<tr><td>Wave volume</td><td>Wave, Game Boy: 100, 50 or 25 %. The Game Boy wave channel has no envelope; its volume comes in four steps.</td></tr>
+<tr><td>Short noise</td><td>Noise: the 7-bit register, more tonal and metallic</td></tr>
+<tr><td>Shape</td><td>Synth: triangle, sine, saw, square, organ, phantom or noise</td></tr>
+</table>
+<p>A noise instrument's note sets how fast the noise runs: low notes rumble, high ones hiss. <kbd>A</kbd> on a setting plays the last note with the instrument.</p>
+
+<h2 id="tables">Tables</h2>
+<p>A table is 16 rows that run one per tick while the note sounds, starting with each note of an instrument that uses it (or from the <code>A</code> command). Each row has a <strong>volume</strong> (or nothing), a <strong>transpose</strong> in semitones from the note, and two commands. <code>H</code> in a table jumps to another row, which is how tables loop: three rows transposing 0, +4 and +7 with <code>H00</code> on the last make a major arpeggio, and transposes falling fast with a short noise make a kick drum.</p>
+
+<h2 id="grooves">Grooves</h2>
+<p>A groove is a list of up to 16 numbers: how many ticks each step lasts, in turn. The default, 6/6, is straight; 7/5 or 8/4 swing. In the GROOVE view, <kbd>A</kbd> on the empty slot after the last number adds one, and <kbd>B</kbd>+<kbd>A</kbd> removes one; the title shows the swing. There are 32 grooves; PROJ sets the one the song starts with, and the <code>G</code> command switches one channel to another groove that exists.</p>
+
+<h2 id="waves">Waves</h2>
+<p>256 waves of 32 samples from 0 to F, played by wave instruments. The first eight are PICO-8's: triangle, tilted saw, saw, square, pulse, organ, noise and phantom. In the WAVE view, <kbd>←</kbd>/<kbd>→</kbd> choose a sample, hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to change it, and hold <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd> to draw (the next sample takes this one's value). <kbd>Start</kbd> has the PICO-8 shapes to start from.</p>
+
+<h2 id="effects-reference">Commands reference</h2>
+<p>Each step and table row has two commands. A new note resets the ongoing ones (C, F, K, P, V, R, the fades and the drop).</p>
+<table>
+<tr><th>Command</th><th>Does</th></tr>
+<tr><td><code>Axx</code></td><td>Start table xx (<code>AFF</code> stops it)</td></tr>
+<tr><td><code>Cxy</code></td><td>Chord: cycles the note, +x and +y semitones every tick (<code>C47</code> major, <code>C37</code> minor)</td></tr>
+<tr><td><code>Dxx</code></td><td>Delay: the step plays xx ticks late (lost if that's longer than the step)</td></tr>
+<tr><td><code>Exy</code></td><td>Envelope: x is the start level; y's top bit means up, its low 3 bits the speed (0: holds)</td></tr>
+<tr><td><code>Fxx</code></td><td>Finetune, in hundredths of a semitone (signed: 01–7F up, 80–FF down)</td></tr>
+<tr><td><code>Gxx</code></td><td>Switch this channel to groove xx</td></tr>
+<tr><td><code>Hxx</code></td><td>Hop. In a phrase: end it after this step, and start the next one at step xx. In a table: jump to row xx.</td></tr>
+<tr><td><code>Ixx</code></td><td>Fade in over xx ticks</td></tr>
+<tr><td><code>Kxx</code></td><td>Kill: release the note after xx ticks</td></tr>
+<tr><td><code>Lxx</code></td><td>Slide: on a step with a note, glide to it over xx ticks instead of playing it again</td></tr>
+<tr><td><code>M0x</code></td><td>Master volume, 0 to F</td></tr>
+<tr><td><code>Oxx</code></td><td>Output: 0 off, 1 left, 2 right, 3 both</td></tr>
+<tr><td><code>Pxx</code></td><td>Pitch bend: hundredths of a semitone per tick (signed)</td></tr>
+<tr><td><code>Rxy</code></td><td>Retrigger the note every y ticks; x (signed, 0–7 up, 8–F down) changes the volume on each one</td></tr>
+<tr><td><code>Sxx</code></td><td>On noise: <code>S01</code> short (7-bit) noise, <code>S00</code> long. On pulse: the PU1 sweep register.</td></tr>
+<tr><td><code>Txx</code></td><td>Tempo, in BPM (28 to FF, that is 40 to 255)</td></tr>
+<tr><td><code>Uxx</code></td><td>Fade out over xx ticks</td></tr>
+<tr><td><code>Vxy</code></td><td>Vibrato: speed x, depth y</td></tr>
+<tr><td><code>Wxx</code></td><td>On a wave instrument: switch to wave xx. Otherwise: the pulse duty, 0 to 3.</td></tr>
+<tr><td><code>Xxx</code></td><td>Drop: the pitch falls and the note fades out over xx ticks</td></tr>
+<tr><td><code>Zxx</code></td><td>Random: adds 0 to xx to the other command's value</td></tr>
 </table>
 
-<h2 id="menu">The menu and your songs</h2>
-<p><kbd>START</kbd> opens the tracker's menu:</p>
+<h2 id="examples">Examples</h2>
+<p><kbd>Start</kbd> → <strong>Songs</strong> has four examples, each showing something. Opening one saves nothing until you edit it.</p>
 <ul>
-<li><strong>Play the song</strong> from the beginning.</li>
-<li><strong>Export to the library</strong>: saves the song as a WAV in an <code>audiofilus tracker</code> folder inside your music folder, and the library picks it up.</li>
-<li><strong>Duplicate pattern</strong> and <strong>Clear pattern</strong>.</li>
-<li><strong>Songs</strong>: a new song, your saved songs, and four examples to start from (Pocket Pop, Crypt Crawl, Night Drive, Amen Chip). Opening an example saves nothing until you edit it.</li>
-<li><strong>Delete this song</strong>.</li>
+<li><strong>Pocket Pop</strong> (Game Boy, 120 BPM): parts as chains reused across the song, and chords with <code>C</code>.</li>
+<li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM): tables for the arpeggios and the kick, notes that glide with <code>L</code> and fall with <code>P</code>, and a bass on PICO-8's tilted saw.</li>
+<li><strong>Night Drive</strong> (Free, 100 BPM): eight channels with synths, a 7/5 swing groove, panning, an echo made with <code>D</code>, and a fade-out with <code>U</code>.</li>
+<li><strong>Amen Chip</strong> (Game Boy, 170 BPM): drum rolls with <code>R</code>, late hits with <code>D</code>, a half phrase that hops into the next with <code>H</code>, a bass line transposed by its chain, and pulse widths changed with <code>W</code>.</li>
 </ul>
 
-<h2 id="song-modes">Song modes: Game Boy and Free</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="structure">Song → Chains → Phrases</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="instruments">Instruments</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="tables">Tables</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="grooves">Grooves</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="waves">Waves</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="effects-reference">Effects reference</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="editing">Editing: copy, paste, undo and live mode</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="import-export">Import and export: WAV, MOD/XM, LSDJ</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
-<h2 id="midi">MIDI sync</h2>
-<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="import-export">Import and export</h2>
+<p><kbd>Start</kbd> → <strong>Export to the library</strong> renders the song once to a WAV in an <code>audiofilus tracker</code> folder inside your music folder. The library picks it up, so it plays in the background like anything else.</p>
+<p>Songs made with the earlier tracker open converted: each pattern becomes one phrase and one chain per channel, and its effects become commands (arpeggio → <code>C</code>, duty → <code>W</code>, bend → <code>P</code>).</p>
+<p>Planned: MOD/XM import and export, LSDJ song import, and MIDI sync.</p>
 
     <nav class="pager" aria-label="Pages"><a href="visualizers-games.html">← Visualizers &amp; games</a><a href="settings.html">Settings →</a></nav>
   </article>

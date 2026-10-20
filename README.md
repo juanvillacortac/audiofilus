@@ -100,7 +100,7 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - **Snake**: steps on the song's beat subdivisions, so every song plays at its own speed.
 - **Ships**: a shooter that fires on every eighth note and spreads on the bass.
 - **Duel**: turn-based battles to the beat. Strike near the center of the bar, which lands right on the beat, then dodge the notes a scratched vinyl, a tangled tape and a metronome throw at you: they surge on every beat, and the song's snares and cymbals send more.
-- **Tracker**: make chiptune with the D-pad, Game Boy style: two pulse channels, a triangle and noise, 16-step patterns with arpeggio, duty and pitch-bend effects, and a song order. Several songs, four examples to start from, and WAV export straight into your library.
+- **Tracker**: make chiptune with the D-pad, LSDJ style with a touch of PICO-8: songs built from chains and phrases, instruments with envelopes, tables and vibrato, grooves with swing, editable waves (the eight PICO-8 ones to start), 21 effect commands and a piano roll. Two modes per song: **Game Boy** (four channels modeled on its sound chip) or **Free** (eight channels with synths). Undo, copy, paste and clone, four examples to learn from, and WAV export straight into your library. Old songs open converted.
 
 <p align="center">
   <img src="site/img/vis-drift.webp" alt="Drift" width="320">

@@ -2029,8 +2029,21 @@ func (a *App) writeFrames() error {
 		a.t = 30 + float64(i)/20
 		_, _ = a.tracker.player.Read(chunk)
 		a.trackerFollow()
-		if row, _, _, _ := a.tracker.player.Position(0); i%4 == 0 {
-			a.tracker.songRow = row // el cursor acompaña un poco
+		// La primera mitad, la frase que suena en PU2 (siguiéndola); la
+		// segunda, la canción.
+		if i < 120 {
+			a.tracker.view, a.tracker.ch = tvPhrase, 1
+			if _, ph := a.tracker.player.Now(1); ph != tracker.Empty {
+				a.tracker.phrase = ph
+			}
+			if _, _, step, _ := a.tracker.player.Position(1); i%2 == 0 {
+				a.tracker.phRow, a.tracker.phCol = step, 0
+			}
+		} else {
+			a.tracker.view = tvSong
+			if row, _, _, _ := a.tracker.player.Position(0); i%4 == 0 {
+				a.tracker.songRow = row // el cursor acompaña un poco
+			}
 		}
 		if err := a.renderShot(filepath.Join(tkDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
