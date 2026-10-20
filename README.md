@@ -19,7 +19,7 @@
   <img src="site/img/vis-lake.webp" alt="Lake visualizer" width="320">
 </p>
 
-Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested on an Anbernic RG34XX-SP), on **Linux and Windows** desktops, and on **iPhone and iPad**.
+Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a native app on muOS; tested on an Anbernic RG34XX-SP), on **Linux and Windows** desktops, and on **iPhone and iPad**.
 
 ## Features
 
