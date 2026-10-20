@@ -7,6 +7,7 @@
 package mobile
 
 import (
+	"errors"
 	"fmt"
 	"image/color"
 	"log"
@@ -296,7 +297,14 @@ func start(home, tmp, langs string) error {
 			_ = config.Save(paths, cfg)
 		}
 	}
+	opening.Lock()
 	socket = paths.Socket
+	pending := opening.paths
+	opening.paths = nil
+	opening.Unlock()
+	if len(pending) > 0 {
+		go openWhenReady(pending)
+	}
 	daemon.NowPlayingHook = nowPlaying
 	// La portada que tiene la interfaz (logos de radio, Subsonic...): se
 	// guarda para esa canción y se vuelve a mandar lo que suena con ella.
@@ -427,6 +435,44 @@ func call(cmd string, args ...string) {
 	}
 	if _, err := control.Call(socket, control.Request{Cmd: cmd, Args: args}); err != nil {
 		log.Printf("audiofilus: %s: %v", cmd, err)
+	}
+}
+
+// opening son los archivos que llegaron ("Abrir en audiofilus" desde
+// Archivos u otra app) antes de que arrancara el servicio.
+var opening struct {
+	sync.Mutex
+	paths []string
+}
+
+// OpenFiles hace sonar los archivos abiertos con audiofilus desde otra app
+// (las rutas, una por línea): los mismos que "audiofilus <archivos>" en el
+// escritorio (el comando open del servicio).
+func OpenFiles(paths string) {
+	list := strings.Split(strings.TrimSpace(paths), "\n")
+	opening.Lock()
+	if socket == "" { // la app se abrió por ellos: aún arranca
+		opening.paths = append(opening.paths, list...)
+		opening.Unlock()
+		return
+	}
+	opening.Unlock()
+	go openWhenReady(list)
+}
+
+// openWhenReady manda los archivos al servicio en cuanto contesta (al abrir
+// la app por ellos, tarda un momento en arrancar).
+func openWhenReady(list []string) {
+	for i := 0; i < 80; i++ {
+		_, err := control.Call(socket, control.Request{Cmd: "open", Args: list})
+		if err == nil {
+			return
+		}
+		if !errors.Is(err, control.ErrNotRunning) {
+			log.Printf("audiofilus: open: %v", err)
+			return
+		}
+		time.Sleep(250 * time.Millisecond)
 	}
 }
 

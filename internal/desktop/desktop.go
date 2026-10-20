@@ -10,7 +10,6 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -46,8 +45,24 @@ func Paths() (entry, icon string, err error) {
 		filepath.Join(d, "icons", "hicolor", "256x256", "apps", ID+".png"), nil
 }
 
-// Entry es el contenido del .desktop para el binario bin (la interfaz sin
-// argumentos; las acciones, sus comandos).
+// MimeTypes son los tipos que abre audiofilus desde el explorador
+// ("Abrir con"): el audio que entiende, las listas, las hojas CUE, la música
+// de consola y las carpetas (Exec recibe %F: uno o varios archivos o
+// carpetas).
+var MimeTypes = []string{
+	"audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/flac", "audio/x-flac",
+	"audio/ogg", "audio/x-vorbis+ogg", "audio/vorbis", "audio/opus", "audio/x-opus+ogg",
+	"audio/wav", "audio/x-wav", "audio/vnd.wave", "audio/aac", "audio/mp4", "audio/x-m4a",
+	"audio/m4a", "audio/aiff", "audio/x-aiff", "audio/x-aifc", "audio/x-dsf", "audio/x-dff",
+	"audio/x-mod", "audio/x-xm", "audio/x-it", "audio/x-s3m",
+	"audio/x-nsf", "audio/x-nsfe", "audio/x-spc", "audio/x-gbs", "audio/x-vgm", "audio/x-vgz",
+	"audio/x-gym", "audio/x-hes", "audio/x-kss", "audio/x-ay", "audio/x-sap",
+	"audio/x-mpegurl", "audio/mpegurl", "application/vnd.apple.mpegurl", "audio/x-scpls",
+	"application/x-cue", "inode/directory",
+}
+
+// Entry es el contenido del .desktop para el binario bin (la interfaz, o lo
+// que se abra con ella; las acciones, sus comandos).
 func Entry(bin string) string {
 	q := func(p string) string { return `"` + strings.ReplaceAll(p, `"`, `\"`) + `"` }
 	return fmt.Sprintf(`[Desktop Entry]
@@ -55,10 +70,11 @@ Type=Application
 Name=Audiofilus
 GenericName=Music Player
 Comment=Pixel-art music player that keeps playing in the background
-Exec=%s
+Exec=%s %%F
 Icon=%s
 Terminal=false
 Categories=AudioVideo;Audio;Player;
+MimeType=%s;
 Keywords=music;player;mp3;flac;radio;podcast;subsonic;jellyfin;
 StartupWMClass=%s
 Actions=PlayPause;Next;Previous;
@@ -74,53 +90,5 @@ Exec=%s next
 [Desktop Action Previous]
 Name=Previous track
 Exec=%s prev
-`, q(bin), ID, ID, q(bin), q(bin), q(bin))
-}
-
-// Install escribe la entrada y el icono para el binario bin (audiofilus) y
-// avisa a las cachés del escritorio si sus herramientas están.
-func Install(bin string) (entry, icon string, err error) {
-	entry, icon, err = Paths()
-	if err != nil {
-		return "", "", err
-	}
-	for _, f := range []struct {
-		path string
-		data []byte
-	}{{entry, []byte(Entry(bin))}, {icon, Icon}} {
-		if err := os.MkdirAll(filepath.Dir(f.path), 0o755); err != nil {
-			return "", "", err
-		}
-		if err := os.WriteFile(f.path, f.data, 0o644); err != nil {
-			return "", "", err
-		}
-	}
-	refresh(filepath.Dir(entry), filepath.Dir(filepath.Dir(filepath.Dir(icon))))
-	return entry, icon, nil
-}
-
-// Uninstall quita la entrada y el icono.
-func Uninstall() error {
-	entry, icon, err := Paths()
-	if err != nil {
-		return err
-	}
-	for _, p := range []string{entry, icon} {
-		if err := os.Remove(p); err != nil && !os.IsNotExist(err) {
-			return err
-		}
-	}
-	refresh(filepath.Dir(entry), filepath.Dir(filepath.Dir(filepath.Dir(icon))))
-	return nil
-}
-
-// refresh actualiza las cachés de entradas e iconos (si las herramientas no
-// están, el escritorio las relee solo).
-func refresh(apps, icons string) {
-	if p, err := exec.LookPath("update-desktop-database"); err == nil {
-		_ = exec.Command(p, apps).Run()
-	}
-	if p, err := exec.LookPath("gtk-update-icon-cache"); err == nil {
-		_ = exec.Command(p, "-q", "-t", icons).Run()
-	}
+`, q(bin), ID, strings.Join(MimeTypes, ";"), ID, q(bin), q(bin), q(bin))
 }

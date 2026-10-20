@@ -100,6 +100,13 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 	app.ScrollTest = scroll
 	app.BenchVisual = bench
 	app.BenchProfile = benchProf
+	// En Windows, "Abrir con" en los archivos y carpetas (desktop.EnsureRegistered;
+	// en Linux lo pone "audiofilus desktop install").
+	if !offline {
+		if exe, err := os.Executable(); err == nil {
+			go desktop.EnsureRegistered(exe)
+		}
+	}
 	ebiten.SetWindowTitle("Audiofilus")
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)

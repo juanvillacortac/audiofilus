@@ -97,6 +97,13 @@ func attach(conn net.Conn, h Handler, req Request) {
 	_, _ = h(Request{Cmd: "detached"})
 }
 
+// Attached dice cuántas interfaces están abiertas (con su attach).
+func Attached() int {
+	attached.Lock()
+	defer attached.Unlock()
+	return len(attached.conns)
+}
+
 // attached son las conexiones de attach abiertas, para avisarles con Notify.
 var attached = struct {
 	sync.Mutex

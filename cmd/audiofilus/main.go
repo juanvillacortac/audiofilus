@@ -57,6 +57,11 @@ Config lives next to the binary: audiofilus.json and data/.
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+	// Archivos o carpetas abiertos desde el explorador (open.go).
+	if files, ok := openArgs(os.Args[1:]); ok {
+		runOpen(files)
+		return
+	}
 	if len(os.Args) < 2 || strings.HasPrefix(os.Args[1], "-") && os.Args[1] != "-h" && os.Args[1] != "--help" {
 		runUI(os.Args[1:])
 		return

@@ -1,3 +1,5 @@
+//go:build !windows
+
 package desktop
 
 import (
@@ -19,7 +21,7 @@ func TestInstall(t *testing.T) {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(entry)
-	for _, want := range []string{`Exec="` + bin + `"` + "\n", "StartupWMClass=audiofilus", `Exec="` + bin + `" toggle`, "Icon=audiofilus"} {
+	for _, want := range []string{`Exec="` + bin + `" %F` + "\n", "MimeType=audio/mpeg;", "inode/directory;", "StartupWMClass=audiofilus", `Exec="` + bin + `" toggle`, "Icon=audiofilus"} {
 		if !strings.Contains(string(b), want) {
 			t.Errorf("entry lacks %q:\n%s", want, b)
 		}

@@ -35,6 +35,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+    // Archivos abiertos con audiofilus desde Archivos u otra app ("Abrir en",
+    // "Compartir"): suenan ya. Si se abren en su sitio (no copiados a la
+    // app), se pide permiso de lectura y se mantiene mientras la app corre.
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        guard url.isFileURL else { return false }
+        if url.startAccessingSecurityScopedResource() {
+            openedURLs.append(url)
+        }
+        MobileOpenFiles(url.path)
+        return true
+    }
+
+    // openedURLs son los archivos abiertos en su sitio, con su permiso.
+    private var openedURLs: [URL] = []
+
     // La interfaz se para mientras la app no está delante (la música no:
     // el servicio sigue en su goroutine).
     func applicationWillResignActive(_ application: UIApplication) {

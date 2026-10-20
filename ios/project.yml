@@ -65,6 +65,64 @@ targets:
         # Audiofilus"): se copia ahí la música y suena.
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
+        # "Abrir en Audiofilus" desde Archivos y "Compartir" en otras apps:
+        # el audio que entiende (AppDelegate → MobileOpenFiles). Lo que iOS no
+        # conoce (Ogg, Opus, DSD, módulos, música de consola, CUE, PLS) se
+        # declara abajo.
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Audio
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.audio
+              - public.mp3
+              - public.mpeg-4-audio
+              - com.apple.m4a-audio
+              - public.aiff-audio
+              - com.microsoft.waveform-audio
+              - org.xiph.flac
+              - com.juanvillacortac.audiofilus.ogg
+              - com.juanvillacortac.audiofilus.dsd
+              - com.juanvillacortac.audiofilus.module
+              - com.juanvillacortac.audiofilus.game
+          - CFBundleTypeName: Playlist
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.m3u-playlist
+              - com.juanvillacortac.audiofilus.pls
+              - com.juanvillacortac.audiofilus.cue
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.ogg
+            UTTypeDescription: Ogg audio
+            UTTypeConformsTo: [public.audio, public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [ogg, oga, opus]
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.dsd
+            UTTypeDescription: DSD audio
+            UTTypeConformsTo: [public.audio, public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [dsf, dff]
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.module
+            UTTypeDescription: Tracker module
+            UTTypeConformsTo: [public.audio, public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [mod, xm, it, s3m]
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.game
+            UTTypeDescription: Console music
+            UTTypeConformsTo: [public.audio, public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [nsf, nsfe, spc, gbs, vgm, vgz, gym, hes, kss, ay, sap]
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.pls
+            UTTypeDescription: PLS playlist
+            UTTypeConformsTo: [public.playlist, public.text]
+            UTTypeTagSpecification:
+              public.filename-extension: [pls]
+          - UTTypeIdentifier: com.juanvillacortac.audiofilus.cue
+            UTTypeDescription: CUE sheet
+            UTTypeConformsTo: [public.text]
+            UTTypeTagSpecification:
+              public.filename-extension: [cue]
         # En vertical y apaisado: la interfaz se adapta a los dos.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

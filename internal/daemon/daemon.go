@@ -58,7 +58,9 @@ type Daemon struct {
 	timerAt time.Time
 	timer   *time.Timer
 	// restarting: el servicio se cierra para volver a arrancar (restart).
-	restarting   bool
+	restarting bool
+	// openedAt es el último "open" (archivos abiertos desde el explorador).
+	openedAt     time.Time
 	awakeApplied bool       // si la plataforma está impidiendo la suspensión ahora
 	pad          string     // descripción del mando en uso
 	appOpen      bool       // el permiso de la app está vigente (la interfaz está abierta)
@@ -297,6 +299,12 @@ loop:
 	}
 	log.Print("bye")
 	return nil
+}
+
+// OpenResult es la respuesta de "open": si hay una interfaz abierta (la
+// que lo abrió no hace falta abrirla otra vez).
+type OpenResult struct {
+	UIOpen bool `json:"ui_open"`
 }
 
 // ErrAlreadyRunning es lo que devuelve Run si ya había otro servicio.
@@ -562,6 +570,27 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 			return nil, errors.New("no playable files found")
 		}
 		e.Load(files, 0, 0, true)
+	case "open":
+		// Archivos o carpetas abiertos desde el explorador (audiofilus <rutas>,
+		// "Abrir con"): suenan ya; si llegan más enseguida (Windows lanza un
+		// proceso por archivo elegido), se añaden a la cola.
+		files, err := library.Expand(req.Args)
+		if err != nil {
+			return nil, err
+		}
+		if len(files) == 0 {
+			return nil, errors.New("no playable files found")
+		}
+		d.mu.Lock()
+		appendTo := time.Since(d.openedAt) < 3*time.Second
+		d.openedAt = time.Now()
+		d.mu.Unlock()
+		if appendTo {
+			e.Append(files)
+		} else {
+			e.Load(files, 0, 0, true)
+		}
+		return OpenResult{UIOpen: control.Attached() > 0}, nil
 	case "load":
 		// load <inicio> <archivos...>: la interfaz manda la cola ya armada (un
 		// álbum, la lista de canciones) y en qué canción empezar.
