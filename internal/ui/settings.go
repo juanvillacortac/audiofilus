@@ -38,6 +38,7 @@ const (
 	setEQ
 	setCrossfade
 	setScrobble
+	setRate
 	setCount
 )
 
@@ -95,6 +96,7 @@ var settingSections = []settingSection{
 	{"sec_sound", []settingTile{
 		{setReplayGain, "speaker", tileChoice},
 		{setEQ, "eq", tileAction},
+		{setRate, "headphones", tileChoice},
 	}},
 	{"sec_online", []settingTile{
 		{setScrobble, "user", tileAction},
@@ -143,7 +145,9 @@ type tileRect struct {
 // "Segundo plano" ni "Al cerrar, seguir"). Una sección sin baldosas no sale.
 func (a *App) sections() []settingSection {
 	hide := map[int]bool{setSleep: !a.canSleep(), setSleepMode: !a.canSleep(),
-		setExitBg: a.mobile(), setCloseBg: a.mobile()}
+		setExitBg: a.mobile(), setCloseBg: a.mobile(),
+		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
+		setRate: a.mobile()}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -328,6 +332,12 @@ func (a *App) changeSetting(id, step int) {
 		mode := rgModes[cycle(n, i)]
 		a.send("replaygain", mode)
 		a.status.DSP.ReplayGain = mode
+	case setRate:
+		// La salida se abre al arrancar el servicio: se guarda y se reinicia.
+		n, i := a.settingChoice(id)
+		a.cfg.SampleRate = rateChoices[cycle(n, i)]
+		a.saveConfig()
+		a.send("restart")
 	case setCrossfade:
 		n, i := a.settingChoice(id)
 		v := xfChoices[cycle(n, i)]
@@ -384,6 +394,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(rgModes), func(i int) bool { return rgModes[i] == a.dspOf().ReplayGain })
 	case setCrossfade:
 		return find(len(xfChoices), func(i int) bool { return xfChoices[i] == a.dspOf().Crossfade })
+	case setRate:
+		return find(len(rateChoices), func(i int) bool { return rateChoices[i] == a.cfg.SampleRate })
 	}
 	return 0, 0
 }
@@ -437,6 +449,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(false)
 	case setEQ:
 		return T("eq_" + a.dspOf().EQPreset)
+	case setRate:
+		return rateLabel(a.cfg.SampleRate)
 	case setScrobble:
 		var names []string
 		if a.cfg.Scrobble.LastFMSession != "" {
@@ -493,7 +507,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
-		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"),
+		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"),
 	}
 }
 
@@ -717,6 +731,8 @@ func choiceLabel(id, i int) string {
 		return T("snd_" + orDefault(soundLevels[i], "mid"))
 	case setReplayGain:
 		return T("rg_" + rgModes[i])
+	case setRate:
+		return rateLabel(rateChoices[i])
 	case setCrossfade:
 		if xfChoices[i] == 0 {
 			return onOffLabel(false)

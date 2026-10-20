@@ -98,7 +98,11 @@ func runDaemon(paths config.Paths, args []string) {
 	// En ROCKNIX la interfaz corre en el scope del port, que se mata entero
 	// al cerrarla: el servicio se muda a uno propio.
 	proc.LeaveGameScope()
-	if err := daemon.Run(paths); err != nil {
+	err := daemon.Run(paths)
+	if errors.Is(err, daemon.ErrRestart) {
+		err = restartSelf() // restart_*.go
+	}
+	if err != nil {
 		log.Fatal(err)
 	}
 }

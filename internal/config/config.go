@@ -237,6 +237,9 @@ type State struct {
 	// DSP es la configuración del sonido (engine.DSP: ReplayGain,
 	// ecualizador, fundido), tal cual.
 	DSP json.RawMessage `json:"dsp,omitempty"`
+	// Resume: al arrancar, seguir sonando (lo deja un reinicio del servicio
+	// que estaba sonando).
+	Resume bool `json:"resume,omitempty"`
 }
 
 // LoadState lee data/state.json; si no existe, el estado está vacío.

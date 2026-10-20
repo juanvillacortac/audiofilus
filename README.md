@@ -31,14 +31,25 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - **Sleep mode:** double `START` or the power button turns the screen off, lowers the CPU clock and turns the triggers into gestures. A closed lid keeps it asleep. On an RG34XX-SP it draws about 260 mA: around 11 to 12 hours of music on its 3300 mAh battery (see [docs/power.md](docs/power.md)).
 - Gapless playback, fade on pause, shuffle, repeat, "play next" and a queue that survives restarts.
 - Volume stays in sync with the system, including boost above 100%.
+- **Sleep timer:** stop the music after 15 to 90 minutes or at the end of the song, even with the player closed.
+
+### Sound
+
+- **ReplayGain** per song, per album, or automatic (album in order, song on shuffle), with preamp and clipping protection; Opus R128 gains too.
+- **10-band equalizer** with presets (rock, metal, vocal, bass, loudness...) and a band editor.
+- **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
+- **Output rate** of 44.1, 48, 96 or 192 kHz.
 
 ### Library
 
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF** and tracker modules (**MOD, XM, IT, S3M**).
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** and tracker modules (**MOD, XM, IT, S3M**). Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.
 - The interface colors come from the album cover.
+- **Liked songs and ratings** (1 to 5), synced with Subsonic/Navidrome and Jellyfin.
+- **History:** Recent and Most played lists, and stats (plays, hours, top artists, albums and songs).
+- **Scrobbling** to Last.fm and ListenBrainz (queued while offline), and play counts on your Subsonic or Jellyfin server.
 - **Lyrics**, synced karaoke-style when available (each line tints as it's sung, and dots count down the instrumental parts): from a `.lrc` or `.txt` next to the song (or in a `lyrics` folder), from the file's tags (ID3 USLT and SYLT, `LYRICS` in FLAC and Ogg, `©lyr` in M4A), or found online on [LRCLIB](https://lrclib.net). Pick a different version from the list, nudge the timing, or turn online lookups off in Settings.
 
 <p align="center">

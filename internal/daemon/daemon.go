@@ -55,8 +55,10 @@ type Daemon struct {
 	awakeUntil time.Time // hasta cuándo la app pidió mantener despierta la consola
 	// El temporizador para parar la música (timer.go): cuándo, y el que lo
 	// hace.
-	timerAt      time.Time
-	timer        *time.Timer
+	timerAt time.Time
+	timer   *time.Timer
+	// restarting: el servicio se cierra para volver a arrancar (restart).
+	restarting   bool
 	awakeApplied bool       // si la plataforma está impidiendo la suspensión ahora
 	pad          string     // descripción del mando en uso
 	appOpen      bool       // el permiso de la app está vigente (la interfaz está abierta)
@@ -252,8 +254,14 @@ loop:
 		}
 	}
 	// La interfaz que siga abierta se cierra con el servicio (si lo cerraron
-	// desde la bandeja o la línea de comandos, no lo vuelve a arrancar).
-	control.NotifyQuit()
+	// desde la bandeja o la línea de comandos, no lo vuelve a arrancar); en
+	// un reinicio, no: se vuelve a conectar sola.
+	d.mu.Lock()
+	restarting := d.restarting
+	d.mu.Unlock()
+	if !restarting {
+		control.NotifyQuit()
+	}
 
 	stopInput()
 	stopPower()
@@ -269,12 +277,25 @@ loop:
 	ln.Close()
 	_ = os.Remove(paths.Socket)
 	_ = d.setSleep(false, false)
+	playing := eng.Playing()
 	d.saveState()
 	eng.Close()
 	d.plat.Cleanup()
+	if restarting {
+		// Que el nuevo siga sonando si esto sonaba.
+		st := config.LoadState(paths)
+		st.Resume = playing
+		_ = config.SaveState(paths, st)
+		log.Print("restarting")
+		return ErrRestart
+	}
 	log.Print("bye")
 	return nil
 }
+
+// ErrRestart es lo que devuelve Run cuando le pidieron reiniciarse
+// (restart): quien lo lanzó tiene que volver a ejecutarlo.
+var ErrRestart = errors.New("restart requested")
 
 // restore recupera la cola, la posición y las opciones de la última vez,
 // en pausa.
@@ -295,7 +316,11 @@ func (d *Daemon) restore() {
 	}
 	d.eng.SetDSP(dsp)
 	if len(st.Queue) > 0 {
-		d.eng.Load(st.Queue, st.Index, st.Position, false)
+		d.eng.Load(st.Queue, st.Index, st.Position, st.Resume)
+	}
+	if st.Resume { // solo para el arranque tras un reinicio
+		st.Resume = false
+		_ = config.SaveState(d.paths, st)
 	}
 }
 
@@ -698,6 +723,15 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		}
 		d.setAwake(req.Args[0] == "on", lease)
 	case "quit":
+		d.quitOnce.Do(func() { close(d.quit) })
+		return nil, nil
+	case "restart":
+		// Para aplicar lo que solo se lee al arrancar (la frecuencia de
+		// salida): Run termina con ErrRestart, sin cerrar la interfaz, y quien
+		// lo lanzó vuelve a ejecutarlo; si sonaba, sigue sonando.
+		d.mu.Lock()
+		d.restarting = true
+		d.mu.Unlock()
 		d.quitOnce.Do(func() { close(d.quit) })
 		return nil, nil
 	default:

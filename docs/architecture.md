@@ -40,14 +40,19 @@ If SDL is missing or doesn't recognize the controller, the standard Linux codes 
 ## The audio path
 
 ```
-file ────► decode.Source ─► resample.Reader ─► Engine.Read ─► oto.Player ─► PulseAudio/PipeWire
-           (stereo float32,   (to 48 kHz,         (float32 → bytes,
-            its own rate)      linear)              advances the queue)
+file ────► decode.Source ─► resample.Reader ─► Engine.Read ─────────────────────────► oto.Player ─► PulseAudio/PipeWire
+           (stereo float32,   (to 48 kHz,         ReplayGain → crossfade mix → EQ →
+            its own rate)      linear)            limiter → float32 → bytes; advances the queue)
 ```
 
 - **`decode`** picks the decoder from the first bytes of the file (not from the extension) and always outputs interleaved stereo float32 at the file's sample rate. Mono is duplicated; more than two channels are reduced to the two front ones.
 - **`resample`** interpolates linearly up to the output rate (48 kHz by default, PipeWire's rate on the console). If they match, it does nothing.
 - **`engine`** has a single `oto.Player` that lives the whole time and reads from `Engine.Read`. When a song ends, `Read` opens the next one without a gap.
+- **Sound processing** (`engine/dsp.go`, `engine/crossfade.go`), configured with `engine.DSP` (commands `replaygain`, `preamp`, `eq`, `crossfade`; saved in `data/state.json`):
+  - **ReplayGain:** the gain is read from the file's tags when it opens (`library.ReadGain`: Vorbis/FLAC `REPLAYGAIN_*`, ID3 `TXXX`, MP4 `----`, Opus `R128_*` + 5 dB) and applied to each chunk as it is read, so a gapless change of song changes the gain on the exact sample. Modes: track, album, auto (album in order, track on shuffle) or off; a preamp; never above what the peak allows. Remote songs (Subsonic transcodes) and radio get none.
+  - **Crossfade:** when the song has that many seconds left, the queue advances (the next song is announced as usual) and the old source keeps playing underneath as `tail`, fading with equal-power sine/cosine curves until it ends. Not between consecutive songs of the same album in order, nor with repeat-one, the sleep timer's "end of song", remote songs, very short songs (under three fades) or sources without a length. Reading is done in 1024-frame chunks while it is on, to start on time. A manual change of song or a seek cuts it.
+  - **Equalizer:** ten peaking biquads (31 Hz to 16 kHz, one octave wide, RBJ cookbook), only the bands that are not at 0, with 80 % of the biggest boost taken off first; the limiter then catches what still goes over (it runs whenever the EQ or a positive gain is on, not only with boost). Ten bands cost about 5 % of one core at 480 MHz on the RG34XX-SP.
+- **Output rate:** `sample_rate` in `audiofilus.json` (44.1, 48, 96 or 192 kHz, from Settings). oto opens one context per process, so changing it restarts the service (`restart`: `Run` returns `ErrRestart` without telling the interface to close, the binary re-executes itself with `syscall.Exec`, and if it was playing it carries on, `State.Resume`). With the file at that rate and nothing applied (volume at 100 %, no ReplayGain or EQ), samples go out untouched; PipeWire or PulseAudio may still resample to their own rate, so this is not a bit-perfect path.
 - **`oto`** talks to PulseAudio over its protocol, in pure Go. On Knulli everything runs as root without `XDG_RUNTIME_DIR`; `usePulseSocket` points `PULSE_SERVER` to `/var/run/pulse/native`, because otherwise `oto` would fall back to ALSA and clash with PipeWire.
 
 ## Threads and lock
@@ -66,6 +71,9 @@ Next to the binary:
 | `audiofilus.json` | The configuration; it is written with the default values the first time (`config.Default`) |
 | `data/state.json` | The queue, position, shuffle, repeat and volume; saved on pause, on exit and every 15 s while playing |
 | `data/audiofilus.log` | The log when the service runs detached (`-detach`) |
+| `data/history.jsonl` | Every listen, one JSON line each (`internal/history`): written by the service, read by the interface |
+| `data/favorites.json` | Liked songs and ratings, with their title, artist and album (written by the interface) |
+| `data/scrobbles.json` | Listens waiting to reach Last.fm or ListenBrainz (no connection) |
 
 On startup, the service restores the queue and position from last time, paused.
 
@@ -82,13 +90,16 @@ The C libraries are loaded at runtime with purego (`decode/native.go`), without 
 | AAC (`.m4a`, `.mp4`) | `libfdk-aac` (C) + our own MP4 reader (`decode/mp4.go`) | 2.0 % | HE-AAC comes out at double the sample rate |
 | ALAC (`.m4a`) | Pure Go (`decode/alac`, from `alicebob/alac`, MIT) + `mp4.go` | 3.7 % | 16 and 24 bits, mono and stereo |
 | Ogg Vorbis | Pure Go (`jfreymuth/oggvorbis`) | 2.7 % | |
-| FLAC | Pure Go (`mewkiz/flac`) | 5.3 % | Seeking lands at the start of the block and discards up to the requested frame |
+| FLAC | Pure Go (`mewkiz/flac`) | 5.3 % | Seeks by bisecting frame headers (no seek table needed, ~40 ms on the console), then decodes up to the requested frame |
 | WAV, AIFF | our own (`decode/wav.go`, `decode/aiff.go`) | 0.5 % | 8/16/24/32-bit PCM and 32-bit float; uncompressed AIFF-C |
 | Modules (`.mod`, `.xm`, `.it`, `.s3m`…) | `libxmp` (C) | — | Recognized by extension; played once, at 48 kHz |
+| DSD (`.dsf`, `.dff`) | Pure Go (`decode/dsd.go`) | ~32 % at 480 MHz (DSD64) | Two FIR stages (1-bit straight to 88.2 kHz with table lookups, then 44.1 kHz) at -6 dB; DST-compressed DFF is not supported; DSD256 may not keep up on a handheld |
 
 \* Decoding only, in % of one core at 1.5 GHz (`audiofilus bench`, 2026-10-17), with one minute of a real song.
 
 On Windows the same libraries are loaded as DLLs (`decode/native_windows.go`), looked up first in the program's folder: the MSYS2 builds `libmpg123-0.dll`, `libopusfile-0.dll` (with `libopus-0.dll` and `libogg-0.dll`), `libxmp-4.dll` or `libxmp.dll`, and `libfdk-aac-2.dll`. Without them Windows plays MP3 (go-mp3), FLAC, Ogg Vorbis, ALAC, WAV and AIFF; AAC, Opus and modules need the DLLs.
+
+**CUE sheets:** an album ripped to one file with a `.cue` shows up as its tracks. Each track is a path `album.flac#t=start,end` (`decode.CuePath`) that travels through the queue like any other; `decode.Open` opens it as a segment of the file (`OpenSegment`, sample-accurate start and end), the scanner replaces the big file with the sheet's tracks (`library.withCues`) and their titles come from the sheet (`library.ReadCueTrack`). Covers, ReplayGain and MPRIS art use the file's tags.
 
 Tags (title, artist, album) are read by `dhowden/tag`.
 

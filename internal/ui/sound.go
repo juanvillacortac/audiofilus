@@ -6,6 +6,7 @@ import (
 	"math"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -21,6 +22,22 @@ import (
 
 // rgModes son los modos de ReplayGain, en el orden en que se eligen.
 var rgModes = []string{"auto", "track", "album", "off"}
+
+// rateChoices son las frecuencias de salida que se pueden elegir. Todo se
+// remuestrea a la de salida; con la misma que el archivo y el sonido sin
+// tocar (volumen al 100 %, sin ReplayGain ni ecualizador), las muestras
+// salen tal cual (aunque luego PipeWire o PulseAudio pueden remuestrear a
+// la suya).
+var rateChoices = []int{44100, 48000, 96000, 192000}
+
+// rateLabel es una frecuencia legible: "44,1 kHz".
+func rateLabel(r int) string {
+	s := strconv.FormatFloat(float64(r)/1000, 'f', -1, 64)
+	if lang == "es" {
+		s = strings.Replace(s, ".", ",", 1)
+	}
+	return s + " kHz"
+}
 
 // xfChoices son los segundos de fundido que se pueden elegir (0: nada).
 var xfChoices = []float64{0, 2, 4, 6, 8, 10, 12}
