@@ -149,3 +149,89 @@ func BenchmarkEQ(b *testing.B) {
 		q.process(buf)
 	}
 }
+
+// response es la ganancia (dB) de un filtro a la frecuencia f.
+func response(b biquad, f float64, rate int) float64 {
+	w := 2 * math.Pi * f / float64(rate)
+	z1 := complex(math.Cos(-w), math.Sin(-w))
+	z2 := z1 * z1
+	num := complex(float64(b.b0), 0) + complex(float64(b.b1), 0)*z1 + complex(float64(b.b2), 0)*z2
+	den := 1 + complex(float64(b.a1), 0)*z1 + complex(float64(b.a2), 0)*z2
+	h := num / den
+	return 20 * math.Log10(math.Hypot(real(h), imag(h)))
+}
+
+// Cada forma del paramétrico hace lo que dice, a las frecuencias de prueba.
+func TestPEQShapes(t *testing.T) {
+	const rate = 48000
+	for _, c := range []struct {
+		band PEQBand
+		f    float64
+		want float64 // dB
+		tol  float64
+		less bool // want es un máximo (el corte de los filtros de paso)
+	}{
+		{PEQBand{"peak", 1000, 6, 1}, 1000, 6, 0.05, false},
+		{PEQBand{"peak", 1000, 6, 1}, 100, 0, 0.3, false},
+		{PEQBand{"peak", 1000, -9, 4}, 1000, -9, 0.05, false},
+		{PEQBand{"peak", 1000, -9, 4}, 2000, 0, 0.5, false},
+		{PEQBand{"lowshelf", 100, 6, 0.707}, 20, 6, 0.3, false},
+		{PEQBand{"lowshelf", 100, 6, 0.707}, 2000, 0, 0.1, false},
+		{PEQBand{"highshelf", 8000, -6, 0.707}, 20000, -6, 0.5, false},
+		{PEQBand{"highshelf", 8000, -6, 0.707}, 500, 0, 0.1, false},
+		{PEQBand{"lowpass", 1000, 0, 0.707}, 1000, -3, 0.1, false},
+		{PEQBand{"lowpass", 1000, 0, 0.707}, 10000, -35, 0, true},
+		{PEQBand{"highpass", 1000, 0, 0.707}, 1000, -3, 0.1, false},
+		{PEQBand{"highpass", 1000, 0, 0.707}, 100, -35, 0, true},
+	} {
+		got := response(rbj(c.band, rate), c.f, rate)
+		if c.less && got > c.want || !c.less && math.Abs(got-c.want) > c.tol {
+			t.Errorf("%+v at %.0f Hz: %.2f dB, want %.2f", c.band, c.f, got, c.want)
+		}
+	}
+}
+
+// Normalize deja las bandas en sus límites, descarta las de forma
+// desconocida y se queda con ocho como mucho.
+func TestPEQNormalize(t *testing.T) {
+	bands := []PEQBand{{"peak", 5, 40, 50}, {"wobble", 1000, 3, 1}, {"lowpass", 30000, 9, 0}}
+	for len(bands) < 12 {
+		bands = append(bands, PEQBand{"peak", 1000, 1, 1})
+	}
+	d := DSP{EQMode: "parametric", PEQ: bands, PEQPreamp: -99}.Normalize()
+	if len(d.PEQ) != PEQMax {
+		t.Fatalf("%d bands, want %d", len(d.PEQ), PEQMax)
+	}
+	if b := d.PEQ[0]; b.Freq != 20 || b.Gain != 15 || b.Q != 10 {
+		t.Errorf("first band = %+v", b)
+	}
+	if b := d.PEQ[1]; b.Type != "lowpass" || b.Freq != 20000 || b.Gain != 0 || b.Q != 0.707 {
+		t.Errorf("lowpass band = %+v", b)
+	}
+	if d.PEQPreamp != -24 || d.Resampler != "auto" {
+		t.Errorf("preamp %v resampler %q", d.PEQPreamp, d.Resampler)
+	}
+	if (DSP{EQMode: "weird"}).Normalize().EQMode != "graphic" {
+		t.Errorf("unknown mode not graphic")
+	}
+}
+
+// En modo paramétrico suenan las bandas del paramétrico (no las del
+// gráfico), y las que no hacen nada no se calculan.
+func TestPEQInEngineFilter(t *testing.T) {
+	var q eqFilter
+	d := DSP{EQMode: "parametric", EQ: []float64{6, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+		PEQ: []PEQBand{{"peak", 1000, 4, 1}, {"peak", 2000, 0, 1}, {"highpass", 30, 0, 0.707}}}.Normalize()
+	q.setDSP(d, 48000)
+	if len(q.bands) != 2 {
+		t.Fatalf("%d bands, want 2 (the 0 dB peak is skipped)", len(q.bands))
+	}
+	if want := float32(math.Pow(10, -4*0.8/20)); math.Abs(float64(q.pre-want)) > 1e-6 {
+		t.Errorf("pre = %v, want %v", q.pre, want)
+	}
+	// Solo un preamp: también se aplica.
+	q.setDSP(DSP{EQMode: "parametric", PEQPreamp: -6}.Normalize(), 48000)
+	if len(q.bands) != 1 || math.Abs(float64(q.pre)-0.501) > 0.001 {
+		t.Errorf("preamp only: %d bands, pre %v", len(q.bands), q.pre)
+	}
+}

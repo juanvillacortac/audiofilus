@@ -1,0 +1,56 @@
+{
+ "recordings": [
+  {
+   "id": "262bef76-1b10-4c8a-b2be-a9921a33b4fc",
+   "score": 90,
+   "title": "Karma Police",
+   "length": 280000,
+   "artist-credit": [
+    {
+     "name": "Radiohead",
+     "artist": {
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "name": "Radiohead"
+     }
+    }
+   ],
+   "releases": [
+    {
+     "id": "3a566aa2-a9d3-420a-b023-5472ee8cedf3",
+     "title": "Go to Sleep",
+     "date": "2003",
+     "release-group": {
+      "id": "f4b8f066-a9f2-428d-b962-982fe90ab52a",
+      "primary-type": "Album"
+     }
+    }
+   ]
+  },
+  {
+   "id": "9f69104f-9a8f-45e5-ba5b-6a5df3a963d9",
+   "score": 100,
+   "title": "Karma Police",
+   "artist-credit": [
+    {
+     "name": "Radiohead",
+     "artist": {
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "name": "Radiohead"
+     }
+    }
+   ],
+   "releases": [
+    {
+     "id": "8dcc8c15-9822-4c6c-bfb9-e6289893c0ba",
+     "title": "2001-09-29: Osaka, Japan",
+     "date": "",
+     "release-group": {
+      "id": "7d47ca14-b3ab-3fe6-b1eb-3e3867d6ad77",
+      "primary-type": "Album"
+     }
+    }
+   ],
+   "length": 400000
+  }
+ ]
+}

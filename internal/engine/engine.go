@@ -47,6 +47,10 @@ type Status struct {
 	Gain float64 `json:"gain_db,omitempty"`
 	// StopAfter: se parará al acabar esta canción.
 	StopAfter bool `json:"stop_after,omitempty"`
+	// Resampler es el remuestreo de la canción que suena ("linear" o
+	// "quality"; vacío si no hace falta, porque ya está a la frecuencia de
+	// salida). Con DSP.Resampler "auto", así se sabe cuál tocó.
+	Resampler string `json:"resampler,omitempty"`
 }
 
 // Engine es seguro para uso concurrente. El hilo de audio de oto llama a Read;
@@ -69,11 +73,13 @@ type Engine struct {
 	limit   limiter
 	// El sonido (dsp.go): la configuración, el ecualizador, la ganancia de
 	// ReplayGain de lo que suena y sus etiquetas (para recalcularla).
-	dsp      DSP
-	eq       eqFilter
-	gain     float32
-	gainTags library.Gain
-	gainOK   bool
+	dsp DSP
+	// qualityAuto: el remuestreo "auto" es quality (el escritorio).
+	qualityAuto bool
+	eq          eqFilter
+	gain        float32
+	gainTags    library.Gain
+	gainOK      bool
 	// El fundido entre canciones (crossfade.go): tail es la que se va
 	// apagando mientras empieza la siguiente; xfLen y xfPos, cuánto dura el
 	// fundido y cuánto lleva (en cuadros de salida).
@@ -359,7 +365,7 @@ func (e *Engine) openFileLocked(path, local string) bool {
 func (e *Engine) setSourceLocked(path, local string, src decode.Source) {
 	e.closeSourceLocked()
 	e.src = src
-	e.rs = resample.New(src, e.rate)
+	e.rs = resample.NewMode(src, e.rate, e.resamplerLocked())
 	e.ended, e.waiting = false, ""
 	e.track = library.ReadTrack(path)
 	e.gainTags, e.gainOK = library.Gain{}, false
@@ -676,11 +682,42 @@ func (e *Engine) SetDSP(d DSP) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.dsp = d
-	e.eq.set(d.EQ, e.rate)
+	e.eq.setDSP(d, e.rate)
 	e.gain = replayGain(d, e.gainTags, e.gainOK, e.q.Shuffled())
 	if d.Crossfade == 0 {
 		e.stopCrossfadeLocked()
 	}
+}
+
+// SetQualityAuto dice qué hace el remuestreo "auto": quality (el
+// escritorio) o linear (las portátiles, por la batería). Lo pone el servicio
+// al arrancar, según la plataforma.
+func (e *Engine) SetQualityAuto(on bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.qualityAuto = on
+}
+
+// resamplerLocked es el remuestreo que toca con la configuración de ahora.
+func (e *Engine) resamplerLocked() resample.Mode {
+	switch e.dsp.Resampler {
+	case "quality":
+		return resample.Quality
+	case "linear":
+		return resample.Linear
+	}
+	if e.qualityAuto {
+		return resample.Quality
+	}
+	return resample.Linear
+}
+
+// resamplerName es el remuestreo de lo que suena (para Status).
+func (e *Engine) resamplerName() string {
+	if e.rs == nil || e.rs.Passthrough() {
+		return ""
+	}
+	return e.rs.Mode().String()
 }
 
 // SetStopAfter pide (o deja de pedir) parar al acabar la canción que suena.
@@ -716,6 +753,7 @@ func (e *Engine) Status() Status {
 		Volume:    e.vol * float64(e.boost),
 		Track:     e.track,
 		DSP:       e.dsp,
+		Resampler: e.resamplerName(),
 		StopAfter: e.stopAfter,
 	}
 	if e.gain != 1 {

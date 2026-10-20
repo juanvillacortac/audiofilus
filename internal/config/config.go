@@ -34,6 +34,20 @@ type Config struct {
 	Servers []Server `json:"servers,omitempty"`
 	// Scrobble son las cuentas donde contar lo que se escucha.
 	Scrobble Scrobble `json:"scrobble,omitzero"`
+	// DLNA es la música por la red local (internal/dlna): servirla a otros
+	// equipos y recibir la que manden.
+	DLNA DLNA `json:"dlna,omitzero"`
+}
+
+// DLNA configura DLNA/UPnP en el servicio. Todo apagado por defecto: con
+// algo encendido, el servicio escucha en la red local.
+type DLNA struct {
+	// Server: la biblioteca se ve desde otros equipos (teles, apps DLNA).
+	Server bool `json:"server,omitempty"`
+	// Renderer: otros (el móvil, BubbleUPnP...) mandan música que suena aquí.
+	Renderer bool `json:"renderer,omitempty"`
+	// Name es como se ve en la red; vacío: "audiofilus (<equipo>)".
+	Name string `json:"name,omitempty"`
 }
 
 // Scrobble son las cuentas de Last.fm y ListenBrainz (ver internal/scrobble).

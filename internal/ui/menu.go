@@ -173,9 +173,16 @@ func (a *App) openItemMenu(v *view) {
 		a.menu = a.songsMenu(ar.Name, ar.AllSongs(), nil, "")
 	case vPlaylists:
 		pl := v.playlists[v.sel]
+		a.smartFill(pl)
 		a.menu = a.songsMenu(pl.Name, pl.Songs, nil, "")
 		if !pl.Remote {
 			a.menu.items = append(a.menu.items, a.playlistItems(pl)...)
+		}
+		if pl.smart > 0 {
+			a.menu.items = append(a.menu.items, a.smartItems(pl)...)
+		}
+		if a.source == 0 {
+			a.menu.items = append(a.menu.items, menuItem{label: T("sm_new"), icon: "bolt", do: a.smartNew})
 		}
 	default:
 		songs := a.itemSongs(v)

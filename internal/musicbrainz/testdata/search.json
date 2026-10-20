@@ -1,0 +1,94 @@
+{
+ "releases": [
+  {
+   "id": "6a09041b-0f79-3278-88d9-0552dd28d37f",
+   "score": 100,
+   "title": "OK Computer",
+   "track-count": 12,
+   "date": "1997-07-01",
+   "country": "US",
+   "artist-credit": [
+    {
+     "name": "Radiohead",
+     "artist": {
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "name": "Radiohead"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "b1392450-e666-3926-a536-22c65f834433",
+    "primary-type": "Album",
+    "title": "OK Computer"
+   },
+   "media": [
+    {
+     "id": "f62bbec0-cb4a-3519-b584-923b7fd5ac75",
+     "format": "CD",
+     "disc-count": 16,
+     "track-count": 12
+    }
+   ]
+  },
+  {
+   "id": "1834eae1-741b-3c03-9ca5-0df3decb43ea",
+   "score": 100,
+   "title": "OK Computer",
+   "track-count": 13,
+   "date": "1997-05-21",
+   "country": "JP",
+   "artist-credit": [
+    {
+     "name": "Radiohead",
+     "artist": {
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "name": "Radiohead"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "b1392450-e666-3926-a536-22c65f834433",
+    "primary-type": "Album",
+    "title": "OK Computer"
+   },
+   "media": [
+    {
+     "id": "060959f3-0d81-38b3-be26-c32f80ca68e9",
+     "format": "CD",
+     "disc-count": 16,
+     "track-count": 12
+    }
+   ]
+  },
+  {
+   "id": "4b3d18cc-8937-36f4-8de0-481088be58e6",
+   "score": 95,
+   "title": "OK Computer",
+   "track-count": 12,
+   "date": "1997-06-17",
+   "country": "CA",
+   "artist-credit": [
+    {
+     "name": "Radiohead",
+     "artist": {
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "name": "Radiohead"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "b1392450-e666-3926-a536-22c65f834433",
+    "primary-type": "Album",
+    "title": "OK Computer"
+   },
+   "media": [
+    {
+     "id": "20c649f0-1349-3dc9-993b-07aa88dad03c",
+     "format": "CD",
+     "disc-count": 15,
+     "track-count": 12
+    }
+   ]
+  }
+ ]
+}

@@ -53,9 +53,12 @@ type Library struct {
 	Songs     []Song
 	Artists   []*Artist
 	Playlists []*Playlist
-	Roots     []string          // las carpetas de música
-	byPath    map[string]*Album // el álbum de cada canción
-	song      map[string]Song   // cada canción por su ruta
+	// meta son los datos de cada canción que no van en Song (para las listas
+	// inteligentes): el género, el año y cuándo entró.
+	meta   map[string]songMeta
+	Roots  []string          // las carpetas de música
+	byPath map[string]*Album // el álbum de cada canción
+	song   map[string]Song   // cada canción por su ruta
 }
 
 // Artist son los álbumes de un artista (por el artista del álbum).
@@ -80,7 +83,15 @@ type Playlist struct {
 	Songs      []Song
 	Remote     bool   // de un servidor (o de las que salen solas): no se edita desde aquí
 	icon       string // el icono de su fila (las que salen solas)
+	smart      int    // 1 + su índice en las listas inteligentes (smartui.go); 0 si no lo es
 	stats      bool   // la entrada de las estadísticas (marks.go)
+}
+
+// songMeta son los datos de una canción para las listas inteligentes.
+type songMeta struct {
+	genre, albumArtist string
+	year               int
+	added              int64 // la fecha del archivo (Unix)
 }
 
 // Song devuelve la canción de una ruta, si está en la biblioteca.
@@ -131,10 +142,11 @@ func (l *Library) AlbumOf(path string) (*Album, int) {
 // álbum) y las ordena: los álbumes por artista y título, las canciones de cada
 // álbum por número de pista.
 func buildLibrary(entries []entry) *Library {
-	lib := &Library{byPath: map[string]*Album{}, song: map[string]Song{}}
+	lib := &Library{byPath: map[string]*Album{}, song: map[string]Song{}, meta: map[string]songMeta{}}
 	byKey := map[string]*Album{}
 	for _, e := range entries {
 		s := Song{Path: e.Path, Title: e.Title, Artist: firstArtist(e.Artist), Album: e.Album, Track: e.Track}
+		lib.meta[e.Path] = songMeta{genre: e.Genre, year: e.Year, added: e.ModTime, albumArtist: e.AlbumArtist}
 		file := audioFile(e.Path)
 		if s.Title == "" {
 			s.Title = strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))

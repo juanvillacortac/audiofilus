@@ -219,7 +219,8 @@ func (a *App) updateLibrary() {
 		return
 	case in.Pressed(ActMenu) && v.kind == vPlaylists:
 		// Sin listas aún: Start crea una.
-		a.menu = &menu{title: T("tab_lists"), items: []menuItem{{label: T("pl_new"), icon: "plus", do: a.openNewPlaylist}}}
+		a.menu = &menu{title: T("tab_lists"), items: []menuItem{{label: T("pl_new"), icon: "plus", do: a.openNewPlaylist},
+			{label: T("sm_new"), icon: "bolt", do: a.smartNew}}}
 		return
 	case in.Pressed(ActShuffle) && a.shuffleTwice():
 		a.playRandomSong() // doble X: una canción al azar de toda la biblioteca
@@ -307,6 +308,7 @@ func (a *App) openItem(v *view) {
 			a.push(a.statsView())
 			return
 		}
+		a.smartFill(pl) // una lista inteligente: sus canciones, ahora
 		a.push(&view{kind: vPlaylist, title: pl.Name, songs: pl.Songs, pl: pl})
 	case vStats:
 		if p := v.stats[v.sel].path; p != "" {

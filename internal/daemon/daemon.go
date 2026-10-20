@@ -28,6 +28,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/config"
 	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"github.com/juanvillacortac/audiofilus/internal/dlna"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/library"
 	"github.com/juanvillacortac/audiofilus/internal/mpris"
@@ -77,6 +78,11 @@ type Daemon struct {
 	outputAt     time.Time  // cuándo se miró output por última vez
 	quit         chan struct{}
 	quitOnce     sync.Once
+	// DLNA (dlna.go): lo encendido, con qué configuración, y el último error.
+	dlnaMu  sync.Mutex
+	dlna    *dlna.Service
+	dlnaCfg config.DLNA
+	dlnaErr string
 }
 
 // Run arranca el daemon y bloquea hasta recibir quit o una señal.
@@ -110,6 +116,9 @@ func Run(paths config.Paths) error {
 		sysVolume: -1,
 	}
 	log.Printf("audiofilus on %s, home %s", d.plat.Name(), paths.Base)
+	// El remuestreo "auto": el fiel en el escritorio, el barato en las
+	// portátiles (la batería).
+	d.eng.SetQualityAuto(d.plat.Name() == "desktop")
 
 	// MPRIS: las teclas multimedia y los widgets del escritorio. Sin bus de
 	// sesión (en las portátiles) no se publica y no pasa nada.
@@ -219,6 +228,7 @@ func Run(paths config.Paths) error {
 		}
 		nowPlayingChanged(eng)
 	}
+	d.installDLNA() // envuelve los ganchos de arriba (dlna.go)
 	d.restore()
 
 	go d.applySystemVolume()
@@ -285,6 +295,7 @@ loop:
 	ln.Close()
 	_ = os.Remove(paths.Socket)
 	_ = d.setSleep(false, false)
+	d.stopDLNA()
 	playing := eng.Playing()
 	d.saveState()
 	eng.Close()
@@ -663,7 +674,7 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		if err := d.setTimer(req.Args); err != nil {
 			return nil, err
 		}
-	case "replaygain", "preamp", "eq", "crossfade":
+	case "replaygain", "preamp", "eq", "crossfade", "eqmode", "peq", "peqpreamp", "resampler":
 		dsp, err := dspCommand(e.DSPConfig(), req.Cmd, req.Args)
 		if err != nil {
 			return nil, err
@@ -679,6 +690,8 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 			return nil, errors.New("usage: repeat off|all|one")
 		}
 		e.SetRepeat(r)
+	case "dlna":
+		return d.dlnaCommand(req.Args) // dlna.go
 	case "volume":
 		if len(req.Args) != 1 {
 			return nil, errors.New("usage: volume <0..2>")

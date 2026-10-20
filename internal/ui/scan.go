@@ -25,6 +25,8 @@ type entry struct {
 	AlbumArtist string `json:"album_artist,omitempty"`
 	Album       string `json:"album,omitempty"`
 	Track       int    `json:"track,omitempty"`
+	Genre       string `json:"genre,omitempty"`
+	Year        int    `json:"year,omitempty"`
 	Pic         bool   `json:"pic,omitempty"` // tiene portada incrustada
 	// Cover es de dónde sacar la portada si no es el propio archivo (la de un
 	// servidor remoto: "subsonic://<servidor>/cover/<id>").
@@ -33,9 +35,15 @@ type entry struct {
 
 // libraryCache es data/library.json.
 type libraryCache struct {
+	Version int      `json:"v,omitempty"`
 	Dirs    []string `json:"dirs"`
 	Entries []entry  `json:"entries"`
 }
+
+// cacheVersion es la de las entradas de la caché: si la guardada es más
+// vieja, las etiquetas se vuelven a leer una vez (la 2 trajo el género y el
+// año, para las listas inteligentes).
+const cacheVersion = 2
 
 // Scan es un escaneo de la biblioteca en marcha. Leer las etiquetas de cada
 // archivo es lento en una portátil, así que se guardan en data/library.json y
@@ -76,7 +84,7 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 	old := map[string]entry{}
 	if b, err := os.ReadFile(cachePath); err == nil {
 		var c libraryCache
-		if json.Unmarshal(b, &c) == nil {
+		if json.Unmarshal(b, &c) == nil && c.Version >= cacheVersion {
 			for _, e := range c.Entries {
 				old[e.Path] = e
 			}
@@ -106,7 +114,7 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 		s.Done.Add(1)
 	}
 	if err := os.MkdirAll(paths.Data, 0o755); err == nil {
-		if b, err := json.Marshal(libraryCache{Dirs: dirs, Entries: entries}); err == nil {
+		if b, err := json.Marshal(libraryCache{Version: cacheVersion, Dirs: dirs, Entries: entries}); err == nil {
 			tmp := cachePath + ".tmp"
 			if os.WriteFile(tmp, b, 0o644) == nil {
 				_ = os.Rename(tmp, cachePath)
@@ -153,6 +161,7 @@ func readEntry(p string, info os.FileInfo) (e entry) {
 	}
 	e.Title, e.Artist, e.AlbumArtist, e.Album = m.Title(), m.Artist(), m.AlbumArtist(), m.Album()
 	e.Track, _ = m.Track()
+	e.Genre, e.Year = m.Genre(), m.Year()
 	e.Pic = m.Picture() != nil
 	return e
 }

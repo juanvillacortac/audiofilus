@@ -179,7 +179,7 @@ func (a *App) autoPlaylists() []*Playlist {
 	}
 	ls := a.listens()
 	if len(ls) == 0 {
-		return out
+		return append(out, a.smartPlaylists()...)
 	}
 	recent := &Playlist{Name: T("pl_recent"), Remote: true, icon: "clock"}
 	for _, l := range history.Recent(ls, 100) {
@@ -191,7 +191,7 @@ func (a *App) autoPlaylists() []*Playlist {
 		top.Songs = append(top.Songs, a.songFor(c.Path, c.Name, c.Sub, ""))
 	}
 	out = append(out, recent, top, &Playlist{Name: T("pl_stats"), Remote: true, icon: "stats", stats: true})
-	return out
+	return append(out, a.smartPlaylists()...)
 }
 
 // statRow es una fila de las estadísticas; path, si está, es la canción

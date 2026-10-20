@@ -1,0 +1,128 @@
+{
+ "id": "6a09041b-0f79-3278-88d9-0552dd28d37f",
+ "title": "OK Computer",
+ "date": "1997-07-01",
+ "country": "US",
+ "artist-credit": [
+  {
+   "joinphrase": "",
+   "artist": {
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "name": "Radiohead"
+   },
+   "name": "Radiohead"
+  }
+ ],
+ "release-group": {
+  "id": "b1392450-e666-3926-a536-22c65f834433",
+  "primary-type": "Album",
+  "genres": [
+   {
+    "name": "alternative rock",
+    "count": 27
+   },
+   {
+    "name": "art rock",
+    "count": 15
+   },
+   {
+    "name": "britpop",
+    "count": 1
+   },
+   {
+    "name": "electronic",
+    "count": 2
+   }
+  ]
+ },
+ "label-info": [
+  {
+   "label": {
+    "name": "Capitol Records"
+   }
+  }
+ ],
+ "genres": [],
+ "tags": [],
+ "media": [
+  {
+   "position": 1,
+   "format": "CD",
+   "track-count": 4,
+   "tracks": [
+    {
+     "id": "08380814-cbf6-3f77-b9b4-1a731f417940",
+     "number": "1",
+     "position": 1,
+     "title": "Airbag",
+     "length": 284400,
+     "recording": {
+      "id": "4a7fea2e-545b-4c63-bc9a-9943cc3a29d7",
+      "length": 284400
+     }
+    },
+    {
+     "id": "ccadc32f-698e-302e-bc5c-a5b8e5ba223e",
+     "number": "2",
+     "position": 2,
+     "title": "Paranoid Android",
+     "length": 383493,
+     "recording": {
+      "id": "9f9cf187-d6f9-437f-9d98-d59cdbd52757",
+      "length": 384000
+     }
+    },
+    {
+     "id": "10c973d8-3adf-3338-afc9-ebba924e77d4",
+     "number": "3",
+     "position": 3,
+     "title": "Subterranean Homesick Alien",
+     "length": 267706,
+     "recording": {
+      "id": "bd82738d-163c-4b1a-bfaf-7acffe30e68a",
+      "length": 267706
+     }
+    },
+    {
+     "id": "445f7341-e13b-3e79-9505-8797dfd44462",
+     "number": "4",
+     "position": 4,
+     "title": "Exit Music (for a Film)",
+     "length": 264800,
+     "recording": {
+      "id": "23c3c36b-9449-4484-9040-6ef2125999aa",
+      "length": 264800
+     }
+    }
+   ]
+  },
+  {
+   "position": 2,
+   "format": "CD",
+   "track-count": 1,
+   "tracks": [
+    {
+     "id": "bonus-1",
+     "number": "1",
+     "position": 1,
+     "title": "Lull",
+     "length": 147000,
+     "recording": {
+      "id": "rec-lull",
+      "length": 147000
+     },
+     "artist-credit": [
+      {
+       "name": "Radiohead",
+       "joinphrase": "",
+       "artist": {
+        "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+        "name": "Radiohead"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
