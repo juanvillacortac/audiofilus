@@ -35,7 +35,7 @@ var ErrUnsupported = errors.New("unsupported audio format")
 // Extensions son las extensiones de archivo que entiende Open.
 // Los que dependen de una biblioteca en C (Opus, AAC, módulos) se listan
 // igual: si falta la biblioteca, Open falla con ErrUnsupported y se salta.
-var Extensions = append([]string{".mp3", ".ogg", ".oga", ".opus", ".flac", ".wav", ".aif", ".aiff", ".aifc", ".m4a", ".m4b", ".mp4", ".aac", ".dsf", ".dff"}, ModuleExtensions...)
+var Extensions = append(append([]string{".mp3", ".ogg", ".oga", ".opus", ".flac", ".wav", ".aif", ".aiff", ".aifc", ".m4a", ".m4b", ".mp4", ".aac", ".dsf", ".dff"}, ModuleExtensions...), GMEExtensions...)
 
 // IsAudioFile dice si path tiene una extensión soportada.
 func IsAudioFile(path string) bool {
@@ -54,6 +54,13 @@ func Open(path string) (Source, error) {
 	// Una pista de un CUE: un trozo de su archivo (segment.go).
 	if IsCuePath(path) {
 		return OpenSegment(path)
+	}
+	// Una canción de un archivo de libgme (gme.go).
+	if file, song, ok := SplitGMEPath(path); ok {
+		return newGME(file, song)
+	}
+	if IsGMEFile(path) {
+		return newGME(path, 1)
 	}
 	f, err := os.Open(path)
 	if err != nil {

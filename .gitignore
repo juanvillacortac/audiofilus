@@ -1,5 +1,7 @@
 # Binarios
 /dist/
+# libgme compilada (tools/libgme/build.sh)
+/build/
 /audiofilus
 
 # Configuración y estado de una ejecución local (viven junto al binario)

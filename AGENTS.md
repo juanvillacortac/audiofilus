@@ -66,6 +66,7 @@ GOOS=windows go vet ./...
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
 | `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
+| `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
 | `site/` | The website (GitHub Pages); its screenshots and GIFs come from `-shots`/`-frames` with `-lang en` |
 | `.github/workflows/` | CI (gofmt, vet, tests, arm64 without cgo), releases when a `v*` tag is pushed (built with the `Dockerfile`), and the website |

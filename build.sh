@@ -49,6 +49,16 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w $lfm" \
   -o "$pkg/audiofilus/audiofilus.x86_64" ./cmd/audiofilus
 mkdir -p "$pkg/audiofilus/licenses"
 cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
+# libgme (la música de consolas viejas), si se compiló con
+# tools/libgme/build.sh build/libgme: las portátiles no la traen. Va en
+# libs.<arquitectura>, donde la busca el programa, con su licencia (LGPL) y
+# de dónde sale el código.
+if [ -d build/libgme ]; then
+  cp -r build/libgme/libs.aarch64 build/libgme/libs.x86_64 "$pkg/audiofilus/"
+  cp build/libgme/libgme-LICENSE.txt build/libgme/libgme-SOURCE.txt "$pkg/audiofilus/licenses/"
+else
+  echo "build/libgme missing: the packages go without libgme (tools/libgme/build.sh)" >&2
+fi
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip
 
@@ -62,6 +72,7 @@ mkdir -p "$app/audiofilus"
 cp -r muos/audiofilus/. "$app/audiofilus/"
 cp dist/audiofilus-arm64 "$app/audiofilus/audiofilus.aarch64"
 cp -r "$pkg/audiofilus/licenses" "$app/audiofilus/"
+[ -d build/libgme ] && cp -r build/libgme/libs.aarch64 "$app/audiofilus/"
 chmod +x "$app/audiofilus/mux_launch.sh" "$app/audiofilus/audiofilus.aarch64"
 (cd "$app" && zip -qr ../audiofilus.muxapp .)
 echo dist/audiofilus.muxapp

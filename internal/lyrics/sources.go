@@ -43,7 +43,7 @@ const maxFile = 512 << 10
 // Music, que no tienen archivos de letra ni etiquetas a mano, ni una pista
 // de un CUE, cuyo archivo y etiquetas son los del disco entero).
 func IsLocal(path string) bool {
-	return path != "" && !strings.Contains(path, "://") && filepath.IsAbs(path) && !decode.IsCuePath(path)
+	return path != "" && !strings.Contains(path, "://") && filepath.IsAbs(path) && !decode.IsVirtualPath(path)
 }
 
 // Local son las letras que hay a mano para la canción en path: los archivos

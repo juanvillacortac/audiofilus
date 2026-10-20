@@ -91,10 +91,7 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 	entries := make([]entry, 0, len(files))
 	for _, p := range files {
 		// Una pista de un CUE: la fecha y el tamaño son los de su archivo.
-		file := p
-		if f, _, _, ok := decode.SplitCuePath(p); ok {
-			file = f
-		}
+		file := decode.FileOf(p)
 		info, err := os.Stat(file)
 		if err != nil {
 			s.Done.Add(1)
@@ -126,6 +123,11 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 // readEntry lee las etiquetas de un archivo.
 func readEntry(p string, info os.FileInfo) (e entry) {
 	e = entry{Path: p, Size: info.Size(), ModTime: info.ModTime().Unix()}
+	// Música de consola (libgme): sus datos salen del propio archivo.
+	if t, n, ok := library.ReadGMETrack(p); ok {
+		e.Title, e.Artist, e.Album, e.Track = t.Title, t.Artist, t.Album, n
+		return e
+	}
 	// Una pista de un CUE: el título y el número de la hoja, el resto (y la
 	// portada) de las etiquetas de su archivo, si tiene.
 	file, _, _, cue := decode.SplitCuePath(p)

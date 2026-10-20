@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/ebitengine/purego"
 )
@@ -23,10 +25,13 @@ type libFunc struct {
 	name string
 }
 
-// openLib abre la primera de names que exista y registra fns en ella.
+// openLib abre la primera de names que exista y registra fns en ella. Se
+// busca primero en la carpeta libs.<arquitectura> junto al programa (donde
+// el port y la app de muOS traen las que los sistemas no tienen, como
+// libgme) y luego donde el sistema las tenga.
 func openLib(names []string, fns []libFunc) error {
 	var lib uintptr
-	for _, name := range names {
+	for _, name := range append(bundled(names), names...) {
 		if l, err := loadLib(name); err == nil {
 			lib = l
 			break
@@ -59,3 +64,25 @@ func cString(s string) *byte {
 }
 
 var errDisabled = errors.New("native decoders disabled by AUDIOFILUS_DECODER=go")
+
+// bundled son las rutas de names en la carpeta libs.<arquitectura> junto al
+// programa (libs.aarch64, libs.x86_64, como en PortMaster), si existe.
+func bundled(names []string) []string {
+	exe, err := os.Executable()
+	if err != nil {
+		return nil
+	}
+	arch := map[string]string{"arm64": "aarch64", "amd64": "x86_64"}[runtime.GOARCH]
+	dir := filepath.Join(filepath.Dir(exe), "libs."+arch)
+	if arch == "" {
+		return nil
+	}
+	if st, err := os.Stat(dir); err != nil || !st.IsDir() {
+		return nil
+	}
+	var out []string
+	for _, n := range names {
+		out = append(out, filepath.Join(dir, n))
+	}
+	return out
+}

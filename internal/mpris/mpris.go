@@ -235,9 +235,7 @@ func (s *Server) art(path string) string {
 		_ = os.Remove(s.artPath)
 		s.artPath = ""
 	}
-	if file, _, _, ok := decode.SplitCuePath(path); ok {
-		path = file // una pista de un CUE: la portada es la de su archivo
-	}
+	path = decode.FileOf(path) // una pista de un CUE: la portada es la de su archivo
 	f, err := os.Open(path)
 	if err != nil {
 		return ""

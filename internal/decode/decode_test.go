@@ -454,3 +454,68 @@ func TestFLACSeekWithoutSeekTable(t *testing.T) {
 		t.Errorf("after seeking to the end, %d samples remain, want 100", len(rest)/2)
 	}
 }
+
+// writeVGM escribe un VGM de secs segundos con un tono de 440 Hz en el chip
+// PSG (SN76489) de la Master System: el formato más simple de libgme.
+func writeVGM(t *testing.T, path string, secs int) {
+	t.Helper()
+	const clock = 3579545
+	data := []byte{
+		0x50, 0x80 | byte(254&0x0F), 0x50, byte(254 >> 4), // canal 0: periodo 254 (≈440 Hz)
+		0x50, 0x90, // canal 0 a todo volumen
+	}
+	for left := 44100 * secs; left > 0; {
+		n := min(left, 65535)
+		data = append(data, 0x61, byte(n), byte(n>>8)) // esperar n muestras (44,1 kHz)
+		left -= n
+	}
+	data = append(data, 0x66) // fin
+	hdr := make([]byte, 0x40)
+	copy(hdr, "Vgm ")
+	binary.LittleEndian.PutUint32(hdr[0x04:], uint32(len(hdr)+len(data)-4))
+	binary.LittleEndian.PutUint32(hdr[0x08:], 0x150)
+	binary.LittleEndian.PutUint32(hdr[0x0C:], clock)
+	binary.LittleEndian.PutUint32(hdr[0x18:], uint32(44100*secs))
+	binary.LittleEndian.PutUint32(hdr[0x34:], 0x40-0x34)
+	if err := os.WriteFile(path, append(hdr, data...), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// TestGME comprueba la música de consola con libgme (si está): un VGM de 2 s
+// se lista como una canción de 2 s, suena (no es silencio) y dura eso, por
+// su ruta de canción y por la del archivo, y saltar deja la posición.
+func TestGME(t *testing.T) {
+	if !GMEAvailable() {
+		t.Skip("libgme not installed")
+	}
+	path := filepath.Join(t.TempDir(), "tone.vgm")
+	writeVGM(t, path, 2)
+	tracks, err := GMETracks(path)
+	if err != nil || len(tracks) != 1 || tracks[0].Length != 2000 || tracks[0].Loops {
+		t.Fatalf("tracks = %+v, %v", tracks, err)
+	}
+	for _, p := range []string{GMEPath(path, 1), path} {
+		s, err := Open(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		samples := readAll(t, s)
+		if got := float64(len(samples)/2) / float64(s.SampleRate()); math.Abs(got-2) > 0.05 {
+			t.Errorf("%s: %.3f s, want 2", p, got)
+		}
+		if pk := peak(samples); pk < 0.05 {
+			t.Errorf("%s: peak %.3f, the tone is silent", p, pk)
+		}
+		if err := s.SeekFrame(int64(s.SampleRate())); err != nil || s.Position() != int64(s.SampleRate()) {
+			t.Errorf("seek to 1 s: position %d, %v", s.Position(), err)
+		}
+		s.Close()
+	}
+	if f, n, ok := SplitGMEPath(GMEPath("/m/game.nsf", 12)); !ok || f != "/m/game.nsf" || n != 12 {
+		t.Errorf("SplitGMEPath = %q %d %v", f, n, ok)
+	}
+	if _, _, ok := SplitGMEPath("/m/#song=1.mp3"); ok {
+		t.Error("a file name with #song= is not a song path")
+	}
+}

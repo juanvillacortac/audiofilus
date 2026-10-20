@@ -374,8 +374,5 @@ func (a *Album) decodeRemoteCover() image.Image {
 // audioFile es el archivo de una canción: el mismo path, o el del disco
 // entero si es una pista de un CUE (ver decode.CuePath).
 func audioFile(path string) string {
-	if f, _, _, ok := decode.SplitCuePath(path); ok {
-		return f
-	}
-	return path
+	return decode.FileOf(path)
 }

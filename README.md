@@ -47,7 +47,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 
 ### Library
 
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** and tracker modules (**MOD, XM, IT, S3M**). Albums ripped to one file with a **CUE sheet** show up as their tracks.
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY and SAP, through libgme, which the handheld and Linux packages bring. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.

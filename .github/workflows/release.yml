@@ -17,6 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: zig, for libgme
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            zig = "0.15.2"
+      - name: libgme for the handhelds (tools/libgme/build.sh)
+        run: tools/libgme/build.sh build/libgme
       - name: Build in the container
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
@@ -32,6 +40,10 @@ jobs:
             mkdir -p "$d/licenses"
             cp "dist/audiofilus-$arch" "$d/audiofilus"
             cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
+            libs=libs.aarch64
+            [ "$arch" = amd64 ] && libs=libs.x86_64
+            cp -r "build/libgme/$libs" "$d/"
+            cp build/libgme/libgme-*.txt "$d/licenses/"
             tar -czf "out/$d.tar.gz" "$d"
           done
           d=audiofilus-windows-amd64

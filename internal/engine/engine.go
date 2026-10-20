@@ -363,9 +363,7 @@ func (e *Engine) setSourceLocked(path, local string, src decode.Source) {
 	e.ended, e.waiting = false, ""
 	e.track = library.ReadTrack(path)
 	e.gainTags, e.gainOK = library.Gain{}, false
-	if f, _, _, ok := decode.SplitCuePath(local); ok {
-		local = f // una pista de un CUE: la ganancia es la de su archivo
-	}
+	local = decode.FileOf(local) // una pista de un CUE: la ganancia es la de su archivo
 	if local != "" {
 		e.gainTags, e.gainOK = library.ReadGain(local)
 	}

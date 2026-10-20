@@ -93,9 +93,12 @@ The C libraries are loaded at runtime with purego (`decode/native.go`), without 
 | FLAC | Pure Go (`mewkiz/flac`) | 5.3 % | Seeks by bisecting frame headers (no seek table needed, ~40 ms on the console), then decodes up to the requested frame |
 | WAV, AIFF | our own (`decode/wav.go`, `decode/aiff.go`) | 0.5 % | 8/16/24/32-bit PCM and 32-bit float; uncompressed AIFF-C |
 | Modules (`.mod`, `.xm`, `.it`, `.s3m`…) | `libxmp` (C) | — | Recognized by extension; played once, at 48 kHz |
+| Console music (`.nsf`, `.nsfe`, `.spc`, `.gbs`, `.vgm`, `.vgz`, `.gym`, `.hes`, `.kss`, `.ay`, `.sap`) | `libgme` (Game_Music_Emu, C++) | — | Emulates the console's sound chip at 48 kHz. A file with several songs (an NSF holds a whole soundtrack) becomes one track per song, `game.nsf#song=3` (`decode.GMEPath`, expanded by the scanner, titled "Game #3" when the file names no song). Songs that loop, or don't say how long they are, last what libgme suggests (2.5 min by default) and fade out in their last 8 s; songs with their own length end by themselves. Seeking emulates up to that point |
 | DSD (`.dsf`, `.dff`) | Pure Go (`decode/dsd.go`) | ~32 % at 480 MHz (DSD64) | Two FIR stages (1-bit straight to 88.2 kHz with table lookups, then 44.1 kHz) at -6 dB; DST-compressed DFF is not supported; DSD256 may not keep up on a handheld |
 
 \* Decoding only, in % of one core at 1.5 GHz (`audiofilus bench`, 2026-10-17), with one minute of a real song.
+
+Libraries are looked up first in `libs.<arch>` next to the binary (`libs.aarch64`, `libs.x86_64`, as PortMaster does), then where the system has them. That is how the handhelds get **libgme**, which none of their systems ship: `tools/libgme/build.sh` compiles libgme 0.6.5 with zig (`mise install zig`) against glibc 2.17, with libc++ and zlib (for VGZ) built in, so it only needs the base libc and loads on old systems like ArkOS. The release workflow runs it (zig through mise-action), and `build.sh` puts it, with its LGPL license and a pointer to its source, in the PortMaster zip, the `.muxapp` and the Linux tarballs. On Windows there is no libgme yet.
 
 On Windows the same libraries are loaded as DLLs (`decode/native_windows.go`), looked up first in the program's folder: the MSYS2 builds `libmpg123-0.dll`, `libopusfile-0.dll` (with `libopus-0.dll` and `libogg-0.dll`), `libxmp-4.dll` or `libxmp.dll`, and `libfdk-aac-2.dll`. Without them Windows plays MP3 (go-mp3), FLAC, Ogg Vorbis, ALAC, WAV and AIFF; AAC, Opus and modules need the DLLs.
 

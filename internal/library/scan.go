@@ -76,8 +76,31 @@ func scanDir(root string) ([]string, error) {
 		return nil
 	})
 	files = withCues(files, cues)
+	files = withSongs(files)
 	sort.Strings(files)
 	return files, err
+}
+
+// withSongs cambia, en files, cada archivo de libgme con varias canciones
+// (un NSF trae la banda sonora entera) por una pista por canción (ver
+// decode.GMEPath). Sin libgme quedan como están (y no se podrán abrir).
+func withSongs(files []string) []string {
+	var out []string
+	for _, f := range files {
+		if !decode.IsGMEFile(f) {
+			out = append(out, f)
+			continue
+		}
+		tracks, err := decode.GMETracks(f)
+		if err != nil || len(tracks) <= 1 {
+			out = append(out, f)
+			continue
+		}
+		for _, t := range tracks {
+			out = append(out, decode.GMEPath(f, t.Song))
+		}
+	}
+	return out
 }
 
 // withCues cambia, en files, cada archivo que tenga una hoja CUE (un disco
@@ -155,7 +178,7 @@ func readM3U(path string) ([]string, error) {
 		if !filepath.IsAbs(line) {
 			line = filepath.Join(dir, line)
 		}
-		if decode.IsAudioFile(line) || decode.IsCuePath(line) {
+		if decode.IsAudioFile(line) || decode.IsVirtualPath(line) {
 			files = append(files, line)
 		}
 	}
@@ -189,6 +212,9 @@ func ReadTrack(path string) Track {
 	}
 	if c, ok := ReadCueTrack(path); ok {
 		return c
+	}
+	if g, _, ok := ReadGMETrack(path); ok {
+		return g
 	}
 	if f, err := os.Open(path); err == nil {
 		if m, err := tag.ReadFrom(f); err == nil {

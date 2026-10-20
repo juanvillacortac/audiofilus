@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -357,3 +358,43 @@ func readCueTrack(path string) (Track, int, bool) {
 	}
 	return Track{}, 0, false
 }
+
+// ReadGMETrack da las etiquetas de una canción de libgme (un archivo, o una
+// de sus canciones, ver decode.GMEPath): el título (o "Juego #n" si no
+// tiene), el autor y el juego como disco; y su número. ok es false si no es
+// de libgme o no se puede leer.
+func ReadGMETrack(path string) (Track, int, bool) {
+	file, song, ok := decode.SplitGMEPath(path)
+	if !ok {
+		if !decode.IsGMEFile(path) {
+			return Track{}, 0, false
+		}
+		file, song = path, 1
+	}
+	if c, ok := gmeTracks.Load(path); ok {
+		c := c.(cueEntry)
+		return c.t, c.n, true
+	}
+	tracks, err := decode.GMETracks(file)
+	if err != nil || song > len(tracks) {
+		return Track{}, 0, false
+	}
+	g := tracks[song-1]
+	game := g.Game
+	if game == "" {
+		game = strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
+	}
+	title := g.Title
+	if title == "" {
+		title = game
+		if len(tracks) > 1 {
+			title = fmt.Sprintf("%s #%d", game, song)
+		}
+	}
+	t := Track{Path: path, Title: title, Artist: g.Author, Album: game}
+	gmeTracks.Store(path, cueEntry{t, song})
+	return t, song, true
+}
+
+// gmeTracks guarda lo leído por ReadGMETrack (abrir el archivo es emularlo).
+var gmeTracks sync.Map
