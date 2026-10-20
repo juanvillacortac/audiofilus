@@ -1384,6 +1384,23 @@ func (a *App) writeShots() error {
 	if err := shot("reproduciendo"); err != nil {
 		return err
 	}
+	// Con el temporizador puesto (y el corazón, si la canción es favorita en
+	// la maqueta).
+	a.status.TimerLeft = 25 * 60
+	if err := shot("reproduciendo-temporizador"); err != nil {
+		return err
+	}
+	a.status.TimerLeft = 0
+	// Las estadísticas, si la maqueta tiene historial.
+	if len(a.listens()) > 0 {
+		a.screen, a.libTab, a.tabFocus = LibraryScreen, tabLists, false
+		a.push(a.statsView())
+		if err := shot("estadisticas"); err != nil {
+			return err
+		}
+		a.pop()
+		a.screen = NowPlaying
+	}
 	// La letra sincronizada (inventada) y la lista para elegir otra.
 	if a.playingSong.Path != "" {
 		a.lyricsOn = true
@@ -1457,6 +1474,22 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.eqEdit = nil
+	// Ajustes en la sección Sonido, y el menú de las cuentas.
+	if tiles, _, _ := settingsLayout(a.w, a.sections()); len(tiles) > 0 {
+		for i, t := range tiles {
+			if t.tile.id == setReplayGain {
+				a.settingsSel = i
+			}
+		}
+	}
+	if err := shot("ajustes-sonido"); err != nil {
+		return err
+	}
+	a.openScrobbleMenu()
+	if err := shot("cuentas"); err != nil {
+		return err
+	}
+	a.menu, a.settingsSel, a.settingsScroll = nil, 0, 0
 	a.screen = NowPlaying
 	a.openNowMenu()
 	if err := shot("menu"); err != nil {
