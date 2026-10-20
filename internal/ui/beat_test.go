@@ -141,3 +141,17 @@ func TestDrumPattern(t *testing.T) {
 		t.Errorf("hat in %d slots, want the off-beat eighths", nh)
 	}
 }
+
+// El último carril del juego de ritmo recibe los platillos y la mitad de los
+// golpes de charles (antes solo los platillos, y casi nunca tenía notas).
+func TestDrumLanes(t *testing.T) {
+	if drumLane(drumCrash, 0) != rhLanes-1 {
+		t.Errorf("crash not on the last lane")
+	}
+	if drumLane(drumHat, 0) != drumHat || drumLane(drumHat, 1) != rhLanes-1 {
+		t.Errorf("hats don't alternate between lanes %d and %d", drumHat, rhLanes-1)
+	}
+	if drumLane(drumKick, 1) != drumKick || drumLane(drumSnare, 1) != drumSnare {
+		t.Errorf("kick or snare moved")
+	}
+}

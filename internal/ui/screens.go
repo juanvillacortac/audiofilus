@@ -34,11 +34,12 @@ const (
 	Shooter // Naves al ritmo (shooter.go)
 	Duel    // Duelo, batallas por turnos al ritmo (duel.go)
 	Runner  // Carrera, un corredor al ritmo (runner.go)
+	Modules // los módulos de la red: The Mod Archive, Modland... (modules.go)
 	screenCount
 )
 
 func (s Screen) String() string {
-	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes", "juegos", "cripta", "tracker", "adivina", "serpiente", "naves", "duelo", "carrera"}[s]
+	return [...]string{"reproduciendo", "biblioteca", "cola", "bloques", "ritmo", "visualizador", "descargas", "radio", "podcasts", "ajustes", "juegos", "cripta", "tracker", "adivina", "serpiente", "naves", "duelo", "carrera", "modulos"}[s]
 }
 
 const (

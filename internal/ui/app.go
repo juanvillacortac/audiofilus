@@ -116,6 +116,7 @@ type App struct {
 	settingsScr      scroller     // y el de Ajustes (su posición va en settingsScroll)
 	splashing        bool         // se está mostrando el splash
 	upd              updateState  // las actualizaciones (update.go)
+	mods             modState     // los módulos de la red (modules.go)
 	splashT          float64      // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
@@ -475,6 +476,7 @@ func (a *App) Update() error {
 	a.updateServers()
 	a.updateRadioResults()
 	a.updatePodResults()
+	a.pollModules()
 	a.trackPodcast()
 	a.updatePings()
 	a.watchProfile()
@@ -789,6 +791,8 @@ func (a *App) updateMain() {
 		a.updateRadio()
 	case Podcasts:
 		a.updatePodcasts()
+	case Modules:
+		a.updateModules()
 	case Settings:
 		if in.Pressed(ActBack) && !a.settingsEdit && !a.settingsQR {
 			a.goBack()
@@ -1209,6 +1213,8 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			a.drawRadio(dst)
 		case Podcasts:
 			a.drawPodcasts(dst)
+		case Modules:
+			a.drawModules(dst)
 		case Settings:
 			a.drawSettings(dst)
 		}
@@ -1723,6 +1729,18 @@ func (a *App) writeShots() error {
 					return err
 				}
 				a.pod.open = nil
+			}
+		}
+		// Los módulos: lo más bajado de The Mod Archive (con red).
+		a.modInit()
+		for i := 0; i < 300 && a.mods.loading[0]; i++ {
+			time.Sleep(100 * time.Millisecond)
+			a.pollModules()
+		}
+		if len(a.mods.lists[0]) > 0 {
+			a.screen, a.mods.tabFocus, a.mods.sel[0] = Modules, false, 2
+			if err := shot("modulos"); err != nil {
+				return err
 			}
 		}
 	}

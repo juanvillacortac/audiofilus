@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"github.com/juanvillacortac/audiofilus/internal/modsrc"
 	"github.com/juanvillacortac/audiofilus/internal/ytm"
 	"image/color"
 	"sort"
@@ -31,7 +32,8 @@ const (
 	resArtist = iota
 	resAlbum
 	resSong
-	resYT // de YouTube Music (ytmusic.go)
+	resYT  // de YouTube Music (ytmusic.go)
+	resMod // de los sitios de módulos (modules.go)
 )
 
 // searchResult es un resultado de la búsqueda.
@@ -45,6 +47,7 @@ type searchResult struct {
 	song Song
 	yt   ytm.Track
 	have bool // de YouTube Music, y probablemente ya está en la biblioteca
+	mod  modsrc.Item
 }
 
 // searchState es la búsqueda en curso.
@@ -56,29 +59,51 @@ type searchState struct {
 	results   []searchResult
 	sel       int
 	lastQuery string
-	scope     int // dónde se busca (con yt-dlp): todo, la biblioteca o YouTube Music
+	scope     int // dónde se busca: todo, la biblioteca, YouTube Music (con yt-dlp) o los módulos
 }
 
-// Dónde se busca. Sin yt-dlp, siempre en la biblioteca.
+// Dónde se busca. YouTube Music solo con yt-dlp.
 const (
 	scopeAll = iota
 	scopeLibrary
 	scopeYT
+	scopeMods
 	scopeCount
 )
 
 // scopeNames son los nombres de los filtros, para la fila de debajo de la caja.
-var scopeNames = [scopeCount]string{"sf_all", "sf_library", "sf_yt"}
+var scopeNames = [scopeCount]string{"sf_all", "sf_library", "sf_yt", "sf_mods"}
+
+// scopeOn dice si un filtro está (YouTube Music, con yt-dlp).
+func (a *App) scopeOn(i int) bool { return i != scopeYT || a.yt.bin != "" }
 
 // searchScope pasa al filtro anterior (-1) o siguiente (1): L1/R1 en Buscar.
 func (a *App) searchScope(d int) {
 	s := &a.search
-	s.scope = (s.scope + d + scopeCount) % scopeCount
+	for {
+		s.scope = (s.scope + d + scopeCount) % scopeCount
+		if a.scopeOn(s.scope) {
+			break
+		}
+		d = max(-1, min(1, d))
+	}
 	s.lastQuery = "" // se vuelven a juntar los resultados
-	if s.scope != scopeLibrary && !s.typing {
-		a.ytSearch(string(s.query))
+	if !s.typing {
+		a.searchOnline(string(s.query))
 	}
 	a.updateSearchResults()
+}
+
+// searchOnline busca q en lo de la red que toque el filtro: YouTube Music y
+// los sitios de módulos.
+func (a *App) searchOnline(q string) {
+	s := &a.search
+	if s.scope == scopeAll || s.scope == scopeYT {
+		a.ytSearch(q)
+	}
+	if s.scope == scopeAll || s.scope == scopeMods {
+		a.modSearchAll(q)
+	}
 }
 
 // fold pasa s a mayúsculas sin tildes, para comparar.
@@ -172,11 +197,14 @@ func (a *App) updateSearchResults() {
 	s := &a.search
 	if q := string(s.query); q != s.lastQuery {
 		var res []searchResult
-		if s.scope != scopeYT || a.yt.bin == "" {
+		if s.scope == scopeAll || s.scope == scopeLibrary {
 			res = a.runSearch(q)
 		}
-		if s.scope != scopeLibrary {
+		if s.scope == scopeAll || s.scope == scopeYT {
 			res = append(res, a.ytResults(q)...)
+		}
+		if s.scope == scopeAll || s.scope == scopeMods {
+			res = append(res, a.modResults(q)...)
 		}
 		s.lastQuery, s.results = q, res
 		s.sel = min(s.sel, max(0, len(s.results)-1))
@@ -235,9 +263,9 @@ func (a *App) updateTyping() {
 				s.query = append(s.query, []rune(k)...)
 			}
 		}
-	case a.yt.bin != "" && in.Pressed(ActPrev):
+	case in.Pressed(ActPrev):
 		a.searchScope(-1)
-	case a.yt.bin != "" && in.Pressed(ActNext):
+	case in.Pressed(ActNext):
 		a.searchScope(1)
 	case in.Repeat(ActBack):
 		a.backspace()
@@ -262,10 +290,8 @@ func (a *App) backspace() {
 
 // searchDone pasa a los resultados (si hay).
 func (a *App) searchDone() {
-	if a.search.scope != scopeLibrary {
-		a.ytSearch(string(a.search.query))
-	}
-	if len(a.search.results) > 0 || a.yt.bin != "" {
+	a.searchOnline(string(a.search.query))
+	if len(a.search.results) > 0 || a.search.scope != scopeLibrary {
 		a.search.typing, a.search.sel = false, 0
 	}
 }
@@ -276,6 +302,8 @@ func (a *App) openResult(r searchResult) {
 	switch r.kind {
 	case resYT:
 		a.ytMenu(r)
+	case resMod:
+		a.modListen(r.mod)
 	case resArtist:
 		a.openArtist(r.ar.Name)
 	case resAlbum:
@@ -295,6 +323,9 @@ func (a *App) resultMenu(r searchResult) {
 	switch r.kind {
 	case resYT:
 		a.ytMenu(r)
+	case resMod:
+		a.modItemMenu(r.mod)
+		return
 	case resArtist:
 		a.menu = a.songsMenu(r.ar.Name, r.ar.AllSongs(), nil, "")
 	case resAlbum:
@@ -330,10 +361,14 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 		rect(dst, x+11+min(tw, maxW)+1, top-1, 1, 7, th.Text)
 	}
 	y := top + 15
-	// Los filtros, si hay YouTube Music: todo, la biblioteca o YouTube.
-	if a.yt.bin != "" {
+	// Los filtros: todo, la biblioteca, YouTube Music (si hay yt-dlp) o los
+	// módulos.
+	{
 		fx := x
 		for i, key := range scopeNames {
+			if !a.scopeOn(i) {
+				continue
+			}
 			label := T(key)
 			tx := fx + 4
 			if i == scopeYT {
@@ -385,7 +420,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 	n := len(s.results)
 	if n == 0 {
 		switch {
-		case a.yt.pending && s.scope != scopeLibrary:
+		case (a.yt.pending || a.mods.spending) && s.scope != scopeLibrary:
 			drawText(dst, T("ytm_searching"), SmallFace, x, y+2, th.Dim)
 		case q != "":
 			drawText(dst, T("search_none"), SmallFace, x, y+2, th.Dim)
@@ -402,7 +437,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 	}
 	whole := dst
 	dst = clip
-	icons := [4]string{"user", "disc", "note", "ytm"}
+	icons := [5]string{"user", "disc", "note", "ytm", "tracker"}
 	for i := 0; i <= rows && first+i < n; i++ {
 		r := s.results[first+i]
 		ry := y + 4 + i*rowH - off
@@ -413,7 +448,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 			subCol = th.Accent
 		}
 		// Una raya separa los de YouTube Music de los de la biblioteca.
-		if r.kind == resYT && (first+i == 0 || s.results[first+i-1].kind != resYT) {
+		if r.kind >= resYT && (first+i == 0 || s.results[first+i-1].kind != r.kind) {
 			rect(dst, x, ry-5, w, 1, withAlpha(th.Accent2, 0x70))
 		}
 		ic := th.Accent
@@ -443,10 +478,7 @@ func (a *App) searchHints() []hint {
 	case a.search.typing:
 		return []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_search")}}
 	}
-	if a.yt.bin != "" {
-		return []hint{{"A", T("h_open")}, {"START", T("h_more")}, {"L1/R1", T("h_filter")}, {"B", T("h_keys")}}
-	}
-	return []hint{{"A", T("h_open")}, {"START", T("h_more")}, {"B", T("h_keys")}}
+	return []hint{{"A", T("h_open")}, {"START", T("h_more")}, {"L1/R1", T("h_filter")}, {"B", T("h_keys")}}
 }
 
 // ytRed es el rojo del icono de YouTube en los resultados y el filtro.

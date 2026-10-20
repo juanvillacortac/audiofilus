@@ -1229,6 +1229,7 @@ func (a *App) openTrackerMenu() {
 		menuItem{label: T("tk_export_xm"), icon: "download", do: func() { a.exportModule(".xm") }},
 		menuItem{label: T("tk_export_mod"), icon: "download", do: func() { a.exportModule(".mod") }},
 		menuItem{label: T("tk_import"), icon: "folder", do: a.openTrackerImport},
+		menuItem{label: T("tk_import_online"), icon: "search", do: a.trackerOnlineSearch},
 		menuItem{label: T("tk_delete"), icon: "power", do: a.deleteTrackerSong},
 		menuItem{label: T("gm_leave"), icon: "pad", do: func() { a.saveTracker(); a.screen = Games }},
 	)

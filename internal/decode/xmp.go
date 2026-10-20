@@ -17,7 +17,7 @@ import (
 
 // ModuleExtensions son las extensiones de módulos tracker (no tienen una firma
 // común al principio del archivo, así que se reconocen por la extensión).
-var ModuleExtensions = []string{".mod", ".xm", ".it", ".s3m", ".mptm", ".669", ".med", ".mtm", ".stm", ".far", ".ult"}
+var ModuleExtensions = []string{".mod", ".xm", ".it", ".s3m", ".mptm", ".669", ".med", ".mmd0", ".mmd1", ".mmd2", ".mmd3", ".mtm", ".stm", ".far", ".ult"}
 
 const (
 	xmpRate = 48000

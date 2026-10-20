@@ -133,6 +133,21 @@ func (g *rhythmGame) pickLane(t float64, e [rhLanes]float64) int {
 	return lane
 }
 
+// drumLane es el carril de un golpe de batería: bombo, caja y charles en los
+// tres primeros, y el último para los platillos. Los platillos fuertes suenan
+// poco (al empezar una parte), así que el charles se reparte entre los dos
+// de la derecha, alternando corchea a corchea como a dos manos: si no, el
+// último carril casi nunca tenía notas.
+func drumLane(k, slot int) int {
+	switch {
+	case k == drumCrash:
+		return rhLanes - 1
+	case k == drumHat && slot%2 == 1:
+		return rhLanes - 1
+	}
+	return k
+}
+
 // rhLaneActs son los botones de cada carril, a dos manos y siempre vecinos:
 // ← y ↓ con la izquierda, B y A con la derecha (con ↑ → Y X de alternativa).
 // Con el rombo entero (Y B X A) había que saltar entre opuestos.
@@ -187,7 +202,7 @@ func (a *App) updateRhythm() {
 				// bombo, luego la caja, el platillo y el charles.
 				for _, k := range []int{drumKick, drumSnare, drumCrash, drumHat} {
 					if on[k] && n < 1 {
-						g.notes = append(g.notes, rhNote{t, k})
+						g.notes = append(g.notes, rhNote{t, drumLane(k, slot)})
 						n++
 					}
 				}

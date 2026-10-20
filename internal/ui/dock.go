@@ -30,6 +30,7 @@ var dockEntries = []dockEntry{
 	{screen: LibraryScreen, search: true, icon: "search", label: "tab_search"},
 	{screen: Radio, search: false, icon: "radio", label: "scr_radio"},
 	{screen: Podcasts, search: false, icon: "mic", label: "scr_podcasts"},
+	{screen: Modules, search: false, icon: "tracker", label: "scr_modules"},
 	{screen: Queue, search: false, icon: "list", label: "scr_queue"},
 	{screen: Visual, search: false, icon: "visual", label: "scr_visual"},
 	{screen: Downloads, search: false, icon: "download", label: "ytm_jobs"},

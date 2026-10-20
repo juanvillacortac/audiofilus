@@ -66,6 +66,8 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>", "gm_choose"}, {"A", "gm_play"}, {"B", "h_back"}}
 	case a.screen == Visual:
 		own = []hint{{"<>", "h_visual"}, {"A", "g_camera"}, {"B", "h_back"}}
+	case a.screen == Modules:
+		own = []hint{{"^v", "g_dock_move"}, {"A", "ytm_listen"}, {"START", "md_g_menu"}, {"X", "rd_g_x"}, {"<", "g_tabs"}}
 	case a.screen == Podcasts:
 		own = []hint{{"^v", "g_dock_move"}, {"A", "pd_g_a"}, {"START", "pd_g_menu"}, {"<>", "g_page"}, {"B", "h_back"}}
 	case a.screen == Radio:
