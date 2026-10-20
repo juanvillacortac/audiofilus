@@ -15,6 +15,10 @@ set -eu
 mkdir -p "${1:?usage: tools/libgme/build.sh <output dir>}"
 out=$(cd "$1" && pwd)
 ZIG=${ZIG:-zig}
+# La ruta de verdad de zig: si es un shim de mise, desde las carpetas
+# temporales de cmake no sabría qué versión usar.
+real=$("$ZIG" env | sed -n 's/.*zig_exe"\{0,1\} *[:=] *"\([^"]*\)".*/\1/p' | head -1)
+[ -n "$real" ] && ZIG=$real
 GME_VERSION=0.6.5
 ZLIB_VERSION=1.3.1
 work=$(mktemp -d)
