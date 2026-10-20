@@ -28,14 +28,19 @@ import (
 
 // Las pestañas de la radio.
 const (
-	rtFav = iota
+	rtFav   = iota
+	rtLists // las listas propias (.m3u, .pls) de la carpeta radio/
 	rtTop
 	rtSearch
 	rtTags
 	rtCount
 )
 
-var radioTabKeys = [rtCount]string{"rd_fav", "rd_top", "rd_search", "rd_tags"}
+var radioTabKeys = [rtCount]string{"rd_fav", "rd_lists", "rd_top", "rd_search", "rd_tags"}
+
+// radioDir es la carpeta de las listas de emisoras propias: radio/ junto a
+// la app (ver radio.LoadPlaylists).
+func (a *App) radioDir() string { return filepath.Join(a.paths.Base, "radio") }
 
 // radioState es la pantalla de la radio.
 type radioState struct {
@@ -163,12 +168,14 @@ func (a *App) radioLoad(tab int) {
 		return
 	}
 	r.loading[tab] = true
-	world, query, tag, country := r.world, r.query, r.tag, a.country()
+	world, query, tag, country, dir := r.world, r.query, r.tag, a.country(), a.radioDir()
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		res := radioResult{tab: tab, query: query, tag: tag}
 		switch tab {
+		case rtLists:
+			res.list = radio.LoadPlaylists(dir)
 		case rtTop:
 			c := country
 			if world {
@@ -247,6 +254,9 @@ func (a *App) radioPlay(list []radio.Station, i int) {
 	a.send("shuffle", "off")
 	a.screen = NowPlaying
 	uuid := list[i].UUID
+	if strings.HasPrefix(uuid, "url-") {
+		return // una emisora propia: no es del directorio
+	}
 	go func() { // radio-browser pide contar cada escucha
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -261,6 +271,7 @@ func (a *App) updateRadio() {
 		r.loaded = true
 		a.radioLoad(rtTop)
 		a.radioLoad(rtTags)
+		a.radioLoad(rtLists)
 	}
 	if r.tabFocus {
 		switch {
@@ -272,6 +283,9 @@ func (a *App) updateRadio() {
 			r.tabFocus = false
 			if r.tab == rtSearch && len(r.lists[rtSearch]) == 0 {
 				a.radioAskSearch()
+			}
+			if r.tab == rtLists {
+				a.radioLoad(rtLists) // por si se añadió una lista
 			}
 		case in.Pressed(ActBack):
 			a.goBack()
@@ -305,6 +319,8 @@ func (a *App) updateRadio() {
 		a.radioPlay(list, *sel)
 	case in.Pressed(ActMenu) && n > 0:
 		a.radioMenu(list, *sel)
+	case in.Pressed(ActMenu) && (r.tab == rtFav || r.tab == rtLists):
+		a.radioAddURL()
 	case in.Pressed(ActMenu) && r.tab == rtSearch:
 		a.radioAskSearch()
 	case in.Pressed(ActMenu):
@@ -338,6 +354,26 @@ func (a *App) updateRadioTags() {
 	}
 }
 
+// radioAddURL añade una emisora por su dirección (y un nombre) a
+// favoritas.
+func (a *App) radioAddURL() {
+	a.openRawPrompt(T("rd_url_q"), "http://", false, func(u string) {
+		u = strings.TrimSpace(u)
+		if !radio.IsStreamURL(u) || len(u) <= len("https://") {
+			a.flash(T("rd_url_bad"))
+			return
+		}
+		a.openRawPrompt(T("rd_name_q"), "", false, func(name string) {
+			s := radio.FromURL(u, name)
+			if !a.isFav(s) {
+				a.toggleFav(s)
+			}
+			a.radio.tab, a.radio.tabFocus = rtFav, false
+			a.radio.lists[rtFav] = a.radio.favs
+		})
+	})
+}
+
 // radioAskSearch pide el nombre de una emisora.
 func (a *App) radioAskSearch() {
 	a.openRawPrompt(T("rd_search_q"), a.radio.query, false, func(q string) {
@@ -362,6 +398,9 @@ func (a *App) radioMenu(list []radio.Station, i int) {
 	if a.radio.tab == rtSearch {
 		m.items = append(m.items, menuItem{label: T("rd_search"), icon: "search", do: a.radioAskSearch})
 	}
+	if t := a.radio.tab; t == rtFav || t == rtLists {
+		m.items = append(m.items, menuItem{label: T("rd_add_url"), icon: "plus", do: a.radioAddURL})
+	}
 	m.items = append(m.items, menuItem{label: T("rd_country_item"), icon: "globe",
 		value: func() string { return a.countryLabel() }, do: a.openCountryMenu, close: true})
 	a.menu = m
@@ -377,7 +416,9 @@ func stationSub(s radio.Station) string {
 	if s.Bitrate > 0 {
 		codec += fmt.Sprintf(" %dk", s.Bitrate)
 	}
-	parts = append(parts, codec)
+	if codec = strings.TrimSpace(codec); codec != "" { // las propias no lo dicen
+		parts = append(parts, codec)
+	}
 	if s.Tags != "" {
 		tags := strings.Split(s.Tags, ",")
 		parts = append(parts, strings.Join(tags[:min(2, len(tags))], ", "))
@@ -399,6 +440,9 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 		r.tab, r.tabFocus = i, false
 		if i == rtSearch && len(r.lists[rtSearch]) == 0 {
 			a.radioAskSearch()
+		}
+		if i == rtLists {
+			a.radioLoad(rtLists)
 		}
 	}
 	names := make([]string, rtCount)
@@ -518,6 +562,8 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 			msg = T("rd_loading")
 		case n == 0 && r.tab == rtFav:
 			msg = T("rd_no_favs")
+		case n == 0 && r.tab == rtLists:
+			msg = T("rd_lists_hint")
 		case n == 0 && r.tab == rtSearch:
 			msg = T("rd_search_hint")
 		case n == 0:

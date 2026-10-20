@@ -1665,6 +1665,16 @@ func (a *App) writeShots() error {
 			a.setSource(0)
 		}
 	}
+	// Mis listas de la radio, si la carpeta radio/ de la maqueta tiene alguna.
+	if list := radio.LoadPlaylists(a.radioDir()); len(list) > 0 {
+		a.radio.loaded = true
+		a.radio.lists[rtLists], a.radio.tab, a.radio.sel[rtLists], a.radio.tabFocus = list, rtLists, 0, false
+		a.screen = Radio
+		if err := shot("radio-listas"); err != nil {
+			return err
+		}
+		a.screen = NowPlaying
+	}
 	// Con AUDIOFILUS_NET_TESTS, la radio con emisoras de verdad.
 	if os.Getenv("AUDIOFILUS_NET_TESTS") != "" {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)

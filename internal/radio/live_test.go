@@ -65,3 +65,24 @@ func TestRadioLive(t *testing.T) {
 		st.Close()
 	}
 }
+
+// TestRadioPlaylistLive conecta con una emisora de verdad por su .pls (con
+// AUDIOFILUS_NET_TESTS; si no, se salta) y espera a que suene.
+func TestRadioPlaylistLive(t *testing.T) {
+	if os.Getenv("AUDIOFILUS_NET_TESTS") == "" {
+		t.Skip("set AUDIOFILUS_NET_TESTS=1")
+	}
+	s := Open("https://somafm.com/groovesalad.pls", "")
+	defer s.Close()
+	for i := 0; i < 150; i++ {
+		ready, err := s.Ready()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if ready {
+			return
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	t.Fatal("the station never started")
+}

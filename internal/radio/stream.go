@@ -7,6 +7,7 @@ package radio
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -54,6 +55,26 @@ type Stream struct {
 	cancel    context.CancelFunc
 	space     *sync.Cond
 	pre       []float32 // lo decodificado al arrancar, para saber la frecuencia
+	hops      int       // listas seguidas hasta el flujo (ver isPlaylist)
+}
+
+// isPlaylist dice si lo que dio la emisora es una lista de direcciones (por
+// su Content-Type o, si no lo dice bien, por la extensión de su dirección).
+func isPlaylist(contentType, u string) bool {
+	ct := strings.ToLower(contentType)
+	if strings.Contains(ct, "scpls") || strings.Contains(ct, "mpegurl") {
+		return true
+	}
+	p := strings.ToLower(u)
+	if i := strings.IndexAny(p, "?#"); i >= 0 {
+		p = p[:i]
+	}
+	for _, e := range PlaylistExtensions {
+		if strings.HasSuffix(p, e) {
+			return true
+		}
+	}
+	return false
 }
 
 // Open empieza a conectar con url (codec es la pista del directorio: "MP3",
@@ -276,6 +297,23 @@ func (s *Stream) connect(ctx context.Context) error {
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("radio: %s", resp.Status)
+	}
+	// Muchas emisoras dan una lista (listen.pls, .m3u) que apunta al flujo
+	// de verdad: se sigue (hasta tres saltos). Las de HLS (#EXT-X-, trozos
+	// sueltos) no se entienden.
+	if isPlaylist(resp.Header.Get("Content-Type"), s.url) && s.hops < 3 {
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
+		if bytes.Contains(b, []byte("#EXT-X-")) {
+			s.mu.Lock()
+			s.fatal = fmt.Errorf("%w (HLS radio streams)", decode.ErrUnsupported)
+			s.mu.Unlock()
+			return s.fatal
+		}
+		if list := ParsePlaylist(bytes.NewReader(b)); len(list) > 0 {
+			s.url = list[0].URL
+			s.hops++
+			return s.connect(ctx)
+		}
 	}
 	s.mu.Lock()
 	if c := codecOf("", resp.Header.Get("Content-Type")); c != "" && s.codec == "" {
