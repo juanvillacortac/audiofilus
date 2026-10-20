@@ -946,28 +946,48 @@ func (a *App) readBattery() {
 		a.battery, a.charging = level, charging
 		return
 	}
-	caps, _ := filepath.Glob("/sys/class/power_supply/*/capacity")
-	for _, c := range caps {
-		if t, err := os.ReadFile(filepath.Join(filepath.Dir(c), "type")); err != nil || strings.TrimSpace(string(t)) != "Battery" {
-			continue
-		}
-		b, err := os.ReadFile(c)
-		if err != nil {
+	if level, charging, ok := sysBattery("/sys/class/power_supply"); ok {
+		a.battery, a.charging = level, charging
+	}
+}
+
+// sysBattery lee la batería de la consola en sysfs (dir es
+// /sys/class/power_supply). Puede haber varias del tipo "Battery": la del
+// sistema, la de un mando (scope "Device"), una que no está (present 0) o
+// la de un medidor que no informa (capacidad 0, visto en las RK3566 con
+// dArkOS). Se queda con la del sistema que esté y diga algo; a igualdad, la
+// de más capacidad, y la primera por nombre.
+func sysBattery(dir string) (level float64, charging, ok bool) {
+	read := func(sup, f string) string {
+		b, _ := os.ReadFile(filepath.Join(dir, sup, f))
+		return strings.TrimSpace(string(b))
+	}
+	ents, _ := os.ReadDir(dir)
+	best := -1
+	var bestCharging bool
+	for _, e := range ents {
+		sup := e.Name()
+		if read(sup, "type") != "Battery" || read(sup, "scope") == "Device" || read(sup, "present") == "0" {
 			continue
 		}
 		var v int
-		if _, err := fmt.Sscan(string(b), &v); err == nil {
-			a.battery = float64(v) / 100
-			st, _ := os.ReadFile(filepath.Join(filepath.Dir(c), "status"))
-			switch strings.TrimSpace(string(st)) {
+		if _, err := fmt.Sscan(read(sup, "capacity"), &v); err != nil || v < 0 || v > 100 {
+			continue
+		}
+		if v > best {
+			best = v
+			switch read(sup, "status") {
 			case "Charging", "Full":
-				a.charging = true
+				bestCharging = true
 			default:
-				a.charging = false
+				bestCharging = false
 			}
-			return
 		}
 	}
+	if best < 0 {
+		return 0, false, false
+	}
+	return float64(best) / 100, bestCharging, true
 }
 
 func firstOr(s []string, d string) string {
