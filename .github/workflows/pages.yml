@@ -3,7 +3,14 @@ name: Pages
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["site/**", ".github/workflows/pages.yml", "tools/site/altstore.py"]
+  # The AltStore source lists the releases: rebuilt when one is made (the
+  # Release workflow) and when its notes are edited.
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  release:
+    types: [published, edited]
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,6 +27,10 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: The AltStore / SideStore source (altstore.json)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/site/altstore.py site/altstore.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

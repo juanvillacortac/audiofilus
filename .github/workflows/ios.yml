@@ -38,10 +38,15 @@ jobs:
 
       - name: The app, unsigned
         run: |
+          # The app's version is the tag's (v0.7.1 -> 0.7.1): AltStore and
+          # SideStore check that it matches the source (tools/site/altstore.py).
+          version=
+          [ "$GITHUB_REF_TYPE" = tag ] && version=${GITHUB_REF_NAME#v}
           xcodebuild -project ios/Audiofilus.xcodeproj -scheme Audiofilus \
             -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
             -derivedDataPath "$RUNNER_TEMP/build" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            ${version:+MARKETING_VERSION=$version} \
             build
           mkdir -p "$RUNNER_TEMP/ipa/Payload"
           cp -R "$RUNNER_TEMP/build/Build/Products/Release-iphoneos/Audiofilus.app" "$RUNNER_TEMP/ipa/Payload/"

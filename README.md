@@ -195,6 +195,8 @@ Or by hand: grab `audiofilus-linux-amd64.tar.gz` (or `-arm64`), unzip it anywher
 
 Every release has an unsigned `audiofilus-ios-unsigned.ipa`. Install it with [Sideloadly](https://sideloadly.io) or [AltStore](https://altstore.io), which sign it with your own Apple ID. Details in [docs/ios.md](docs/ios.md).
 
+**AltStore, SideStore or LiveContainer source:** add `https://juanvillacortac.github.io/audiofilus/altstore.json` as a source and every new release shows up as an update.
+
 ### Windows
 
 On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the `.exe` (`libfdk-aac-2.dll`, `libopusfile-0.dll` with `libopus-0.dll` and `libogg-0.dll`, `libmpg123-0.dll`, `libxmp-4.dll`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
