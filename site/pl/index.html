@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -458,7 +459,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Tracker</span>
             <h3>Twórz własny chiptune</h3>
           </div>
-          <p class="lede">Tracker w stylu LSDJ na krzyżak, z odrobiną PICO-8: łańcuchy i frazy, instrumenty z obwiedniami i tabelami, groove ze swingiem, edytowalne fale, 21 komend efektów i piano roll. Pisz na cztery kanały Game Boya albo wybierz tryb Wolny z ośmioma kanałami syntezatora. Wyeksportuj utwór do WAV, a trafi do twojej biblioteki, gotowy do słuchania w tle jak wszystko inne. <a href="docs/tracker.html">Przewodnik po trackerze</a>.</p>
+          <p class="lede">Tracker w stylu LSDJ na krzyżak, z odrobiną PICO-8: łańcuchy i frazy, instrumenty z obwiedniami i tabelami, groove ze swingiem, edytowalne fale, 21 komend efektów i piano roll. Pisz na cztery kanały Game Boya albo wybierz tryb Wolny z ośmioma kanałami syntezatora. Importuj utwory MOD, XM i LSDJ, eksportuj do WAV, XM lub MOD, i graj albo synchronizuj go z klawiatury USB MIDI lub automatu perkusyjnego. Eksporty trafiają do twojej biblioteki, gotowe do słuchania w tle jak wszystko inne. <a href="docs/tracker.html">Przewodnik po trackerze</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Tracker grający Pocket Pop: fraza z nutami, instrumentami i głośnościami, które świecą, gdy grają, a potem widok utworu z oscyloskopami na żywo dla każdego kanału" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -565,6 +566,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Na żywo</span><h3>Radio internetowe</h3><p>Tysiące stacji z radio-browser.info, według kraju lub gatunku, z tytułem bieżącego utworu ze strumienia. Dodaj własne listy stacji .m3u lub .pls albo dodaj stację przez adres.</p></div>
         <div class="source"><span class="tag">Odcinki</span><h3>Podcasty</h3><p>Najpopularniejsze programy w twoim kraju, wyszukiwanie albo dowolny kanał RSS przez adres. Odcinki pobierają się do słuchania offline i pamiętają, gdzie skończyłeś.</p></div>
         <div class="source"><span class="tag">Przynieś własne</span><h3>YouTube Music</h3><p>Skopiuj własny yt-dlp obok aplikacji, a pojawi się wyszukiwanie: słuchaj bez pobierania albo zapisuj utwory do biblioteki z okładką i tagami.</p></div>
+        <div class="source wide"><span class="tag">Scena</span><h3>Archiwa modułów</h3><p>The Mod Archive, Modland, VGMRips i AMP na jednym ekranie: przeglądaj popularne, nowe albo losowe, szukaj, słuchaj, zapisuj w bibliotece albo otwórz moduł w trackerze. Pojawiają się też w wyszukiwaniu.</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Wyszukiwanie z filtrami Wszystko, Biblioteka i YouTube; utwory, które już masz, są zaznaczone" width="360" height="240" loading="lazy"><figcaption>Jedno wyszukiwanie w bibliotece i YouTube. Znacznik pokazuje utwory, które już masz.</figcaption></figure>

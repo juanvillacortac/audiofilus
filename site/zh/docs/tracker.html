@@ -68,6 +68,7 @@ body { line-break: strict; }
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="modules.html">模块</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">播放记录</a></li>
@@ -119,7 +120,7 @@ body { line-break: strict; }
 <tr><td>GROOVE</td><td>乐器的波形（如果是波形乐器）</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>：歌曲名称（<kbd>A</kbd> 打开键盘）、模式、速度（40 到 300 BPM）和起始律动。</li>
+<li><strong>PROJ</strong>：歌曲名称（<kbd>A</kbd> 打开键盘）、模式、速度（40 到 300 BPM）和起始律动，以及 <a href="#midi">MIDI</a> 设备和同步。</li>
 <li><strong>SONG</strong>：行 × 声道的链编号网格，每个声道都有示波器。你在这里选中的声道就是链和乐句播放所在的声道。</li>
 <li><strong>CHAIN</strong>、<strong>PHRASE</strong>、<strong>TABLE</strong>：16 行的网格。</li>
 <li><strong>INSTR</strong>：乐器设置的列表。</li>
@@ -153,7 +154,9 @@ body { line-break: strict; }
 <li>对当前视图显示的内容（链、乐句、乐器、表、律动或波形）执行 <strong>复制</strong>、<strong>粘贴</strong>、<strong>克隆为新的</strong> 和 <strong>清空</strong>。克隆会复制到第一个空闲编号，你来时所在的歌曲单元格或链步骤会改为指向副本。</li>
 <li>在波形视图中，有八种 <strong>PICO-8 形状</strong>，可复制到当前波形。</li>
 <li><strong>歌曲</strong>：新建 Game Boy 或自由模式歌曲、你保存的歌曲和示例。</li>
-<li><strong>导出到音乐库</strong>、<strong>删除这首歌</strong> 和 <strong>回到游戏</strong>。</li>
+<li><strong>导出到音乐库</strong>（WAV）、<strong>导出为 XM</strong> 和 <strong>导出为 MOD</strong>。</li>
+<li><strong>导入…</strong>和<strong>在线搜索…</strong>：见<a href="#import-export">导入和导出</a>。</li>
+<li><strong>删除这首歌</strong>和<strong>回到游戏</strong>。</li>
 </ul>
 <p>按住 <kbd>FN</kbd> 查看当前视图的操作。</p>
 
@@ -190,6 +193,7 @@ body { line-break: strict; }
 <tr><td>短噪声</td><td>噪声：7 位寄存器，音色更有音调感、更金属</td></tr>
 <tr><td>形状</td><td>合成器：三角、正弦、锯齿、方波、风琴、幻影或噪声</td></tr>
 </table>
+<p>导入的 MOD 和 XM 歌曲还有<strong>采样</strong>乐器：模块里录制的声音，带有循环（正向或往返）。它们会在 INSTR 视图中显示通用设置；更改类型会把它们变成新的乐器。</p>
 <p>噪声乐器的音符决定噪声的速度：低音轰鸣，高音嘶嘶作响。在某项设置上按 <kbd>A</kbd> 会用该乐器播放上次的音符。</p>
 
 <h2 id="tables">表</h2>
@@ -238,9 +242,33 @@ body { line-break: strict; }
 </ul>
 
 <h2 id="import-export">导入和导出</h2>
-<p><kbd>Start</kbd> → <strong>导出到音乐库</strong> 会把歌曲完整渲染一遍，生成 WAV 并保存到音乐文件夹内的 <code>audiofilus tracker</code> 文件夹中。音乐库会收录它，所以它能像其他歌曲一样在后台播放。</p>
-<p>用旧版 tracker 制作的歌曲打开时会自动转换：每个 pattern 变成每个声道一个乐句和一条链，其效果变成指令（琶音 → <code>C</code>，占空比 → <code>W</code>，弯音 → <code>P</code>）。</p>
-<p>计划中：MOD/XM 导入和导出、LSDJ 歌曲导入，以及 MIDI 同步。</p>
+<p><strong>导出</strong>在 <kbd>Start</kbd> 菜单中。文件会保存到音乐文件夹里的 <code>audiofilus tracker</code> 文件夹，音乐库会收录它们：</p>
+<ul>
+<li><strong>导出到音乐库</strong>：把歌曲完整渲染一遍生成的 WAV。</li>
+<li><strong>导出为 XM</strong>：可以在 OpenMPT、MilkyTracker 等软件中打开的 FastTracker 2 模块（在 audiofilus 里也能播放）。每个乐器会变成听起来相似的采样，并带有音量包络；音符、链的移调、速度、律动和主要指令（和弦、音高、滑音、颤音、切断、延迟、重触发、声像）都会保留。</li>
+<li><strong>导出为 MOD</strong>：同样的内容，存为四声道 ProTracker 模块。无法容纳自由模式歌曲的第 5 到第 8 声道。</li>
+</ul>
+<p><strong>导入…</strong>会列出在你的音乐文件夹和应用的 <code>data/tracker/import</code> 文件夹中找到的歌曲（最多 300 首）。每次导入都会成为一首可以编辑的新歌：</p>
+<ul>
+<li><strong>MOD</strong>（ProTracker 及兼容格式，4、6 或 8 声道）和 <strong>XM</strong>（FastTracker 2，前 8 个声道）：成为自由模式的歌曲。每个 pattern 变成乐句和链，每个采样变成采样乐器，时值准确。</li>
+<li><strong>LSDJ</strong>：一首 <code>.lsdsng</code> 歌曲，或 <code>.sav</code> 中的所有歌曲。在 Game Boy 模式下几乎一一对应：歌曲、链、乐句、乐器、表、律动、波形和速度。</li>
+</ul>
+<p><strong>在线搜索…</strong>会在 The Mod Archive 和 Modland 上查找 MOD 和 XM 文件；选中一个就会下载并导入。<a href="modules.html">模块</a>界面也能在 tracker 中打开它们。</p>
+<p>并不是所有内容都能保留：tracker 没有对应指令的模块效果（采样偏移、pattern 循环、震音、全局音量）会被丢弃，XM 乐器只保留在 C-4 上播放的那个采样，LSDJ 的鼓组会变成短促的噪声，导出的模块会丢失表和较少用的指令。用旧版 tracker 制作的歌曲打开时会自动转换：每个 pattern 变成每个声道一个乐句和一条链，其效果变成指令（琶音 → <code>C</code>，占空比 → <code>W</code>，弯音 → <code>P</code>）。</p>
+
+<h2 id="midi">MIDI</h2>
+<p>把 USB MIDI 键盘或控制器插到掌机（必要时通过 USB-C 转接头）或电脑上。支持 Linux 掌机和电脑、Windows 以及 iPhone/iPad（USB 或已配对的蓝牙 MIDI）。tracker 会自动找到它（应用开着时插上也可以），并连接第一个设备。</p>
+<ul>
+<li><strong>音符</strong>：在你正在编辑的声道上，用最后使用的乐器发声。在乐句视图中还会写入光标位置，光标随后移到下一步：逐步录入。</li>
+<li><strong>PROJ → MIDI</strong>：使用哪个设备，或不使用。</li>
+<li><strong>PROJ → 同步</strong>：由谁掌握节拍。
+<ul>
+<li><strong>内部</strong>：歌曲自身的速度。</li>
+<li><strong>跟随时钟</strong>：tracker 跟随收到的 MIDI 时钟。鼓机、DAW 或 LSDJ 本身都可以开始、停止并设定速度。MIDI 时钟每拍 24 个脉冲，与 tracker 的 tick 相同，所以每个脉冲就是一个 tick。</li>
+<li><strong>发送时钟</strong>：tracker 把自己的时钟（开始、停止和速度）发给设备，让其他设备跟着它走。</li>
+</ul></li>
+</ul>
+<p>时钟会晚到大约一个音频缓冲（50–100 ms），只有在跟着现场演奏时才会察觉。</p>
 
     <nav class="pager" aria-label="页面"><a href="visualizers-games.html">← 可视化与游戏</a><a href="settings.html">设置 →</a></nav>
   </article>

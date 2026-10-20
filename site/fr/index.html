@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -464,7 +465,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Tracker</span>
             <h3>Compose ta propre chiptune</h3>
           </div>
-          <p class="lede">Un tracker façon LSDJ pour la croix directionnelle, avec une touche de PICO-8&nbsp;: chaînes et phrases, instruments avec enveloppes et tables, grooves avec swing, ondes modifiables, 21 commandes d’effet et un piano roll. Compose pour les quatre canaux d’une Game Boy, ou passe en mode Libre avec huit canaux de synthé. Exporte un morceau en WAV et il arrive dans ta bibliothèque, prêt à jouer en arrière-plan comme le reste. <a href="docs/tracker.html">Guide du tracker</a>.</p>
+          <p class="lede">Un tracker façon LSDJ pour la croix directionnelle, avec une touche de PICO-8&nbsp;: chaînes et phrases, instruments avec enveloppes et tables, grooves avec swing, ondes modifiables, 21 commandes d’effet et un piano roll. Compose pour les quatre canaux d’une Game Boy, ou passe en mode Libre avec huit canaux de synthé. Importe des morceaux MOD, XM et LSDJ, exporte en WAV, XM ou MOD, et joue-le ou synchronise-le depuis un clavier MIDI USB ou une boîte à rythmes. Les exports arrivent dans ta bibliothèque, prêts à jouer en arrière-plan comme le reste. <a href="docs/tracker.html">Guide du tracker</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Le tracker joue Pocket Pop&nbsp;: une phrase dont les notes, instruments et volumes s’allument en jouant, puis la vue du morceau avec un oscilloscope en direct par canal" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -570,6 +571,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Serveur</span><h3>Jellyfin</h3><p>Connecte-toi avec ton compte Jellyfin et parcours sa bibliothèque musicale et ses playlists comme tes propres fichiers.</p></div>
         <div class="source"><span class="tag">En direct</span><h3>Radio Internet</h3><p>Des milliers de stations de radio-browser.info, par pays ou par genre, avec le titre en cours tiré du flux. Apporte tes propres listes de stations .m3u ou .pls, ou ajoute une station par son adresse.</p></div>
         <div class="source"><span class="tag">Épisodes</span><h3>Podcasts</h3><p>Les meilleures émissions de ton pays, la recherche, ou n’importe quel flux RSS par son adresse. Les épisodes se téléchargent pour l’écoute hors ligne et reprennent là où tu t’es arrêté.</p></div>
+        <div class="source wide"><span class="tag">Scène</span><h3>Archives de modules</h3><p>The Mod Archive, Modland, VGMRips et AMP dans un seul écran&nbsp;: explore les plus populaires, les nouveautés ou au hasard, cherche, écoute, garde dans ta bibliothèque ou ouvre un module dans le tracker. Ils apparaissent aussi dans la recherche.</p></div>
         <div class="source"><span class="tag">Apporte le tien</span><h3>YouTube Music</h3><p>Copie ton propre yt-dlp à côté de l’appli et la recherche apparaît&nbsp;: écoute sans télécharger, ou enregistre des chansons dans ta bibliothèque avec pochette et tags.</p></div>
       </div>
       <div class="trio">

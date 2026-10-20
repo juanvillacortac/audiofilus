@@ -58,6 +58,7 @@
           <li><a href="sound.html">サウンド</a></li>
           <li><a href="lyrics.html">歌詞</a></li>
           <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
+          <li><a href="modules.html">モジュール</a></li>
           <li><a href="servers.html">サーバー</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">スクロブル</a></li>
@@ -109,7 +110,7 @@
 <tr><td>GROOVE</td><td>ウェーブのインストゥルメントなら、そのウェーブ</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>：曲名（<kbd>A</kbd> でキーボードが開きます）、モード、テンポ（40〜300 BPM）、最初のグルーヴ。</li>
+<li><strong>PROJ</strong>：曲名（<kbd>A</kbd> でキーボードが開きます）、モード、テンポ（40〜300 BPM）、最初のグルーヴ、そして <a href="#midi">MIDI</a> の機器と同期。</li>
 <li><strong>SONG</strong>：チェイン番号が並ぶ「行 × チャンネル」のグリッドと、各チャンネルのオシロスコープ。ここで選んだチャンネルで、チェインとフレーズが再生されます。</li>
 <li><strong>CHAIN</strong>、<strong>PHRASE</strong>、<strong>TABLE</strong>：16 行のグリッド。</li>
 <li><strong>INSTR</strong>：インストゥルメントの設定のリスト。</li>
@@ -143,7 +144,9 @@
 <li><strong>コピー</strong>、<strong>貼り付け</strong>、<strong>新しい番号に複製</strong>、<strong>クリア</strong>：ビューに表示されているもの（チェイン、フレーズ、インストゥルメント、テーブル、グルーヴ、ウェーブ）が対象です。クローンは最初の空き番号にコピーし、元のソングのセルやチェインのステップはコピーを指すように切り替わります。</li>
 <li>ウェーブビューでは、8 つの <strong>PICO-8 の波形</strong>を開いているウェーブにコピーできます。</li>
 <li><strong>曲</strong>：新しいゲームボーイまたはフリーの曲、保存した曲、サンプル曲。</li>
-<li><strong>ライブラリに書き出す</strong>（ライブラリに書き出す）、<strong>この曲を削除</strong>（この曲を削除）、<strong>ゲームに戻る</strong>（ゲームに戻る）。</li>
+<li><strong>ライブラリに書き出す</strong>（WAV）、<strong>XM で書き出す</strong>、<strong>MOD で書き出す</strong>。</li>
+<li><strong>インポート…</strong>と<strong>オンラインで探す…</strong>：<a href="#import-export">インポートとエクスポート</a>を参照してください。</li>
+<li><strong>この曲を削除</strong>、<strong>ゲームに戻る</strong>。</li>
 </ul>
 <p><kbd>FN</kbd> を押し続けると、今いるビューの操作が表示されます。</p>
 
@@ -180,6 +183,7 @@
 <tr><td>短いノイズ</td><td>ノイズ：7 ビットのレジスタ。より音程感があり金属的</td></tr>
 <tr><td>波形</td><td>シンセ：三角、サイン、ノコギリ、矩形、オルガン、ファントム、ノイズ</td></tr>
 </table>
+<p>インポートした MOD と XM の曲には<strong>サンプル</strong>インストゥルメントもあります：モジュールに録音された音で、ループ（順方向または往復）付きです。INSTR ビューに共通の設定とともに表示され、タイプを変えると新しいインストゥルメントになります。</p>
 <p>ノイズのインストゥルメントでは、ノートがノイズの速さを決めます：低いノートはゴロゴロ、高いノートはシャーッと鳴ります。設定の上で <kbd>A</kbd> を押すと、そのインストゥルメントで最後のノートを鳴らします。</p>
 
 <h2 id="tables">テーブル</h2>
@@ -228,9 +232,33 @@
 </ul>
 
 <h2 id="import-export">インポートとエクスポート</h2>
-<p><kbd>Start</kbd> → <strong>ライブラリに書き出す</strong>で、曲を 1 回レンダリングし、音楽フォルダー内の <code>audiofilus tracker</code> フォルダーに WAV として書き出します。ライブラリに取り込まれるので、ほかの曲と同じようにバックグラウンドで再生できます。</p>
-<p>以前のトラッカーで作った曲は変換されて開きます：各パターンはチャンネルごとに 1 つのフレーズと 1 つのチェインになり、エフェクトはコマンドになります（アルペジオ → <code>C</code>、デューティ → <code>W</code>、ベンド → <code>P</code>）。</p>
-<p>予定：MOD/XM のインポートとエクスポート、LSDJ の曲のインポート、MIDI 同期。</p>
+<p><strong>書き出し</strong>は <kbd>Start</kbd> メニューから行います。ファイルは音楽フォルダー内の <code>audiofilus tracker</code> フォルダーに入り、ライブラリに取り込まれます：</p>
+<ul>
+<li><strong>ライブラリに書き出す</strong>：曲を 1 回レンダリングした WAV。</li>
+<li><strong>XM で書き出す</strong>：OpenMPT や MilkyTracker などで開ける FastTracker 2 のモジュール（audiofilus でも再生できます）。各インストゥルメントはそれに似た音のサンプルになり、音量エンベロープが付きます。ノート、チェインのトランスポーズ、テンポ、グルーヴ、主なコマンド（コード、ピッチ、スライド、ビブラート、キル、ディレイ、リトリガー、パン）が引き継がれます。</li>
+<li><strong>MOD で書き出す</strong>：同じものを 4 チャンネルの ProTracker モジュールで書き出します。フリーの曲のチャンネル 5〜8 は入りません。</li>
+</ul>
+<p><strong>インポート…</strong>は、音楽フォルダーとアプリの <code>data/tracker/import</code> フォルダーで見つかった曲を一覧にします（最大 300）。インポートした曲はそれぞれ、編集できる新しい曲になります：</p>
+<ul>
+<li><strong>MOD</strong>（ProTracker と互換形式、4・6・8 チャンネル）と <strong>XM</strong>（FastTracker 2、最初の 8 チャンネル）：フリーモードの曲になります。各パターンはフレーズとチェインに、各サンプルはサンプルインストゥルメントになり、タイミングは正確です。</li>
+<li><strong>LSDJ</strong>：<code>.lsdsng</code> の曲、または <code>.sav</code> 内のすべての曲。ゲームボーイモードでほぼそのまま対応します：ソング、チェイン、フレーズ、インストゥルメント、テーブル、グルーヴ、ウェーブ、テンポ。</li>
+</ul>
+<p><strong>オンラインで探す…</strong>は The Mod Archive と Modland で MOD と XM のファイルを探します。選ぶとダウンロードしてインポートします。<a href="modules.html">モジュール</a>画面からもトラッカーで開けます。</p>
+<p>すべてがそのまま移るわけではありません：トラッカーのコマンドにないモジュールのエフェクト（サンプルオフセット、パターンループ、トレモロ、グローバル音量）は省かれ、XM のインストゥルメントは C-4 で鳴るサンプルだけが残り、LSDJ のキットは短いノイズになり、書き出したモジュールではテーブルとあまり使わないコマンドが失われます。以前のトラッカーで作った曲は変換されて開きます：各パターンはチャンネルごとに 1 つのフレーズと 1 つのチェインになり、エフェクトはコマンドになります（アルペジオ → <code>C</code>、デューティ → <code>W</code>、ベンド → <code>P</code>）。</p>
+
+<h2 id="midi">MIDI</h2>
+<p>USB の MIDI キーボードやコントローラーを、携帯機（必要なら USB-C アダプター経由）やパソコンにつなぎます。Linux の携帯機とパソコン、Windows、iPhone/iPad（USB、またはペアリング済みの Bluetooth MIDI）で使えます。トラッカーが自動で見つけ（アプリを開いたままつないでも大丈夫です）、最初の機器に接続します。</p>
+<ul>
+<li><strong>ノート</strong>：いま作業しているチャンネルで、最後に使ったインストゥルメントが鳴ります。フレーズビューではカーソル位置にも書き込まれ、カーソルは次のステップへ進みます（ステップ入力）。</li>
+<li><strong>PROJ → MIDI</strong>：使う機器、またはなし。</li>
+<li><strong>PROJ → 同期</strong>：テンポを決めるのはどちらか。
+<ul>
+<li><strong>内部</strong>：曲自体のテンポ。</li>
+<li><strong>クロックに従う</strong>：受け取った MIDI クロックに合わせます。ドラムマシン、DAW、LSDJ 自身がスタート、ストップ、テンポを決められます。MIDI クロックは 1 拍 24 パルスで、トラッカーのティックと同じなので、1 パルスが 1 ティックです。</li>
+<li><strong>クロック送信</strong>：トラッカーのクロック（スタート、ストップ、テンポ）を機器に送り、ほかの機材を合わせます。</li>
+</ul></li>
+</ul>
+<p>クロックはオーディオバッファ 1 つ分（50〜100 ms）遅れて届きます。生演奏に合わせるときだけ気になる程度です。</p>
 
     <nav class="pager" aria-label="ページ"><a href="visualizers-games.html">← ビジュアライザーとゲーム</a><a href="settings.html">設定 →</a></nav>
   </article>

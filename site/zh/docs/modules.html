@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>模块 · audiofilus 文档</title>
+<meta name="description" content="来自 The Mod Archive、Modland、VGMRips 和 AMP 的 tracker 模块和游戏机音乐：浏览、搜索、收听、存入音乐库，或在 tracker 中打开。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/modules.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/modules.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/modules.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/modules.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/modules.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/modules.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/modules.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/modules.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/modules.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/modules.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/modules.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/modules.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/modules.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/modules.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/modules.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/modules.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/modules.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/modules.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/modules.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/modules.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/modules.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/modules.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/modules.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/modules.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/modules.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/modules.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../ko/docs/modules.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">音乐库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="modules.html" aria-current="page">模块</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>模块</h1>
+    <p class="lede">来自四个在线资料库的 tracker 模块和游戏机音乐：浏览、搜索、收听、存入音乐库，或在 tracker 中打开。</p>
+
+<h2 id="sources">资料库</h2>
+<p>从屏幕栏（<kbd>SELECT</kbd>）打开<strong>模块</strong>。每个资料库是左侧的一个标签页：</p>
+<table>
+<tr><th>资料库</th><th>内容</th><th>浏览</th></tr>
+<tr><td><a href="https://modarchive.org">The Mod Archive</a></td><td>Tracker 模块（MOD、XM、IT、S3M…）</td><td>下载最多、最新、随机</td></tr>
+<tr><td><a href="https://ftp.modland.com">Modland</a></td><td>规模最大的模块和游戏机音乐合集，涵盖各种格式</td><td>随机</td></tr>
+<tr><td><a href="https://vgmrips.net">VGMRips</a></td><td>街机和游戏机原声（Mega Drive、街机基板…），以 VGM 曲目包的形式提供</td><td>下载最多、最新、随机</td></tr>
+<tr><td><a href="https://amp.dascene.net">AMP</a>（Amiga Music Preservation）</td><td>按作曲者整理的 Amiga 模块</td><td>最新</td></tr>
+</table>
+<p>每个标签页一开始显示该资料库提供的浏览列表。只列出 audiofilus 能播放的内容（SID 和部分 Amiga 专用格式除外）。都不需要账号。</p>
+
+<h2 id="using">浏览和收听</h2>
+<table>
+<tr><th>按键</th><th>作用</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>选择资料库（左侧）或结果</td></tr>
+<tr><td><kbd>A</kbd></td><td>收听：下载文件并播放（VGMRips 的曲目包会播放其中所有曲目）</td></tr>
+<tr><td><kbd>X</kbd></td><td>搜索当前资料库</td></tr>
+<tr><td><kbd>START</kbd></td><td>菜单（见下）</td></tr>
+</table>
+<p>结果的 <kbd>START</kbd> 菜单包括：</p>
+<ul>
+<li><strong>收听</strong>。</li>
+<li><strong>存入音乐库</strong>：把文件复制到音乐文件夹里的 <code>audiofilus modules/&lt;艺人&gt;</code> 文件夹，音乐库会收录它。</li>
+<li><strong>在音轨器中打开</strong>（MOD 和 XM）：作为可编辑的新 tracker 歌曲导入。见<a href="tracker.html#import-export">导入和导出</a>。</li>
+<li><strong>（艺人）的更多作品</strong>。</li>
+<li><strong>搜索</strong>，以及浏览方式：<strong>下载最多</strong>、<strong>最新</strong>和<strong>随机</strong>（资料库提供的那些）。</li>
+</ul>
+<p>下载会进入<strong>下载</strong>队列并显示进度，文件保存在 <code>data/cache/modules</code>：听过的文件下次会立即播放。</p>
+
+<h2 id="search">在搜索中</h2>
+<p>音乐库的<strong>搜索</strong>在“全部”、“音乐库”和 YouTube 旁边有一个<strong>模块</strong>筛选（<kbd>L1</kbd>/<kbd>R1</kbd>）。它会同时搜索四个资料库；<strong>全部</strong>也包含它们，排在你的音乐库之后。在模块上按 <kbd>A</kbd> 收听，按 <kbd>START</kbd> 打开和上面相同的菜单。</p>
+
+<h2 id="notes">小贴士</h2>
+<ul>
+<li>Modland 的搜索使用完整索引，第一次会下载（约 6 MB），每月更新一次。之后搜索 Modland 是瞬时的，离线也能用；收听仍需要网络。</li>
+<li>The Mod Archive 按文件名或标题中的完整单词匹配。</li>
+<li>VGMRips 每次搜索最多返回 20 个曲目包。</li>
+<li>这些资料库由志愿者维护：audiofilus 会拉开请求间隔并表明身份，请不要过于频繁地访问。</li>
+</ul>
+
+    <nav class="pager" aria-label="页面"><a href="radio-podcasts.html">← 电台和播客</a><a href="servers.html">服务器 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

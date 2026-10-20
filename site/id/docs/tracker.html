@@ -55,6 +55,7 @@
           <li><a href="sound.html">Suara</a></li>
           <li><a href="lyrics.html">Lirik</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; podcast</a></li>
+          <li><a href="modules.html">Modul</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -106,7 +107,7 @@
 <tr><td>GROOVE</td><td>Gelombang instrumen itu, jika itu instrumen gelombang</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>: nama lagu (<kbd>A</kbd> membuka keyboard), mode, tempo (40 sampai 300 BPM), dan groove awal.</li>
+<li><strong>PROJ</strong>: nama lagu (<kbd>A</kbd> membuka keyboard), mode, tempo (40 sampai 300 BPM), dan groove awal, ditambah perangkat <a href="#midi">MIDI</a> dan sinkronisasinya.</li>
 <li><strong>SONG</strong>: baris × kanal berisi nomor rantai, dengan osiloskop tiap kanal. Kanal yang kamu pilih di sini adalah kanal tempat rantai dan frasa dimainkan.</li>
 <li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: grid 16 baris.</li>
 <li><strong>INSTR</strong>: daftar pengaturan instrumen.</li>
@@ -140,7 +141,9 @@
 <li><strong>Salin</strong>, <strong>Tempel</strong>, <strong>Klon ke yang baru</strong>, dan <strong>Kosongkan</strong>, untuk yang sedang ditampilkan (rantai, frasa, instrumen, tabel, groove, atau gelombang). Mengklon menyalinnya ke nomor kosong pertama, dan sel lagu atau langkah rantai asalmu beralih ke salinannya.</li>
 <li>Di tampilan gelombang, delapan <strong>bentuk PICO-8</strong>, untuk disalin ke gelombang yang terbuka.</li>
 <li><strong>Lagu</strong>: lagu baru Game Boy atau Bebas, lagu yang tersimpan, dan contoh-contohnya.</li>
-<li><strong>Ekspor ke pustaka</strong>, <strong>Hapus lagu ini</strong>, dan <strong>Kembali ke game</strong>.</li>
+<li><strong>Ekspor ke pustaka</strong> (WAV), <strong>Ekspor ke XM</strong>, dan <strong>Ekspor ke MOD</strong>.</li>
+<li><strong>Impor…</strong> dan <strong>Cari online…</strong>: lihat <a href="#import-export">Impor dan ekspor</a>.</li>
+<li><strong>Hapus lagu ini</strong> dan <strong>Kembali ke game</strong>.</li>
 </ul>
 <p>Tahan <kbd>FN</kbd> untuk kontrol tampilan tempatmu berada.</p>
 
@@ -177,6 +180,7 @@
 <tr><td>Noise pendek</td><td>Noise: register 7-bit, lebih bernada dan metalik</td></tr>
 <tr><td>Bentuk</td><td>Synth: triangle, sine, saw, square, organ, phantom, atau noise</td></tr>
 </table>
+<p>Lagu MOD dan XM yang diimpor juga punya instrumen <strong>sample</strong>: suara rekaman modul, dengan loop-nya (maju atau ping-pong). Instrumen ini muncul di tampilan INSTR dengan pengaturan umum; mengubah jenisnya menjadikannya instrumen baru.</p>
 <p>Not pada instrumen noise menentukan seberapa cepat noise berjalan: not rendah bergemuruh, not tinggi mendesis. <kbd>A</kbd> pada pengaturan memainkan not terakhir dengan instrumen itu.</p>
 
 <h2 id="tables">Tabel</h2>
@@ -225,9 +229,33 @@
 </ul>
 
 <h2 id="import-export">Impor dan ekspor</h2>
-<p><kbd>Start</kbd> → <strong>Ekspor ke pustaka</strong> merender lagu sekali ke WAV di folder <code>audiofilus tracker</code> di dalam folder musikmu. Pustaka mengambilnya, jadi lagu itu bisa diputar di latar belakang seperti lagu lain.</p>
-<p>Lagu yang dibuat dengan tracker versi lama terbuka dalam bentuk yang sudah dikonversi: setiap pattern menjadi satu frasa dan satu rantai per kanal, dan efeknya menjadi perintah (arpeggio → <code>C</code>, duty → <code>W</code>, bend → <code>P</code>).</p>
-<p>Direncanakan: impor dan ekspor MOD/XM, impor lagu LSDJ, dan sinkronisasi MIDI.</p>
+<p><strong>Ekspor</strong>, dari menu <kbd>Start</kbd>. Berkasnya masuk ke folder <code>audiofilus tracker</code> di folder musikmu, lalu pustaka mengambilnya:</p>
+<ul>
+<li><strong>Ekspor ke pustaka</strong>: lagu dirender sekali ke WAV.</li>
+<li><strong>Ekspor ke XM</strong>: modul FastTracker 2 yang bisa dibuka di OpenMPT, MilkyTracker, dan lainnya (dan diputar di audiofilus). Setiap instrumen menjadi sample yang mirip bunyinya, dengan envelope volume; not, transpos rantai, tempo, groove, dan perintah utama (akor, pitch, slide, vibrato, kill, delay, retrigger, pan) ikut terbawa.</li>
+<li><strong>Ekspor ke MOD</strong>: sama, sebagai modul ProTracker 4 kanal. Tidak bisa memuat kanal 5 sampai 8 dari lagu Bebas.</li>
+</ul>
+<p><strong>Impor…</strong> menampilkan lagu yang ditemukan di folder musikmu dan di folder aplikasi <code>data/tracker/import</code> (hingga 300). Setiap impor menjadi lagu baru yang bisa kamu edit:</p>
+<ul>
+<li><strong>MOD</strong> (ProTracker dan yang kompatibel, 4, 6, atau 8 kanal) dan <strong>XM</strong> (FastTracker 2, 8 kanal pertama): lagu mode Bebas. Setiap pattern menjadi frasa dan rantai, setiap sample menjadi instrumen sample, dan waktunya persis.</li>
+<li><strong>LSDJ</strong>: lagu <code>.lsdsng</code>, atau semua lagu dalam <code>.sav</code>. Hampir semuanya terpetakan satu banding satu, dalam mode Game Boy: lagu, rantai, frasa, instrumen, tabel, groove, gelombang, dan tempo.</li>
+</ul>
+<p><strong>Cari online…</strong> mencari berkas MOD dan XM di The Mod Archive dan Modland; memilih satu akan mengunduh dan mengimpornya. Layar <a href="modules.html">Modul</a> juga bisa membukanya di tracker.</p>
+<p>Tidak semuanya selamat dalam perjalanan: efek modul yang tidak punya perintah tracker (sample offset, loop pattern, tremolo, volume global) dibuang, instrumen XM hanya menyimpan sample yang dimainkannya di C-4, kit LSDJ menjadi pukulan noise singkat, dan modul hasil ekspor kehilangan tabel dan perintah yang jarang dipakai. Lagu yang dibuat dengan tracker versi lama terbuka dalam bentuk yang sudah dikonversi: setiap pattern menjadi satu frasa dan satu rantai per kanal, dan efeknya menjadi perintah (arpeggio → <code>C</code>, duty → <code>W</code>, bend → <code>P</code>).</p>
+
+<h2 id="midi">MIDI</h2>
+<p>Colokkan keyboard atau controller MIDI USB ke handheld (lewat adaptor USB-C jika perlu) atau ke komputer. Berfungsi di handheld dan desktop Linux, Windows, serta iPhone/iPad (USB atau Bluetooth MIDI yang sudah dipasangkan). Tracker menemukannya sendiri, juga saat dicolokkan ketika aplikasi terbuka, dan terhubung ke yang pertama.</p>
+<ul>
+<li><strong>Not</strong>: memainkan instrumen terakhir yang dipakai, di kanal yang sedang kamu kerjakan. Di tampilan frasa, not juga ditulis di langkah kursor, dan kursor pindah ke langkah berikutnya: rekam langkah demi langkah.</li>
+<li><strong>PROJ → MIDI</strong>: perangkat mana yang dipakai, atau tidak ada.</li>
+<li><strong>PROJ → Sinkron</strong>: siapa yang menjaga waktu.
+<ul>
+<li><strong>Internal</strong>: tempo lagu itu sendiri.</li>
+<li><strong>Ikuti clock</strong>: tracker mengikuti MIDI clock yang diterimanya. Drum machine, DAW, atau LSDJ sendiri bisa memulai, menghentikan, dan mengatur tempo. MIDI clock punya 24 pulsa per ketukan, sama dengan tick tracker, jadi setiap pulsa adalah satu tick.</li>
+<li><strong>Kirim clock</strong>: tracker mengirim clock-nya (mulai, berhenti, dan tempo) ke perangkat, agar perangkat lain tetap seirama dengannya.</li>
+</ul></li>
+</ul>
+<p>Clock tiba sekitar satu buffer audio lebih lambat (50–100 ms), yang hanya berpengaruh saat kamu mengiringi sesuatu secara langsung.</p>
 
     <nav class="pager" aria-label="Halaman"><a href="visualizers-games.html">← Visualisasi &amp; game</a><a href="settings.html">Pengaturan →</a></nav>
   </article>

@@ -50,11 +50,12 @@
         <ol>
           <li><a href="index.html">Genel bakış</a></li>
           <li><a href="getting-started.html">Başlarken</a></li>
-          <li><a href="library.html">Kitaplık</a></li>
+          <li><a href="library.html">Kütüphane</a></li>
           <li><a href="playback.html">Çalma</a></li>
           <li><a href="sound.html">Ses</a></li>
           <li><a href="lyrics.html">Şarkı sözleri</a></li>
           <li><a href="radio-podcasts.html">Radyo ve podcast'ler</a></li>
+          <li><a href="modules.html">Modüller</a></li>
           <li><a href="servers.html">Sunucular</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -106,7 +107,7 @@
 <tr><td>GROOVE</td><td>Dalga enstrümanıysa enstrümanın dalgası</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>: şarkının adı (<kbd>A</kbd> klavyeyi açar), modu, temposu (40-300 BPM) ve başlangıç groove'u.</li>
+<li><strong>PROJ</strong>: şarkının adı (<kbd>A</kbd> klavyeyi açar), modu, temposu (40-300 BPM) ve başlangıç groove'u, ayrıca <a href="#midi">MIDI</a> cihazı ve senkronu.</li>
 <li><strong>SONG</strong>: her kanalın osiloskopuyla, satırlar × kanallar şeklinde zincir numaraları. Burada seçtiğiniz kanal, zincirlerin ve ifadelerin çaldığı kanaldır.</li>
 <li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: 16 satırlık ızgaralar.</li>
 <li><strong>INSTR</strong>: enstrümanın ayarlarından bir liste.</li>
@@ -140,7 +141,9 @@
 <li>Görünümün gösterdiği şey (bir zincir, ifade, enstrüman, tablo, groove ya da dalga) için <strong>Kopyala</strong>, <strong>Yapıştır</strong>, <strong>Yeniye kopyala</strong> ve <strong>Temizle</strong>. Kopyalamak onu ilk boş numaraya kopyalar ve geldiğiniz şarkı hücresi ya da zincir adımı kopyaya geçer.</li>
 <li>Dalga görünümünde, açık dalgaya kopyalamak için sekiz <strong>PICO-8 şekli</strong>.</li>
 <li><strong>Şarkılar</strong>: yeni bir Game Boy ya da Serbest şarkı, kaydettiğiniz şarkılar ve örnekler.</li>
-<li><strong>Kitaplığa aktar</strong>, <strong>Bu şarkıyı sil</strong> ve <strong>Oyunlara dön</strong>.</li>
+<li><strong>Kütüphaneye aktar</strong> (WAV), <strong>XM olarak aktar</strong> ve <strong>MOD olarak aktar</strong>.</li>
+<li><strong>İçe aktar…</strong> ve <strong>Çevrimiçi ara…</strong>: bkz. <a href="#import-export">İçe ve dışa aktarma</a>.</li>
+<li><strong>Bu şarkıyı sil</strong> ve <strong>Oyunlara dön</strong>.</li>
 </ul>
 <p>Bulunduğunuz görünümün kontrolleri için <kbd>FN</kbd>'ye basılı tutun.</p>
 
@@ -177,6 +180,7 @@
 <tr><td>Kısa gürültü</td><td>Gürültü: 7 bitlik yazmaç, daha tonal ve metalik</td></tr>
 <tr><td>Şekil</td><td>Synth: üçgen, sinüs, testere, kare, org, phantom ya da gürültü</td></tr>
 </table>
+<p>İçe aktarılan MOD ve XM şarkılarında <strong>sample</strong> enstrümanları da vardır: modülün kayıtlı sesleri, döngüleriyle (ileri ya da ping-pong). INSTR görünümünde ortak ayarlarla görünürler; türlerini değiştirmek onları yeni bir enstrümana dönüştürür.</p>
 <p>Bir gürültü enstrümanının notası gürültünün ne kadar hızlı aktığını belirler: pes notalar gürler, tiz olanlar tıslar. Bir ayarda <kbd>A</kbd> son notayı enstrümanla çalar.</p>
 
 <h2 id="tables">Tablolar</h2>
@@ -225,9 +229,33 @@
 </ul>
 
 <h2 id="import-export">İçe ve dışa aktarma</h2>
-<p><kbd>Start</kbd> → <strong>Kitaplığa aktar</strong> şarkıyı bir kez, müzik klasörünüzün içindeki bir <code>audiofilus tracker</code> klasörüne WAV olarak işler. Kitaplık onu alır, böylece her şey gibi arka planda çalar.</p>
-<p>Önceki tracker ile yapılmış şarkılar dönüştürülerek açılır: her desen kanal başına bir ifade ve bir zincir olur, efektleri de komutlara dönüşür (arpej → <code>C</code>, genişlik → <code>W</code>, bükme → <code>P</code>).</p>
-<p>Planlanan: MOD/XM içe ve dışa aktarma, LSDJ şarkısı içe aktarma ve MIDI senkronu.</p>
+<p><strong>Dışa aktarma</strong>, <kbd>Start</kbd> menüsünden. Dosyalar müzik klasörünüzdeki bir <code>audiofilus tracker</code> klasörüne gider ve kütüphane onları alır:</p>
+<ul>
+<li><strong>Kütüphaneye aktar</strong>: şarkı bir kez WAV olarak işlenir.</li>
+<li><strong>XM olarak aktar</strong>: OpenMPT, MilkyTracker ve diğerlerinde açılan (ve audiofilus'ta çalan) bir FastTracker 2 modülü. Her enstrüman ona benzeyen, ses zarflı bir sample olur; notalar, zincir transpozeleri, tempo, groove'lar ve ana komutlar (akor, perde, kaydırma, vibrato, kesme, gecikme, yeniden tetikleme, pan) aktarılır.</li>
+<li><strong>MOD olarak aktar</strong>: aynısı, 4 kanallı bir ProTracker modülü olarak. Serbest bir şarkının 5-8. kanallarını taşıyamaz.</li>
+</ul>
+<p><strong>İçe aktar…</strong>, müzik klasörlerinizde ve uygulamanın <code>data/tracker/import</code> klasöründe bulduğu şarkıları listeler (en fazla 300). Her içe aktarma düzenleyebileceğiniz yeni bir şarkı olur:</p>
+<ul>
+<li><strong>MOD</strong> (ProTracker ve uyumlular, 4, 6 ya da 8 kanal) ve <strong>XM</strong> (FastTracker 2, ilk 8 kanal): Serbest modda bir şarkı. Her desen ifadelere ve zincirlere, her sample bir sample enstrümanına dönüşür; zamanlama birebirdir.</li>
+<li><strong>LSDJ</strong>: bir <code>.lsdsng</code> şarkısı ya da bir <code>.sav</code> içindeki tüm şarkılar. Game Boy modunda neredeyse bire bir eşleşirler: şarkı, zincirler, ifadeler, enstrümanlar, tablolar, groove'lar, dalgalar ve tempo.</li>
+</ul>
+<p><strong>Çevrimiçi ara…</strong>, The Mod Archive ve Modland'de MOD ve XM dosyaları arar; birini seçmek onu indirip içe aktarır. <a href="modules.html">Modüller</a> ekranı da onları tracker'da açabilir.</p>
+<p>Her şey yolculuğa dayanmaz: tracker komutu olmayan modül efektleri (sample ofseti, desen döngüleri, tremolo, genel ses) düşer, bir XM enstrümanı yalnızca C-4'te çaldığı sample'ı tutar, LSDJ kitleri kısa gürültü vuruşlarına dönüşür ve dışa aktarılan bir modül tabloları ve daha seyrek komutları kaybeder. Önceki tracker ile yapılmış şarkılar dönüştürülerek açılır: her desen kanal başına bir ifade ve bir zincir olur, efektleri de komutlara dönüşür (arpej → <code>C</code>, genişlik → <code>W</code>, bükme → <code>P</code>).</p>
+
+<h2 id="midi">MIDI</h2>
+<p>Bir USB MIDI klavyesini ya da denetleyicisini el konsoluna (gerekirse bir USB-C adaptörüyle) ya da bilgisayara takın. Linux el konsollarında ve masaüstlerinde, Windows'ta ve iPhone/iPad'de (USB ya da önceden eşleştirilmiş Bluetooth MIDI) çalışır. Tracker onu kendisi bulur, uygulama açıkken taktığınızda da, ve ilkine bağlanır.</p>
+<ul>
+<li><strong>Notalar</strong>: üzerinde çalıştığınız kanalda son kullanılan enstrümanı çalarlar. İfade görünümünde ayrıca imleçteki adıma yazılırlar ve imleç bir sonraki adıma geçer: adım adım kayıt.</li>
+<li><strong>PROJ → MIDI</strong>: hangi cihazın kullanılacağı ya da hiçbiri.</li>
+<li><strong>PROJ → Senkron</strong>: zamanı kim tutar.
+<ul>
+<li><strong>Dahili</strong>: şarkının kendi temposu.</li>
+<li><strong>Saati izle</strong>: tracker aldığı MIDI saatini izler. Bir davul makinesi, bir DAW ya da LSDJ'nin kendisi başlatabilir, durdurabilir ve tempoyu belirleyebilir. MIDI saatinin vuruş başına 24 darbesi vardır, tracker'ın tick'leriyle aynı, yani her darbe bir tick'tir.</li>
+<li><strong>Saat gönder</strong>: tracker saatini (başlat, durdur ve tempo) cihaza gönderir, böylece diğer cihazlar onunla aynı zamanda kalır.</li>
+</ul></li>
+</ul>
+<p>Saat yaklaşık bir ses arabelleği geç gelir (50–100 ms); bu yalnızca canlı bir şeye eşlik ederken önemlidir.</p>
 
     <nav class="pager" aria-label="Sayfalar"><a href="visualizers-games.html">← Görselleştiriciler ve oyunlar</a><a href="settings.html">Ayarlar →</a></nav>
   </article>

@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -450,7 +451,7 @@ footer img { height: 56px; width: auto; }
         <figure><img class="shot px" src="../img/snake.webp" alt="Snake: yılan, onunla atan noktalardan bir ızgara üzerinde şarkının vuruş alt bölümlerinde ilerliyor" width="360" height="240" loading="lazy"><figcaption>Snake <span>ritimle ilerler</span></figcaption></figure>
         <figure><img class="shot px" src="../img/ships.webp" alt="Ships: yıldızlı bir gökyüzünde piksel uzaylılara yukarı ateş eden bir gemi" width="360" height="240" loading="lazy"><figcaption>Ships <span>sekizliklerde ateş eder</span></figcaption></figure>
         <figure><img class="shot px" src="../img/duel.webp" alt="Duel: tek bitlik bir plak canavarı nota fırlatırken bir kalp bir kutunun içinde kaçıyor" width="360" height="240" loading="lazy"><figcaption>Duel <span>ritimle savaşır</span></figcaption></figure>
-        <figure><img class="shot px" src="../img/quiz.png" alt="Şarkıyı bil: biri çalarken kitaplıktan seçilecek dört şarkı" width="360" height="240" loading="lazy"><figcaption>Şarkıyı bil <span>on tur</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/quiz.png" alt="Şarkıyı bil: biri çalarken kütüphaneden seçilecek dört şarkı" width="360" height="240" loading="lazy"><figcaption>Şarkıyı bil <span>on tur</span></figcaption></figure>
       </div>
       <div class="split" style="margin-top: 3rem">
         <div class="points">
@@ -458,7 +459,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Tracker</span>
             <h3>Kendi chiptune'unu yap</h3>
           </div>
-          <p class="lede">Yön tuşları için, biraz da PICO-8 tadında LSDJ tarzı bir tracker: zincirler ve ifadeler, zarflı ve tablolu enstrümanlar, swing'li groove'lar, düzenlenebilir dalgalar, 21 efekt komutu ve bir piyano rulosu. Game Boy'un dört kanalı için yazın ya da sekiz synth kanalıyla Serbest moda geçin. Bir şarkıyı WAV olarak dışa aktarın; kitaplığınıza düşer ve her şey gibi arka planda çalmaya hazırdır. <a href="docs/tracker.html">Tracker rehberi</a>.</p>
+          <p class="lede">Yön tuşları için, biraz da PICO-8 tadında LSDJ tarzı bir tracker: zincirler ve ifadeler, zarflı ve tablolu enstrümanlar, swing'li groove'lar, düzenlenebilir dalgalar, 21 efekt komutu ve bir piyano rulosu. Game Boy'un dört kanalı için yazın ya da sekiz synth kanalıyla Serbest moda geçin. MOD, XM ve LSDJ şarkılarını içe aktarın, WAV, XM ya da MOD olarak dışa aktarın ve bir USB MIDI klavyeyle ya da davul makinesiyle çalın veya senkronlayın. Dışa aktarılanlar kütüphanenize düşer ve her şey gibi arka planda çalmaya hazırdır. <a href="docs/tracker.html">Tracker rehberi</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Pocket Pop'u çalan tracker: notaları, enstrümanları ve sesleri çaldıkça yanan bir ifade, ardından kanal başına canlı osiloskoplarla şarkı görünümü" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -474,7 +475,7 @@ footer img { height: 56px; width: auto; }
           <h2>Her albüm onu boyar</h2>
           <p class="lede">Arayüz renklerini çalan kapaktan alır. Albümü değiştirin; tüm çalar, görselleştiriciler ve oyunlar onu takip eder.</p>
         </div>
-        <p class="note">Gerçek bir kitaplıktan dört albümle gösteriliyor: her kapak iki vurgu rengi ve arka plan için bir ton verir.</p>
+        <p class="note">Gerçek bir kütüphaneden dört albümle gösteriliyor: her kapak iki vurgu rengi ve arka plan için bir ton verir.</p>
       </div>
       <figure class="figure"><img class="shot px" src="../img/colors.webp" alt="Dört albüm arasında geçiş yapan çalar; vurgu rengi her kapakla turuncu, mavi, yeşil ve pembe oluyor" width="360" height="240" loading="lazy"></figure>
     </div>
@@ -556,18 +557,19 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Kaynaklar</span>
         <h2>Dosyalarınız, sunucunuz, radyo</h2>
-        <p class="lede">Her şey aynı kitaplıkta ve aynı çalarda görünür. Uzak şarkılar SD kartta önbelleğe alınır; bir sonraki dinleme bedavadır.</p>
+        <p class="lede">Her şey aynı kütüphanede ve aynı çalarda görünür. Uzak şarkılar SD kartta önbelleğe alınır; bir sonraki dinleme bedavadır.</p>
       </div>
       <div class="sources">
-        <div class="source"><span class="tag">Yerel</span><h3>Kitaplığınız</h3><p>Klasörler, etiketler, gömülü ve klasör kapakları, M3U çalma listeleri ve kendi listeleriniz. Bir kez taranır, sonra yalnızca yeni dosyalar okunur. Senkronize sözler satır satır yanar; .lrc'den, etiketlerden ya da LRCLIB'den. Konsol müzikleri de: NES, SNES, Game Boy, Genesis ve daha fazlası, her şarkı bir parça.</p></div>
+        <div class="source"><span class="tag">Yerel</span><h3>Kütüphaneniz</h3><p>Klasörler, etiketler, gömülü ve klasör kapakları, M3U çalma listeleri ve kendi listeleriniz. Bir kez taranır, sonra yalnızca yeni dosyalar okunur. Senkronize sözler satır satır yanar; .lrc'den, etiketlerden ya da LRCLIB'den. Konsol müzikleri de: NES, SNES, Game Boy, Genesis ve daha fazlası, her şarkı bir parça.</p></div>
         <div class="source"><span class="tag">Sunucu</span><h3>Subsonic</h3><p>Navidrome ve diğer Subsonic ya da OpenSubsonic sunucuları. Şarkılar akış olarak çalar, bir sonraki dinleme için önbellekte kalır ve indirilebilir.</p></div>
-        <div class="source"><span class="tag">Sunucu</span><h3>Jellyfin</h3><p>Jellyfin kullanıcınızla giriş yapın ve müzik kitaplığına ve çalma listelerine kendi dosyalarınız gibi göz atın.</p></div>
+        <div class="source"><span class="tag">Sunucu</span><h3>Jellyfin</h3><p>Jellyfin kullanıcınızla giriş yapın ve müzik kütüphanesine ve çalma listelerine kendi dosyalarınız gibi göz atın.</p></div>
         <div class="source"><span class="tag">Canlı</span><h3>İnternet radyosu</h3><p>radio-browser.info'dan binlerce istasyon, ülkeye ya da türe göre; yayından gelen güncel şarkı adıyla. Kendi .m3u ya da .pls istasyon listelerinizi getirin veya bir istasyonu adresiyle ekleyin.</p></div>
         <div class="source"><span class="tag">Bölümler</span><h3>Podcast'ler</h3><p>Ülkenizin en popüler programları, arama ya da adresiyle herhangi bir RSS akışı. Bölümler çevrimdışı dinlemek için iner ve kaldığınız yeri hatırlar.</p></div>
-        <div class="source"><span class="tag">Kendininkini getir</span><h3>YouTube Music</h3><p>Kendi yt-dlp'nizi uygulamanın yanına kopyalayın, arama ortaya çıksın: indirmeden dinleyin ya da şarkıları kapak ve etiketleriyle kitaplığınıza kaydedin.</p></div>
+        <div class="source"><span class="tag">Kendininkini getir</span><h3>YouTube Music</h3><p>Kendi yt-dlp'nizi uygulamanın yanına kopyalayın, arama ortaya çıksın: indirmeden dinleyin ya da şarkıları kapak ve etiketleriyle kütüphanenize kaydedin.</p></div>
+        <div class="source wide"><span class="tag">Sahne</span><h3>Modül arşivleri</h3><p>The Mod Archive, Modland, VGMRips ve AMP tek ekranda: popüler, yeni ya da rastgele olanlara göz atın, arayın, dinleyin, kütüphanenize kaydedin ya da bir modülü tracker'da açın. Aramada da çıkarlar.</p></div>
       </div>
       <div class="trio">
-        <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Tümü, Kitaplık ve YouTube filtreleriyle arama; zaten sahip olduğunuz şarkılar işaretli" width="360" height="240" loading="lazy"><figcaption>Kitaplık ve YouTube için tek arama. Zaten sahip olduğunuz şarkılar işaretlenir.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Tümü, Kütüphane ve YouTube filtreleriyle arama; zaten sahip olduğunuz şarkılar işaretli" width="360" height="240" loading="lazy"><figcaption>Kütüphane ve YouTube için tek arama. Zaten sahip olduğunuz şarkılar işaretlenir.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="Bir şarkı yüklenirken STREAMING rozetiyle çalar" width="360" height="240" loading="lazy"><figcaption>Akıştan çalan şarkılar bir rozet alır ve onları saklayabilirsiniz.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/radio.png" alt="Güncel şarkısıyla canlı bir radyo istasyonu gösteren çalar" width="360" height="240" loading="lazy"><figcaption>Radyo canlı çalar, istasyondan gelen şarkı adıyla.</figcaption></figure>
       </div>
@@ -709,8 +711,8 @@ docker build --target dist --output dist .
       </div>
       <div class="trio phones">
         <figure class="figure"><img class="shot px" src="../img/phone-player.png" alt="iPhone'da Şimdi Çalıyor: plağın göründüğü büyük bir albüm kapağı, şarkı, kontroller ve spektrum, altta büyük dokunmatik düğmeler" width="240" height="520" loading="lazy"></figure>
-        <figure class="figure"><img class="shot px" src="../img/phone-library.png" alt="iPhone'da kitaplık: üstte bir sekmeler düğmesi, şarkı listesi ve önceki, 10 saniye geri, duraklat, 10 saniye ileri ve sonraki düğmeleriyle bir mini çalar" width="240" height="520" loading="lazy"></figure>
-        <figure class="figure"><img class="shot px" src="../img/phone-tabs.webp" alt="Kitaplık sekmeleri dokununca üst çubuktan açılır, Albümler seçilir ve menü yukarı kayarak kapanır" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-library.png" alt="iPhone'da kütüphane: üstte bir sekmeler düğmesi, şarkı listesi ve önceki, 10 saniye geri, duraklat, 10 saniye ileri ve sonraki düğmeleriyle bir mini çalar" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-tabs.webp" alt="Kütüphane sekmeleri dokununca üst çubuktan açılır, Albümler seçilir ve menü yukarı kayarak kapanır" width="240" height="520" loading="lazy"></figure>
       </div>
       <div class="trio">
         <div class="point"><h3>Önce dokunmatik</h3><p>Satırlara, kapaklara, sekmelere ve düğmelere dokunun; listeleri başparmağınızla sürükleyin; düğme çubuğunda gerçek düğmeler var ve oyunların kendi dokunmatik kontrolleri var. Dikeyde sekmeler bir düğmeden açılır.</p></div>

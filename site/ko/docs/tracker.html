@@ -59,6 +59,7 @@
           <li><a href="sound.html">사운드</a></li>
           <li><a href="lyrics.html">가사</a></li>
           <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="modules.html">모듈</a></li>
           <li><a href="servers.html">서버</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">스크로블</a></li>
@@ -110,7 +111,7 @@
 <tr><td>GROOVE</td><td>파형 악기라면 그 악기의 파형</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>: 곡 이름(<kbd>A</kbd>로 키보드를 열어요), 모드, 템포(40~300 BPM), 시작 그루브.</li>
+<li><strong>PROJ</strong>: 곡 이름(<kbd>A</kbd>로 키보드를 열어요), 모드, 템포(40~300 BPM), 시작 그루브, 그리고 <a href="#midi">MIDI</a> 기기와 동기화.</li>
 <li><strong>SONG</strong>: 줄 × 채널의 체인 번호와 채널마다의 오실로스코프. 여기서 고른 채널에서 체인과 프레이즈가 재생돼요.</li>
 <li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: 16줄 격자.</li>
 <li><strong>INSTR</strong>: 악기 설정 목록.</li>
@@ -144,7 +145,9 @@
 <li>화면에 보이는 것(체인, 프레이즈, 악기, 테이블, 그루브, 파형)에 대한 <strong>복사</strong>, <strong>붙여넣기</strong>, <strong>새 번호로 복제</strong>, <strong>비우기</strong>. 복제하면 첫 빈 번호에 복사되고, 원래 왔던 곡 칸이나 체인 스텝이 복사본으로 바뀌어요.</li>
 <li>파형 화면에서는 열린 파형에 복사할 수 있는 여덟 가지 <strong>PICO-8 모양</strong>.</li>
 <li><strong>곡</strong>: 새 게임보이 곡이나 자유 곡, 저장한 곡, 예제.</li>
-<li><strong>보관함으로 내보내기</strong>, <strong>이 곡 삭제</strong>, <strong>게임으로</strong>.</li>
+<li><strong>보관함으로 내보내기</strong>(WAV), <strong>XM으로 내보내기</strong>, <strong>MOD로 내보내기</strong>.</li>
+<li><strong>가져오기…</strong>와 <strong>온라인 검색…</strong>: <a href="#import-export">가져오기와 내보내기</a>를 보세요.</li>
+<li><strong>이 곡 삭제</strong>, <strong>게임으로</strong>.</li>
 </ul>
 <p><kbd>FN</kbd>을 누르고 있으면 지금 화면의 조작을 볼 수 있어요.</p>
 
@@ -181,6 +184,7 @@
 <tr><td>짧은 노이즈</td><td>노이즈: 7비트 레지스터. 더 음정감 있고 금속적이에요</td></tr>
 <tr><td>모양</td><td>신스: 삼각, 사인, 톱니, 사각, 오르간, 팬텀, 노이즈</td></tr>
 </table>
+<p>가져온 MOD와 XM 곡에는 <strong>샘플</strong> 악기도 있어요. 모듈에 녹음된 소리로, 루프(정방향 또는 왕복)가 있어요. INSTR 화면에 공통 설정과 함께 보이고, 종류를 바꾸면 새 악기가 돼요.</p>
 <p>노이즈 악기의 노트는 노이즈가 도는 속도를 정해요. 낮은 노트는 웅웅거리고, 높은 노트는 쉬익 소리가 나요. 설정에서 <kbd>A</kbd>를 누르면 그 악기로 마지막 노트를 재생해요.</p>
 
 <h2 id="tables">테이블</h2>
@@ -229,9 +233,33 @@
 </ul>
 
 <h2 id="import-export">가져오기와 내보내기</h2>
-<p><kbd>Start</kbd> → <strong>보관함으로 내보내기</strong>는 곡을 한 번 렌더링해서 음악 폴더 안의 <code>audiofilus tracker</code> 폴더에 WAV로 저장해요. 보관함이 그 파일을 찾으니 다른 곡처럼 백그라운드로 재생돼요.</p>
-<p>예전 트래커로 만든 곡은 변환되어 열려요. 패턴 하나가 채널마다 프레이즈 하나와 체인 하나가 되고, 이펙트는 명령이 돼요(아르페지오 → <code>C</code>, 듀티 → <code>W</code>, 벤드 → <code>P</code>).</p>
-<p>계획 중: MOD/XM 가져오기와 내보내기, LSDJ 곡 가져오기, MIDI 싱크.</p>
+<p><strong>내보내기</strong>는 <kbd>Start</kbd> 메뉴에서 해요. 파일은 음악 폴더 안의 <code>audiofilus tracker</code> 폴더로 가고, 보관함이 찾아요.</p>
+<ul>
+<li><strong>보관함으로 내보내기</strong>: 곡을 한 번 렌더링한 WAV.</li>
+<li><strong>XM으로 내보내기</strong>: OpenMPT, MilkyTracker 등에서 열리는 FastTracker 2 모듈(audiofilus에서도 재생돼요). 악기마다 비슷하게 들리는 샘플과 볼륨 엔벨로프가 돼요. 노트, 체인의 트랜스포즈, 템포, 그루브, 주요 명령(코드, 피치, 슬라이드, 비브라토, 킬, 딜레이, 리트리거, 팬)이 그대로 넘어가요.</li>
+<li><strong>MOD로 내보내기</strong>: 같은 것을 4채널 ProTracker 모듈로. 프리 곡의 5~8번 채널은 담을 수 없어요.</li>
+</ul>
+<p><strong>가져오기…</strong>는 음악 폴더와 앱의 <code>data/tracker/import</code> 폴더에서 찾은 곡을 보여 줘요(최대 300개). 가져온 곡은 각각 편집할 수 있는 새 곡이 돼요.</p>
+<ul>
+<li><strong>MOD</strong>(ProTracker와 호환 형식, 4·6·8채널)와 <strong>XM</strong>(FastTracker 2, 처음 8채널): 프리 모드 곡이 돼요. 패턴은 프레이즈와 체인이, 샘플은 샘플 악기가 되고, 타이밍은 정확해요.</li>
+<li><strong>LSDJ</strong>: <code>.lsdsng</code> 곡, 또는 <code>.sav</code> 안의 모든 곡. 게임보이 모드에서 거의 그대로 옮겨져요: 곡, 체인, 프레이즈, 악기, 테이블, 그루브, 파형, 템포.</li>
+</ul>
+<p><strong>온라인 검색…</strong>은 The Mod Archive와 Modland에서 MOD와 XM 파일을 찾아요. 하나를 고르면 내려받아 가져와요. <a href="modules.html">모듈</a> 화면에서도 트래커로 열 수 있어요.</p>
+<p>모든 것이 그대로 옮겨지지는 않아요. 트래커 명령이 없는 모듈 이펙트(샘플 오프셋, 패턴 루프, 트레몰로, 전체 볼륨)는 빠지고, XM 악기는 C-4에서 나는 샘플만 남고, LSDJ의 킷은 짧은 노이즈가 되고, 내보낸 모듈에서는 테이블과 덜 쓰는 명령이 사라져요. 예전 트래커로 만든 곡은 변환되어 열려요. 패턴 하나가 채널마다 프레이즈 하나와 체인 하나가 되고, 이펙트는 명령이 돼요(아르페지오 → <code>C</code>, 듀티 → <code>W</code>, 벤드 → <code>P</code>).</p>
+
+<h2 id="midi">MIDI</h2>
+<p>USB MIDI 키보드나 컨트롤러를 휴대용 기기(필요하면 USB-C 어댑터로)나 컴퓨터에 연결하세요. 리눅스 휴대용 기기와 컴퓨터, Windows, iPhone/iPad(USB 또는 이미 페어링한 블루투스 MIDI)에서 돼요. 트래커가 알아서 찾고(앱을 연 채로 연결해도 돼요), 첫 번째 기기에 연결해요.</p>
+<ul>
+<li><strong>노트</strong>: 지금 작업 중인 채널에서 마지막으로 쓴 악기로 소리가 나요. 프레이즈 화면에서는 커서 자리에 적히고 커서가 다음 스텝으로 넘어가요. 스텝 녹음이에요.</li>
+<li><strong>PROJ → MIDI</strong>: 쓸 기기, 또는 없음.</li>
+<li><strong>PROJ → 동기화</strong>: 누가 박자를 맞출지.
+<ul>
+<li><strong>내부</strong>: 곡 자체의 템포.</li>
+<li><strong>클럭 따르기</strong>: 받은 MIDI 클럭을 따라가요. 드럼 머신, DAW, LSDJ 자체가 시작, 정지, 템포를 정할 수 있어요. MIDI 클럭은 한 박에 24펄스로 트래커의 틱과 같아서, 펄스 하나가 틱 하나예요.</li>
+<li><strong>클럭 보내기</strong>: 트래커의 클럭(시작, 정지, 템포)을 기기로 보내서 다른 장비가 맞추게 해요.</li>
+</ul></li>
+</ul>
+<p>클럭은 오디오 버퍼 하나만큼(50~100 ms) 늦게 도착해요. 라이브 연주에 맞출 때만 신경 쓰일 정도예요.</p>
 
     <nav class="pager" aria-label="페이지"><a href="visualizers-games.html">← 비주얼라이저와 게임</a><a href="settings.html">설정 →</a></nav>
   </article>

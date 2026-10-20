@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -463,7 +464,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">트래커</span>
             <h3>나만의 칩튠 만들기</h3>
           </div>
-          <p class="lede">십자키로 쓰는 LSDJ 스타일 트래커에 PICO-8의 감성을 더했어요. 체인과 프레이즈, 엔벨로프와 테이블이 있는 악기, 스윙이 들어간 그루브, 편집 가능한 파형, 이펙트 명령 21가지, 피아노 롤까지. Game Boy의 4채널로 쓰거나, 프리 모드에서 신스 8채널로 작업할 수 있어요. 곡을 WAV로 내보내면 보관함에 들어가서 다른 곡처럼 백그라운드로 재생할 수 있습니다. <a href="docs/tracker.html">트래커 가이드</a>.</p>
+          <p class="lede">십자키로 쓰는 LSDJ 스타일 트래커에 PICO-8의 감성을 더했어요. 체인과 프레이즈, 엔벨로프와 테이블이 있는 악기, 스윙이 들어간 그루브, 편집 가능한 파형, 이펙트 명령 21가지, 피아노 롤까지. Game Boy의 4채널로 쓰거나, 프리 모드에서 신스 8채널로 작업할 수 있어요. MOD, XM, LSDJ 곡을 가져오고, WAV, XM, MOD로 내보내고, USB MIDI 키보드나 드럼 머신으로 연주하고 동기화할 수 있어요. 내보낸 파일은 보관함에 들어가서 다른 곡처럼 백그라운드로 재생돼요. <a href="docs/tracker.html">트래커 가이드</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Pocket Pop을 재생 중인 트래커: 재생에 맞춰 음표, 악기, 볼륨이 빛나는 프레이즈, 이어서 채널마다 실시간 오실로스코프가 있는 곡 화면" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -570,6 +571,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">라이브</span><h3>인터넷 라디오</h3><p>radio-browser.info의 수천 개 방송국을 나라나 장르별로, 스트림에서 받은 현재 곡 제목과 함께. 직접 만든 .m3u나 .pls 방송국 목록을 넣거나, 주소로 방송국을 추가할 수 있어요.</p></div>
         <div class="source"><span class="tag">에피소드</span><h3>팟캐스트</h3><p>내 나라의 인기 프로그램, 검색, 또는 주소로 아무 RSS 피드나. 에피소드는 오프라인으로 듣도록 내려받을 수 있고, 멈춘 위치를 기억해요.</p></div>
         <div class="source"><span class="tag">직접 준비하기</span><h3>YouTube Music</h3><p>앱 옆에 직접 받은 yt-dlp를 넣으면 검색이 나타나요. 내려받지 않고 듣거나, 커버와 태그를 붙여 보관함에 저장하세요.</p></div>
+        <div class="source wide"><span class="tag">씬</span><h3>모듈 아카이브</h3><p>The Mod Archive, Modland, VGMRips, AMP를 한 화면에서: 인기, 새로 나온 것, 무작위로 둘러보고, 검색하고, 듣고, 보관함에 저장하거나 모듈을 트래커에서 열어요. 검색에도 나와요.</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="전체, 보관함, YouTube 필터가 있는 검색. 이미 가진 곡엔 체크 표시" width="360" height="240" loading="lazy"><figcaption>보관함과 YouTube를 한 번에 검색. 이미 가진 곡엔 체크가 붙어요.</figcaption></figure>

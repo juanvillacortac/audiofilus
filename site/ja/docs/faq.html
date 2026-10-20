@@ -58,6 +58,7 @@
           <li><a href="sound.html">サウンド</a></li>
           <li><a href="lyrics.html">歌詞</a></li>
           <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
+          <li><a href="modules.html">モジュール</a></li>
           <li><a href="servers.html">サーバー</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">スクロブル</a></li>
@@ -77,7 +78,6 @@
 <details class="q" id="music-stops"><summary>アプリを閉じると音楽が止まります。</summary><p><strong>バックグラウンドへ</strong>（再生中のその他メニュー、または設定 → 終了）を使うと、プレイヤーを閉じても音楽は続きます。それ以外の閉じ方（PortMaster の <kbd>SELECT</kbd>+<kbd>START</kbd>、ウィンドウを閉じる）では、<strong>設定 → 閉じても再生</strong>がオンのときだけ音楽が続きます。携帯ゲーム機ではデフォルトでオフ、デスクトップではオンです。<strong>終了</strong>は常にすべてを停止します。</p></details>
 <details class="q" id="control-in-game"><summary>ゲーム中に曲を変えるには？</summary><p><kbd>FN</kbd> を 3 回押してから、<kbd>L1</kbd>/<kbd>R1</kbd>（前 / 次）、<kbd>L2</kbd>/<kbd>R2</kbd>（10 秒移動）、<kbd>SELECT</kbd>（一時停止）を押します。ヘッドホンのボタンも使えます。</p></details>
 <details class="q" id="where-data"><summary>設定とデータはどこにありますか？</summary><p>プログラムの隣です。設定は <code>audiofilus.json</code>、それ以外（ライブラリのキャッシュ、プレイリスト、履歴、歌詞、ポッドキャスト、ログ）はすべて <code>data/</code> フォルダーにあります。<a href="handhelds.html#files">ファイルの場所</a>を参照してください。</p></details>
-<details class="q" id="update"><summary>アップデートするには？</summary><p>古いリリースと同じ方法で新しいリリースをインストールします。設定とデータはプログラムの隣にあるので残ります。Linux ではインストールコマンドをもう一度実行してください。</p></details>
 <details class="q" id="portmaster-or-muxapp"><summary>muOS では PortMaster のポートと muOS アプリのどちらを使うべきですか？</summary><p>どちらも同じように動きます。<code>.muxapp</code> は muOS の Archive Manager からインストールして Applications に表示され、PortMaster のポートは Ports に表示されます。設定とデータはそれぞれ別です。</p></details>
 <details class="q" id="formats"><summary>どのフォーマットを再生できますか？</summary><p>MP3、AAC/M4A、ALAC、FLAC、Ogg Vorbis、Opus、WAV、AIFF、DSD、トラッカーモジュール（MOD、XM、IT、S3M）、ゲーム機の音楽（NSF、SPC、GBS、VGM…）、M3U プレイリスト、CUE シート。<a href="library.html#formats">対応フォーマット</a>を参照してください。</p></details>
 <details class="q" id="console-music"><summary>NSF/SPC/VGM ファイルが再生されません。</summary><p>ゲーム機の音楽には libgme が必要です。PortMaster のポート、muOS アプリ、Linux 版のダウンロードには同梱されています。プログラムだけをコピーしてインストールした場合は、<code>libs.aarch64</code>（または <code>libs.x86_64</code>）フォルダーも隣にコピーしてください。Linux デスクトップでは、ディストリビューションの libgme パッケージをインストールしてもかまいません。Windows ではまだ使えません。</p></details>
@@ -96,7 +96,9 @@
 <details class="q" id="iphone-music"><summary>iPhone で音楽を追加するには？</summary><p>ファイルアプリの <em>このiPhone内 → Audiofilus</em> に曲をコピーするか、設定 → フォルダで任意のフォルダーを選ぶか、ファイルアプリや他のアプリから曲を Audiofilus で開きます。サーバー、ラジオ、ポッドキャストはローカルの音楽がなくても使えます。</p></details>
 <details class="q" id="open-with"><summary>ファイルマネージャーからファイルを開くには？</summary><p>Linux では、右クリック → このアプリで開く → Audiofilus（インストーラーか <code>audiofilus desktop install</code> でインストールした後）。Windows では、audiofilus は初回起動時に自動で登録されるので、「プログラムから開く」か、フォルダーの「Play with Audiofilus」を使います。一時的なキューとして再生されます。</p></details>
 <details class="q" id="server-offline"><summary>サーバーの曲はネットワークなしで使えますか？</summary><p>カタログは保存されるのでオフラインでも閲覧でき、一度再生した曲はキャッシュされます（デフォルトで 400 MB）。キャッシュされていない曲にはサーバーが必要です。ずっと残したい曲はライブラリにダウンロードしてください。</p></details>
-<details class="q" id="privacy"><summary>audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、そして接続した場合のみ Last.fm や ListenBrainz。</p></details>
+<details class="q" id="privacy"><summary>audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、モジュールのアーカイブ（モジュール）、GitHub のリリース（1 日 1 回のアップデート確認）、そして接続した場合のみ Last.fm や ListenBrainz。</p></details>
+<details class="q" id="modules"><summary>モジュールはどこから来るのですか？</summary><p>4 つの無料オンラインアーカイブ、The Mod Archive、Modland、VGMRips、AMP からです（<a href="modules.html">モジュール</a>を参照）。聴くとファイルが <code>data/cache/modules</code> にダウンロードされるので、次からはすぐ再生されます。<strong>ライブラリに保存</strong>で、音楽フォルダーの <code>audiofilus modules</code> にコピーします。</p></details>
+<details class="q" id="midi"><summary>MIDI キーボードは使えますか？</summary><p>はい、トラッカーで使えます。USB MIDI キーボードを携帯機やパソコン（Linux、Windows、iPhone/iPad）につなぐと、ノートでいまのインストゥルメントが鳴り、フレーズに書き込むこともできます。MIDI クロックに従ったり、送ったりもできます。<a href="tracker.html#midi">MIDI</a> を参照してください。</p></details>
 <details class="q" id="tracker-visualizer"><summary>ビジュアライザーはトラッカーに反応しますか？</summary><p>はい。トラッカーの再生中は、ビジュアライザー、ビートに合わせて動くゲーム、背景がその音楽に合わせて動きます。</p></details>
     <nav class="pager" aria-label="ページ"><a href="handhelds.html">← 携帯ゲーム機</a><span></span></nav>
   </article>

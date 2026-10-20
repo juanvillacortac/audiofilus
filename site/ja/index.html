@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -462,7 +463,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">トラッカー</span>
             <h3>自分だけのチップチューンを作ろう</h3>
           </div>
-          <p class="lede">十字キーで使える LSDJ スタイルのトラッカーに、PICO-8 の要素を少し加えました：チェインとフレーズ、エンベロープとテーブル付きのインストゥルメント、スウィングするグルーヴ、編集できるウェーブ、21 のエフェクトコマンド、ピアノロール。ゲームボーイの 4 チャンネルで作るもよし、シンセ 8 チャンネルのフリーモードで作るもよし。曲を WAV で書き出せばライブラリに入り、ほかの曲と同じようにバックグラウンドで再生できます。<a href="docs/tracker.html">トラッカーガイド</a>。</p>
+          <p class="lede">十字キーで使える LSDJ スタイルのトラッカーに、PICO-8 の要素を少し加えました：チェインとフレーズ、エンベロープとテーブル付きのインストゥルメント、スウィングするグルーヴ、編集できるウェーブ、21 のエフェクトコマンド、ピアノロール。ゲームボーイの 4 チャンネルで作るもよし、シンセ 8 チャンネルのフリーモードで作るもよし。MOD、XM、LSDJ の曲をインポートし、WAV、XM、MOD で書き出し、USB の MIDI キーボードやドラムマシンで演奏・同期できます。書き出したものはライブラリに入り、ほかの曲と同じようにバックグラウンドで再生できます。<a href="docs/tracker.html">トラッカーガイド</a>。</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Pocket Pop を再生中のトラッカー：ノート、インストゥルメント、音量が鳴るたびに光るフレーズと、各チャンネルのリアルタイムのオシロスコープが並ぶソングビュー" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -569,6 +570,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">ライブ</span><h3>インターネットラジオ</h3><p>radio-browser.info の何千もの局を、国やジャンルから。ストリームから今流れている曲名も表示します。自分の .m3u や .pls の局リストを持ち込んだり、アドレスで局を追加したりできます。</p></div>
         <div class="source"><span class="tag">エピソード</span><h3>ポッドキャスト</h3><p>あなたの国の人気番組、検索、またはアドレスで任意の RSS フィード。エピソードはオフラインで聴けるようにダウンロードされ、止めた場所を覚えています。</p></div>
         <div class="source"><span class="tag">持ち込み</span><h3>YouTube Music</h3><p>自分の yt-dlp をアプリの隣にコピーすると検索が使えるようになります：ダウンロードせずに聴くことも、ジャケットとタグ付きでライブラリに保存することもできます。</p></div>
+        <div class="source wide"><span class="tag">シーン</span><h3>モジュールのアーカイブ</h3><p>The Mod Archive、Modland、VGMRips、AMP をひとつの画面に：人気・新着・ランダムを眺めて、検索して、聴いて、ライブラリに保存したり、モジュールをトラッカーで開いたり。検索にも出てきます。</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="All、Library、YouTube のフィルター付き検索。すでに持っている曲にはチェックが付く" width="360" height="240" loading="lazy"><figcaption>ライブラリと YouTube をまとめて検索。すでに持っている曲にはチェックが付きます。</figcaption></figure>

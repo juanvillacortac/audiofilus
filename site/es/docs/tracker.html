@@ -55,6 +55,7 @@
           <li><a href="sound.html">Sonido</a></li>
           <li><a href="lyrics.html">Letras</a></li>
           <li><a href="radio-podcasts.html">Radio y podcasts</a></li>
+          <li><a href="modules.html">Módulos</a></li>
           <li><a href="servers.html">Servidores</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -106,7 +107,7 @@
 <tr><td>GROOVE</td><td>La onda del instrumento, si es de onda</td></tr>
 </table>
 <ul>
-<li><strong>PROJ</strong>: el nombre de la canción (<kbd>A</kbd> abre el teclado), el modo, el tempo (de 40 a 300 BPM) y el groove con el que empieza.</li>
+<li><strong>PROJ</strong>: el nombre de la canción (<kbd>A</kbd> abre el teclado), el modo, el tempo (de 40 a 300 BPM) y el groove con el que empieza, además del aparato <a href="#midi">MIDI</a> y la sincronía.</li>
 <li><strong>SONG</strong>: filas × canales de números de cadena, con el osciloscopio de cada canal. El canal que elijas aquí es en el que suenan las cadenas y las frases.</li>
 <li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: cuadrículas de 16 filas.</li>
 <li><strong>INSTR</strong>: una lista con los ajustes del instrumento.</li>
@@ -140,7 +141,9 @@
 <li><strong>Copiar</strong>, <strong>Pegar</strong>, <strong>Clonar en uno nuevo</strong> y <strong>Vaciar</strong>, para lo que muestra la vista (una cadena, frase, instrumento, tabla, groove u onda). Clonar lo copia en el primer número libre, y la celda de la canción o el paso de la cadena de donde venías pasa a usar la copia.</li>
 <li>En la vista de onda, las ocho <strong>formas de PICO-8</strong>, para copiarlas en la onda abierta.</li>
 <li><strong>Canciones</strong>: una canción nueva de Game Boy o Libre, tus canciones guardadas y los ejemplos.</li>
-<li><strong>Exportar a la biblioteca</strong>, <strong>Borrar esta canción</strong> y <strong>A los juegos</strong>.</li>
+<li><strong>Exportar a la biblioteca</strong> (WAV), <strong>Exportar a XM</strong> y <strong>Exportar a MOD</strong>.</li>
+<li><strong>Importar…</strong> y <strong>Buscar en línea…</strong>: mira <a href="#import-export">Importar y exportar</a>.</li>
+<li><strong>Borrar esta canción</strong> y <strong>A los juegos</strong>.</li>
 </ul>
 <p>Mantén <kbd>FN</kbd> para ver los controles de la vista en la que estás.</p>
 
@@ -177,6 +180,7 @@
 <tr><td>Ruido corto</td><td>Ruido: el registro de 7 bits, más tonal y metálico</td></tr>
 <tr><td>Forma</td><td>Synth: triangular, seno, sierra, cuadrada, órgano, fantasma o ruido</td></tr>
 </table>
+<p>Las canciones MOD y XM importadas también tienen instrumentos de <strong>sample</strong>: los sonidos grabados del módulo, con sus bucles (hacia adelante o de ida y vuelta). Aparecen en la vista INSTR con los ajustes comunes; cambiar su tipo los convierte en un instrumento nuevo.</p>
 <p>La nota de un instrumento de ruido marca lo rápido que corre el ruido: las notas graves retumban y las agudas sisean. <kbd>A</kbd> sobre un ajuste toca la última nota con el instrumento.</p>
 
 <h2 id="tables">Tablas</h2>
@@ -225,9 +229,33 @@
 </ul>
 
 <h2 id="import-export">Importar y exportar</h2>
-<p><kbd>Start</kbd> → <strong>Exportar a la biblioteca</strong> toca la canción una vez y la guarda como WAV en una carpeta <code>audiofilus tracker</code> dentro de tu carpeta de música. La biblioteca la encuentra, así que suena en segundo plano como cualquier otra.</p>
-<p>Las canciones hechas con el tracker anterior se abren convertidas: cada patrón se vuelve una frase y una cadena por canal, y sus efectos pasan a comandos (arpegio → <code>C</code>, ancho → <code>W</code>, bend → <code>P</code>).</p>
-<p>Planeado: importar y exportar MOD/XM, importar canciones de LSDJ y sincronía MIDI.</p>
+<p><strong>Exportar</strong>, desde el menú de <kbd>Start</kbd>. Los archivos van a una carpeta <code>audiofilus tracker</code> de tu carpeta de música, y la biblioteca los encuentra:</p>
+<ul>
+<li><strong>Exportar a la biblioteca</strong>: la canción tocada una vez en un WAV.</li>
+<li><strong>Exportar a XM</strong>: un módulo de FastTracker 2 que se abre en OpenMPT, MilkyTracker y otros (y suena en audiofilus). Cada instrumento se vuelve un sample que suena como él, con una envolvente de volumen; pasan las notas, las transposiciones de las cadenas, el tempo, los grooves y los comandos principales (acorde, pitch, slide, vibrato, kill, delay, retrigger, paneo).</li>
+<li><strong>Exportar a MOD</strong>: lo mismo como módulo de ProTracker de 4 canales. No admite los canales 5 a 8 de una canción Libre.</li>
+</ul>
+<p><strong>Importar…</strong> lista las canciones que encuentra en tus carpetas de música y en la carpeta <code>data/tracker/import</code> de la app (hasta 300). Cada importación se vuelve una canción nueva que puedes editar:</p>
+<ul>
+<li><strong>MOD</strong> (ProTracker y compatibles, de 4, 6 u 8 canales) y <strong>XM</strong> (FastTracker 2, los primeros 8 canales): una canción en modo Libre. Cada patrón se vuelve frases y cadenas, cada sample un instrumento de sample, y el tiempo es exacto.</li>
+<li><strong>LSDJ</strong>: una canción <code>.lsdsng</code>, o todas las de un <code>.sav</code>. Pasan casi una a una, en modo Game Boy: canción, cadenas, frases, instrumentos, tablas, grooves, ondas y tempo.</li>
+</ul>
+<p><strong>Buscar en línea…</strong> busca archivos MOD y XM en The Mod Archive y Modland; elegir uno lo baja y lo importa. La pantalla <a href="modules.html">Módulos</a> también puede abrirlos en el tracker.</p>
+<p>No todo sobrevive al viaje: los efectos de módulo sin comando en el tracker (sample offset, bucles de patrón, trémolo, volumen global) se pierden, un instrumento XM se queda solo con el sample que toca en C-4, los kits de LSDJ se vuelven golpes cortos de ruido, y un módulo exportado pierde las tablas y los comandos menos comunes. Las canciones hechas con el tracker anterior se abren convertidas: cada patrón se vuelve una frase y una cadena por canal, y sus efectos pasan a comandos (arpegio → <code>C</code>, ancho → <code>W</code>, bend → <code>P</code>).</p>
+
+<h2 id="midi">MIDI</h2>
+<p>Conecta un teclado o controlador MIDI USB a la portátil (con un adaptador USB-C si hace falta) o a la computadora. Funciona en las portátiles y escritorios Linux, en Windows y en iPhone/iPad (USB o MIDI Bluetooth ya emparejado). El tracker lo encuentra solo, también si lo conectas con la app abierta, y se conecta al primero.</p>
+<ul>
+<li><strong>Notas</strong>: tocan el último instrumento usado, en el canal en que trabajas. En la vista de frase además se escriben en el cursor, que pasa al paso siguiente: grabación paso a paso.</li>
+<li><strong>PROJ → MIDI</strong>: qué aparato usar, o ninguno.</li>
+<li><strong>PROJ → Sincronía</strong>: quién lleva el tiempo.
+<ul>
+<li><strong>INTERNA</strong>: el tempo propio de la canción.</li>
+<li><strong>SEGUIR RELOJ</strong>: el tracker sigue el reloj MIDI que recibe. Una caja de ritmos, un DAW o el propio LSDJ pueden arrancarlo, pararlo y marcar el tempo. El reloj MIDI tiene 24 pulsos por tiempo, igual que los ticks del tracker, así que cada pulso es un tick.</li>
+<li><strong>ENVIAR RELOJ</strong>: el tracker manda su reloj (arranque, parada y el tempo) al aparato, para que otros equipos vayan a su ritmo.</li>
+</ul></li>
+</ul>
+<p>El reloj llega con un búfer de audio de retraso (50–100 ms), lo que solo importa si tocas junto a algo en vivo.</p>
 
     <nav class="pager" aria-label="Páginas"><a href="visualizers-games.html">← Visualizadores y juegos</a><a href="settings.html">Ajustes →</a></nav>
   </article>

@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -471,7 +472,7 @@ body { line-break: strict; }
             <span class="eyebrow">Tracker</span>
             <h3>做你自己的芯片音乐</h3>
           </div>
-          <p class="lede">一款 LSDJ 风格、用十字键操作的 tracker，带点 PICO-8 的味道：链（chain）与乐句（phrase）、带包络和表（table）的乐器、带摇摆感的律动（groove）、可编辑波形、21 种效果指令和钢琴卷帘。可以为 Game Boy 的四个声道写曲，也可以切到自由模式，用八个合成器声道。把歌曲导出为 WAV，它就会出现在你的音乐库里，像其他歌一样在后台播放。<a href="docs/tracker.html">Tracker 指南</a>。</p>
+          <p class="lede">一款 LSDJ 风格、用十字键操作的 tracker，带点 PICO-8 的味道：链（chain）与乐句（phrase）、带包络和表（table）的乐器、带摇摆感的律动（groove）、可编辑波形、21 种效果指令和钢琴卷帘。可以为 Game Boy 的四个声道写曲，也可以切到自由模式，用八个合成器声道。可以导入 MOD、XM 和 LSDJ 歌曲，导出为 WAV、XM 或 MOD，还能用 USB MIDI 键盘或鼓机演奏和同步。导出的文件会出现在你的音乐库里，像其他歌一样在后台播放。<a href="docs/tracker.html">Tracker 指南</a>。</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="播放 Pocket Pop 的 tracker：一个乐句中的音符、乐器和音量随播放点亮，然后切换到歌曲视图，每个声道都有实时示波器" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -578,6 +579,7 @@ body { line-break: strict; }
         <div class="source"><span class="tag">直播</span><h3>网络电台</h3><p>来自 radio-browser.info 的数千个电台，可按国家或流派浏览，并显示流中当前播放的歌名。也可以使用你自己的 .m3u 或 .pls 电台列表，或通过地址添加电台。</p></div>
         <div class="source"><span class="tag">单集</span><h3>播客</h3><p>你所在国家的热门节目、搜索，或通过地址添加任意 RSS 订阅。单集可下载离线收听，并记住你停在哪里。</p></div>
         <div class="source"><span class="tag">自备工具</span><h3>YouTube Music</h3><p>把你自己的 yt-dlp 复制到应用旁边，搜索功能就会出现：无需下载即可收听，也可以把歌曲连同封面和标签保存到音乐库。</p></div>
+        <div class="source wide"><span class="tag">Demoscene</span><h3>模块资料库</h3><p>The Mod Archive、Modland、VGMRips 和 AMP 集中在一个界面：浏览热门、最新或随机内容，搜索、收听、存入音乐库，或在 tracker 中打开模块。它们也会出现在搜索里。</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="搜索，带“全部”、“音乐库”和 YouTube 筛选；已拥有的歌曲带勾" width="360" height="240" loading="lazy"><figcaption>一次搜索同时覆盖音乐库和 YouTube。已拥有的歌曲会打勾。</figcaption></figure>

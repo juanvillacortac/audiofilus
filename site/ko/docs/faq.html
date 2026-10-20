@@ -59,6 +59,7 @@
           <li><a href="sound.html">사운드</a></li>
           <li><a href="lyrics.html">가사</a></li>
           <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="modules.html">모듈</a></li>
           <li><a href="servers.html">서버</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">스크로블</a></li>
@@ -78,7 +79,6 @@
 <details class="q" id="music-stops"><summary>앱을 닫으면 음악이 멈춰요.</summary><p>음악은 그대로 두고 플레이어만 닫으려면 <strong>백그라운드로</strong>(재생 중 화면의 더보기 메뉴 또는 설정 → 나가기)를 쓰세요. 다른 방식으로 닫으면(PortMaster의 <kbd>SELECT</kbd>+<kbd>START</kbd>, 창 닫기) <strong>설정 → 닫아도 재생</strong>이 켜져 있을 때만 음악이 계속돼요. 휴대용 게임기에선 기본으로 꺼져 있고, 데스크톱에선 켜져 있어요. <strong>종료</strong>는 항상 모두 멈춰요.</p></details>
 <details class="q" id="control-in-game"><summary>게임을 하면서 곡을 바꾸려면 어떻게 하나요?</summary><p><kbd>FN</kbd>을 세 번 누른 다음 <kbd>L1</kbd>/<kbd>R1</kbd>(이전/다음), <kbd>L2</kbd>/<kbd>R2</kbd>(10초 이동), <kbd>SELECT</kbd>(일시정지)를 누르세요. 헤드폰 버튼도 작동해요.</p></details>
 <details class="q" id="where-data"><summary>설정과 데이터는 어디에 있나요?</summary><p>프로그램 옆이에요. 설정은 <code>audiofilus.json</code>, 나머지(보관함 캐시, 재생목록, 기록, 가사, 팟캐스트, 로그)는 <code>data/</code> 폴더에 있어요. <a href="handhelds.html#files">파일이 있는 곳</a>을 보세요.</p></details>
-<details class="q" id="update"><summary>업데이트는 어떻게 하나요?</summary><p>예전 버전을 설치한 방법 그대로 새 릴리스를 설치하세요. 설정과 데이터는 프로그램 옆에 있어서 그대로 남아요. 리눅스에서는 설치 명령을 다시 실행하세요.</p></details>
 <details class="q" id="portmaster-or-muxapp"><summary>muOS에서는 PortMaster 포트와 muOS 앱 중 뭘 써야 하나요?</summary><p>어느 쪽이든 똑같이 작동해요. <code>.muxapp</code>은 muOS의 Archive Manager로 설치하고 Applications에 나타나고, PortMaster 포트는 Ports에 나타나요. 설정과 데이터는 따로 보관돼요.</p></details>
 <details class="q" id="formats"><summary>어떤 형식을 재생하나요?</summary><p>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD, 트래커 모듈(MOD, XM, IT, S3M), 게임기 음악(NSF, SPC, GBS, VGM…), M3U 재생목록, CUE 시트. <a href="library.html#formats">형식</a>을 보세요.</p></details>
 <details class="q" id="console-music"><summary>NSF/SPC/VGM 파일이 재생되지 않아요.</summary><p>게임기 음악에는 libgme가 필요하고, PortMaster 포트, muOS 앱, 리눅스 다운로드에 들어 있어요. 프로그램만 복사해서 설치했다면 <code>libs.aarch64</code>(또는 <code>libs.x86_64</code>) 폴더도 옆에 복사하세요. 리눅스 데스크톱에서는 배포판의 libgme 패키지를 설치해도 돼요. 윈도우에서는 아직 쓸 수 없어요.</p></details>
@@ -97,7 +97,9 @@
 <details class="q" id="iphone-music"><summary>iPhone에서 음악은 어떻게 넣나요?</summary><p>파일 앱의 <em>나의 iPhone → Audiofilus</em>에 곡을 복사하거나, 설정 → 폴더에서 아무 폴더나 고르거나, 파일 앱이나 다른 앱에서 곡을 Audiofilus로 여세요. 서버, 라디오, 팟캐스트는 로컬 음악 없이도 작동해요.</p></details>
 <details class="q" id="open-with"><summary>파일 관리자에서 파일을 열려면요?</summary><p>리눅스에서는 오른쪽 클릭 → 연결 프로그램 → Audiofilus(설치 프로그램이나 <code>audiofilus desktop install</code>로 설치한 뒤). 윈도우에서는 audiofilus를 처음 실행할 때 스스로 등록되니, 연결 프로그램을 쓰거나 폴더에서 Play with Audiofilus를 고르세요. 임시 대기열로 재생돼요.</p></details>
 <details class="q" id="server-offline"><summary>서버 곡은 네트워크 없이도 되나요?</summary><p>목록이 저장되어 있어서 오프라인에서도 둘러볼 수 있고, 이미 들은 곡은 캐시돼요(기본 400 MB). 캐시되지 않은 곡은 서버가 필요해요. 계속 보관하려면 곡을 보관함에 받으세요.</p></details>
-<details class="q" id="privacy"><summary>audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 그리고 연결했을 때만 Last.fm이나 ListenBrainz.</p></details>
+<details class="q" id="privacy"><summary>audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 모듈 아카이브(모듈), GitHub 릴리스(하루 한 번 업데이트 확인), 그리고 연결했을 때만 Last.fm이나 ListenBrainz.</p></details>
+<details class="q" id="modules"><summary>모듈은 어디서 오나요?</summary><p>네 곳의 무료 온라인 아카이브, The Mod Archive, Modland, VGMRips, AMP에서 와요(<a href="modules.html">모듈</a>을 보세요). 들으면 파일이 <code>data/cache/modules</code>에 내려받아져서 다음에는 바로 재생돼요. <strong>보관함에 저장</strong>은 음악 폴더의 <code>audiofilus modules</code>로 복사해요.</p></details>
+<details class="q" id="midi"><summary>MIDI 키보드를 쓸 수 있나요?</summary><p>네, 트래커에서요. USB MIDI 키보드를 휴대용 기기나 컴퓨터(리눅스, Windows, iPhone/iPad)에 연결하면 노트가 지금 악기로 소리 나거나 프레이즈에 적혀요. 트래커는 MIDI 클럭을 따르거나 보낼 수도 있어요. <a href="tracker.html#midi">MIDI</a>를 보세요.</p></details>
 <details class="q" id="tracker-visualizer"><summary>비주얼라이저가 트래커에 반응하나요?</summary><p>네. 트래커가 재생되는 동안 비주얼라이저, 박자를 따라가는 게임, 배경이 그 음악을 따라가요.</p></details>
     <nav class="pager" aria-label="페이지"><a href="handhelds.html">← 휴대용 게임기 시스템</a><span></span></nav>
   </article>

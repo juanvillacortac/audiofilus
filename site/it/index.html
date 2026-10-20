@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -458,7 +459,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Tracker</span>
             <h3>Crea il tuo chiptune</h3>
           </div>
-          <p class="lede">Un tracker in stile LSDJ per la croce direzionale, con un tocco di PICO-8: catene e frasi, strumenti con inviluppi e tabelle, groove con swing, onde modificabili, 21 comandi di effetto e un piano roll. Scrivi per i quattro canali di un Game Boy o passa a Libero con otto canali di synth. Esporta un brano in WAV e finisce nella tua libreria, pronto da ascoltare in sottofondo come tutto il resto. <a href="docs/tracker.html">Guida al tracker</a>.</p>
+          <p class="lede">Un tracker in stile LSDJ per la croce direzionale, con un tocco di PICO-8: catene e frasi, strumenti con inviluppi e tabelle, groove con swing, onde modificabili, 21 comandi di effetto e un piano roll. Scrivi per i quattro canali di un Game Boy o passa a Libero con otto canali di synth. Importa brani MOD, XM e LSDJ, esporta in WAV, XM o MOD, e suonalo o sincronizzalo da una tastiera MIDI USB o una drum machine. Gli export finiscono nella tua libreria, pronti da ascoltare in sottofondo come tutto il resto. <a href="docs/tracker.html">Guida al tracker</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Il tracker che suona Pocket Pop: una frase con le note, gli strumenti e i volumi che si accendono mentre suonano, poi la vista del brano con un oscilloscopio dal vivo per canale" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -565,6 +566,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Dal vivo</span><h3>Radio su internet</h3><p>Migliaia di stazioni da radio-browser.info, per paese o genere, con il titolo del brano dal flusso. Porta le tue liste di stazioni .m3u o .pls, o aggiungi una stazione dal suo indirizzo.</p></div>
         <div class="source"><span class="tag">Episodi</span><h3>Podcast</h3><p>I podcast più popolari del tuo paese, la ricerca o qualsiasi feed RSS dal suo indirizzo. Gli episodi si scaricano per l'ascolto offline e ricordano dove ti eri fermato.</p></div>
         <div class="source"><span class="tag">Porta il tuo</span><h3>YouTube Music</h3><p>Copia il tuo yt-dlp accanto all'app e compare la ricerca: ascolta senza scaricare, o salva i brani nella libreria con copertina e tag.</p></div>
+        <div class="source wide"><span class="tag">Scena</span><h3>Archivi di moduli</h3><p>The Mod Archive, Modland, VGMRips e AMP in una sola schermata: esplora i più popolari, le novità o a caso, cerca, ascolta, salva nella libreria o apri un modulo nel tracker. Compaiono anche in Cerca.</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Ricerca con i filtri Tutto, Libreria e YouTube; i brani che hai già sono spuntati" width="360" height="240" loading="lazy"><figcaption>Una sola ricerca per la libreria e YouTube. Una spunta segna i brani che hai già.</figcaption></figure>

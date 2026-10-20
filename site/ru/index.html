@@ -187,6 +187,7 @@ figure { margin: 0; }
 
 /* Sources */
 .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -460,7 +461,7 @@ footer img { height: 56px; width: auto; }
             <span class="eyebrow">Трекер</span>
             <h3>Делай свой чиптюн</h3>
           </div>
-          <p class="lede">Трекер в стиле LSDJ для крестовины, с щепоткой PICO-8: цепочки и фразы, инструменты с огибающими и таблицами, грувы со свингом, редактируемые волны, 21 команда эффектов и пиано-ролл. Пиши для четырёх каналов Game Boy или выбери Свободный режим с восемью синтезаторными каналами. Экспортируй песню в WAV — она попадёт в библиотеку и будет играть в фоне, как всё остальное. <a href="docs/tracker.html">Руководство по трекеру</a>.</p>
+          <p class="lede">Трекер в стиле LSDJ для крестовины, с щепоткой PICO-8: цепочки и фразы, инструменты с огибающими и таблицами, грувы со свингом, редактируемые волны, 21 команда эффектов и пиано-ролл. Пиши для четырёх каналов Game Boy или выбери Свободный режим с восемью синтезаторными каналами. Импортируй песни MOD, XM и LSDJ, экспортируй в WAV, XM или MOD, играй и синхронизируй с USB MIDI-клавиатуры или драм-машины. Экспортированное попадает в библиотеку и играет в фоне, как всё остальное. <a href="docs/tracker.html">Руководство по трекеру</a>.</p>
         </div>
         <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Трекер играет Pocket Pop: фраза, в которой подсвечиваются звучащие ноты, инструменты и громкость, затем вид песни с осциллографом на каждом канале" width="360" height="240" loading="lazy"></figure>
       </div>
@@ -567,6 +568,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">В эфире</span><h3>Интернет-радио</h3><p>Тысячи станций с radio-browser.info по странам и жанрам, с названием текущей песни из потока. Добавляй свои списки станций .m3u или .pls или станцию по адресу.</p></div>
         <div class="source"><span class="tag">Выпуски</span><h3>Подкасты</h3><p>Популярные шоу твоей страны, поиск или любая RSS-лента по адресу. Выпуски скачиваются для прослушивания без сети и помнят, где ты остановился.</p></div>
         <div class="source"><span class="tag">Своё</span><h3>YouTube Music</h3><p>Положи свой yt-dlp рядом с приложением — и появится поиск: слушай без скачивания или сохраняй песни в библиотеку с обложкой и тегами.</p></div>
+        <div class="source wide"><span class="tag">Сцена</span><h3>Архивы модулей</h3><p>The Mod Archive, Modland, VGMRips и AMP на одном экране: смотри популярное, новое или случайное, ищи, слушай, сохраняй в библиотеку или открывай модуль в трекере. Они есть и в Поиске.</p></div>
       </div>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Поиск с фильтрами Всё, Библиотека и YouTube; песни, которые у тебя уже есть, отмечены галочкой" width="360" height="240" loading="lazy"><figcaption>Один поиск по библиотеке и YouTube. Галочка отмечает песни, которые у тебя уже есть.</figcaption></figure>

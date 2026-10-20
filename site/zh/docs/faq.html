@@ -68,6 +68,7 @@ body { line-break: strict; }
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="modules.html">模块</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">播放记录</a></li>
@@ -87,7 +88,6 @@ body { line-break: strict; }
 <details class="q" id="music-stops"><summary>关闭应用后音乐就停了。</summary><p>使用 <strong>转到后台</strong>（正在播放界面的“更多”菜单，或 设置 → 退出）来关闭播放器并保留音乐。用其他方式关闭（PortMaster 的 <kbd>SELECT</kbd>+<kbd>START</kbd>、关闭窗口）时，只有开启了 <strong>设置 → 关闭后继续播放</strong> 才会保留音乐；该设置在掌机上默认关闭，在桌面上默认开启。<strong>退出</strong> 总是会停止一切。</p></details>
 <details class="q" id="control-in-game"><summary>玩游戏时怎么切歌？</summary><p>按三下 <kbd>FN</kbd>，然后按 <kbd>L1</kbd>/<kbd>R1</kbd>（上一首/下一首）、<kbd>L2</kbd>/<kbd>R2</kbd>（快退/快进 10 秒）或 <kbd>SELECT</kbd>（暂停）。耳机按键也可以用。</p></details>
 <details class="q" id="where-data"><summary>我的设置和数据在哪里？</summary><p>在程序旁边：<code>audiofilus.json</code> 存放设置，<code>data/</code> 文件夹存放其他所有内容（音乐库缓存、歌单、历史、歌词、播客、日志）。参见<a href="handhelds.html#files">文件存放位置</a>。</p></details>
-<details class="q" id="update"><summary>怎么更新？</summary><p>用安装旧版本的方式安装新版本即可。设置和数据会保留，因为它们存放在程序旁边。在 Linux 上，再运行一次安装命令。</p></details>
 <details class="q" id="portmaster-or-muxapp"><summary>在 muOS 上，应该用 PortMaster 版还是 muOS 应用？</summary><p>两者功能相同。<code>.muxapp</code> 通过 muOS 的 Archive Manager 安装，出现在“应用程序”下；PortMaster 版出现在 Ports 下。它们的设置和数据是分开的。</p></details>
 <details class="q" id="formats"><summary>支持哪些格式？</summary><p>MP3、AAC/M4A、ALAC、FLAC、Ogg Vorbis、Opus、WAV、AIFF、DSD、tracker 模块（MOD、XM、IT、S3M）、游戏音乐（NSF、SPC、GBS、VGM…）、M3U 播放列表和 CUE 文件。参见<a href="library.html#formats">格式</a>。</p></details>
 <details class="q" id="console-music"><summary>我的 NSF/SPC/VGM 文件无法播放。</summary><p>游戏音乐需要 libgme，PortMaster 版、muOS 应用和 Linux 下载包都已自带。如果你只复制了程序本身，请把 <code>libs.aarch64</code>（或 <code>libs.x86_64</code>）文件夹也复制到它旁边。在 Linux 桌面上，也可以安装发行版自带的 libgme 软件包。Windows 上暂不支持。</p></details>
@@ -106,7 +106,9 @@ body { line-break: strict; }
 <details class="q" id="iphone-music"><summary>怎么在 iPhone 上添加音乐？</summary><p>在“文件”应用中把歌曲复制到 <em>我的 iPhone → Audiofilus</em>，在 设置 → 文件夹 中选择任意文件夹，或从“文件”和其他应用中用 Audiofilus 打开歌曲。服务器、电台和播客无需本地音乐即可使用。</p></details>
 <details class="q" id="open-with"><summary>怎么从文件管理器打开文件？</summary><p>在 Linux 上，右键 → 打开方式 → Audiofilus（需先用安装脚本或 <code>audiofilus desktop install</code> 安装）。在 Windows 上，audiofilus 首次运行时会自动注册：使用“打开方式”，或在文件夹上使用“用 Audiofilus 播放”。它们会作为临时队列播放。</p></details>
 <details class="q" id="server-offline"><summary>服务器上的歌曲没有网络能用吗？</summary><p>曲目目录会被保存，因此可以离线浏览，已播放过的歌曲会被缓存（默认 400 MB）。没有缓存的歌曲需要连接服务器。把歌曲下载到音乐库即可永久保留。</p></details>
-<details class="q" id="privacy"><summary>audiofilus 会向网络发送什么？</summary><p>只发送你用到的：radio-browser（电台界面）、Apple 的播客目录和 RSS 订阅（播客）、LRCLIB（歌词，除非关闭网上歌词）、你自己的服务器、通过你的 yt-dlp 访问的 YouTube，以及仅在你连接后才使用的 Last.fm 或 ListenBrainz。</p></details>
+<details class="q" id="privacy"><summary>audiofilus 会向网络发送什么？</summary><p>只发送你用到的：radio-browser（电台界面）、Apple 的播客目录和 RSS 订阅（播客）、LRCLIB（歌词，除非关闭网上歌词）、你自己的服务器、通过你的 yt-dlp 访问的 YouTube、模块资料库（模块）、GitHub 发布（每天一次的更新检查），以及仅在你连接后才使用的 Last.fm 或 ListenBrainz。</p></details>
+<details class="q" id="modules"><summary>模块从哪里来？</summary><p>来自四个免费的在线资料库：The Mod Archive、Modland、VGMRips 和 AMP（见<a href="modules.html">模块</a>）。收听时文件会下载到 <code>data/cache/modules</code>，下次会立即播放；<strong>存入音乐库</strong>会把它复制到音乐文件夹里的 <code>audiofilus modules</code>。</p></details>
+<details class="q" id="midi"><summary>可以用 MIDI 键盘吗？</summary><p>可以，在 tracker 中：把 USB MIDI 键盘插到掌机或电脑（Linux、Windows、iPhone/iPad）上，它的音符会用当前乐器发声，或写入乐句。tracker 还可以跟随或发送 MIDI 时钟。见 <a href="tracker.html#midi">MIDI</a>。</p></details>
 <details class="q" id="tracker-visualizer"><summary>可视化效果会随 tracker 律动吗？</summary><p>会。tracker 播放时，可视化效果、跟随节拍的游戏和背景都会跟着它的音乐变化。</p></details>
     <nav class="pager" aria-label="页面"><a href="handhelds.html">← 掌机系统</a><span></span></nav>
   </article>
