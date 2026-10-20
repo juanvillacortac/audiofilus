@@ -41,12 +41,12 @@ func (a *App) guideRows() (own, all []hint) {
 	case a.screen == Crypt:
 		own = []hint{{"<>^v", "g_cr_move"}, {"<>^v", "g_cr_attack"}, {"START", "h_pause"}}
 	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvPhrase && a.tracker.roll:
-		own = []hint{{"<>", "tk_g_step"}, {"^v", "tk_g_pitch"}, {"A", "tk_g_toggle"}, {"A+^v", "tk_g_move"}, {"B+A", "tk_g_delete"}, {"X", "tk_g_grid"}, {"Y", "tk_h_play"}}
+		own = []hint{{"<>", "tk_g_step"}, {"^v", "tk_g_pitch"}, {"A", "tk_g_toggle"}, {"A+^v", "tk_g_move"}, {"B+A", "tk_g_delete"}, {"X", "tk_g_grid"}, {"Y", "tk_g_play"}}
 	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvWave:
-		own = []hint{{"<>", "g_dock_move"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_draw"}, {"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_h_play"}, {"START", "tk_g_menu"}}
+		own = []hint{{"<>", "g_dock_move"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_draw"}, {"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_g_play"}, {"START", "tk_g_menu"}}
 	case a.screen == Tracker:
 		own = []hint{{"<>^v", "g_dock_move"}, {"A", "tk_g_put"}, {"A A", "tk_g_new"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_big"}, {"B+A", "tk_g_delete"},
-			{"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_h_play"}, {"B+Y", "tk_g_mute"}, {"X", "tk_g_roll"}, {"START", "tk_g_menu"}}
+			{"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_g_play"}, {"B+Y", "tk_g_mute"}, {"X", "tk_g_roll"}, {"START", "tk_g_menu"}}
 	case a.screen == Quiz:
 		own = []hint{{"<>^v", "gm_choose"}, {"A", "qz_answer"}, {"START", "h_pause"}}
 	case a.screen == Snake:
@@ -126,20 +126,70 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 	if w < 300 && topH+4+tall <= h-bottomH {
 		cols = [][]section{append(cols[0], cols[1]...)}
 	}
-	colW := (w - (len(cols)+1)*margin) / len(cols)
-	for c, secs := range cols {
-		x := margin + c*(colW+margin)
-		y := topH + 4
-		for _, sec := range secs {
-			drawText(dst, T(sec.head), SmallFace, x, y, th.Accent)
-			rect(dst, x, y+9, colW, 1, withAlpha(th.Dim, 0x50))
-			y += headH
-			for _, r := range sec.rows {
-				bw := a.drawBtnChip(dst, a.btn(r.btn), x, y-2)
-				drawTextW(dst, T(r.label), SmallFace, x+bw+4, y, colW-bw-4, th.Text)
-				y += rowH
+	// Lo que no cabe en el alto de una columna sigue en otra (la cabecera de
+	// la sección, repetida). Si las columnas no caben a lo ancho (a 110 px ya
+	// no se leen), se quitan las secciones del final: lo de esta pantalla va
+	// primero.
+	top, bottom := topH+4, h-bottomH-2
+	type entry struct {
+		head string
+		row  hint
+	}
+	flow := func(cols [][]section) [][]entry {
+		var out [][]entry
+		for _, secs := range cols {
+			var col []entry
+			y := top
+			for _, sec := range secs {
+				if y+headH+rowH > bottom && len(col) > 0 {
+					out, col, y = append(out, col), nil, top
+				}
+				col = append(col, entry{head: sec.head})
+				y += headH
+				for _, r := range sec.rows {
+					if y+rowH > bottom {
+						out, col, y = append(out, col), []entry{{head: sec.head}}, top+headH
+					}
+					col = append(col, entry{row: r})
+					y += rowH
+				}
+				y += 3
 			}
-			y += 3
+			if len(col) > 0 {
+				out = append(out, col)
+			}
+		}
+		return out
+	}
+	laid := flow(cols)
+	for len(laid) > 1 && (w-(len(laid)+1)*margin)/len(laid) < 110 {
+		last := cols[len(cols)-1]
+		if len(last) > 1 {
+			cols[len(cols)-1] = last[:len(last)-1]
+		} else if len(cols) > 1 {
+			cols = cols[:len(cols)-1]
+		} else {
+			break
+		}
+		laid = flow(cols)
+	}
+	colW := (w - (len(laid)+1)*margin) / len(laid)
+	for c, col := range laid {
+		x := margin + c*(colW+margin)
+		y := top
+		for i, e := range col {
+			if e.head != "" {
+				if i > 0 {
+					y += 3
+				}
+				drawText(dst, T(e.head), SmallFace, x, y, th.Accent)
+				rect(dst, x, y+9, colW, 1, withAlpha(th.Dim, 0x50))
+				y += headH
+				continue
+			}
+			bw := a.drawBtnChip(dst, a.btn(e.row.btn), x, y-2)
+			drawTextW(dst, T(e.row.label), SmallFace, x+bw+4, y, colW-bw-4, th.Text)
+			y += rowH
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg)

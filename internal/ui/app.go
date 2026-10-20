@@ -1916,6 +1916,13 @@ func (a *App) writeShots() error {
 	if err := shot("tracker-instrumento"); err != nil {
 		return err
 	}
+	// La guía de FN en el tracker: la lista más larga, en varias columnas.
+	a.tracker.view = tvSong
+	a.guideAt = a.t - 1
+	if err := shot("guia-tracker"); err != nil {
+		return err
+	}
+	a.guideAt = 0
 	a.tracker.player.Stop()
 	a.tracker = nil
 	if err := a.writePortCover(filepath.Join(a.ShotsDir, "portada-portmaster.png")); err != nil {
