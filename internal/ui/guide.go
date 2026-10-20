@@ -40,10 +40,13 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"< v B A", "g_lanes"}, {"START", "h_pause"}}
 	case a.screen == Crypt:
 		own = []hint{{"<>^v", "g_cr_move"}, {"<>^v", "g_cr_attack"}, {"START", "h_pause"}}
-	case a.screen == Tracker && a.tracker != nil && a.tracker.songView:
-		own = []hint{{"^v", "g_dock_move"}, {"A", "tk_h_open"}, {"A+^v", "tk_g_order"}, {"B+A", "tk_g_delete"}, {"Y", "tk_h_play"}, {"X", "tk_g_view"}}
+	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvPhrase && a.tracker.roll:
+		own = []hint{{"<>", "tk_g_step"}, {"^v", "tk_g_pitch"}, {"A", "tk_g_toggle"}, {"A+^v", "tk_g_move"}, {"B+A", "tk_g_delete"}, {"X", "tk_g_grid"}, {"Y", "tk_h_play"}}
+	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvWave:
+		own = []hint{{"<>", "g_dock_move"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_draw"}, {"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_h_play"}, {"START", "tk_g_menu"}}
 	case a.screen == Tracker:
-		own = []hint{{"<>^v", "g_dock_move"}, {"A", "tk_g_put"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_big"}, {"B+A", "tk_g_delete"}, {"L1/R1", "tk_g_pattern"}, {"Y", "tk_h_play"}, {"B+Y", "tk_g_mute"}, {"X", "tk_g_view"}}
+		own = []hint{{"<>^v", "g_dock_move"}, {"A", "tk_g_put"}, {"A A", "tk_g_new"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_big"}, {"B+A", "tk_g_delete"},
+			{"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_h_play"}, {"B+Y", "tk_g_mute"}, {"X", "tk_g_roll"}, {"START", "tk_g_menu"}}
 	case a.screen == Quiz:
 		own = []hint{{"<>^v", "gm_choose"}, {"A", "qz_answer"}, {"START", "h_pause"}}
 	case a.screen == Snake:

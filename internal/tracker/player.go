@@ -1,4 +1,4 @@
-package next
+package tracker
 
 import (
 	"encoding/binary"
@@ -49,11 +49,12 @@ type fx struct {
 // channel es el estado de un canal.
 type channel struct {
 	v         voice
-	row       int // la fila de la canción
-	chainPos  int // el paso de la cadena
-	step      int // el paso de la frase
-	ticks     int // ticks que le quedan al paso
-	delay     int // D: ticks hasta que empiece el paso
+	row       int  // la fila de la canción
+	chainPos  int  // el paso de la cadena
+	step      int  // el paso de la frase
+	ticks     int  // ticks que le quedan al paso
+	delay     int  // D: ticks hasta que suene el paso
+	pending   Step // el paso que espera por D
 	groove    int
 	groovePos int
 	done      bool // la canción se acabó para este canal (o una frase/cadena sola)
@@ -192,6 +193,46 @@ func (p *Player) SetMuted(ch int, m bool) {
 	p.mu.Unlock()
 }
 
+// Muted son los canales silenciados.
+func (p *Player) Muted() [MaxChannels]bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.muted
+}
+
+// Now es lo que suena en el canal ch: la cadena y la frase (Empty si
+// ninguna), para que la interfaz siga la canción.
+func (p *Player) Now(ch int) (chain, phrase int) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	chain, phrase = Empty, Empty
+	c := &p.chans[ch]
+	if !p.playing || c.done || p.song == nil {
+		return
+	}
+	switch p.what {
+	case PlayPhrase:
+		return Empty, p.target
+	case PlayChain:
+		chain = p.target
+	default:
+		if c.row < len(p.song.Rows) {
+			chain = int(p.song.Rows[c.row][ch])
+		}
+	}
+	if ch := p.song.Chains[chain]; chain != Empty && ch != nil && c.chainPos < Steps {
+		phrase = int(ch[c.chainPos].Phrase)
+	}
+	return
+}
+
+// Playing dice si está tocando.
+func (p *Player) Playing() bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.playing
+}
+
 // Scope copia la onda reciente del canal ch.
 func (p *Player) Scope(ch int, dst []float32) {
 	p.mu.Lock()
@@ -292,11 +333,13 @@ func (p *Player) advance(ch int) {
 		}
 		return
 	}
+	if chain == nil && (c.chainPos < 1 || p.rowHasChains(c.row)) {
+		return // descansa (ver sync)
+	}
 	if chain != nil && c.chainPos < Steps && chain[c.chainPos].Phrase != Empty {
 		return
 	}
-	// Se acabó la cadena: la fila siguiente (con una vacía, el canal
-	// descansa lo que dura una frase y sigue).
+	// Se acabó la cadena: la fila siguiente.
 	c.chainPos = 0
 	c.row++
 	if c.row >= len(p.song.Rows) {
@@ -308,6 +351,64 @@ func (p *Player) advance(ch int) {
 	}
 }
 
+// rowHasChains dice si alguna cadena suena en la fila. Un canal sin cadena
+// en una fila que sí tiene descansa hasta que los demás pasan a la
+// siguiente (sync), así los canales siguen juntos de fila en fila (en LSDJ
+// el canal se pararía); en una fila vacía, todos descansan una frase.
+func (p *Player) rowHasChains(row int) bool {
+	if row >= len(p.song.Rows) {
+		return false
+	}
+	for ch := 0; ch < p.song.Channels(); ch++ {
+		if id := p.song.Rows[row][ch]; id != Empty && p.song.Chains[int(id)] != nil {
+			return true
+		}
+	}
+	return false
+}
+
+// sync pasa a la fila siguiente los canales que descansan en cuanto se van
+// los que tocaban: van al paso en que están ellos.
+func (p *Player) sync() {
+	if !p.playing || p.what != PlaySong {
+		return
+	}
+	n := p.song.Channels()
+	for ch := 0; ch < n; ch++ {
+		c := &p.chans[ch]
+		if c.done || p.chainAt(ch) != nil {
+			continue
+		}
+		var lead *channel
+		waiting := false
+		for o := 0; o < n; o++ {
+			oc := &p.chans[o]
+			if o == ch || c.row >= len(p.song.Rows) {
+				continue
+			}
+			id := p.song.Rows[c.row][o]
+			if id == Empty || p.song.Chains[int(id)] == nil {
+				continue
+			}
+			if oc.row == c.row && !oc.done {
+				waiting = true
+				break
+			}
+			lead = oc
+		}
+		if waiting || lead == nil {
+			continue
+		}
+		c.row, c.chainPos, c.step, c.ticks, c.groovePos, c.done = lead.row, lead.chainPos, lead.step, lead.ticks, lead.groovePos, lead.done
+		c.delay = 0
+		if c.done {
+			c.v.release()
+			continue
+		}
+		p.startStep(ch)
+	}
+}
+
 // startStep empieza el paso del canal (o, con D, lo deja para luego).
 func (p *Player) startStep(ch int) {
 	c := &p.chans[ch]
@@ -316,14 +417,14 @@ func (p *Player) startStep(ch int) {
 		return // fila vacía: descansa
 	}
 	st := ph[c.step]
-	// D: el paso empieza más tarde.
+	c.transpose = tr
+	// D: el paso suena más tarde (si llega antes de que acabe).
 	for _, cm := range st.Cmds {
-		if cm.Code == CmdDelay && cm.Arg > 0 && c.delay == 0 {
-			c.delay = int(cm.Arg)
+		if cm.Code == CmdDelay && cm.Arg > 0 {
+			c.delay, c.pending = int(cm.Arg), st
 			return
 		}
 	}
-	c.transpose = tr
 	p.playStep(ch, st)
 }
 
@@ -471,17 +572,18 @@ func (p *Player) tick() {
 	for ch := 0; ch < p.song.Channels(); ch++ {
 		c := &p.chans[ch]
 		if p.playing && !c.done {
-			if c.delay > 0 {
-				if c.delay--; c.delay == 0 {
-					p.startStep(ch)
-				}
-			} else if c.ticks <= 0 {
+			if c.ticks <= 0 {
 				if c.started {
 					p.advance(ch)
 				}
 				c.started = true
 				c.ticks = p.grooveTicks(c)
+				c.delay = 0 // un paso retrasado que no llegó a sonar se pierde
 				p.startStep(ch)
+			} else if c.delay > 0 {
+				if c.delay--; c.delay == 0 {
+					p.playStep(ch, c.pending)
+				}
 			}
 			c.ticks--
 		}
@@ -489,6 +591,7 @@ func (p *Player) tick() {
 		p.effects(c)
 		c.v.envTick(dt)
 	}
+	p.sync()
 }
 
 // runTable aplica la fila de la tabla que corre y pasa a la siguiente.

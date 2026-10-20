@@ -57,7 +57,7 @@ GOOS=windows go vet ./...
 | `internal/scrobble/` | Last.fm and ListenBrainz, with a queue for when there is no connection (`data/scrobbles.json`) |
 | `internal/lyrics/` | Lyrics: LRC and ID3 SYLT parsing, `.lrc`/`.txt` files and tags, LRCLIB search, and the saved choices (`data/lyrics`) |
 | `internal/radio/`, `internal/podcast/`, `internal/ytm/` | Internet radio, podcasts, and YouTube Music search plus yt-dlp |
-| `internal/tracker/` | The tracker's song format and chiptune synth (four channels, WAV export) |
+| `internal/tracker/` | The tracker (LSDJ style): song → chains → phrases, instruments, tables, grooves, waves; Game Boy and Free modes; the sequencer, synth voices and WAV export. Design in [docs/tracker.md](docs/tracker.md) |
 | `internal/sfx/` | The synthesized interface sounds and the splash jingle |
 | `internal/desktop/` | The Linux launcher entry and icon (`audiofilus desktop install`); see [docs/linux-desktop.md](docs/linux-desktop.md) |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |

@@ -1,4 +1,4 @@
-package next
+package tracker
 
 import (
 	"math"
@@ -282,4 +282,51 @@ func itoa(n int) string {
 		return string(rune('0' + n))
 	}
 	return itoa(n/10) + string(rune('0'+n%10))
+}
+
+// Los ejemplos suenan, y sus canales pasan de fila a la vez (cada fila dura
+// lo que su cadena más larga, también para los canales que descansan).
+func TestExamples(t *testing.T) {
+	for _, s := range Examples() {
+		p := NewPlayer(rate)
+		p.SetSong(s)
+		p.start(PlaySong, 0, 0, true)
+		peak := 0.0
+		for i := 0; i < rate*120 && !p.ended; i++ {
+			l, _ := p.next()
+			peak = math.Max(peak, math.Abs(l))
+			if p.tickAcc+p.tickRate()/p.rate < 1 {
+				continue // solo justo antes de cada tick
+			}
+			row0 := p.chans[0].row
+			for ch := 1; ch < s.Channels(); ch++ {
+				if p.chans[ch].row != row0 && !p.chans[ch].done && !p.chans[0].done {
+					t.Fatalf("%s: at %.2f s channel %d is on row %d, channel 0 on %d", s.Name, float64(i)/rate, ch, p.chans[ch].row, row0)
+				}
+			}
+		}
+		if !p.ended {
+			t.Errorf("%s did not end", s.Name)
+		}
+		if peak < 0.1 || peak > 1 {
+			t.Errorf("%s peak %v", s.Name, peak)
+		}
+	}
+}
+
+// D retrasa el paso: la nota suena unos ticks más tarde.
+func TestDelay(t *testing.T) {
+	s := song1(ModeGB)
+	s.Phrases[0][0].Cmds[0] = Cmd{CmdDelay, 3}
+	p := NewPlayer(rate)
+	p.SetSong(s)
+	p.Play(PlaySong, 0, 0)
+	run(p, rate/48) // un tick
+	if h := p.Hits()[PU1]; h != 0 {
+		t.Fatalf("note played before its delay")
+	}
+	run(p, rate*3/48)
+	if h := p.Hits()[PU1]; h != 1 {
+		t.Fatalf("delayed note did not play (hits %d)", h)
+	}
 }

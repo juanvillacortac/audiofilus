@@ -5,7 +5,7 @@
 // canales de la consola, con su APU) y Libre (ocho canales, cualquier
 // sonido en cualquiera). Reemplaza a internal/tracker cuando tenga sus
 // pantallas.
-package next
+package tracker
 
 import (
 	"encoding/json"

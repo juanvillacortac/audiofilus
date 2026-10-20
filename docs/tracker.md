@@ -15,7 +15,7 @@ Switching Game Boy → Free loses nothing. Free → Game Boy reports what doesn'
 
 ## Structure
 
-- **Song:** rows; each row has a chain number (or empty) per channel. Playback walks the rows; each channel plays its own chain and moves on independently, like LSDJ. Up to 256 rows.
+- **Song:** rows; each row has a chain number (or empty) per channel. Playback walks the rows; each channel plays its own chain and moves on independently, like LSDJ. A channel with no chain in a row rests until the channels that do have one move to the next row, so rows stay aligned (LSDJ would stop that channel); a row with no chains at all rests for one phrase. Up to 256 rows.
 - **Chain** (256): up to 16 steps, each a phrase number and a transpose (signed semitones).
 - **Phrase** (256): 16 steps, each with a **note** (C-0..B-9, or `---` empty, or `OFF`/kill), an **instrument**, a **volume** (0–F or none) and **two commands** (letter + hex argument). One phrase is 16 sixteenth notes by default; the groove decides how many ticks each step lasts.
 - **Instrument** (64): type, volume and envelope, its type's parameters, an optional table, panning, automatic length, vibrato and transpose on or off.

@@ -1887,21 +1887,36 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.crypt = nil
-	// El tracker: la canción de ejemplo sonando (adelantada al paso 6) y el
-	// cursor en el volumen del pulso 2; después, la vista de canción.
+	// El tracker: la canción de ejemplo sonando (adelantada un compás y
+	// medio), en la frase del pulso 2 con el cursor en su comando; después,
+	// la canción, el piano roll y el instrumento.
 	a.screen, a.tracker = Tracker, a.newTracker()
-	a.tracker.song = tracker.NewSong()
-	a.tracker.player.SetSong(a.tracker.song)
-	a.tracker.player.PlayPattern(0)
-	_, _ = a.tracker.player.Read(make([]byte, 8*sfx.Rate*60/a.tracker.song.BPM/4*6+8))
-	a.tracker.row, a.tracker.col = 4, 4
+	ex := tracker.Examples()[0]
+	a.tracker.song = ex
+	a.tracker.player.SetSong(ex)
+	a.tracker.player.Play(tracker.PlaySong, 1, 0)
+	a.tracker.playing = true
+	_, _ = a.tracker.player.Read(make([]byte, 8*sfx.Rate*60/ex.BPM*6+8))
+	a.tracker.view, a.tracker.ch, a.tracker.songRow = tvPhrase, 1, 1
+	a.tracker.chain = int(ex.Rows[1][1])
+	a.tracker.phrase = int(ex.Chains[a.tracker.chain][0].Phrase)
+	a.tracker.phRow, a.tracker.phCol = 4, 3
 	if err := shot("tracker"); err != nil {
 		return err
 	}
-	a.tracker.songView, a.tracker.ord = true, 0
+	a.tracker.view = tvSong
 	if err := shot("tracker-cancion"); err != nil {
 		return err
 	}
+	a.tracker.view, a.tracker.roll, a.tracker.rollNote = tvPhrase, true, 65
+	if err := shot("tracker-piano"); err != nil {
+		return err
+	}
+	a.tracker.view, a.tracker.instr = tvInstr, 1
+	if err := shot("tracker-instrumento"); err != nil {
+		return err
+	}
+	a.tracker.player.Stop()
 	a.tracker = nil
 	if err := a.writePortCover(filepath.Join(a.ShotsDir, "portada-portmaster.png")); err != nil {
 		return err
@@ -2000,16 +2015,15 @@ func (a *App) writeFrames() error {
 	ex := tracker.Examples()[0]
 	a.tracker.song, a.tracker.file = ex, "example.json"
 	a.tracker.player.SetSong(ex)
-	a.tracker.player.PlaySong(1)
-	a.tracker.playing, a.tracker.playSong = true, true
-	a.tracker.row, a.tracker.col = 0, 3
+	a.tracker.player.Play(tracker.PlaySong, 1, 0)
+	a.tracker.playing, a.tracker.view, a.tracker.songRow = true, tvSong, 1
 	chunk := make([]byte, 8*sfx.Rate/20)
 	for i := 0; i < 240; i++ {
 		a.t = 30 + float64(i)/20
 		_, _ = a.tracker.player.Read(chunk)
 		a.trackerFollow()
-		if _, step, _, _ := a.tracker.player.Position(); i%4 == 0 {
-			a.tracker.row = step // el cursor acompaña un poco
+		if row, _, _, _ := a.tracker.player.Position(0); i%4 == 0 {
+			a.tracker.songRow = row // el cursor acompaña un poco
 		}
 		if err := a.renderShot(filepath.Join(tkDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
 			return err
