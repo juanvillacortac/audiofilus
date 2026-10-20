@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"net/http"
 	"path/filepath"
@@ -56,7 +57,8 @@ type lyricsResult struct {
 
 // Medidas de la vista.
 const (
-	lyrRowH   = 11 // alto de cada fila de la letra
+	lyrRowH   = 15 // alto de cada fila de la letra (en BigFace)
+	lyrGap    = 4  // el aire de más entre una línea y la siguiente
 	lyrHeadH  = 34 // la cabecera con la portada
 	lyrManual = 6  // segundos que dura el desplazamiento a mano
 )
@@ -348,7 +350,7 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 	if fresh {
 		l.wrapW, l.rows = lw, make([][]string, len(ly.Lines))
 		for i, ln := range ly.Lines {
-			l.rows[i] = wrapLines(ln.Text, SmallFace, lw)
+			l.rows[i] = wrapLines(ln.Text, BigFace, lw)
 			if len(l.rows[i]) == 0 {
 				l.rows[i] = []string{""}
 			}
@@ -356,7 +358,9 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 	}
 	tops := make([]int, len(l.rows)+1)
 	for i, r := range l.rows {
-		tops[i+1] = tops[i] + len(r)*lyrRowH
+		// Entre líneas, un poco de aire: así una partida en dos filas no
+		// parece dos.
+		tops[i+1] = tops[i] + len(r)*lyrRowH + lyrGap
 		if len(r) == 1 && r[0] == "" {
 			tops[i+1] = tops[i] + lyrRowH/2 // una línea en blanco, media fila
 		}
@@ -391,6 +395,8 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 		l.scroll = want
 	}
 
+	// Lo que mide la franja que se desvanece arriba y abajo.
+	fade := math.Min(float64(view)/3, 56)
 	b := dst.Bounds()
 	clip := dst.SubImage(image.Rect(b.Min.X, b.Min.Y+y0, b.Max.X, b.Min.Y+y1)).(*ebiten.Image)
 	for i, rows := range l.rows {
@@ -423,18 +429,27 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 		}
 		widths, sum := make([]int, len(rows)), 0
 		for j, r := range rows {
-			widths[j] = textWidth(r, SmallFace)
+			widths[j] = textWidth(r, BigFace)
 			sum += widths[j]
 		}
 		lit := int(frac * float64(sum))
 		for j, r := range rows {
 			x := margin + 6 + (lw-widths[j])/2
-			y := top + j*lyrRowH + 1
-			drawText(clip, r, SmallFace, x, y, c)
+			y := top + j*lyrRowH - 2 // las mayúsculas, centradas en la fila
+			// Como un carrusel: arriba y abajo las filas se desvanecen, en
+			// cuatro pasos (como el texto largo, ver drawTextW).
+			mid := y + bigCapTop + bigCap/2
+			f := math.Min(1, float64(min(mid-y0, y1-mid))/fade)
+			if f = math.Ceil(f*4) / 4; f <= 0 {
+				lit -= widths[j]
+				continue
+			}
+			alpha := func(c color.RGBA) color.RGBA { return withAlpha(c, uint8(float64(c.A)*f)) }
+			drawText(clip, r, BigFace, x, y, alpha(c))
 			if frac >= 0 && lit > 0 {
 				part := min(lit, widths[j])
-				sub := clip.SubImage(image.Rect(b.Min.X+x, b.Min.Y+max(y-2, y0), b.Min.X+x+part, b.Min.Y+min(y+lyrRowH, y1))).(*ebiten.Image)
-				drawText(sub, r, SmallFace, x, y, th.Accent)
+				sub := clip.SubImage(image.Rect(b.Min.X+x, b.Min.Y+max(y, y0), b.Min.X+x+part, b.Min.Y+min(y+bigCapTop+bigCap+5, y1))).(*ebiten.Image)
+				drawText(sub, r, BigFace, x, y, alpha(th.Accent))
 				lit -= part
 			}
 		}
