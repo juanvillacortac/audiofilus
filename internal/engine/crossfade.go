@@ -39,7 +39,7 @@ func (e *Engine) maybeCrossfadeLocked() {
 		return // sin duración (una radio): no se sabe cuándo acaba
 	}
 	rate := float64(e.src.SampleRate())
-	left := float64(n-e.src.Position()) / rate
+	left := (float64(n-e.src.Position()) + e.rs.Pending()) / rate
 	fade := e.dsp.Crossfade
 	// Una canción muy corta (un interludio) no se funde.
 	if left > fade || left <= 0.05 || float64(n)/rate < 3*fade {

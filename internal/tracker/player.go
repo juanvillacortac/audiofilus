@@ -78,6 +78,7 @@ type channel struct {
 type Player struct {
 	mu      sync.Mutex
 	song    *Song
+	used    int // los canales que usa la canción (usedChannels)
 	rate    float64
 	gain    float64
 	master  float64
@@ -96,6 +97,9 @@ type Player struct {
 	scope    [MaxChannels][ScopeLen]float32
 	scopeAt  int
 	scopeDiv int
+	// El reloj MIDI de fuera (clock.go): con él, los ticks los marca cada
+	// pulso que llega, no el tempo propio.
+	ext extClock
 }
 
 // ScopeLen son las muestras que guarda cada osciloscopio.
@@ -106,11 +110,25 @@ func NewPlayer(rate int) *Player {
 	return &Player{rate: float64(rate), gain: 0.8, master: 1, rng: rand.New(rand.NewPCG(1, 2))}
 }
 
+// usedChannels es hasta qué canal tiene cadenas la canción (para la mezcla).
+func usedChannels(s *Song) int {
+	n := 0
+	for _, r := range s.Rows {
+		for ch := 0; ch < s.Channels(); ch++ {
+			if r[ch] != Empty {
+				n = max(n, ch+1)
+			}
+		}
+	}
+	return n
+}
+
 // SetSong cambia la canción (una copia): lo editado suena al momento.
 func (p *Player) SetSong(s *Song) {
 	c := s.Clone()
 	p.mu.Lock()
 	p.song = c
+	p.used = usedChannels(c)
 	if !p.playing {
 		p.bpm = c.BPM
 	}
@@ -172,6 +190,7 @@ func (p *Player) Preview(ch int, note int8, instr int) {
 	c.base, c.noteVol, c.table = float64(note), 1, Empty
 	c.v.ch = ch
 	c.v.trigger(in, p.waveOf(in), p.song.Mode == ModeGB)
+	c.v.smp = p.sampleOf(in) // los instrumentos de sample (voice.go)
 	c.v.level = float64(in.Volume) / 15
 	c.v.note = c.base
 }
@@ -467,6 +486,7 @@ func (p *Player) playStep(ch int, st Step) {
 			}
 			c.v.ch = ch
 			c.v.trigger(in, p.waveOf(in), p.song.Mode == ModeGB)
+			c.v.smp = p.sampleOf(in) // los instrumentos de sample (voice.go)
 			c.noteVol = 1
 			c.table, c.tableRow, c.tableTr = int(in.Table), 0, 0
 			if in.Pan != 0 {
@@ -568,7 +588,7 @@ func (p *Player) command(ch int, cm Cmd) {
 
 // tick avanza un tick: el paso de cada canal, sus tablas y sus efectos.
 func (p *Player) tick() {
-	dt := 1 / p.tickRate()
+	dt := p.tickDur()
 	for ch := 0; ch < p.song.Channels(); ch++ {
 		c := &p.chans[ch]
 		if p.playing && !c.done {
@@ -685,10 +705,14 @@ func (p *Player) next() (l, r float64) {
 	if p.song == nil {
 		return 0, 0
 	}
-	p.tickAcc += p.tickRate() / p.rate
-	for p.tickAcc >= 1 {
-		p.tickAcc--
-		p.tick()
+	// Con el reloj de fuera, tocando, los ticks llegan con cada pulso
+	// (ExternalTick); si no, salen del tempo propio.
+	if !(p.ext.on && p.playing) {
+		p.tickAcc += p.tickRate() / p.rate
+		for p.tickAcc >= 1 {
+			p.tickAcc--
+			p.tick()
+		}
 	}
 	n := p.song.Channels()
 	allDone := p.playing
@@ -718,8 +742,10 @@ func (p *Player) next() (l, r float64) {
 	if allDone && p.once {
 		p.playing, p.ended = false, true
 	}
-	// Cada canal a 1/n de fondo (con los 4 de la GB, como la mezcla de antes).
-	g := p.gain * p.master * 0.9 / math.Sqrt(float64(n)*1.6)
+	// Cada canal a 1/n de fondo (con los 4 de la GB, como la mezcla de antes),
+	// con n los canales que usa la canción: un MOD de 4 canales en el modo
+	// Libre suena como uno de la GB, no a la mitad.
+	g := p.gain * p.master * 0.9 / math.Sqrt(float64(min(n, max(GBChannels, p.used)))*1.6)
 	return l * g, r * g
 }
 

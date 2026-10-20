@@ -103,7 +103,10 @@ type trackerState struct {
 	aWasHeld bool
 	dirty    bool
 	dirtyAt  float64
-	exported chan string // el archivo exportado (o el error), desde la goroutine
+	exported chan string      // el archivo exportado (o el error), desde la goroutine
+	files    chan importFound // los archivos que se pueden importar (trackerfiles.go)
+	imported chan importDone  // lo importado
+	midi     midiState        // el MIDI (trackermidi.go)
 	hits     [tracker.MaxChannels]int
 	hitAt    [tracker.MaxChannels]float64 // cuándo sonó la última nota de cada canal
 	scope    []float32
@@ -117,7 +120,7 @@ func (a *App) trackerDir() string { return filepath.Join(a.paths.Data, "tracker"
 // primera de ejemplo.
 func (a *App) newTracker() *trackerState {
 	t := &trackerState{player: tracker.NewPlayer(sfx.Rate), lastNote: 49, lastVol: 12, lastCmd: tracker.Cmd{Code: tracker.CmdChord, Arg: 0x47},
-		exported: make(chan string, 1), view: tvSong}
+		exported: make(chan string, 1), files: make(chan importFound, 1), imported: make(chan importDone, 1), view: tvSong}
 	file := "song.json"
 	if b, err := os.ReadFile(filepath.Join(a.trackerDir(), "current")); err == nil && len(b) > 0 {
 		file = filepath.Base(string(b))
@@ -308,6 +311,9 @@ func (a *App) trackerToggle() {
 // updateTracker atiende el tracker.
 func (a *App) updateTracker() {
 	t, in := a.tracker, &a.input
+	a.midiWatch()
+	a.pollMIDI()
+	a.pollTrackerFiles()
 	if !t.streaming && !a.offline {
 		// Lo que sale se oye tras el búfer de la salida (50 ms) y el de oto.
 		t.an = engine.NewAnalyzer(sfx.Rate, 100*time.Millisecond)
@@ -472,8 +478,11 @@ func (a *App) trackerFollow() {
 		}
 		t.hits = h
 	}
-	if t.playing && !t.player.Playing() {
-		t.playing = false // se acabó sola (no pasa tocando en bucle)
+	switch playing := t.player.Playing(); {
+	case t.playing && !playing:
+		t.playing = false // se acabó sola, o la paró el reloj MIDI
+	case !t.playing && playing:
+		t.playing, t.playWhat = true, tracker.PlaySong // la empezó el reloj MIDI
 	}
 }
 
@@ -1011,8 +1020,15 @@ func (a *App) updateTkInstr(aHeld, bHeld bool) {
 	a.updateTkList(a.tkInstrParams(), &t.instrRow, aHeld, bHeld, func() { a.tkPreview(t.lastNote, t.instr) })
 }
 
-// tkProjectParams son las filas del proyecto: nombre, modo, tempo y groove.
+// tkProjectParams son las filas del proyecto: las de la canción y, al final,
+// las de MIDI.
 func (a *App) tkProjectParams() []tkParam {
+	return append(a.tkSongParams(), a.midiParams()...)
+}
+
+// tkSongParams son las filas de la canción en el proyecto: nombre, modo,
+// tempo y groove.
+func (a *App) tkSongParams() []tkParam {
 	s := a.tracker.song
 	mode := T("tk_mode_gb")
 	if s.Mode == tracker.ModeFree {
@@ -1210,6 +1226,9 @@ func (a *App) openTrackerMenu() {
 	items = append(items,
 		menuItem{label: T("tk_songs"), icon: "list", do: a.openTrackerSongs},
 		menuItem{label: T("tk_export"), icon: "download", do: a.exportTracker},
+		menuItem{label: T("tk_export_xm"), icon: "download", do: func() { a.exportModule(".xm") }},
+		menuItem{label: T("tk_export_mod"), icon: "download", do: func() { a.exportModule(".mod") }},
+		menuItem{label: T("tk_import"), icon: "folder", do: a.openTrackerImport},
 		menuItem{label: T("tk_delete"), icon: "power", do: a.deleteTrackerSong},
 		menuItem{label: T("gm_leave"), icon: "pad", do: func() { a.saveTracker(); a.screen = Games }},
 	)
@@ -1378,6 +1397,7 @@ func (a *App) trackerStopIfAway() {
 	a.saveTracker()
 	a.stopStream()
 	t.streaming = false
+	a.midiStop()
 }
 
 // deleteTrackerSong borra la canción abierta (su archivo) y abre otra de las

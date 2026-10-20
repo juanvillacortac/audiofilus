@@ -741,7 +741,11 @@ func (e *Engine) Status() Status {
 	if e.src != nil {
 		rate := float64(e.src.SampleRate())
 		buffered := float64(e.player.BufferedSize()) / bytesPerFrame / float64(e.rate)
-		s.Position = math.Max(float64(e.src.Position())/rate-buffered, 0)
+		pending := 0.0 // lo leído que espera en el remuestreo
+		if e.rs != nil {
+			pending = e.rs.Pending()
+		}
+		s.Position = math.Max((float64(e.src.Position())-pending)/rate-buffered, 0)
 		if l := e.src.Length(); l > 0 {
 			s.Duration = float64(l) / rate
 		}

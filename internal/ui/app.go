@@ -1919,6 +1919,10 @@ func (a *App) writeShots() error {
 	if err := shot("tracker-instrumento"); err != nil {
 		return err
 	}
+	a.tracker.view = tvProject
+	if err := shot("tracker-proyecto"); err != nil {
+		return err
+	}
 	// La guía de FN en el tracker: la lista más larga, en varias columnas.
 	a.tracker.view = tvSong
 	a.guideAt = a.t - 1

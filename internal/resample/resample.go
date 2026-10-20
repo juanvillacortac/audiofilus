@@ -34,6 +34,18 @@ func New(src decode.Source, outRate int) *Reader {
 // Passthrough dice si no hace falta convertir (misma frecuencia).
 func (r *Reader) Passthrough() bool { return r.inRate == r.outRate }
 
+// Pending son los frames de origen que ya se leyeron de src pero aún no han
+// salido (los que esperan en el búfer para interpolar). La posición de lo que
+// suena es la de src menos estos: si no, avanza a saltos del tamaño del
+// búfer (hasta 0,19 s con un WAV de 22 kHz) y la barra de la interfaz
+// retrocede al corregirse.
+func (r *Reader) Pending() float64 {
+	if r.Passthrough() {
+		return 0
+	}
+	return max(0, float64(r.frames)-r.t)
+}
+
 // Reset descarta lo que hay en el búfer; se llama después de saltar en el origen.
 func (r *Reader) Reset() {
 	r.frames = 0

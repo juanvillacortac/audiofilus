@@ -1,4 +1,4 @@
-// Package next es el tracker nuevo de audiofilus (ver docs/tracker.md): un
+// Package tracker es el tracker nuevo de audiofilus (ver docs/tracker.md): un
 // híbrido de LSDJ (canción → cadenas → frases, instrumentos, tablas, grooves
 // y sus comandos) y PICO-8 (instrumento y comando en cada nota, formas de
 // onda listas, piano roll), con dos modos por canción: Game Boy (los cuatro
@@ -27,8 +27,8 @@ const (
 	MaxChannels = 8
 	GBChannels  = 4
 	SongRows    = 256
-	NumChains   = 256
-	NumPhrases  = 256
+	NumChains   = 1024 // como en LSDJ hay 256, pero los MOD/XM importados pueden pasar
+	NumPhrases  = 1024
 	NumInstr    = 64
 	NumTables   = 32
 	NumGrooves  = 32
@@ -286,7 +286,7 @@ func NewTable() *Table {
 func NewSong(name string, mode Mode) *Song {
 	s := &Song{Format: 2, Name: name, Mode: mode, BPM: 120, Rows: []Row{EmptyRow()},
 		Chains: map[int]*Chain{}, Phrases: map[int]*Phrase{}, Instrs: map[int]*Instrument{},
-		Tables: map[int]*Table{}, Grooves: map[int]Groove{0: {6, 6}}, Waves: map[int]*Wave{}}
+		Tables: map[int]*Table{}, Grooves: map[int]Groove{0: {6, 6}}, Waves: map[int]*Wave{}, Samples: map[int]*SampleData{}}
 	for i, w := range PresetWaves() {
 		w := w
 		s.Waves[i] = &w

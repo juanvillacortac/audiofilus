@@ -60,6 +60,23 @@ type voice struct {
 	lfsr  uint16
 	noise float64
 	amp   float64 // la amplitud que sale, que va hacia la pedida (sin clics)
+
+	// Los instrumentos de sample: el sample (lo pone el reproductor con
+	// sampleOf al disparar la nota), por dónde va (en muestras, con
+	// decimales), hacia dónde (1, o -1 en la vuelta de un bucle de ida y
+	// vuelta) y si ya se acabó (sin bucle).
+	smp   *SampleData
+	spos  float64
+	sdir  float64
+	sdone bool
+}
+
+// sampleOf es el sample de un instrumento de sample (nil si no tiene).
+func (p *Player) sampleOf(in *Instrument) *SampleData {
+	if in == nil || in.Type != InstrSample || p.song == nil {
+		return nil
+	}
+	return p.song.Samples[int(in.Sample)]
 }
 
 // trigger empieza una nota con el instrumento in.
@@ -78,6 +95,7 @@ func (v *voice) trigger(in *Instrument, wave *Wave, gb bool) {
 		}
 	}
 	v.sweepClock, v.sweepHz = 0, 0
+	v.spos, v.sdir, v.sdone = 0, 1, false
 	if v.lfsr == 0 {
 		v.lfsr = 0x7fff
 	}
@@ -213,6 +231,8 @@ func (v *voice) sample(rate float64) float64 {
 		v.phase += f / rate
 		v.phase -= math.Floor(v.phase)
 		out = synthShape(v.in.Shape, v.phase, v.duty)
+	case InstrSample:
+		out = v.sampleAt(rate)
 	}
 	return out * v.amp
 }
@@ -264,4 +284,53 @@ func synthShape(name string, x float64, duty int) float64 {
 		return shape(WaveNoise, x)
 	}
 	return 1 - 4*math.Abs(x-0.5) // triangle
+}
+
+// sampleAt da la siguiente muestra de un instrumento de sample: el sample a
+// Rate·2^((nota−raíz)/12) muestras por segundo, interpolando entre muestras,
+// con su bucle (hacia delante o de ida y vuelta) o hasta que se acaba.
+func (v *voice) sampleAt(rate float64) float64 {
+	d := v.smp
+	n := 0
+	if d != nil {
+		n = d.Len()
+	}
+	if n == 0 || v.sdone || d.Rate <= 0 {
+		return 0
+	}
+	root := float64(v.in.Root)
+	if root == 0 {
+		root = 49 // C-4
+	}
+	step := float64(d.Rate) * math.Pow(2, (v.note-root)/12) / rate
+	i := int(v.spos)
+	frac := v.spos - float64(i)
+	a := d.At(min(i, n-1))
+	b := a
+	if i+1 < n {
+		b = d.At(i + 1)
+	}
+	out := a + (b-a)*frac
+	// El bucle: el del sample, si el instrumento lo usa.
+	ls, ll := d.LoopStart, d.LoopLen
+	loop := v.in.Loop && ll > 1 && ls >= 0 && ls+ll <= n
+	v.spos += step * v.sdir
+	switch {
+	case loop && d.PingPong:
+		end := float64(ls + ll - 1)
+		for v.spos > end || (v.sdir < 0 && v.spos < float64(ls)) {
+			if v.spos > end {
+				v.spos, v.sdir = 2*end-v.spos, -1
+			} else {
+				v.spos, v.sdir = 2*float64(ls)-v.spos, 1
+			}
+		}
+	case loop:
+		for v.spos >= float64(ls+ll) {
+			v.spos -= float64(ll)
+		}
+	case v.spos >= float64(n):
+		v.sdone = true
+	}
+	return out
 }
