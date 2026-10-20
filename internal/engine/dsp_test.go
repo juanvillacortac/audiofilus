@@ -137,3 +137,15 @@ func TestCrossfade(t *testing.T) {
 		}
 	}
 }
+
+// BenchmarkEQ mide el ecualizador con las diez bandas activas (un segundo
+// de audio a 48 kHz por iteración).
+func BenchmarkEQ(b *testing.B) {
+	var q eqFilter
+	q.set(PresetGains("rock"), 48000)
+	buf := stereoSine(1000, 48000, 48000)
+	b.ResetTimer()
+	for range b.N {
+		q.process(buf)
+	}
+}

@@ -12,7 +12,10 @@ WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go vet ./... && go test ./... && ./build.sh
+# The Last.fm application key (build.sh), from the repository secrets.
+ARG LASTFM_KEY=""
+ARG LASTFM_SECRET=""
+RUN go vet ./... && go test ./... && LASTFM_KEY="$LASTFM_KEY" LASTFM_SECRET="$LASTFM_SECRET" ./build.sh
 
 # Only the results, to export them with --output.
 FROM scratch AS dist

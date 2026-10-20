@@ -18,7 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build in the container
-        run: docker build --target dist --output dist .
+        env:
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+        run: docker build --build-arg LASTFM_KEY --build-arg LASTFM_SECRET --target dist --output dist .
       - name: Package
         run: |
           mkdir -p out

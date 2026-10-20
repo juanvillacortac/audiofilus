@@ -7,19 +7,23 @@
 # Y deja dist/audiofilus, el del PC, listo para probar.
 set -eu
 cd "$(dirname "$0")"
+# La aplicación de Last.fm de audiofilus (internal/scrobble), si está en el
+# entorno: los releases la sacan de los secretos del repositorio. Sin ella,
+# Last.fm pide la clave propia en audiofilus.json.
+lfm="-X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMKey=${LASTFM_KEY:-} -X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMSecret=${LASTFM_SECRET:-}"
 mkdir -p dist
 rm -f dist/audiofilus-ui dist/audiofilus-ui-* # los de antes, cuando eran dos
 for arch in amd64 arm64; do
   cgo=0
   [ "$arch" = "$(go env GOARCH)" ] && cgo=1
-  CGO_ENABLED=$cgo GOOS=linux GOARCH=$arch go build -trimpath -ldflags="-s -w" \
+  CGO_ENABLED=$cgo GOOS=linux GOARCH=$arch go build -trimpath -ldflags="-s -w $lfm" \
     -o "dist/audiofilus-$arch" ./cmd/audiofilus
   echo "dist/audiofilus-$arch"
 done
 # Windows (amd64), sin cgo: Ebitengine usa DirectX y oto WASAPI. Es una
 # aplicación de ventana (-H windowsgui), sin consola detrás; la línea de
 # comandos se engancha a la de quien la lanza (console_windows.go).
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w -H windowsgui" \
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w -H windowsgui $lfm" \
   -o dist/audiofilus-windows-amd64.exe ./cmd/audiofilus
 echo "dist/audiofilus-windows-amd64.exe"
 
@@ -41,7 +45,7 @@ cp -r portmaster/. "$pkg/"
 # (el del PC usa GLFW con cgo y pide X11, que una portátil x86 puede no
 # tener); en los dos manda el backend SDL2 que pide el lanzador.
 cp dist/audiofilus-arm64 "$pkg/audiofilus/audiofilus.aarch64"
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" \
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w $lfm" \
   -o "$pkg/audiofilus/audiofilus.x86_64" ./cmd/audiofilus
 mkdir -p "$pkg/audiofilus/licenses"
 cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"

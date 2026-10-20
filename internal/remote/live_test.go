@@ -95,3 +95,63 @@ func splitN(s string, n int) []string {
 	}
 	return append(out, s)
 }
+
+// TestLiveUserData marca una canción como favorita, comprueba que el
+// catálogo la traiga marcada, la desmarca y cuenta una escucha (con
+// AUDIOFILUS_JELLYFIN o AUDIOFILUS_SUBSONIC; si no, se salta).
+func TestLiveUserData(t *testing.T) {
+	for _, c := range []struct{ env, typ string }{{os.Getenv("AUDIOFILUS_JELLYFIN"), "jellyfin"}, {os.Getenv("AUDIOFILUS_SUBSONIC"), ""}} {
+		if c.env == "" {
+			continue
+		}
+		parts := splitN(c.env, 3)
+		srv := config.Server{Name: "Prueba", Type: c.typ, URL: parts[0], User: parts[1], Password: parts[2]}
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		b := New(srv)
+		if err := b.Ping(ctx); err != nil {
+			t.Fatal(err)
+		}
+		songs, err := b.AllSongs(ctx, nil)
+		if err != nil || len(songs) == 0 {
+			t.Fatalf("songs: %d, %v", len(songs), err)
+		}
+		id := songs[0].ID
+		starred := func() bool {
+			all, err := b.AllSongs(ctx, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, s := range all {
+				if s.ID == id {
+					return s.Starred != ""
+				}
+			}
+			return false
+		}
+		if err := b.SetFavorite(ctx, id, true); err != nil {
+			t.Fatalf("%s favorite: %v", c.typ, err)
+		}
+		if !starred() {
+			t.Errorf("%s: the song is not starred after SetFavorite", c.typ)
+		}
+		if err := b.SetFavorite(ctx, id, false); err != nil || starred() {
+			t.Errorf("%s: unstar failed (%v)", c.typ, err)
+		}
+		if c.typ == "" { // Jellyfin no valora
+			if err := b.SetRating(ctx, id, 4); err != nil {
+				t.Fatalf("rating: %v", err)
+			}
+			all, _ := b.AllSongs(ctx, nil)
+			for _, s := range all {
+				if s.ID == id && s.Rating != 4 {
+					t.Errorf("rating = %d after SetRating(4)", s.Rating)
+				}
+			}
+			_ = b.SetRating(ctx, id, 0)
+		}
+		if err := b.Scrobble(ctx, id, time.Now()); err != nil {
+			t.Errorf("%s scrobble: %v", c.typ, err)
+		}
+		cancel()
+	}
+}
