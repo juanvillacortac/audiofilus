@@ -165,8 +165,8 @@ type Instrument struct {
 	WaveVol  int8   `json:"wavevol,omitempty"` // onda: 0 100 %, 1 50 %, 2 25 % (el desplazamiento de la GB)
 	Short    bool   `json:"short,omitempty"`   // ruido: el registro de 7 bits (más tonal)
 	Shape    string `json:"shape,omitempty"`   // synth: sine, triangle, saw, square, organ, phantom, noise
-	Sample   string `json:"sample,omitempty"`  // sample: el archivo (en la carpeta de la canción)
-	Root     int8   `json:"root,omitempty"`    // sample: la nota a la que suena tal cual
+	Sample   int16  `json:"sample,omitempty"`  // sample: su número en Song.Samples
+	Root     int8   `json:"root,omitempty"`    // sample: la nota a la que suena a su frecuencia (0: C-4)
 	Loop     bool   `json:"loop,omitempty"`    // sample: en bucle
 	SynthPWM byte   `json:"pwm,omitempty"`     // synth square: velocidad·16 + profundidad
 }
@@ -201,6 +201,40 @@ type Song struct {
 	Tables  map[int]*Table      `json:"tables,omitempty"`
 	Grooves map[int]Groove      `json:"grooves"`
 	Waves   map[int]*Wave       `json:"waves,omitempty"`
+	Samples map[int]*SampleData `json:"samples,omitempty"`
+}
+
+// NumSamples son los samples que caben en una canción.
+const NumSamples = 128
+
+// SampleData es un sample de una canción (los de un MOD o un XM importado):
+// PCM mono con signo, de 8 o 16 bits (little endian), que en el JSON va en
+// base64. Suena a Rate muestras por segundo en la nota Root de su
+// instrumento.
+type SampleData struct {
+	Name      string `json:"name,omitempty"`
+	Rate      int    `json:"rate"`
+	Bits      int    `json:"bits"` // 8 o 16
+	Data      []byte `json:"data"`
+	LoopStart int    `json:"loop_start,omitempty"` // en muestras
+	LoopLen   int    `json:"loop_len,omitempty"`   // en muestras (0: sin bucle)
+	PingPong  bool   `json:"pingpong,omitempty"`   // el bucle va y vuelve (XM)
+}
+
+// Len es cuántas muestras tiene.
+func (d *SampleData) Len() int {
+	if d.Bits == 16 {
+		return len(d.Data) / 2
+	}
+	return len(d.Data)
+}
+
+// At es la muestra i, de -1 a 1.
+func (d *SampleData) At(i int) float64 {
+	if d.Bits == 16 {
+		return float64(int16(uint16(d.Data[2*i])|uint16(d.Data[2*i+1])<<8)) / 32768
+	}
+	return float64(int8(d.Data[i])) / 128
 }
 
 // Channels es cuántos canales tiene la canción.
@@ -296,7 +330,7 @@ func (s *Song) Fix() {
 	if len(s.Rows) > SongRows {
 		s.Rows = s.Rows[:SongRows]
 	}
-	for _, m := range []any{&s.Chains, &s.Phrases, &s.Instrs, &s.Tables, &s.Waves} {
+	for _, m := range []any{&s.Chains, &s.Phrases, &s.Instrs, &s.Tables, &s.Waves, &s.Samples} {
 		switch m := m.(type) {
 		case *map[int]*Chain:
 			if *m == nil {
@@ -317,6 +351,10 @@ func (s *Song) Fix() {
 		case *map[int]*Wave:
 			if *m == nil {
 				*m = map[int]*Wave{}
+			}
+		case *map[int]*SampleData:
+			if *m == nil {
+				*m = map[int]*SampleData{}
 			}
 		}
 	}
