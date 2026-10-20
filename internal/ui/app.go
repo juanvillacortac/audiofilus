@@ -976,6 +976,15 @@ func sysBattery(dir string) (level float64, charging, ok bool) {
 		}
 		var v int
 		if _, err := fmt.Sscan(read(sup, "capacity"), &v); err != nil || v < 0 || v > 100 {
+			v = -1
+		}
+		if v <= 0 {
+			// 0 % con la consola encendida no es real: el medidor no calcula
+			// el porcentaje (el RK817 de la RG353V con dArkOS). Se saca de la
+			// carga, o de la tensión.
+			v = batteryEstimate(func(f string) string { return read(sup, f) })
+		}
+		if v < 0 {
 			continue
 		}
 		if v > best {
@@ -992,6 +1001,49 @@ func sysBattery(dir string) (level float64, charging, ok bool) {
 		return 0, false, false
 	}
 	return float64(best) / 100, bestCharging, true
+}
+
+// liIon es la curva de descarga de una celda de litio: tensión (V) y
+// porcentaje, de más a menos.
+var liIon = []struct{ v, pct float64 }{
+	{4.20, 100}, {4.10, 90}, {4.00, 78}, {3.90, 65}, {3.80, 50}, {3.75, 40},
+	{3.70, 30}, {3.65, 20}, {3.60, 12}, {3.50, 5}, {3.40, 0},
+}
+
+// batteryEstimate calcula el porcentaje cuando la batería no lo da: de la
+// carga (charge_now/charge_full o energy_now/energy_full) o, si no, de la
+// tensión con la curva de una celda de litio. -1 si no hay con qué.
+func batteryEstimate(read func(f string) string) int {
+	num := func(f string) float64 {
+		var v float64
+		if _, err := fmt.Sscan(read(f), &v); err != nil {
+			return -1
+		}
+		return v
+	}
+	for _, pair := range [][2]string{{"charge_now", "charge_full"}, {"energy_now", "energy_full"}} {
+		if now, full := num(pair[0]), num(pair[1]); now >= 0 && full > 0 {
+			return int(math.Round(math.Min(100, now/full*100)))
+		}
+	}
+	uv := num("voltage_now")
+	if uv <= 0 {
+		uv = num("voltage_avg")
+	}
+	if uv <= 0 {
+		return -1
+	}
+	v := uv / 1e6 // en microvoltios
+	if v >= liIon[0].v {
+		return 100
+	}
+	for i := 1; i < len(liIon); i++ {
+		if v >= liIon[i].v {
+			hi, lo := liIon[i-1], liIon[i]
+			return int(math.Round(lo.pct + (v-lo.v)/(hi.v-lo.v)*(hi.pct-lo.pct)))
+		}
+	}
+	return 0
 }
 
 func firstOr(s []string, d string) string {
