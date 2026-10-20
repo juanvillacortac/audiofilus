@@ -22,6 +22,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -508,8 +509,9 @@ func (a *App) maybeSleep() {
 	after := a.cfg.UI.SleepAfter
 	// Sonando, solo en la pantalla de reproducción (navegando o en Ajustes, no).
 	// Sin música, en cualquiera: con la app abierta la consola no se suspende,
-	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca.
-	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Runner || a.screen == Visual || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
+	// así que si nadie la usa, al menos se apaga la pantalla. Jugando, nunca;
+	// leyendo la letra, tampoco.
+	if after <= 0 || a.menu != nil || a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Runner || a.screen == Visual || (a.screen == NowPlaying && a.lyricsOn) || (a.isPlaying && a.screen != NowPlaying) || a.t-a.lastInput < float64(after) {
 		return
 	}
 	a.enterSleep()
@@ -892,6 +894,18 @@ func (a *App) simulatePlaying() {
 	sel = max(sel, 0)
 	al := a.lib.Albums[sel]
 	a.playing, a.playingIdx, a.playingSong = al, 0, al.Songs[0]
+	// Con AUDIOFILUS_SHOT_LYRICS=título, la canción con ese título (para la
+	// secuencia de la letra, ver lyricsFrames).
+	if name := strings.ToLower(os.Getenv("AUDIOFILUS_SHOT_LYRICS")); name != "" {
+		for _, b := range a.lib.Albums {
+			for i, s := range b.Songs {
+				if strings.Contains(strings.ToLower(s.Title), name) {
+					al = b
+					a.playing, a.playingIdx, a.playingSong = b, i, s
+				}
+			}
+		}
+	}
 	a.isPlaying, a.position, a.duration = true, 64, 231
 	a.status.Shuffle, a.status.Repeat, a.status.Volume = true, "off", 1
 	a.status.Output = "bluetooth"
@@ -1908,6 +1922,10 @@ func (a *App) writeFrames() error {
 	if err := a.drawerFrames(filepath.Join(a.FramesDir, "pestanas")); err != nil {
 		return err
 	}
+	// La letra (inventada) sonando: el karaoke, sus chispas y el cambio de línea.
+	if err := a.lyricsFrames(filepath.Join(a.FramesDir, "letras")); err != nil {
+		return err
+	}
 	// Cripta: el bot jugando 12 s al ritmo de la maqueta.
 	crDir := filepath.Join(a.FramesDir, "cripta")
 	if err := os.MkdirAll(crDir, 0o755); err != nil {
@@ -2314,6 +2332,56 @@ func (a *App) drawerFrames(dir string) error {
 		}
 	}
 	a.drawer = nil
+	return nil
+}
+
+// lyricsFrames guarda en dir 9 s de la vista de letras sonando (la letra
+// inventada de shotLyrics), en horizontal a 30 cuadros por segundo, con un
+// golpe de ritmo cada medio segundo.
+func (a *App) lyricsFrames(dir string) error {
+	if a.playingSong.Path == "" {
+		return nil
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	w0, screen0, playing0, pos0 := a.w, a.screen, a.isPlaying, a.position
+	al0, idx0, song0, theme0 := a.playing, a.playingIdx, a.playingSong, a.themeFor
+	defer func() {
+		a.w, a.screen, a.isPlaying, a.position, a.shownPos = w0, screen0, playing0, pos0, pos0
+		a.playing, a.playingIdx, a.playingSong, a.themeFor = al0, idx0, song0, theme0
+		a.lyricsOn, a.lyr = false, lyricsView{}
+	}()
+	a.w, a.screen, a.isPlaying, a.lyricsOn = 360, NowPlaying, true, true
+	opt := shotLyrics(a.position + 4.5)
+	// Con AUDIOFILUS_SHOT_LYRICS=título, la canción que suena es esa (ver
+	// simulatePlaying), con su letra
+	// de verdad (de sus archivos, etiquetas o LRCLIB), desde el segundo
+	// AUDIOFILUS_SHOT_AT: para verla a mano, no para la web.
+	if os.Getenv("AUDIOFILUS_SHOT_LYRICS") != "" { // la eligió simulatePlaying
+		tmp, err := os.MkdirTemp("", "audiofilus-lyrics")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmp)
+		fd := &lyrics.Finder{Store: lyrics.NewStore(tmp), Web: &lyrics.LRCLIB{}}
+		q := lyrics.Query{Title: a.playingSong.Title, Artist: a.playingSong.Artist, Album: a.playingSong.Album}
+		opt = fd.Find(context.Background(), a.playingSong.Path, q)
+		at, _ := strconv.ParseFloat(os.Getenv("AUDIOFILUS_SHOT_AT"), 64)
+		a.position, a.shownPos = at, at
+	}
+	a.lyr = lyricsView{path: a.playingSong.Path, opt: opt}
+	for i := 0; i < 270; i++ {
+		a.t += 1.0 / 30
+		a.position += 1.0 / 30
+		a.shownPos = a.position
+		if i%15 == 0 {
+			a.beat.at = a.beatClock()
+		}
+		if err := a.renderShot(filepath.Join(dir, fmt.Sprintf("f%04d.png", i)), a.w); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

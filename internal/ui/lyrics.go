@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"math/rand/v2"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -41,7 +42,29 @@ type lyricsView struct {
 	scroll   float64
 	manual   float64
 	manualAt float64
+
+	// La animación: la velocidad del desplazamiento (un muelle que se pasa
+	// un poco y vuelve), la línea que suena y desde cuándo (entra dando un
+	// salto), y las chispas que suelta el karaoke.
+	vel       float64
+	cur       int
+	curAt     float64
+	sparks    []lyrSpark
+	lastSpark float64
 }
+
+// lyrSpark es una chispa del karaoke: sale de (x, y) con velocidad (vx, vy)
+// en píxeles por segundo, cae con algo de gravedad y se apaga.
+type lyrSpark struct {
+	x, y, vx, vy, born float64
+	big                bool
+}
+
+// Cuánto vive una chispa y cada cuánto sale una mientras se pinta la línea.
+const (
+	sparkLife  = 0.7
+	sparkEvery = 0.045
+)
 
 // lyricsResult es lo que devuelve una búsqueda de letra.
 type lyricsResult struct {
@@ -390,9 +413,14 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 	if !ly.Synced {
 		a.scrollArea(margin, y0, w-2*margin, view, a.scrollLyrics)
 	}
-	l.scroll += (want - l.scroll) * 0.15
-	if fresh || math.Abs(want-l.scroll) < 0.5 {
-		l.scroll = want
+	// Un muelle: arranca, se pasa un pelo y vuelve, como un carrusel.
+	l.vel = (l.vel + (want-l.scroll)*0.07) * 0.74
+	l.scroll += l.vel
+	if fresh || (math.Abs(want-l.scroll) < 0.3 && math.Abs(l.vel) < 0.05) {
+		l.scroll, l.vel = want, 0
+	}
+	if cur != l.cur {
+		l.cur, l.curAt = cur, a.t
 	}
 
 	// Lo que mide la franja que se desvanece arriba y abajo.
@@ -445,16 +473,123 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 				continue
 			}
 			alpha := func(c color.RGBA) color.RGBA { return withAlpha(c, uint8(float64(c.A)*f)) }
-			drawText(clip, r, BigFace, x, y, alpha(c))
-			if frac >= 0 && lit > 0 {
-				part := min(lit, widths[j])
-				sub := clip.SubImage(image.Rect(b.Min.X+x, b.Min.Y+max(y, y0), b.Min.X+x+part, b.Min.Y+min(y+bigCapTop+bigCap+5, y1))).(*ebiten.Image)
-				drawText(sub, r, BigFace, x, y, alpha(th.Accent))
-				lit -= part
+			if frac >= 0 {
+				// La que suena va letra a letra (ver drawKaraokeRow).
+				a.drawKaraokeRow(clip, r, x, y, lit, alpha)
+				lit -= widths[j]
+				continue
 			}
+			drawText(clip, r, BigFace, x, y, alpha(c))
 		}
 	}
+	a.drawSparks(clip)
 	a.drawLyricsHints(dst)
+}
+
+// drawKaraokeRow pinta una fila de la línea que suena, letra a letra: las
+// ya cantadas en el color de acento y las que faltan en el del texto, con
+// una sombra debajo. Las letras junto al borde de lo cantado saltan (una
+// ola que lo recorre), la línea entera da un salto al empezar a sonar y un
+// botecito en cada golpe del ritmo, y del borde salen chispas. lit son los
+// píxeles cantados de esta fila (negativo o 0: ninguno).
+func (a *App) drawKaraokeRow(dst *ebiten.Image, row string, x, y, lit int, alpha func(color.RGBA) color.RGBA) {
+	th, l := a.theme, &a.lyr
+	since := a.t - l.curAt
+	// El salto de entrada: sube 4 px y baja con un rebote, en 0,35 s.
+	pop := 0.0
+	if since < 0.35 {
+		p := since / 0.35
+		pop = 4 * math.Sin(p*math.Pi) * (1 - p)
+	}
+	beat := 0.0
+	if a.isPlaying {
+		beat = 1.5 * a.beatPulse()
+	}
+	base := float64(y) - pop - beat
+	edge := float64(x + lit)
+	singing := lit > 0 && lit < textWidth(row, BigFace) && a.isPlaying
+	// Primero todas las sombras y luego las letras, para que una letra que
+	// salta no quede tapada por la sombra de la de al lado.
+	type glyph struct {
+		ch   string
+		x, y int
+		c    color.RGBA
+	}
+	var gs []glyph
+	cx := x
+	for _, r := range row {
+		ch := string(r)
+		cw := textWidth(ch, BigFace)
+		mid := float64(cx) + float64(cw)/2
+		// La ola: hasta 2 px de alto en la letra del borde, que se apaga en
+		// 12 px hacia los lados.
+		lift := 0.0
+		if singing {
+			if d := math.Abs(mid - edge); d < 12 {
+				lift = 2 * math.Cos(d/12*math.Pi/2)
+			}
+		}
+		c := th.Text
+		if mid < edge {
+			c = th.Accent
+		}
+		gs = append(gs, glyph{ch, cx, int(math.Round(base - lift)), c})
+		cx += cw
+	}
+	for _, g := range gs {
+		drawText(dst, g.ch, BigFace, g.x, g.y+1, alpha(th.Shadow))
+	}
+	for _, g := range gs {
+		drawText(dst, g.ch, BigFace, g.x, g.y, alpha(g.c))
+	}
+	// Chispas desde el borde de lo cantado.
+	if singing && a.t-l.lastSpark > sparkEvery {
+		l.lastSpark = a.t
+		l.sparks = append(l.sparks, lyrSpark{
+			x: edge, y: base + bigCapTop + 2,
+			vx: (rand.Float64() - 0.3) * 40, vy: -25 - rand.Float64()*35,
+			born: a.t, big: rand.IntN(3) > 0,
+		})
+	}
+	// Al empezar una línea, una ráfaga desde su principio.
+	if since < 1.0/30 && a.isPlaying && lit <= 0 {
+		for i := 0; i < 10; i++ {
+			ang := rand.Float64() * 2 * math.Pi
+			sp := 30 + rand.Float64()*50
+			l.sparks = append(l.sparks, lyrSpark{
+				x: float64(x), y: base + bigCapTop + bigCap/2,
+				vx: math.Cos(ang) * sp, vy: math.Sin(ang)*sp - 20,
+				born: a.t, big: i%3 == 0,
+			})
+		}
+	}
+}
+
+// drawSparks pinta las chispas del karaoke y olvida las apagadas. Caen con
+// gravedad y se apagan en cuatro pasos, como el resto de desvanecidos.
+func (a *App) drawSparks(dst *ebiten.Image) {
+	th, l := a.theme, &a.lyr
+	live := l.sparks[:0]
+	for _, s := range l.sparks {
+		age := a.t - s.born
+		if age >= sparkLife || age < 0 {
+			continue
+		}
+		live = append(live, s)
+		px := s.x + s.vx*age
+		py := s.y + s.vy*age + 60*age*age
+		f := math.Ceil((1-age/sparkLife)*4) / 4
+		c := th.Accent
+		if age < 0.12 {
+			c = th.Text // nacen blancas y se tiñen
+		}
+		size := 1
+		if s.big && age < sparkLife/2 {
+			size = 2
+		}
+		rect(dst, int(px), int(py), size, size, withAlpha(c, uint8(255*f)))
+	}
+	l.sparks = live
 }
 
 // drawLyricsHints es la barra de abajo de la vista.
