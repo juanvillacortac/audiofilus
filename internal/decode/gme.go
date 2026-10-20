@@ -179,8 +179,14 @@ func gmeInfo(emu uintptr, i int) GMETrack {
 	return t
 }
 
-// GMETracks son las canciones de un archivo de libgme.
+// GMETracks son las canciones de un archivo de libgme (un VGM, con libvgm
+// si está: vgm.go).
 func GMETracks(file string) ([]GMETrack, error) {
+	if isVGMFile(file) && loadVGM() == nil {
+		if t, err := vgmTracks(file); err == nil {
+			return t, nil
+		}
+	}
 	emu, err := gmeOpen(file)
 	if err != nil {
 		return nil, err
@@ -203,8 +209,14 @@ type gmeSource struct {
 	ended  bool
 }
 
-// newGME abre la canción song (desde 1) de file.
+// newGME abre la canción song (desde 1) de file (un VGM, con libvgm si
+// está: vgm.go).
 func newGME(file string, song int) (Source, error) {
+	if isVGMFile(file) && song == 1 && loadVGM() == nil {
+		if s, err := newVGM(file); err == nil {
+			return s, nil
+		}
+	}
 	emu, err := gmeOpen(file)
 	if err != nil {
 		return nil, err

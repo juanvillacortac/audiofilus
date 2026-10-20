@@ -50,7 +50,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (and as a
 ### Library
 
 - **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream.
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ (Genesis, Master System) and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme, which the handheld and Linux packages bring. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.
@@ -263,7 +263,7 @@ audiofilus is free and made in my spare time. If you enjoy it, you can buy me a 
 
 ## License
 
-[MIT](LICENSE). The bundled fonts, Jersey 10 and Tiny5, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`).
+[MIT](LICENSE). The bundled fonts, Jersey 10, Tiny5 and Fusion Pixel, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`). The packages also ship two libraries loaded at runtime, each under its own license: libgme (LGPL) and libvgmshim, built from [libvgm](https://github.com/ValleyBell/libvgm) plus `tools/libvgm/shim.cpp`, which as a whole is **GPL-2.0** (`tools/libvgm/GPL-2.0.txt`; the list of each source file's license and the exact libvgm commit go in `licenses/` of every package). audiofilus itself stays MIT and doesn't link them at build time.
 
 ## Docs
 

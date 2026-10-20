@@ -63,6 +63,18 @@ if [ -d build/libgme ]; then
 else
   echo "build/libgme missing: the packages go without libgme (tools/libgme/build.sh)" >&2
 fi
+# libvgm (los VGM de cualquier chip: arcades, NES, Game Boy...), igual, si se
+# compiló con tools/libvgm/build.sh build/libvgm.
+if [ -d build/libvgm ]; then
+  for a in aarch64 x86_64; do
+    mkdir -p "$pkg/audiofilus/libs.$a"
+    cp build/libvgm/libs.$a/libvgmshim.so "$pkg/audiofilus/libs.$a/"
+  done
+  cp build/libvgm/libvgm-LICENSE.txt build/libvgm/libvgm-SOURCE.txt "$pkg/audiofilus/licenses/"
+  cp tools/libvgm/GPL-2.0.txt "$pkg/audiofilus/licenses/libvgm-GPL-2.0.txt"
+else
+  echo "build/libvgm missing: the packages go without libvgm (tools/libvgm/build.sh)" >&2
+fi
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip
 
@@ -77,6 +89,10 @@ cp -r muos/audiofilus/. "$app/audiofilus/"
 cp dist/audiofilus-arm64 "$app/audiofilus/audiofilus.aarch64"
 cp -r "$pkg/audiofilus/licenses" "$app/audiofilus/"
 [ -d build/libgme ] && cp -r build/libgme/libs.aarch64 "$app/audiofilus/"
+if [ -d build/libvgm ]; then
+  mkdir -p "$app/audiofilus/libs.aarch64"
+  cp build/libvgm/libs.aarch64/libvgmshim.so "$app/audiofilus/libs.aarch64/"
+fi
 chmod +x "$app/audiofilus/mux_launch.sh" "$app/audiofilus/audiofilus.aarch64"
 (cd "$app" && zip -qr ../audiofilus.muxapp .)
 echo dist/audiofilus.muxapp

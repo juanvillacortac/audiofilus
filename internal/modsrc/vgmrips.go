@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 )
 
 // VGMRips (vgmrips.net): música de consolas y arcades en VGM, en paquetes
@@ -100,13 +102,20 @@ var (
 )
 
 // vgmChips son los chips de VGM que libgme emula (los de Genesis y Master
-// System). Un paquete con otros (los de las placas arcade: YM2151,
-// SegaPCM, QSound...) sonaría en silencio, así que no se ofrece.
+// System). Sin libvgm, un paquete con otros (los de las placas arcade:
+// YM2151, SegaPCM, QSound...) no sonaría, así que no se ofrece.
 var vgmChips = map[string]bool{"sn76489": true, "sn76496": true, "ym2612": true, "ym2413": true}
 
+// vgmFullChips dice si los VGM se tocan con libvgm, que emula casi todos los
+// chips (los tests lo cambian).
+var vgmFullChips = decode.VGMFullChips
+
 // vgmPlayable dice si los chips de un paquete (los de su bloque o su
-// página) se pueden tocar todos. Sin chips a la vista, sí.
+// página) se pueden tocar todos. Sin chips a la vista, o con libvgm, sí.
 func vgmPlayable(b string) bool {
+	if vgmFullChips() {
+		return true
+	}
 	for _, m := range vrChipRe.FindAllStringSubmatch(b, -1) {
 		if !vgmChips[m[1]] {
 			return false

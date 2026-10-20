@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: zig, for libgme
+      - name: zig, for libgme and libvgm
         uses: jdx/mise-action@v2
         with:
           mise_toml: |
@@ -25,6 +25,8 @@ jobs:
             zig = "0.15.2"
       - name: libgme for the handhelds (tools/libgme/build.sh)
         run: tools/libgme/build.sh build/libgme
+      - name: libvgm for the handhelds and Linux (tools/libvgm/build.sh)
+        run: tools/libvgm/build.sh build/libvgm
       - name: Build in the container
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
@@ -44,6 +46,9 @@ jobs:
             [ "$arch" = amd64 ] && libs=libs.x86_64
             cp -r "build/libgme/$libs" "$d/"
             cp build/libgme/libgme-*.txt "$d/licenses/"
+            cp "build/libvgm/$libs/libvgmshim.so" "$d/$libs/"
+            cp build/libvgm/libvgm-*.txt "$d/licenses/"
+            cp tools/libvgm/GPL-2.0.txt "$d/licenses/libvgm-GPL-2.0.txt"
             tar -czf "out/$d.tar.gz" "$d"
           done
           d=audiofilus-windows-amd64
