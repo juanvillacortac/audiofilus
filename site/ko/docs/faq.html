@@ -60,6 +60,7 @@
           <li><a href="lyrics.html">가사</a></li>
           <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
           <li><a href="modules.html">모듈</a></li>
+          <li><a href="network.html">네트워크</a></li>
           <li><a href="servers.html">서버</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">스크로블</a></li>
@@ -97,9 +98,14 @@
 <details class="q" id="iphone-music"><summary>iPhone에서 음악은 어떻게 넣나요?</summary><p>파일 앱의 <em>나의 iPhone → Audiofilus</em>에 곡을 복사하거나, 설정 → 폴더에서 아무 폴더나 고르거나, 파일 앱이나 다른 앱에서 곡을 Audiofilus로 여세요. 서버, 라디오, 팟캐스트는 로컬 음악 없이도 작동해요.</p></details>
 <details class="q" id="open-with"><summary>파일 관리자에서 파일을 열려면요?</summary><p>리눅스에서는 오른쪽 클릭 → 연결 프로그램 → Audiofilus(설치 프로그램이나 <code>audiofilus desktop install</code>로 설치한 뒤). 윈도우에서는 audiofilus를 처음 실행할 때 스스로 등록되니, 연결 프로그램을 쓰거나 폴더에서 Play with Audiofilus를 고르세요. 임시 대기열로 재생돼요.</p></details>
 <details class="q" id="server-offline"><summary>서버 곡은 네트워크 없이도 되나요?</summary><p>목록이 저장되어 있어서 오프라인에서도 둘러볼 수 있고, 이미 들은 곡은 캐시돼요(기본 400 MB). 캐시되지 않은 곡은 서버가 필요해요. 계속 보관하려면 곡을 보관함에 받으세요.</p></details>
-<details class="q" id="privacy"><summary>audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 모듈 아카이브(모듈), GitHub 릴리스(하루 한 번 업데이트 확인), 그리고 연결했을 때만 Last.fm이나 ListenBrainz.</p></details>
+<details class="q" id="privacy"><summary>audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 모듈 아카이브(모듈), GitHub 릴리스(하루 한 번 업데이트 확인), 그리고 연결했을 때만 Last.fm이나 ListenBrainz.MusicBrainz, Cover Art Archive, iTunes에는 <strong>커버 찾기</strong>나 <strong>MusicBrainz에서 찾기</strong>를 쓸 때만 연결해요. 스피커로 보내기와 DLNA는 로컬 네트워크 안에서만 이뤄지고, DLNA는 켜지 않는 한 꺼져 있어요.</p></details>
 <details class="q" id="modules"><summary>모듈은 어디서 오나요?</summary><p>네 곳의 무료 온라인 아카이브, The Mod Archive, Modland, VGMRips, AMP에서 와요(<a href="modules.html">모듈</a>을 보세요). 들으면 파일이 <code>data/cache/modules</code>에 내려받아져서 다음에는 바로 재생돼요. <strong>보관함에 저장</strong>은 음악 폴더의 <code>audiofilus modules</code>로 복사해요.</p></details>
 <details class="q" id="midi"><summary>MIDI 키보드를 쓸 수 있나요?</summary><p>네, 트래커에서요. USB MIDI 키보드를 휴대용 기기나 컴퓨터(리눅스, Windows, iPhone/iPad)에 연결하면 노트가 지금 악기로 소리 나거나 프레이즈에 적혀요. 트래커는 MIDI 클럭을 따르거나 보낼 수도 있어요. <a href="tracker.html#midi">MIDI</a>를 보세요.</p></details>
+<details class="q" id="cast"><summary>TV나 스피커로 재생할 수 있나요?</summary><p>네. 재생 중에서 <kbd>START</kbd> → <strong>보내기…</strong>를 고르면 네트워크의 DLNA/UPnP 스피커와 TV, Chromecast가 목록에 나와요. 음악은 거기서 이어지고 audiofilus는 리모컨이 돼요. <a href="network.html#send-to">네트워크</a>를 보세요.</p></details>
+<details class="q" id="dlna"><summary>TV나 휴대폰에서 내 음악을 볼 수 있나요?</summary><p><strong>설정 → 보관함 공유 (DLNA)</strong>를 켜면 같은 네트워크의 TV와 DLNA 앱에 내 보관함이 나와요. <strong>음악 받기 (DLNA)</strong>를 켜면 BubbleUPnP 같은 앱이 audiofilus로 음악을 보내 재생할 수 있어요. 둘 다 처음에는 꺼져 있어요. <a href="network.html">네트워크</a>를 보세요.</p></details>
+<details class="q" id="edit-tags"><summary>잘못된 태그나 빠진 커버를 고칠 수 있나요?</summary><p>네, 내 보관함의 파일이라면요. 곡이나 앨범의 <kbd>START</kbd> 메뉴에 <strong>태그 편집</strong>, <strong>앨범 태그</strong>, <strong>커버 찾기</strong>, <strong>MusicBrainz에서 찾기</strong>가 있고, MusicBrainz에서 제목, 번호, 연도, 장르를 채워 넣어요. <a href="library.html#edit-tags">보관함</a>을 보세요.</p></details>
+<details class="q" id="replaygain-compute"><summary>어떤 곡은 다른 곡보다 소리가 커요. 어떻게 하나요?</summary><p><strong>설정 → ReplayGain</strong>을 켜고, ReplayGain 태그가 없는 곡에는 앨범이나 아티스트에서 <strong>ReplayGain 계산</strong>을 쓰세요. 음량을 재서 태그를 써넣어요. <a href="sound.html#replaygain-compute">사운드</a>를 보세요.</p></details>
+<details class="q" id="arcade-vgm"><summary>아케이드 VGM이 재생되지 않는 이유는요?</summary><p>audiofilus는 VGM 파일을 libgme로 재생하는데, libgme는 메가 드라이브/제네시스와 마스터 시스템의 칩(SN76489, YM2612, YM2413)만 에뮬레이션해요. 아케이드 기판(아웃런의 YM2151과 SegaPCM 같은)이나 다른 기종은 다른 칩을 써서 아직 재생할 수 없어요. 무음으로 재생하는 대신, 어떤 칩을 쓰는지 알려 주고 건너뛰어요.</p></details>
 <details class="q" id="tracker-visualizer"><summary>비주얼라이저가 트래커에 반응하나요?</summary><p>네. 트래커가 재생되는 동안 비주얼라이저, 박자를 따라가는 게임, 배경이 그 음악을 따라가요.</p></details>
     <nav class="pager" aria-label="페이지"><a href="handhelds.html">← 휴대용 게임기 시스템</a><span></span></nav>
   </article>

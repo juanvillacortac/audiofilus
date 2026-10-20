@@ -69,6 +69,7 @@ body { line-break: strict; }
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="modules.html">模块</a></li>
+          <li><a href="network.html">网络</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">播放记录</a></li>
@@ -106,9 +107,14 @@ body { line-break: strict; }
 <details class="q" id="iphone-music"><summary>怎么在 iPhone 上添加音乐？</summary><p>在“文件”应用中把歌曲复制到 <em>我的 iPhone → Audiofilus</em>，在 设置 → 文件夹 中选择任意文件夹，或从“文件”和其他应用中用 Audiofilus 打开歌曲。服务器、电台和播客无需本地音乐即可使用。</p></details>
 <details class="q" id="open-with"><summary>怎么从文件管理器打开文件？</summary><p>在 Linux 上，右键 → 打开方式 → Audiofilus（需先用安装脚本或 <code>audiofilus desktop install</code> 安装）。在 Windows 上，audiofilus 首次运行时会自动注册：使用“打开方式”，或在文件夹上使用“用 Audiofilus 播放”。它们会作为临时队列播放。</p></details>
 <details class="q" id="server-offline"><summary>服务器上的歌曲没有网络能用吗？</summary><p>曲目目录会被保存，因此可以离线浏览，已播放过的歌曲会被缓存（默认 400 MB）。没有缓存的歌曲需要连接服务器。把歌曲下载到音乐库即可永久保留。</p></details>
-<details class="q" id="privacy"><summary>audiofilus 会向网络发送什么？</summary><p>只发送你用到的：radio-browser（电台界面）、Apple 的播客目录和 RSS 订阅（播客）、LRCLIB（歌词，除非关闭网上歌词）、你自己的服务器、通过你的 yt-dlp 访问的 YouTube、模块资料库（模块）、GitHub 发布（每天一次的更新检查），以及仅在你连接后才使用的 Last.fm 或 ListenBrainz。</p></details>
+<details class="q" id="privacy"><summary>audiofilus 会向网络发送什么？</summary><p>只发送你用到的：radio-browser（电台界面）、Apple 的播客目录和 RSS 订阅（播客）、LRCLIB（歌词，除非关闭网上歌词）、你自己的服务器、通过你的 yt-dlp 访问的 YouTube、模块资料库（模块）、GitHub 发布（每天一次的更新检查），以及仅在你连接后才使用的 Last.fm 或 ListenBrainz。只有在使用<strong>查找封面</strong>或<strong>在 MusicBrainz 查找</strong>时才会连接 MusicBrainz、Cover Art Archive 和 iTunes。发送到音箱和 DLNA 只在局域网内进行，DLNA 除非你打开，否则是关闭的。</p></details>
 <details class="q" id="modules"><summary>模块从哪里来？</summary><p>来自四个免费的在线资料库：The Mod Archive、Modland、VGMRips 和 AMP（见<a href="modules.html">模块</a>）。收听时文件会下载到 <code>data/cache/modules</code>，下次会立即播放；<strong>存入音乐库</strong>会把它复制到音乐文件夹里的 <code>audiofilus modules</code>。</p></details>
 <details class="q" id="midi"><summary>可以用 MIDI 键盘吗？</summary><p>可以，在 tracker 中：把 USB MIDI 键盘插到掌机或电脑（Linux、Windows、iPhone/iPad）上，它的音符会用当前乐器发声，或写入乐句。tracker 还可以跟随或发送 MIDI 时钟。见 <a href="tracker.html#midi">MIDI</a>。</p></details>
+<details class="q" id="cast"><summary>可以在电视或音箱上播放吗？</summary><p>可以：在正在播放中，<kbd>START</kbd> → <strong>发送到…</strong> 会列出网络上的 DLNA/UPnP 音箱和电视以及 Chromecast。音乐会在那里继续，audiofilus 变成遥控器。见<a href="network.html#send-to">网络</a>。</p></details>
+<details class="q" id="dlna"><summary>电视或手机能看到我的音乐吗？</summary><p>打开<strong>设置 → 共享音乐库 (DLNA)</strong>，同一网络里的电视和 DLNA 应用就能看到你的音乐库。打开<strong>接收音乐 (DLNA)</strong>，BubbleUPnP 之类的应用就能把音乐发给 audiofilus 播放。两者默认都关闭。见<a href="network.html">网络</a>。</p></details>
+<details class="q" id="edit-tags"><summary>能修正错误的标签或缺失的封面吗？</summary><p>可以，限于你自己音乐库里的文件：歌曲或专辑的 <kbd>START</kbd> 菜单里有<strong>编辑标签</strong>、<strong>专辑标签</strong>、<strong>查找封面</strong>和<strong>在 MusicBrainz 查找</strong>，后者会从 MusicBrainz 填入标题、编号、年份和流派。见<a href="library.html#edit-tags">音乐库</a>。</p></details>
+<details class="q" id="replaygain-compute"><summary>有些歌比其他歌响，怎么办？</summary><p>打开<strong>设置 → ReplayGain</strong>，对于没有 ReplayGain 标签的歌曲，在专辑或艺人上使用<strong>计算 ReplayGain</strong>：它会测量响度并写入标签。见<a href="sound.html#replaygain-compute">音质</a>。</p></details>
+<details class="q" id="arcade-vgm"><summary>为什么街机 VGM 不能播放？</summary><p>audiofilus 通过 libgme 播放 VGM 文件，而 libgme 只模拟 Mega Drive/Genesis 和 Master System 的芯片（SN76489、YM2612、YM2413）。街机基板（比如 Out Run 的 YM2151 和 SegaPCM）和其他机种用的是别的芯片，所以这些文件暂时还不能播放：audiofilus 不会播放静音，而是告诉你它们用了哪些芯片并跳过。</p></details>
 <details class="q" id="tracker-visualizer"><summary>可视化效果会随 tracker 律动吗？</summary><p>会。tracker 播放时，可视化效果、跟随节拍的游戏和背景都会跟着它的音乐变化。</p></details>
     <nav class="pager" aria-label="页面"><a href="handhelds.html">← 掌机系统</a><span></span></nav>
   </article>

@@ -59,6 +59,7 @@
           <li><a href="lyrics.html">歌詞</a></li>
           <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
           <li><a href="modules.html">モジュール</a></li>
+          <li><a href="network.html">ネットワーク</a></li>
           <li><a href="servers.html">サーバー</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">スクロブル</a></li>
@@ -96,9 +97,14 @@
 <details class="q" id="iphone-music"><summary>iPhone で音楽を追加するには？</summary><p>ファイルアプリの <em>このiPhone内 → Audiofilus</em> に曲をコピーするか、設定 → フォルダで任意のフォルダーを選ぶか、ファイルアプリや他のアプリから曲を Audiofilus で開きます。サーバー、ラジオ、ポッドキャストはローカルの音楽がなくても使えます。</p></details>
 <details class="q" id="open-with"><summary>ファイルマネージャーからファイルを開くには？</summary><p>Linux では、右クリック → このアプリで開く → Audiofilus（インストーラーか <code>audiofilus desktop install</code> でインストールした後）。Windows では、audiofilus は初回起動時に自動で登録されるので、「プログラムから開く」か、フォルダーの「Play with Audiofilus」を使います。一時的なキューとして再生されます。</p></details>
 <details class="q" id="server-offline"><summary>サーバーの曲はネットワークなしで使えますか？</summary><p>カタログは保存されるのでオフラインでも閲覧でき、一度再生した曲はキャッシュされます（デフォルトで 400 MB）。キャッシュされていない曲にはサーバーが必要です。ずっと残したい曲はライブラリにダウンロードしてください。</p></details>
-<details class="q" id="privacy"><summary>audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、モジュールのアーカイブ（モジュール）、GitHub のリリース（1 日 1 回のアップデート確認）、そして接続した場合のみ Last.fm や ListenBrainz。</p></details>
+<details class="q" id="privacy"><summary>audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、モジュールのアーカイブ（モジュール）、GitHub のリリース（1 日 1 回のアップデート確認）、そして接続した場合のみ Last.fm や ListenBrainz。MusicBrainz、Cover Art Archive、iTunes には、<strong>カバーを探す</strong>や <strong>MusicBrainz で検索</strong>を使ったときだけ接続します。スピーカーへの送信と DLNA はローカルネットワーク内だけで、DLNA はオンにしない限りオフです。</p></details>
 <details class="q" id="modules"><summary>モジュールはどこから来るのですか？</summary><p>4 つの無料オンラインアーカイブ、The Mod Archive、Modland、VGMRips、AMP からです（<a href="modules.html">モジュール</a>を参照）。聴くとファイルが <code>data/cache/modules</code> にダウンロードされるので、次からはすぐ再生されます。<strong>ライブラリに保存</strong>で、音楽フォルダーの <code>audiofilus modules</code> にコピーします。</p></details>
 <details class="q" id="midi"><summary>MIDI キーボードは使えますか？</summary><p>はい、トラッカーで使えます。USB MIDI キーボードを携帯機やパソコン（Linux、Windows、iPhone/iPad）につなぐと、ノートでいまのインストゥルメントが鳴り、フレーズに書き込むこともできます。MIDI クロックに従ったり、送ったりもできます。<a href="tracker.html#midi">MIDI</a> を参照してください。</p></details>
+<details class="q" id="cast"><summary>テレビやスピーカーで再生できますか？</summary><p>はい。再生中で <kbd>START</kbd> → <strong>送信先…</strong> を選ぶと、ネットワーク上の DLNA/UPnP のスピーカーやテレビ、Chromecast が一覧に出ます。音楽はそちらで続き、audiofilus はリモコンになります。<a href="network.html#send-to">ネットワーク</a>を参照してください。</p></details>
+<details class="q" id="dlna"><summary>テレビやスマホから自分の音楽を見られますか？</summary><p><strong>設定 → ライブラリ共有 (DLNA)</strong> をオンにすると、同じネットワークのテレビや DLNA アプリにライブラリが表示されます。<strong>音楽を受信 (DLNA)</strong> をオンにすると、BubbleUPnP などのアプリから audiofilus に音楽を送って再生できます。どちらも初期状態ではオフです。<a href="network.html">ネットワーク</a>を参照してください。</p></details>
+<details class="q" id="edit-tags"><summary>間違ったタグや足りないジャケットを直せますか？</summary><p>はい、自分のライブラリのファイルなら。曲やアルバムの <kbd>START</kbd> メニューに<strong>タグを編集</strong>、<strong>アルバムのタグ</strong>、<strong>カバーを探す</strong>、<strong>MusicBrainz で検索</strong>があり、MusicBrainz からタイトル、番号、年、ジャンルを埋められます。<a href="library.html#edit-tags">ライブラリ</a>を参照してください。</p></details>
+<details class="q" id="replaygain-compute"><summary>曲によって音量が違います。どうすればいいですか？</summary><p><strong>設定 → ReplayGain</strong> をオンにし、ReplayGain タグのない曲にはアルバムやアーティストで <strong>ReplayGain を計算</strong>を使ってください。音の大きさを測ってタグを書き込みます。<a href="sound.html#replaygain-compute">サウンド</a>を参照してください。</p></details>
+<details class="q" id="arcade-vgm"><summary>アーケードの VGM が再生されないのはなぜですか？</summary><p>audiofilus は VGM を libgme で再生しますが、libgme がエミュレートするのはメガドライブとマスターシステムのチップ（SN76489、YM2612、YM2413）だけです。アーケード基板（アウトランの YM2151 と SegaPCM など）やほかの機種は別のチップを使うので、まだ再生できません。無音で鳴らす代わりに、使っているチップを伝えて飛ばします。</p></details>
 <details class="q" id="tracker-visualizer"><summary>ビジュアライザーはトラッカーに反応しますか？</summary><p>はい。トラッカーの再生中は、ビジュアライザー、ビートに合わせて動くゲーム、背景がその音楽に合わせて動きます。</p></details>
     <nav class="pager" aria-label="ページ"><a href="handhelds.html">← 携帯ゲーム機</a><span></span></nav>
   </article>

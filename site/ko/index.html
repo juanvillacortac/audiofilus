@@ -512,12 +512,12 @@ footer img { height: 56px; width: auto; }
           <p>모든 곡을 같은 음량으로, 또는 앨범 단위로, 아니면 자동으로: 순서대로 들을 땐 앨범 단위, 셔플일 땐 곡 단위. 곡의 피크를 넘겨서 키우는 일은 없어요.</p>
         </div>
         <div class="point">
-          <h3>10밴드 이퀄라이저</h3>
-          <p>록, 메탈, 보컬, 저음 등 프리셋을 쓰거나 밴드를 직접 조절하세요. 휴대용 게임기 CPU를 약 5&nbsp;% 쓰고, 플랫일 때는 전혀 쓰지 않아요.</p>
+          <h3>그래픽 또는 파라메트릭 이퀄라이저</h3>
+          <p>록, 메탈, 보컬, 저음 등의 프리셋이 있는 10밴드, 또는 최대 8밴드(피크, 셸프, 패스 필터)의 파라메트릭을 곡선과 함께 화면에서 써요. 평평하면 부담은 전혀 없어요.</p>
         </div>
         <div class="point">
           <h3>크로스페이드, DSD, CUE 시트</h3>
-          <p>최대 12초의 크로스페이드를 쓰면서도 앨범은 끊김 없이 이어져요. DSD 파일도 재생되고, CUE 시트와 함께 한 파일로 리핑한 앨범은 트랙별로 보이며, 출력은 44.1, 48, 96, 192&nbsp;kHz로 할 수 있습니다.</p>
+          <p>최대 12초의 크로스페이드를 쓰면서도 앨범은 끊김 없이 이어져요. DSD 파일도 재생되고, CUE 시트와 함께 한 파일로 리핑한 앨범은 트랙별로 보이며, 출력은 44.1, 48, 96, 192&nbsp;kHz로 할 수 있습니다.데스크톱에서는 고품질 리샘플러를 써요(휴대용 게임기에서는 배터리를 위해 가벼운 것을).</p>
         </div>
       </div>
       <figure class="figure"><img class="shot px" src="../img/eq.png" alt="이퀄라이저: Rock 프리셋이 적용된 31 Hz~16 kHz의 세로 슬라이더 열 개" width="360" height="240" loading="lazy"></figure>
@@ -565,14 +565,15 @@ footer img { height: 56px; width: auto; }
         <p class="lede">모든 음원이 같은 보관함과 같은 플레이어에 나타나요. 원격 곡은 SD 카드에 캐시되어 다음에 들을 땐 데이터를 쓰지 않습니다.</p>
       </div>
       <div class="sources">
-        <div class="source"><span class="tag">로컬</span><h3>내 보관함</h3><p>폴더, 태그, 내장 커버와 폴더 커버, M3U 재생목록, 직접 만든 재생목록. 한 번 스캔한 뒤로는 새 파일만 읽어요. 싱크 가사는 .lrc, 태그, LRCLIB에서 가져와 한 줄씩 빛납니다. 게임기 사운드트랙도 돼요: NES, SNES, Game Boy, Genesis 등을 곡마다 한 트랙으로.</p></div>
-        <div class="source"><span class="tag">서버</span><h3>Subsonic</h3><p>Navidrome을 비롯한 Subsonic·OpenSubsonic 서버. 곡을 스트리밍하고, 다음에 들을 수 있게 캐시하며, 다운로드할 수도 있어요.</p></div>
+        <div class="source"><span class="tag">로컬</span><h3>내 보관함</h3><p>폴더, 태그, 내장 커버와 폴더 커버, M3U 재생목록, 직접 만든 재생목록. 한 번 스캔한 뒤로는 새 파일만 읽어요. 싱크 가사는 .lrc, 태그, LRCLIB에서 가져와 한 줄씩 빛납니다. 게임기 사운드트랙도 돼요: NES, SNES, Game Boy, Genesis 등을 곡마다 한 트랙으로.MusicBrainz로 태그와 빠진 커버를 고치고, ReplayGain을 계산하고, 스마트 재생목록이 알아서 채워져요.</p></div>
+        <div class="source"><span class="tag">서버</span><h3>Subsonic</h3><p>Navidrome을 비롯한 Subsonic·OpenSubsonic 서버. 곡을 스트리밍하고, 다음에 들을 수 있게 캐시하며, 다운로드할 수도 있어요.재생목록을 앱에서 편집할 수 있어요.</p></div>
         <div class="source"><span class="tag">서버</span><h3>Jellyfin</h3><p>Jellyfin 계정으로 로그인해서 음악 보관함과 재생목록을 내 파일처럼 둘러보세요.</p></div>
         <div class="source"><span class="tag">라이브</span><h3>인터넷 라디오</h3><p>radio-browser.info의 수천 개 방송국을 나라나 장르별로, 스트림에서 받은 현재 곡 제목과 함께. 직접 만든 .m3u나 .pls 방송국 목록을 넣거나, 주소로 방송국을 추가할 수 있어요.</p></div>
         <div class="source"><span class="tag">에피소드</span><h3>팟캐스트</h3><p>내 나라의 인기 프로그램, 검색, 또는 주소로 아무 RSS 피드나. 에피소드는 오프라인으로 듣도록 내려받을 수 있고, 멈춘 위치를 기억해요.</p></div>
         <div class="source"><span class="tag">직접 준비하기</span><h3>YouTube Music</h3><p>앱 옆에 직접 받은 yt-dlp를 넣으면 검색이 나타나요. 내려받지 않고 듣거나, 커버와 태그를 붙여 보관함에 저장하세요.</p></div>
         <div class="source wide"><span class="tag">씬</span><h3>모듈 아카이브</h3><p>The Mod Archive, Modland, VGMRips, AMP를 한 화면에서: 인기, 새로 나온 것, 무작위로 둘러보고, 검색하고, 듣고, 보관함에 저장하거나 모듈을 트래커에서 열어요. 검색에도 나와요.</p></div>
       </div>
+      <p class="note">재생 중인 음악을 네트워크의 스피커나 TV(DLNA/UPnP 또는 Chromecast)로 보내고, DLNA로 보관함을 공유하고, 휴대폰에서 휴대용 게임기로 음악을 보낼 수 있어요. <a href="docs/network.html">작동 방식</a>.</p>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="전체, 보관함, YouTube 필터가 있는 검색. 이미 가진 곡엔 체크 표시" width="360" height="240" loading="lazy"><figcaption>보관함과 YouTube를 한 번에 검색. 이미 가진 곡엔 체크가 붙어요.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="곡을 불러오는 동안 STREAMING 배지가 붙은 플레이어" width="360" height="240" loading="lazy"><figcaption>스트리밍 곡에는 배지가 붙고, 저장해 둘 수도 있어요.</figcaption></figure>

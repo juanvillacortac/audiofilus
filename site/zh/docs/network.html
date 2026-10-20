@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>网络 · audiofilus 文档</title>
+<meta name="description" content="把音乐发送到音箱和电视（DLNA/UPnP 和 Chromecast），用 DLNA 共享音乐库，并接收手机等设备发来的音乐。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/network.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/network.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/network.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/network.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/network.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/network.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/network.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/network.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/network.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/network.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/network.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/network.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/network.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/network.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/network.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/network.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/network.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/network.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/network.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/network.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/network.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/network.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/network.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/network.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../ko/docs/network.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">音乐库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="modules.html">模块</a></li>
+          <li><a href="network.html" aria-current="page">网络</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>网络</h1>
+    <p class="lede">在家里的音箱或电视上播放，让其他设备浏览你的音乐库，或者让手机把音乐发到掌机上。这一切都只在你的局域网内进行。</p>
+
+<h2 id="send-to">发送到音箱或电视</h2>
+<p>在<strong>正在播放</strong>中，<kbd>START</kbd> → <strong>发送到…</strong> 会花大约三秒查找网络上的设备并列出来：DLNA/UPnP 音箱和电视，以及 Chromecast（内置 Chromecast 的电视、Google/Nest 音箱）。</p>
+<ul>
+<li>选一个设备，歌曲就从同一秒在那里继续播放；掌机或电脑会暂停，变成遥控器。队列里的下一首会提前发过去，所以设备会继续按队列播放。</li>
+<li>发送时，顶部栏显示 <strong>→ &lt;设备&gt;</strong>，暂停、下一首、上一首和快进都控制该设备；进度条显示设备的播放位置。</li>
+<li><kbd>START</kbd> → <strong>设备音量</strong>可以调高或调低设备音量。<strong>停止发送到 &lt;设备&gt;</strong> 会停止设备，并在这里从同一首歌的同一秒继续。</li>
+<li>audiofilus 能播放的内容都能发送。MP3、FLAC、AAC/M4A、WAV 和 Ogg 原样发送；模块、游戏机音乐、DSD 和 CUE 曲目会即时转换为 WAV。来自 Subsonic/Jellyfin 服务器的歌曲和电台按各自的地址发送。</li>
+</ul>
+
+<h2 id="dlna-server">共享音乐库（DLNA 服务器）</h2>
+<p>打开<strong>设置 → 共享音乐库 (DLNA)</strong>，同一网络里的电视、游戏机和 DLNA 应用就能看到你的音乐库，名称为 <strong>audiofilus (&lt;设备名&gt;)</strong>。它们可以带封面浏览<strong>艺人</strong>、<strong>专辑</strong>、<strong>歌曲</strong>、<strong>歌单</strong>和<strong>文件夹</strong>，并从那里播放。电视不认识的格式会转换成 WAV 给它。共享的是 audiofilus 已经扫描过的音乐库，服务器上的歌曲不会共享。</p>
+
+<h2 id="dlna-renderer">接收音乐（DLNA 渲染器）</h2>
+<p>打开<strong>设置 → 接收音乐 (DLNA)</strong>，掌机或电脑就成了其他应用的音箱：在手机上的 BubbleUPnP、Windows 的<em>投放到设备</em>或任何 UPnP 控制点里选择 <strong>audiofilus</strong>，然后发送歌曲。歌曲会带着标题和艺人在 audiofilus 里播放，播放、暂停、快进和音量由发送的应用控制。每首歌会先下载再播放，所以在 Wi-Fi 上开始前要等一会儿。</p>
+
+<h2 id="notes">说明</h2>
+<ul>
+<li>两个 DLNA 选项<strong>默认都是关闭的</strong>。关闭时，不会在网络上监听任何东西。</li>
+<li>共享和接收本身不会让掌机保持唤醒：掌机休眠后，要等它醒来才会再响应。</li>
+<li>电脑上的防火墙需要允许设备连到 audiofilus（媒体端口每次随机选择）。</li>
+<li>在终端里：<code>audiofilus dlna</code> 显示状态，<code>audiofilus dlna server on|off</code>、<code>audiofilus dlna renderer on|off</code> 和 <code>audiofilus dlna name &lt;名称&gt;</code> 可以修改。</li>
+<li>在 iPhone 和 iPad 上，第一次查找时会请求使用本地网络的权限。</li>
+</ul>
+
+    <nav class="pager" aria-label="页面"><a href="modules.html">← 模块</a><a href="servers.html">服务器 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

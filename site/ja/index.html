@@ -511,12 +511,12 @@ footer img { height: 56px; width: auto; }
           <p>すべての曲を、またはすべてのアルバムを同じ音量に。自動なら、順番に再生するときはアルバム単位、シャッフル時は曲単位。曲のピークを超えることはありません。</p>
         </div>
         <div class="point">
-          <h3>10 バンドイコライザー</h3>
-          <p>ロック、メタル、ボーカル、低音などのプリセット。自分でバンドを動かすこともできます。負荷は携帯ゲーム機の CPU の約 5&nbsp;% で、フラットなら負荷はありません。</p>
+          <h3>グラフィックとパラメトリックのイコライザー</h3>
+          <p>ロック、メタル、ボーカル、低音などのプリセットがある 10 バンドか、最大 8 バンド（ピーク、シェルフ、パスフィルター）のパラメトリックで、カーブも画面に表示されます。フラットなら負荷はゼロです。</p>
         </div>
         <div class="point">
           <h3>クロスフェード、DSD、CUE シート</h3>
-          <p>最大 12 秒のクロスフェードでも、アルバムはギャップレスのまま。DSD ファイルを再生でき、CUE シート付きで 1 ファイルにリッピングしたアルバムはトラックごとに表示されます。出力は 44.1、48、96、192&nbsp;kHz。</p>
+          <p>最大 12 秒のクロスフェードでも、アルバムはギャップレスのまま。DSD ファイルを再生でき、CUE シート付きで 1 ファイルにリッピングしたアルバムはトラックごとに表示されます。出力は 44.1、48、96、192&nbsp;kHz。デスクトップでは高品質なリサンプラーを使います（携帯ゲーム機ではバッテリーのために軽いものを）。</p>
         </div>
       </div>
       <figure class="figure"><img class="shot px" src="../img/eq.png" alt="イコライザー：Rock プリセットを選んだ、31 Hz から 16 kHz までの 10 本の縦スライダー" width="360" height="240" loading="lazy"></figure>
@@ -564,14 +564,15 @@ footer img { height: 56px; width: auto; }
         <p class="lede">すべてが同じライブラリ、同じプレイヤーに表示されます。リモートの曲は SD カードにキャッシュされるので、次からは通信なしで聴けます。</p>
       </div>
       <div class="sources">
-        <div class="source"><span class="tag">ローカル</span><h3>あなたのライブラリ</h3><p>フォルダー、タグ、埋め込みとフォルダーのジャケット、M3U プレイリスト、自分のプレイリスト。スキャンは一度だけで、以降は新しいファイルだけを読み込みます。同期歌詞は .lrc、タグ、LRCLIB から取得し、1 行ずつ光ります。ゲームのサウンドトラックも：NES、SNES、ゲームボーイ、メガドライブなど、曲ごとに 1 トラック。</p></div>
-        <div class="source"><span class="tag">サーバー</span><h3>Subsonic</h3><p>Navidrome などの Subsonic / OpenSubsonic サーバー。曲はストリーミングされ、次回のためにキャッシュされ、ダウンロードもできます。</p></div>
+        <div class="source"><span class="tag">ローカル</span><h3>あなたのライブラリ</h3><p>フォルダー、タグ、埋め込みとフォルダーのジャケット、M3U プレイリスト、自分のプレイリスト。スキャンは一度だけで、以降は新しいファイルだけを読み込みます。同期歌詞は .lrc、タグ、LRCLIB から取得し、1 行ずつ光ります。ゲームのサウンドトラックも：NES、SNES、ゲームボーイ、メガドライブなど、曲ごとに 1 トラック。MusicBrainz でタグや足りないジャケットを直し、ReplayGain を計算し、スマートリストが自動で曲を集めます。</p></div>
+        <div class="source"><span class="tag">サーバー</span><h3>Subsonic</h3><p>Navidrome などの Subsonic / OpenSubsonic サーバー。曲はストリーミングされ、次回のためにキャッシュされ、ダウンロードもできます。プレイリストはアプリから編集できます。</p></div>
         <div class="source"><span class="tag">サーバー</span><h3>Jellyfin</h3><p>Jellyfin のユーザーでサインインし、その音楽ライブラリとプレイリストを自分のファイルのように閲覧できます。</p></div>
         <div class="source"><span class="tag">ライブ</span><h3>インターネットラジオ</h3><p>radio-browser.info の何千もの局を、国やジャンルから。ストリームから今流れている曲名も表示します。自分の .m3u や .pls の局リストを持ち込んだり、アドレスで局を追加したりできます。</p></div>
         <div class="source"><span class="tag">エピソード</span><h3>ポッドキャスト</h3><p>あなたの国の人気番組、検索、またはアドレスで任意の RSS フィード。エピソードはオフラインで聴けるようにダウンロードされ、止めた場所を覚えています。</p></div>
         <div class="source"><span class="tag">持ち込み</span><h3>YouTube Music</h3><p>自分の yt-dlp をアプリの隣にコピーすると検索が使えるようになります：ダウンロードせずに聴くことも、ジャケットとタグ付きでライブラリに保存することもできます。</p></div>
         <div class="source wide"><span class="tag">シーン</span><h3>モジュールのアーカイブ</h3><p>The Mod Archive、Modland、VGMRips、AMP をひとつの画面に：人気・新着・ランダムを眺めて、検索して、聴いて、ライブラリに保存したり、モジュールをトラッカーで開いたり。検索にも出てきます。</p></div>
       </div>
+      <p class="note">再生中の音楽をネットワーク上のスピーカーやテレビ（DLNA/UPnP、Chromecast）に送ったり、DLNA でライブラリを共有したり、スマホから携帯ゲーム機に音楽を送ったりできます。<a href="docs/network.html">しくみ</a>。</p>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="All、Library、YouTube のフィルター付き検索。すでに持っている曲にはチェックが付く" width="360" height="240" loading="lazy"><figcaption>ライブラリと YouTube をまとめて検索。すでに持っている曲にはチェックが付きます。</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="曲の読み込み中に STREAMING バッジが表示されたプレイヤー" width="360" height="240" loading="lazy"><figcaption>ストリーミング中の曲にはバッジが付き、そのまま保存することもできます。</figcaption></figure>

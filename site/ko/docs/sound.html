@@ -60,6 +60,7 @@
           <li><a href="lyrics.html">가사</a></li>
           <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
           <li><a href="modules.html">모듈</a></li>
+          <li><a href="network.html">네트워크</a></li>
           <li><a href="servers.html">서버</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">스크로블</a></li>
@@ -87,8 +88,11 @@
 </ul>
 <p>곡의 피크를 넘겨서 키우지 않으니 소리가 찌그러지지 않아요. ReplayGain 태그가 없는 곡(과 원격 곡)은 그대로 재생돼요.</p>
 
+<h2 id="replaygain-compute">ReplayGain 계산하기</h2>
+<p>ReplayGain 태그가 없는 곡은 곡, 앨범, 아티스트 메뉴의 <strong>ReplayGain 계산</strong>으로 음량을 재고(EBU R128, ReplayGain 2.0 방식) 태그를 파일에 써넣어요. 곡마다 쓰고, 앨범에서 하면 앨범 전체 값도 써요. 백그라운드에서 돌고(다운로드를 보세요), 휴대용 게임기에서는 곡당 몇 초 걸려요. 이미 ReplayGain이 있는 곡은 건너뛰고, <strong>ReplayGain 다시 계산</strong>은 다시 재요. 내 보관함의 MP3, FLAC, Ogg, Opus, M4A에서 쓸 수 있어요.</p>
+
 <h2 id="eq">이퀄라이저</h2>
-<p><strong>설정 → 이퀄라이저</strong>를 열면 31&nbsp;Hz부터 16&nbsp;kHz까지 10개 밴드가 나오고, 각각 −12에서 +12&nbsp;dB까지 조절해요.</p>
+<p><strong>설정 → 이퀄라이저</strong>에서 어느 것을 쓸지 골라요: <strong>그래픽 (10밴드)</strong> 또는 <strong>파라메트릭</strong>(아래 참고). 그래픽은 31&nbsp;Hz부터 16&nbsp;kHz까지 10개 밴드이고, 각각 −12에서 +12&nbsp;dB까지 조절해요.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="이퀄라이저: Rock 프리셋이 적용된 세로 슬라이더 열 개" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>버튼</th><th>기능</th></tr>
@@ -99,6 +103,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>닫기(바꾸는 대로 바로 적용돼요)</td></tr>
 </table>
 <p>밴드를 직접 움직이면 프리셋이 <strong>사용자</strong>로 바뀌어요. 터치 화면에서는 열을 탭해서 높이를 정해요. 이퀄라이저를 켜면 10개 밴드가 가장 낮은 클럭의 휴대용 게임기 CPU를 약 5&nbsp;% 쓰고, 플랫이면 전혀 쓰지 않아요.</p>
+
+<h2 id="parametric-eq">파라메트릭 이퀄라이저</h2>
+<p>직접 모양을 정하는 최대 8개 밴드로, 위쪽에 곡선이 그려져요. 밴드마다 종류(<strong>피크</strong>, <strong>로우 셸프</strong>, <strong>하이 셸프</strong>, <strong>로우패스</strong>, <strong>하이패스</strong>), 주파수(20&nbsp;Hz~20&nbsp;kHz), 게인(±15&nbsp;dB, 패스 필터는 쓰지 않아요), Q(0.3은 넓게, 10은 좁게)가 있어요. 첫 줄은 <strong>프리앰프</strong>로, 올리는 만큼의 여유를 만들어요.</p>
+<table>
+<tr><th>버튼</th><th>동작</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>줄 고르기(프리앰프 또는 밴드)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>항목 고르기: 종류, 주파수, 게인, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>값 바꾸기(<kbd>L1</kbd>/<kbd>R1</kbd>: 크게)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>밴드 추가 / 고른 밴드 삭제</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>닫기(바꾼 내용은 바로 적용돼요)</td></tr>
+</table>
+<p>클리핑을 막는 리미터는 그대로 작동해요. 그래픽으로 돌아가도 파라메트릭 밴드는 나중을 위해 남아 있어요.</p>
+
+<h2 id="resampler">리샘플링</h2>
+<p>출력과 샘플레이트가 다른 곡(예: 48&nbsp;kHz 출력에서 44.1&nbsp;kHz 파일)은 재생하면서 변환해요. <strong>설정 → 리샘플링</strong>:</p>
+<ul>
+<li><strong>배터리</strong>: 단순하고 아주 가벼워서 휴대용 게임기에 가장 좋아요.</li>
+<li><strong>고품질</strong>: 고품질 필터로 가청 대역 끝까지 깨끗해요. CPU를 약 다섯 배 써요(컴퓨터에서는 여전히 적어요).</li>
+<li><strong>자동</strong>(기본값): 데스크톱에서는 고품질, 휴대용 게임기에서는 배터리.</li>
+</ul>
+<p>다음 곡부터 적용돼요.</p>
 
 <h2 id="crossfade">크로스페이드</h2>
 <p><strong>설정 → 크로스페이드</strong>: 끔, 또는 곡 사이 2~12초 겹치기. 같은 앨범을 순서대로 들을 때 이어지는 곡 사이에는 페이드하지 않아서 앨범은 끊김 없이 이어져요. 아주 짧은 곡과 아직 내려받지 않은 서버 곡도 건너뛰어요.</p>
@@ -111,6 +136,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>DSF와 DFF 파일은 PCM으로 변환해서 재생해요. DSD64는 휴대용 게임기에서도 가볍지만, DSD256은 버거울 수 있어요.</p>
+<p>DSD를 DAC로 "네이티브"(DoP) 출력할 수는 없어요. 그러려면 샘플이 비트 하나 틀리지 않고 그대로 닿아야 하는데, audiofilus의 출력은 다른 앱처럼 시스템 믹서를 PCM으로 거쳐요. 변환은 꼼꼼하게 하지만, 변환은 변환이에요.</p>
 
     <nav class="pager" aria-label="페이지"><a href="playback.html">← 재생</a><a href="lyrics.html">가사 →</a></nav>
   </article>

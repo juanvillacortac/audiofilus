@@ -60,6 +60,7 @@
           <li><a href="lyrics.html">가사</a></li>
           <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
           <li><a href="modules.html">모듈</a></li>
+          <li><a href="network.html">네트워크</a></li>
           <li><a href="servers.html">서버</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">스크로블</a></li>
@@ -89,6 +90,7 @@
 <li>음악 폴더의 <code>.m3u</code> 재생목록은 <strong>재생목록</strong>에 나타나요.</li>
 <li>직접 만든 재생목록은 <code>data/playlists</code>에 <code>.m3u8</code> 파일로 저장돼요. 재생목록 탭에서 <kbd>START</kbd>를 누르거나, 아무 곡, 앨범, 아티스트에서 <strong>재생목록에 추가</strong>로 만드세요. <strong>대기열 저장</strong>(재생 중 화면의 더보기 메뉴)은 대기열에 있는 곡을 보관해요.</li>
 <li>직접 만든 재생목록 안에서는 곡 메뉴로 위·아래로 옮기거나 뺄 수 있고, 재생목록 메뉴로 이름을 바꾸거나 삭제할 수 있어요.</li>
+<li>Subsonic이나 Jellyfin 서버의 재생목록도 편집할 수 있어요. <a href="servers.html#server-playlists">서버</a>를 보세요.</li>
 </ul>
 
 <h2 id="liked">좋아요, 최근, 많이 들은 곡, 통계</h2>
@@ -101,6 +103,25 @@
 </ul>
 <p>곡의 절반(또는 4분)이 재생되면 들은 것으로 세어요. 플레이어가 열려 있든 아니든 마찬가지예요. <strong>평점</strong>은 1부터 5까지예요(<kbd>A</kbd>를 누를 때마다 다음 값으로). Subsonic이나 Jellyfin 서버의 곡에 준 좋아요와 평점은 서버에도 보내져요. <a href="servers.html">서버</a>를 보세요.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="통계: 재생 횟수, 시간, 지난 달, 인기 아티스트" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">스마트 재생목록</h2>
+<p>위의 목록들 다음에는 <strong>스마트 재생목록</strong>이 와요. 열 때마다 규칙에 따라 알아서 채워져요. 기본으로 있는 것: <strong>많이 들은 곡 (30일)</strong>, <strong>최근 추가</strong>, <strong>들은 적 없는 곡</strong>, <strong>좋아요</strong>, <strong>높은 평점</strong>, <strong>잊힌 즐겨찾기</strong>(많이 들었지만 최근 석 달 동안 듣지 않은 곡), 그리고 하루에 한 번 바뀌는 <strong>랜덤 믹스 (오늘)</strong>.</p>
+<ul>
+<li>재생목록 탭에서 <kbd>START</kbd> → <strong>새 스마트 재생목록</strong>을 고르면 편집기가 열려요. <strong>규칙 추가</strong>(항목, 조건, 값 고르기), <strong>모든 규칙 일치</strong> 또는 <strong>하나라도 일치</strong>, 정렬과 제한을 정한 뒤 <strong>저장</strong>하고 이름을 붙여요. 편집기에서 규칙을 고르면 그 규칙이 지워져요.</li>
+<li>항목: 제목, 아티스트, 앨범, 앨범 아티스트, 장르, 연도, 길이, 형식, 비트레이트, 폴더, 경로, 트랙 번호, 추가일, 재생 수, 마지막 재생, 좋아요, 평점. 조건은 항목에 따라 달라요: <em>같음</em>, <em>포함</em>, <em>으로 시작</em>, <em>보다 큼/작음</em>, <em>사이</em>, <em>최근 … 일</em> 등.</li>
+<li>스마트 재생목록의 메뉴에는 <strong>규칙 편집</strong>, <strong>이름 바꾸기</strong>, <strong>재생목록 삭제</strong>가 있어요. <code>data/smart.json</code>에 저장돼요.</li>
+<li>장르, 연도, 추가일은 보관함 스캔에서 가져와요. 업데이트 후 첫 스캔에서는 이를 위해 모든 파일을 한 번 읽어요.</li>
+</ul>
+
+<h2 id="edit-tags">태그, 커버, MusicBrainz</h2>
+<p>내 보관함(SD 카드나 디스크의 MP3, FLAC, Ogg, Opus, M4A 파일)에 있는 곡, 앨범, 아티스트의 <kbd>START</kbd> 메뉴에 정보를 고치는 도구가 있어요. 오래 걸리는 작업은 백그라운드에서 돌고 다운로드에 표시돼요.</p>
+<ul>
+<li><strong>태그 편집</strong>(곡): 제목, 아티스트, 앨범, 앨범 아티스트, 장르, 연도, 트랙, 디스크. 항목을 골라 입력한 뒤 <strong>파일에 저장</strong>해요. <strong>앨범 태그</strong>는 앨범의 모든 곡에서 앨범, 앨범 아티스트, 장르, 연도를 한 번에 바꿔요.</li>
+<li><strong>커버 찾기</strong>(앨범): MusicBrainz의 Cover Art Archive에서 찾고, 없으면 iTunes에서 찾아요. 그다음 <strong>폴더에 저장</strong>(<code>cover.jpg</code>로), <strong>파일에 넣기</strong>, <strong>둘 다</strong> 중에서 골라요.</li>
+<li><strong>MusicBrainz에서 찾기</strong>(앨범): 맞는 발매판(제목, 연도, 나라, 트랙 수, 레이블)을 보여 줘요. 하나를 고르면 트랙 번호와 길이로 내 곡 중 몇 곡이 맞는지 보여 주고, <strong>적용</strong> 또는 <strong>커버와 함께 적용</strong>으로 올바른 제목, 아티스트, 번호, 연도, 장르를 써넣어요. 맞지 않는 곡은 그대로 둬요.</li>
+<li><strong>ReplayGain 계산</strong>(곡, 앨범, 아티스트): ReplayGain이 없는 곡의 음량을 재서 ReplayGain을 써넣어요. <a href="sound.html#replaygain-compute">사운드</a>를 보세요.</li>
+</ul>
+<p>바뀌는 것은 태그뿐이에요. 파일의 오디오는 그대로이고, 보관함에는 바로 반영돼요.</p>
 
 <h2 id="formats">형식</h2>
 <table>

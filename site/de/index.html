@@ -507,12 +507,12 @@ footer img { height: 56px; width: auto; }
           <p>Jeder Song gleich laut, oder jedes Album, oder automatisch: Album bei Wiedergabe in Reihenfolge, Song bei Zufall. Kein Song wird über seinen Spitzenpegel hinaus angehoben.</p>
         </div>
         <div class="point">
-          <h3>Ein 10-Band-Equalizer</h3>
-          <p>Presets für Rock, Metal, Gesang, Bass und mehr, oder du ziehst die Bänder selbst. Er kostet etwa 5&nbsp;% der CPU eines Handhelds und nichts, wenn er flach ist.</p>
+          <h3>Grafischer oder parametrischer Equalizer</h3>
+          <p>Zehn Bänder mit Presets für Rock, Metal, Gesang, Bass und mehr, oder ein parametrischer mit bis zu acht Bändern (Glocke, Shelves, Pass-Filter) und seiner Kurve auf dem Bildschirm. Flach kostet er nichts.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD und CUE-Sheets</h3>
-          <p>Bis zu 12 Sekunden Crossfade, bei dem Alben trotzdem lückenlos bleiben. DSD-Dateien werden abgespielt, Alben, die als eine Datei mit CUE-Sheet gerippt wurden, erscheinen als einzelne Titel, und die Ausgabe läuft mit 44,1, 48, 96 oder 192&nbsp;kHz.</p>
+          <p>Bis zu 12 Sekunden Crossfade, bei dem Alben trotzdem lückenlos bleiben. DSD-Dateien werden abgespielt, Alben, die als eine Datei mit CUE-Sheet gerippt wurden, erscheinen als einzelne Titel, und die Ausgabe läuft mit 44,1, 48, 96 oder 192&nbsp;kHz, mit einem hochwertigen Resampler auf dem Desktop (einem leichten auf Handhelds, um Akku zu sparen).</p>
         </div>
       </div>
       <figure class="figure"><img class="shot px" src="../img/eq.png" alt="Der Equalizer: zehn senkrechte Regler von 31 Hz bis 16 kHz mit dem Rock-Preset" width="360" height="240" loading="lazy"></figure>
@@ -560,14 +560,15 @@ footer img { height: 56px; width: auto; }
         <p class="lede">Alles erscheint in derselben Bibliothek und im selben Player. Entfernte Songs werden auf der SD-Karte zwischengespeichert, damit das nächste Hören nichts kostet.</p>
       </div>
       <div class="sources">
-        <div class="source"><span class="tag">Lokal</span><h3>Deine Bibliothek</h3><p>Ordner, Tags, eingebettete Cover und Ordnercover, M3U-Playlists und deine eigenen Playlists. Einmal gescannt, danach werden nur neue Dateien gelesen. Synchronisierte Songtexte leuchten Zeile für Zeile auf, aus einer .lrc-Datei, den Tags oder LRCLIB. Auch Konsolen-Soundtracks: NES, SNES, Game Boy, Genesis und mehr, ein Titel pro Song.</p></div>
-        <div class="source"><span class="tag">Server</span><h3>Subsonic</h3><p>Navidrome und andere Subsonic- oder OpenSubsonic-Server. Songs werden gestreamt, für das nächste Hören zwischengespeichert und lassen sich herunterladen.</p></div>
+        <div class="source"><span class="tag">Lokal</span><h3>Deine Bibliothek</h3><p>Ordner, Tags, eingebettete Cover und Ordnercover, M3U-Playlists und deine eigenen Playlists. Einmal gescannt, danach werden nur neue Dateien gelesen. Synchronisierte Songtexte leuchten Zeile für Zeile auf, aus einer .lrc-Datei, den Tags oder LRCLIB. Auch Konsolen-Soundtracks: NES, SNES, Game Boy, Genesis und mehr, ein Titel pro Song. Korrigiere Tags und fehlende Cover mit MusicBrainz, berechne ReplayGain und lass intelligente Playlists sich selbst füllen.</p></div>
+        <div class="source"><span class="tag">Server</span><h3>Subsonic</h3><p>Navidrome und andere Subsonic- oder OpenSubsonic-Server. Songs werden gestreamt, für das nächste Hören zwischengespeichert und lassen sich herunterladen. Bearbeite seine Playlists aus der App.</p></div>
         <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Melde dich mit deinem Jellyfin-Benutzer an und durchstöbere die Musikbibliothek und Playlists wie deine eigenen Dateien.</p></div>
         <div class="source"><span class="tag">Live</span><h3>Internetradio</h3><p>Tausende Sender von radio-browser.info, nach Land oder Genre, mit dem aktuellen Songtitel aus dem Stream. Bring deine eigenen .m3u- oder .pls-Senderlisten mit oder füge einen Sender über seine Adresse hinzu.</p></div>
         <div class="source"><span class="tag">Folgen</span><h3>Podcasts</h3><p>Top-Sendungen für dein Land, Suche oder jeder beliebige RSS-Feed per Adresse. Folgen werden zum Offline-Hören heruntergeladen und merken sich, wo du aufgehört hast.</p></div>
         <div class="source"><span class="tag">Bring dein eigenes mit</span><h3>YouTube Music</h3><p>Kopier dein eigenes yt-dlp neben die App, und die Suche erscheint: hören, ohne herunterzuladen, oder Songs mit Cover und Tags in deiner Bibliothek speichern.</p></div>
         <div class="source wide"><span class="tag">Szene</span><h3>Modul-Archive</h3><p>The Mod Archive, Modland, VGMRips und AMP auf einem Bildschirm: stöbere im Beliebten, Neuen oder Zufälligen, such, hör rein, sichere in deiner Bibliothek oder öffne ein Modul im Tracker. Sie erscheinen auch in der Suche.</p></div>
       </div>
+      <p class="note">Schick, was läuft, an einen Lautsprecher oder Fernseher in deinem Netz (DLNA/UPnP oder Chromecast), teile deine Bibliothek per DLNA oder lass dein Handy Musik an den Handheld schicken. <a href="docs/network.html">So geht’s</a>.</p>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Suche mit den Filtern Alles, Bibliothek und YouTube; Songs, die du schon hast, sind abgehakt" width="360" height="240" loading="lazy"><figcaption>Eine Suche für Bibliothek und YouTube. Ein Haken markiert Songs, die du schon hast.</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="Der Player mit einem STREAMING-Abzeichen, während ein Song lädt" width="360" height="240" loading="lazy"><figcaption>Gestreamte Songs bekommen ein Abzeichen, und du kannst sie behalten.</figcaption></figure>

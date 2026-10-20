@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Tekst</a></li>
           <li><a href="radio-podcasts.html">Radio i podcasty</a></li>
           <li><a href="modules.html">Moduły</a></li>
+          <li><a href="network.html">Sieć</a></li>
           <li><a href="servers.html">Serwery</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Playlisty <code>.m3u</code> z folderu z muzyką pojawiają się w <strong>Playlisty</strong>.</li>
 <li>Twoje własne playlisty zapisują się jako pliki <code>.m3u8</code> w <code>data/playlists</code>. Utwórz je przez <kbd>START</kbd> na zakładce Playlisty albo przez <strong>Do playlisty</strong> na dowolnym utworze, albumie lub wykonawcy. <strong>Zapisz kolejkę</strong> (menu Więcej na ekranie Teraz gra) zachowuje zawartość kolejki.</li>
 <li>W twojej playliście menu utworu pozwala przesunąć go w górę lub w dół albo usunąć; menu playlisty zmienia jej nazwę lub ją usuwa.</li>
+<li>Playlisty na serwerze Subsonic albo Jellyfin też można edytować; zobacz <a href="servers.html#server-playlists">Serwery</a>.</li>
 </ul>
 
 <h2 id="liked">Polubione, Ostatnie, Najczęściej grane i Statystyki</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Utwór liczy się jako wysłuchany, gdy zagra połowa (albo cztery minuty), niezależnie od tego, czy odtwarzacz był otwarty. <strong>Ocena</strong> idzie od 1 do 5 (każde <kbd>A</kbd> przechodzi do następnej wartości). Polubienia i oceny utworów z serwera Subsonic lub Jellyfin są też wysyłane na serwer; zobacz <a href="servers.html">Serwery</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Statystyki: odtworzenia, godziny, ostatni miesiąc i ulubieni wykonawcy" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Inteligentne playlisty</h2>
+<p>Po listach powyżej są <strong>inteligentne playlisty</strong>, które przy każdym otwarciu same się wypełniają według reguł. Gotowe: <strong>Najczęściej słuchane (30 dni)</strong>, <strong>Ostatnio dodane</strong>, <strong>Nigdy nie słuchane</strong>, <strong>Polubione</strong>, <strong>Najwyżej oceniane</strong>, <strong>Zapomniani ulubieni</strong> (utwory, których dużo słuchałeś, ale nie w ostatnich trzech miesiącach) i <strong>Losowy miks (dziś)</strong>, który zmienia się raz dziennie.</p>
+<ul>
+<li><kbd>START</kbd> w zakładce Playlisty → <strong>Nowa inteligentna playlista</strong> otwiera jej edytor: <strong>Dodaj regułę</strong> (wybierz pole, warunek i wartość), <strong>Wszystkie reguły</strong> albo <strong>Dowolna reguła</strong>, <strong>Sortuj</strong> i <strong>Limit</strong>, potem <strong>Zapisz</strong> i nadaj nazwę. Wybranie reguły w edytorze ją usuwa.</li>
+<li>Pola: tytuł, wykonawca, album, wykonawca albumu, gatunek, rok, długość, format, bitrate, folder, ścieżka, numer utworu, kiedy został dodany, odtworzenia, ostatnio słuchane, polubione i ocena. Warunki zależą od pola: <em>to</em>, <em>zawiera</em>, <em>zaczyna się od</em>, <em>więcej/mniej niż</em>, <em>między</em>, <em>w ostatnich … dniach</em> i tak dalej.</li>
+<li>Menu inteligentnej playlisty ma <strong>Edytuj reguły</strong>, <strong>Zmień nazwę</strong> i <strong>Usuń playlistę</strong>. Zapisują się w <code>data/smart.json</code>.</li>
+<li>Gatunek, rok i datę dodania daje skanowanie biblioteki; pierwsze skanowanie po aktualizacji raz czyta w tym celu każdy plik.</li>
+</ul>
+
+<h2 id="edit-tags">Tagi, okładki i MusicBrainz</h2>
+<p>Menu <kbd>START</kbd> utworu, albumu albo wykonawcy z twojej biblioteki (pliki na karcie SD albo dysku, w MP3, FLAC, Ogg, Opus albo M4A) ma narzędzia do poprawiania ich danych. Długie zadania działają w tle i widać je w Pobranych.</p>
+<ul>
+<li><strong>Edytuj tagi</strong> (utwór): tytuł, wykonawca, album, wykonawca albumu, gatunek, rok, numer i płyta. Wybierz pole, żeby je wpisać, potem <strong>Zapisz w plikach</strong>. <strong>Tagi albumu</strong> zmienia album, wykonawcę albumu, gatunek i rok wszystkich utworów albumu naraz.</li>
+<li><strong>Znajdź okładkę</strong> (album): szuka w Cover Art Archive MusicBrainz, potem w iTunes, i proponuje <strong>Zapisz w folderze</strong> (jako <code>cover.jpg</code>), <strong>Osadź w plikach</strong> albo <strong>Oba</strong>.</li>
+<li><strong>Szukaj w MusicBrainz</strong> (album): pokazuje pasujące wydania (tytuł, rok, kraj, utwory, wytwórnia); wybierz jedno, a pokaże, ile twoich utworów pasuje według numeru i długości, potem <strong>Zastosuj</strong> albo <strong>Zastosuj z okładką</strong> zapisuje właściwe tytuły, wykonawców, numery, rok i gatunek. Utwory, które nie pasują, zostają bez zmian.</li>
+<li><strong>Oblicz ReplayGain</strong> (utwór, album albo wykonawca): mierzy, jak głośny jest każdy utwór, i zapisuje jego ReplayGain, dla utworów, które go nie mają; zobacz <a href="sound.html#replaygain-compute">Dźwięk</a>.</li>
+</ul>
+<p>Zmieniają się tylko tagi: dźwięk w pliku zostaje dokładnie taki, jaki był, a biblioteka od razu widzi zmiany.</p>
 
 <h2 id="formats">Formaty</h2>
 <table>

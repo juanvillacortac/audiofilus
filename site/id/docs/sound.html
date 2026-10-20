@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Lirik</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; podcast</a></li>
           <li><a href="modules.html">Modul</a></li>
+          <li><a href="network.html">Jaringan</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Tidak pernah mendorong lagu melewati puncaknya, jadi tidak ada yang pecah. Lagu tanpa tag ReplayGain (dan lagu dari server) diputar apa adanya.</p>
 
+<h2 id="replaygain-compute">Menghitung ReplayGain</h2>
+<p>Untuk lagu tanpa tag ReplayGain, <strong>Hitung ReplayGain</strong> di menu lagu, album, atau artis mengukurnya (EBU R128, cara ReplayGain 2.0) dan menulis tag ke berkas: per lagu, dan untuk seluruh album saat kamu memilih album. Berjalan di latar belakang (lihat Unduhan); di handheld butuh beberapa detik per lagu. Lagu yang sudah punya ReplayGain dilewati; <strong>Hitung ulang ReplayGain</strong> mengukurnya lagi. Bekerja dengan MP3, FLAC, Ogg, Opus, dan M4A di pustakamu sendiri.</p>
+
 <h2 id="eq">Ekualiser</h2>
-<p><strong>Pengaturan → Ekualiser</strong> membuka sepuluh band dari 31&nbsp;Hz sampai 16&nbsp;kHz, masing-masing dari −12 sampai +12&nbsp;dB.</p>
+<p><strong>Pengaturan → Ekualiser</strong> menanyakan mana yang dipakai: <strong>Grafis (10 pita)</strong> atau <strong>Parametrik</strong> (di bawah). Yang grafis punya sepuluh band dari 31&nbsp;Hz sampai 16&nbsp;kHz, masing-masing dari −12 sampai +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="Ekualiser: sepuluh slider vertikal dengan preset Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Tombol</th><th>Fungsi</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Tutup (perubahan langsung berlaku)</td></tr>
 </table>
 <p>Menggeser band sendiri mengubah preset menjadi <strong>Kustom</strong>. Di layar sentuh, ketuk sebuah kolom untuk mengatur tingginya. Dengan ekualiser aktif, sepuluh band memakai sekitar 5&nbsp;% CPU handheld di kecepatan terendahnya; saat datar, tidak memakai apa-apa.</p>
+
+<h2 id="parametric-eq">Ekualiser parametrik</h2>
+<p>Hingga delapan band yang kamu bentuk sendiri, dengan kurva yang digambar di atasnya. Setiap band punya tipe, <strong>Puncak</strong>, <strong>Rak rendah</strong>, <strong>Rak tinggi</strong>, <strong>Low pass</strong>, atau <strong>High pass</strong>, frekuensi (20&nbsp;Hz sampai 20&nbsp;kHz), penguatan (±15&nbsp;dB; filter pass tidak memakainya), dan Q (0,3, lebar, sampai 10, sempit). Baris pertama adalah <strong>Preamp</strong>, untuk memberi ruang bagi penguatan.</p>
+<table>
+<tr><th>Tombol</th><th>Fungsi</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pilih baris (preamp atau band)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Pilih bidang: tipe, frekuensi, penguatan, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Ubah (<kbd>L1</kbd>/<kbd>R1</kbd>: langkah lebih besar)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Tambah band / hapus yang dipilih</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Tutup (perubahan langsung berlaku)</td></tr>
+</table>
+<p>Limiter tetap menjaga dari clipping. Kembali ke yang grafis menyimpan band parametrikmu untuk nanti.</p>
+
+<h2 id="resampler">Resampling</h2>
+<p>Lagu dengan laju yang berbeda dari keluaran (misalnya berkas 44,1&nbsp;kHz di 48&nbsp;kHz) diubah saat diputar. <strong>Pengaturan → Resampling</strong>:</p>
+<ul>
+<li><strong>Baterai</strong>: sederhana dan sangat ringan, pilihan terbaik di handheld.</li>
+<li><strong>Kualitas</strong>: filter berkualitas tinggi, bersih sampai batas atas rentang yang bisa didengar; memakai sekitar lima kali lebih banyak CPU (tetap sedikit di komputer).</li>
+<li><strong>Otomatis</strong> (bawaan): Kualitas di desktop, Baterai di handheld.</li>
+</ul>
+<p>Berlaku mulai lagu berikutnya.</p>
 
 <h2 id="crossfade">Crossfade</h2>
 <p><strong>Pengaturan → Crossfade</strong>: Mati, atau 2 sampai 12 detik tumpang tindih antarlagu. Tidak ada fade di antara lagu berurutan dari album yang sama yang diputar urut, jadi album tetap tanpa jeda. Lagu yang sangat pendek dan lagu dari server yang belum selesai diunduh juga dilewati.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>File DSF dan DFF bisa diputar, dikonversi ke PCM. DSD64 cukup ringan untuk handheld; DSD256 mungkin tidak terkejar di sana.</p>
+<p>DSD tidak bisa dikirim "asli" (DoP) ke DAC: itu butuh sampel sampai ke sana bit demi bit, sedangkan keluaran audiofilus, seperti aplikasi lain, melewati mixer sistem sebagai PCM. Konversinya dilakukan dengan cermat, tetapi tetap sebuah konversi.</p>
 
     <nav class="pager" aria-label="Halaman"><a href="playback.html">← Pemutaran</a><a href="lyrics.html">Lirik →</a></nav>
   </article>

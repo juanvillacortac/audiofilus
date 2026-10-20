@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Paroles</a></li>
           <li><a href="radio-podcasts.html">Radio et podcasts</a></li>
           <li><a href="modules.html">Modules</a></li>
+          <li><a href="network.html">Réseau</a></li>
           <li><a href="servers.html">Serveurs</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Les playlists <code>.m3u</code> de ton dossier de musique apparaissent dans <strong>Playlists</strong>.</li>
 <li>Tes propres playlists sont enregistrées en fichiers <code>.m3u8</code> dans <code>data/playlists</code>. Crée-en une avec <kbd>START</kbd> dans l’onglet Playlists, ou avec <strong>À une playlist</strong> sur n’importe quelle chanson, album ou artiste. <strong>Sauver la file</strong> (menu PLUS de l’écran En lecture) garde ce qu’il y a dans la file.</li>
 <li>Dans une de tes playlists, le menu d’une chanson peut la monter, la descendre ou la retirer&#8239;; le menu de la playlist la renomme ou la supprime.</li>
+<li>Les playlists d’un serveur Subsonic ou Jellyfin peuvent aussi être modifiées&#8239;; vois <a href="servers.html#server-playlists">Serveurs</a>.</li>
 </ul>
 
 <h2 id="liked">J’aime, Récents, Les plus écoutés et Stats</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Une chanson compte comme écoutée une fois que la moitié a été jouée (ou quatre minutes), que le lecteur soit ouvert ou non. Le <strong>Note</strong> va de 1 à 5 (chaque <kbd>A</kbd> passe à la valeur suivante). Les «&nbsp;j’aime&nbsp;» et les notes des chansons d’un serveur Subsonic ou Jellyfin sont aussi envoyés au serveur&#8239;; vois <a href="servers.html">Serveurs</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Statistiques&nbsp;: écoutes, heures, dernier mois et artistes préférés" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Playlists intelligentes</h2>
+<p>Après les listes ci-dessus viennent les <strong>playlists intelligentes</strong>, qui se remplissent toutes seules selon des règles à chaque ouverture. Celles fournies&nbsp;: <strong>Les plus écoutés (30 j)</strong>, <strong>Ajouts récents</strong>, <strong>Jamais écoutés</strong>, <strong>J’aime</strong>, <strong>Les mieux notés</strong>, <strong>Favoris oubliés</strong> (morceaux beaucoup écoutés mais pas ces trois derniers mois) et <strong>Mix au hasard (aujourd’hui)</strong>, qui change une fois par jour.</p>
+<ul>
+<li><kbd>START</kbd> dans l’onglet Playlists → <strong>Nouvelle playlist intelligente</strong> ouvre son éditeur&nbsp;: <strong>Ajouter une règle</strong> (choisis un champ, une condition et une valeur), <strong>Toutes les règles</strong> ou <strong>Au moins une règle</strong>, <strong>Tri</strong> et <strong>Limite</strong>, puis <strong>Enregistrer</strong> et donne-lui un nom. Choisir une règle dans l’éditeur la retire.</li>
+<li>Champs&nbsp;: titre, artiste, album, artiste de l’album, genre, année, durée, format, débit, dossier, chemin, n° de piste, date d’ajout, écoutes, dernière écoute, j’aime et note. Les conditions dépendent du champ&nbsp;: <em>est</em>, <em>contient</em>, <em>commence par</em>, <em>plus/moins que</em>, <em>entre</em>, <em>dans les derniers … jours</em>, etc.</li>
+<li>Le menu d’une playlist intelligente propose <strong>Modifier les règles</strong>, <strong>Renommer</strong> et <strong>Supprimer la playlist</strong>. Elles sont enregistrées dans <code>data/smart.json</code>.</li>
+<li>Le genre, l’année et la date d’ajout viennent du scan de la bibliothèque&nbsp;; le premier scan après la mise à jour relit chaque fichier une fois pour les obtenir.</li>
+</ul>
+
+<h2 id="edit-tags">Tags, pochettes et MusicBrainz</h2>
+<p>Le menu <kbd>START</kbd> d’un morceau, d’un album ou d’un artiste de ta propre bibliothèque (fichiers sur la carte ou le disque, en MP3, FLAC, Ogg, Opus ou M4A) a des outils pour corriger leurs infos. Les tâches longues tournent en arrière-plan et s’affichent dans Téléchargements.</p>
+<ul>
+<li><strong>Modifier les tags</strong> (un morceau)&nbsp;: titre, artiste, album, artiste de l’album, genre, année, piste et disque. Choisis un champ pour le saisir, puis <strong>Enregistrer dans les fichiers</strong>. <strong>Tags de l’album</strong> change l’album, l’artiste de l’album, le genre et l’année de tous les morceaux de l’album d’un coup.</li>
+<li><strong>Chercher la pochette</strong> (un album)&nbsp;: la cherche dans le Cover Art Archive de MusicBrainz, puis sur iTunes, et propose <strong>Enregistrer dans le dossier</strong> (en <code>cover.jpg</code>), <strong>Intégrer aux fichiers</strong> ou <strong>Les deux</strong>.</li>
+<li><strong>Chercher sur MusicBrainz</strong> (un album)&nbsp;: liste les éditions qui correspondent (titre, année, pays, pistes, label)&#8239;; choisis-en une et il indique combien de tes morceaux correspondent par piste et durée, puis <strong>Appliquer</strong> ou <strong>Appliquer avec la pochette</strong> écrit les bons titres, artistes, numéros, année et genre. Les morceaux qui ne correspondent pas ne sont pas touchés.</li>
+<li><strong>Calculer le ReplayGain</strong> (morceau, album ou artiste)&nbsp;: mesure le volume de chaque morceau et écrit son ReplayGain, pour ceux qui n’en ont pas&#8239;; vois <a href="sound.html#replaygain-compute">Son</a>.</li>
+</ul>
+<p>Seuls les tags changent&nbsp;: l’audio du fichier reste exactement le même, et la bibliothèque voit les changements tout de suite.</p>
 
 <h2 id="formats">Formats</h2>
 <table>

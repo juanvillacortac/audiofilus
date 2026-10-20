@@ -59,6 +59,7 @@
           <li><a href="lyrics.html">歌詞</a></li>
           <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
           <li><a href="modules.html">モジュール</a></li>
+          <li><a href="network.html">ネットワーク</a></li>
           <li><a href="servers.html">サーバー</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">スクロブル</a></li>
@@ -86,8 +87,11 @@
 </ul>
 <p>曲のピークを超えることはないので、音割れしません。ReplayGain タグのない曲（とリモートの曲）はそのまま再生されます。</p>
 
+<h2 id="replaygain-compute">ReplayGain を計算する</h2>
+<p>ReplayGain タグのない曲は、曲・アルバム・アーティストのメニューの <strong>ReplayGain を計算</strong>で音の大きさを測り（EBU R128、ReplayGain 2.0 方式）、タグをファイルに書き込みます。曲ごとに、アルバムで実行したときはアルバム全体の値も書きます。バックグラウンドで進み（ダウンロードを参照）、携帯ゲーム機では 1 曲あたり数秒かかります。すでに ReplayGain がある曲は飛ばし、<strong>ReplayGain を再計算</strong>で測り直します。自分のライブラリの MP3、FLAC、Ogg、Opus、M4A で使えます。</p>
+
 <h2 id="eq">イコライザー</h2>
-<p><strong>設定 → イコライザー</strong>で 31&nbsp;Hz から 16&nbsp;kHz までの 10 バンドが開きます。各バンドは −12 から +12&nbsp;dB です。</p>
+<p><strong>設定 → イコライザー</strong>で、どちらを使うか選びます：<strong>グラフィック (10バンド)</strong> または<strong>パラメトリック</strong>（下記）。グラフィックは 31&nbsp;Hz から 16&nbsp;kHz までの 10 バンドで、各バンドは −12 から +12&nbsp;dB です。</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="イコライザー：Rock プリセットを選んだ 10 本の縦スライダー" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>ボタン</th><th>動作</th></tr>
@@ -98,6 +102,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>閉じる（変更はその場で反映されます）</td></tr>
 </table>
 <p>自分でバンドを動かすと、プリセットは<strong>カスタム</strong>になります。タッチスクリーンでは、列をタップするとその高さに設定されます。イコライザーがオンのとき、10 バンドの負荷は最低クロックの携帯ゲーム機で CPU の約 5&nbsp;% です。フラットなら負荷はありません。</p>
+
+<h2 id="parametric-eq">パラメトリックイコライザー</h2>
+<p>自分で形を決める最大 8 バンドで、上にカーブが描かれます。各バンドには種類（<strong>ピーク</strong>、<strong>ローシェルフ</strong>、<strong>ハイシェルフ</strong>、<strong>ローパス</strong>、<strong>ハイパス</strong>）、周波数（20&nbsp;Hz〜20&nbsp;kHz）、ゲイン（±15&nbsp;dB。パス系のフィルターでは使いません）、Q（0.3 で広く、10 で狭く）があります。最初の行は<strong>プリアンプ</strong>で、持ち上げる分の余裕を作ります。</p>
+<table>
+<tr><th>ボタン</th><th>動作</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>行を選ぶ（プリアンプまたはバンド）</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>項目を選ぶ：種類、周波数、ゲイン、Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>値を変える（<kbd>L1</kbd>/<kbd>R1</kbd>：大きく）</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>バンドを追加 / 選んだバンドを削除</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>閉じる（変更はその場で反映されます）</td></tr>
+</table>
+<p>クリップ防止のリミッターはそのまま働きます。グラフィックに戻しても、パラメトリックのバンドはあとのために残ります。</p>
+
+<h2 id="resampler">リサンプリング</h2>
+<p>出力と違うサンプルレートの曲（たとえば 48&nbsp;kHz 出力での 44.1&nbsp;kHz のファイル）は、再生しながら変換されます。<strong>設定 → リサンプリング</strong>：</p>
+<ul>
+<li><strong>省電力</strong>：シンプルでとても軽く、携帯ゲーム機に最適です。</li>
+<li><strong>高音質</strong>：高品質なフィルターで、可聴域の上端まできれいです。CPU は約 5 倍使います（パソコンなら十分小さい負荷です）。</li>
+<li><strong>自動</strong>（初期設定）：デスクトップでは高音質、携帯ゲーム機では省電力。</li>
+</ul>
+<p>次の曲から適用されます。</p>
 
 <h2 id="crossfade">クロスフェード</h2>
 <p><strong>設定 → クロスフェード</strong>：オフ、または曲と曲を 2〜12 秒重ねます。同じアルバムの連続する曲を順番に再生するときはフェードしないので、アルバムはギャップレスのままです。とても短い曲や、まだダウンロードが終わっていないサーバーの曲もスキップします。</p>
@@ -110,6 +135,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>DSF と DFF ファイルは PCM に変換して再生されます。DSD64 なら携帯ゲーム機でも軽く再生できますが、DSD256 は追いつかないことがあります。</p>
+<p>DSD を「ネイティブ」（DoP）で DAC に出すことはできません。それにはサンプルがビット単位でそのまま届く必要がありますが、audiofilus の出力はほかのアプリと同じくシステムのミキサーを PCM で通ります。変換は丁寧に行いますが、変換であることに変わりはありません。</p>
 
     <nav class="pager" aria-label="ページ"><a href="playback.html">← 再生</a><a href="lyrics.html">歌詞 →</a></nav>
   </article>

@@ -520,12 +520,12 @@ body { line-break: strict; }
           <p>每首歌同样响度，或每张专辑同样响度，或自动：按顺序播放时按专辑，随机播放时按歌曲。绝不会把歌曲推过峰值。</p>
         </div>
         <div class="point">
-          <h3>10 段均衡器</h3>
-          <p>预设有摇滚、金属、人声、低音等，也可以自己调节各个频段。在掌机上大约占用 5&nbsp;% 的 CPU，保持平直时完全不占用。</p>
+          <h3>图形或参数均衡器</h3>
+          <p>十个频段，带摇滚、金属、人声、低音等预设；或者最多八个频段的参数均衡器（峰值、搁架、通滤波），曲线显示在屏幕上。平直时不消耗任何资源。</p>
         </div>
         <div class="point">
           <h3>淡入淡出、DSD 和 CUE 文件</h3>
-          <p>最长 12 秒的淡入淡出，同时保持专辑无缝播放。支持 DSD 文件；用 CUE 文件整轨抓取的专辑会按曲目显示；输出采样率可选 44.1、48、96 或 192&nbsp;kHz。</p>
+          <p>最长 12 秒的淡入淡出，同时保持专辑无缝播放。支持 DSD 文件；用 CUE 文件整轨抓取的专辑会按曲目显示；输出采样率可选 44.1、48、96 或 192&nbsp;kHz。桌面上使用高质量重采样器（掌机上为了续航使用轻量的）。</p>
         </div>
       </div>
       <figure class="figure"><img class="shot px" src="../img/eq.png" alt="均衡器：从 31 Hz 到 16 kHz 的十个垂直滑块，使用摇滚预设" width="360" height="240" loading="lazy"></figure>
@@ -573,14 +573,15 @@ body { line-break: strict; }
         <p class="lede">所有内容都出现在同一个音乐库和同一个播放器里。远程歌曲会缓存到 SD 卡，下次收听不再耗费流量。</p>
       </div>
       <div class="sources">
-        <div class="source"><span class="tag">本地</span><h3>你的音乐库</h3><p>文件夹、标签、内嵌封面和文件夹封面、M3U 播放列表以及你自己的歌单。只完整扫描一次，之后只读取新文件。同步歌词逐行点亮，来源可以是 .lrc、标签或 LRCLIB。还支持游戏原声：NES、SNES、Game Boy、Genesis 等，每首歌一条曲目。</p></div>
-        <div class="source"><span class="tag">服务器</span><h3>Subsonic</h3><p>Navidrome 以及其他 Subsonic 或 OpenSubsonic 服务器。歌曲以流媒体播放，缓存后下次可直接收听，也可以下载。</p></div>
+        <div class="source"><span class="tag">本地</span><h3>你的音乐库</h3><p>文件夹、标签、内嵌封面和文件夹封面、M3U 播放列表以及你自己的歌单。只完整扫描一次，之后只读取新文件。同步歌词逐行点亮，来源可以是 .lrc、标签或 LRCLIB。还支持游戏原声：NES、SNES、Game Boy、Genesis 等，每首歌一条曲目。用 MusicBrainz 修正标签和缺失的封面，计算 ReplayGain，让智能歌单自动填满。</p></div>
+        <div class="source"><span class="tag">服务器</span><h3>Subsonic</h3><p>Navidrome 以及其他 Subsonic 或 OpenSubsonic 服务器。歌曲以流媒体播放，缓存后下次可直接收听，也可以下载。可以在应用里编辑它们的歌单。</p></div>
         <div class="source"><span class="tag">服务器</span><h3>Jellyfin</h3><p>用你的 Jellyfin 账号登录，像浏览本地文件一样浏览它的音乐库和歌单。</p></div>
         <div class="source"><span class="tag">直播</span><h3>网络电台</h3><p>来自 radio-browser.info 的数千个电台，可按国家或流派浏览，并显示流中当前播放的歌名。也可以使用你自己的 .m3u 或 .pls 电台列表，或通过地址添加电台。</p></div>
         <div class="source"><span class="tag">单集</span><h3>播客</h3><p>你所在国家的热门节目、搜索，或通过地址添加任意 RSS 订阅。单集可下载离线收听，并记住你停在哪里。</p></div>
         <div class="source"><span class="tag">自备工具</span><h3>YouTube Music</h3><p>把你自己的 yt-dlp 复制到应用旁边，搜索功能就会出现：无需下载即可收听，也可以把歌曲连同封面和标签保存到音乐库。</p></div>
         <div class="source wide"><span class="tag">Demoscene</span><h3>模块资料库</h3><p>The Mod Archive、Modland、VGMRips 和 AMP 集中在一个界面：浏览热门、最新或随机内容，搜索、收听、存入音乐库，或在 tracker 中打开模块。它们也会出现在搜索里。</p></div>
       </div>
+      <p class="note">把正在播放的音乐发送到网络上的音箱或电视（DLNA/UPnP 或 Chromecast），用 DLNA 共享你的音乐库，或者让手机把音乐发到掌机上。<a href="docs/network.html">了解原理</a>。</p>
       <div class="trio">
         <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="搜索，带“全部”、“音乐库”和 YouTube 筛选；已拥有的歌曲带勾" width="360" height="240" loading="lazy"><figcaption>一次搜索同时覆盖音乐库和 YouTube。已拥有的歌曲会打勾。</figcaption></figure>
         <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="歌曲加载时，播放器上显示 STREAMING 标记" width="360" height="240" loading="lazy"><figcaption>流媒体歌曲带有标记，你可以把它们保存下来。</figcaption></figure>

@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Songtexte</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; Podcasts</a></li>
           <li><a href="modules.html">Module</a></li>
+          <li><a href="network.html">Netzwerk</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Kein Song wird über seinen Spitzenpegel angehoben, es übersteuert also nichts. Songs ohne ReplayGain-Tags (und entfernte Songs) laufen unverändert.</p>
 
+<h2 id="replaygain-compute">ReplayGain berechnen</h2>
+<p>Für Songs ohne ReplayGain-Tags misst <strong>ReplayGain berechnen</strong> im Menü eines Songs, Albums oder Künstlers sie (EBU R128, wie bei ReplayGain 2.0) und schreibt die Tags in die Dateien: pro Song und, wenn du es auf ein Album anwendest, für das ganze Album. Es läuft im Hintergrund (siehe Downloads); auf einem Handheld dauert es ein paar Sekunden pro Song. Songs, die schon ReplayGain haben, werden übersprungen; <strong>ReplayGain neu berechnen</strong> misst sie noch einmal. Funktioniert mit MP3, FLAC, Ogg, Opus und M4A in deiner eigenen Bibliothek.</p>
+
 <h2 id="eq">Equalizer</h2>
-<p><strong>Einstellungen → Equalizer</strong> öffnet zehn Bänder von 31&nbsp;Hz bis 16&nbsp;kHz, jedes von −12 bis +12&nbsp;dB.</p>
+<p><strong>Einstellungen → Equalizer</strong> fragt, welcher es sein soll: <strong>Grafisch (10 Bänder)</strong> oder <strong>Parametrisch</strong> (unten). Der grafische hat zehn Bänder von 31&nbsp;Hz bis 16&nbsp;kHz, jedes von −12 bis +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="Der Equalizer: zehn senkrechte Regler mit dem Rock-Preset" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Taste</th><th>Funktion</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Schließen (Änderungen gelten sofort)</td></tr>
 </table>
 <p>Wenn du ein Band selbst verschiebst, wird das Preset zu <strong>Eigene</strong>. Auf Touchscreens tippst du auf eine Säule, um ihre Höhe festzulegen. Mit eingeschaltetem Equalizer kosten zehn Bänder etwa 5&nbsp;% der CPU eines Handhelds bei niedrigstem Takt; flach kosten sie nichts.</p>
+
+<h2 id="parametric-eq">Parametrischer Equalizer</h2>
+<p>Bis zu acht Bänder, die du selbst formst, mit der Kurve darüber. Jedes Band hat eine Form, <strong>Glocke</strong>, <strong>Bass-Shelf</strong>, <strong>Höhen-Shelf</strong>, <strong>Tiefpass</strong> oder <strong>Hochpass</strong>, eine Frequenz (20&nbsp;Hz bis 20&nbsp;kHz), eine Verstärkung (±15&nbsp;dB; Pass-Filter nutzen sie nicht) und ein Q (0,3, breit, bis 10, schmal). Die erste Zeile ist die <strong>Vorverstärkung</strong>, um Platz für Anhebungen zu schaffen.</p>
+<table>
+<tr><th>Taste</th><th>Macht</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Eine Zeile wählen (die Vorverstärkung oder ein Band)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Ein Feld wählen: Form, Frequenz, Verstärkung, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Es ändern (<kbd>L1</kbd>/<kbd>R1</kbd>: größere Schritte)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Ein Band hinzufügen / das gewählte entfernen</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Schließen (Änderungen gelten sofort)</td></tr>
+</table>
+<p>Der Limiter schützt weiter vor Übersteuerung. Wechselst du zurück zum grafischen, bleiben deine parametrischen Bänder für später.</p>
+
+<h2 id="resampler">Resampling</h2>
+<p>Songs mit einer anderen Rate als der Ausgabe (44,1-kHz-Dateien bei 48&nbsp;kHz zum Beispiel) werden beim Abspielen umgerechnet. <strong>Einstellungen → Resampling</strong>:</p>
+<ul>
+<li><strong>Akku</strong>: einfach und sehr leicht, die beste Wahl auf einem Handheld.</li>
+<li><strong>Qualität</strong>: ein hochwertiger Filter, sauber bis an die Grenze des Hörbaren, mit etwa fünfmal mehr CPU (auf einem Computer immer noch wenig).</li>
+<li><strong>Auto</strong> (Standard): Qualität auf dem Desktop, Akku auf Handhelds.</li>
+</ul>
+<p>Es gilt ab dem nächsten Song.</p>
 
 <h2 id="crossfade">Crossfade</h2>
 <p><strong>Einstellungen → Überblenden</strong>: Off oder 2 bis 12 Sekunden Überblendung zwischen Songs. Zwischen aufeinanderfolgenden Songs desselben Albums in Reihenfolge wird nicht überblendet, Alben bleiben also lückenlos. Sehr kurze Songs und Server-Songs, die noch nicht geladen sind, werden ebenfalls ausgelassen.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>DSF- und DFF-Dateien werden abgespielt, umgewandelt in PCM. DSD64 ist leicht genug für einen Handheld; DSD256 kommt auf einem womöglich nicht mit.</p>
+<p>DSD kann nicht „nativ“ (DoP) an einen DAC gehen: Dafür müssten die Samples Bit für Bit bei ihm ankommen, und die Ausgabe von audiofilus läuft wie bei jeder App als PCM über den Mixer des Systems. Die Umwandlung ist sorgfältig, bleibt aber eine Umwandlung.</p>
 
     <nav class="pager" aria-label="Seiten"><a href="playback.html">← Wiedergabe</a><a href="lyrics.html">Songtexte →</a></nav>
   </article>

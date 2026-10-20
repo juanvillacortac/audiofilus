@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Lirik</a></li>
           <li><a href="radio-podcasts.html">Radio &amp; podcast</a></li>
           <li><a href="modules.html">Modul</a></li>
+          <li><a href="network.html">Jaringan</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Playlist <code>.m3u</code> di folder musikmu muncul di <strong>Playlist</strong>.</li>
 <li>Playlist buatanmu disimpan sebagai file <code>.m3u8</code> di <code>data/playlists</code>. Buat dengan <kbd>START</kbd> di tab Playlist, atau dengan <strong>Tambah ke playlist</strong> pada lagu, album, atau artis mana pun. <strong>Simpan antrean</strong> (menu Lainnya di Sedang diputar) menyimpan isi antrean.</li>
 <li>Di dalam playlist buatanmu, menu lagu bisa menaikkan, menurunkan, atau menghapusnya; menu playlist bisa mengganti nama atau menghapusnya.</li>
+<li>Playlist di server Subsonic atau Jellyfin juga bisa diedit; lihat <a href="servers.html#server-playlists">Server</a>.</li>
 </ul>
 
 <h2 id="liked">Disukai, Terbaru, Paling sering, dan Statistik</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Sebuah lagu dihitung didengarkan setelah setengahnya diputar (atau empat menit), baik pemutar terbuka atau tidak. <strong>Rating</strong> dari 1 sampai 5 (setiap <kbd>A</kbd> pindah ke nilai berikutnya). Suka dan rating untuk lagu dari server Subsonic atau Jellyfin juga dikirim ke server; lihat <a href="servers.html">Server</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Statistik: putar, jam, bulan lalu, dan artis teratas" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Playlist pintar</h2>
+<p>Setelah daftar di atas ada <strong>playlist pintar</strong>, yang mengisi dirinya sendiri dari aturan setiap kali kamu membukanya. Yang sudah jadi: <strong>Paling sering diputar (30 hari)</strong>, <strong>Baru ditambahkan</strong>, <strong>Belum pernah diputar</strong>, <strong>Disukai</strong>, <strong>Nilai tertinggi</strong>, <strong>Favorit yang terlupa</strong> (lagu yang sering kamu putar tapi tidak dalam tiga bulan terakhir), dan <strong>Campuran acak (hari ini)</strong>, yang berganti sekali sehari.</p>
+<ul>
+<li><kbd>START</kbd> di tab Playlist → <strong>Playlist pintar baru</strong> membuka editornya: <strong>Tambah aturan</strong> (pilih bidang, kondisi, dan nilai), <strong>Semua aturan</strong> atau <strong>Salah satu aturan</strong>, <strong>Urutan</strong> dan <strong>Batas</strong>, lalu <strong>Simpan</strong> dan beri nama. Memilih aturan di editor akan menghapusnya.</li>
+<li>Bidang: judul, artis, album, artis album, genre, tahun, durasi, format, bitrate, folder, jalur, nomor lagu, kapan ditambahkan, jumlah putar, terakhir diputar, disukai, dan nilai. Kondisinya tergantung bidang: <em>adalah</em>, <em>berisi</em>, <em>diawali</em>, <em>lebih dari/kurang dari</em>, <em>antara</em>, <em>dalam … hari terakhir</em>, dan seterusnya.</li>
+<li>Menu playlist pintar berisi <strong>Ubah aturan</strong>, <strong>Ganti nama</strong>, dan <strong>Hapus playlist</strong>. Semuanya disimpan di <code>data/smart.json</code>.</li>
+<li>Genre, tahun, dan tanggal ditambahkan berasal dari pemindaian pustaka; pemindaian pertama setelah pembaruan membaca setiap berkas sekali untuk mendapatkannya.</li>
+</ul>
+
+<h2 id="edit-tags">Tag, sampul, dan MusicBrainz</h2>
+<p>Menu <kbd>START</kbd> sebuah lagu, album, atau artis di pustakamu sendiri (berkas di kartu SD atau disk, dalam MP3, FLAC, Ogg, Opus, atau M4A) berisi alat untuk memperbaiki datanya. Pekerjaan yang lama berjalan di latar belakang dan muncul di Unduhan.</p>
+<ul>
+<li><strong>Ubah tag</strong> (lagu): judul, artis, album, artis album, genre, tahun, nomor lagu, dan disk. Pilih bidang untuk mengetiknya, lalu <strong>Simpan ke berkas</strong>. <strong>Tag album</strong> mengubah album, artis album, genre, dan tahun untuk semua lagu album sekaligus.</li>
+<li><strong>Cari sampul</strong> (album): mencarinya di Cover Art Archive milik MusicBrainz, lalu di iTunes, dan menawarkan <strong>Simpan di folder</strong> (sebagai <code>cover.jpg</code>), <strong>Sematkan ke berkas</strong>, atau <strong>Keduanya</strong>.</li>
+<li><strong>Cari di MusicBrainz</strong> (album): menampilkan rilis yang cocok (judul, tahun, negara, jumlah lagu, label); pilih satu dan kamu lihat berapa lagumu yang cocok menurut nomor dan durasi, lalu <strong>Terapkan</strong> atau <strong>Terapkan dengan sampul</strong> menulis judul, artis, nomor, tahun, dan genre yang benar. Lagu yang tidak cocok dibiarkan.</li>
+<li><strong>Hitung ReplayGain</strong> (lagu, album, atau artis): mengukur kerasnya setiap lagu dan menulis ReplayGain-nya, untuk lagu yang belum punya; lihat <a href="sound.html#replaygain-compute">Suara</a>.</li>
+</ul>
+<p>Hanya tag yang berubah: audio di dalam berkas tetap persis sama, dan pustaka langsung mengambil perubahannya.</p>
 
 <h2 id="formats">Format</h2>
 <table>

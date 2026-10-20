@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Testi</a></li>
           <li><a href="radio-podcasts.html">Radio e podcast</a></li>
           <li><a href="modules.html">Moduli</a></li>
+          <li><a href="network.html">Rete</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Non spinge mai un brano oltre il suo picco, quindi niente distorce. I brani senza tag ReplayGain (e i brani remoti) suonano invariati.</p>
 
+<h2 id="replaygain-compute">Calcolare il ReplayGain</h2>
+<p>Per i brani senza tag ReplayGain, <strong>Calcola ReplayGain</strong> nel menu di un brano, un album o un artista li misura (EBU R128, come ReplayGain 2.0) e scrive i tag nei file: per brano, e per l'album intero quando lo fai su un album. Va in sottofondo (vedi Download); su una console portatile ci vogliono pochi secondi per brano. I brani che hanno già il ReplayGain si saltano; <strong>Ricalcola ReplayGain</strong> li misura di nuovo. Funziona con MP3, FLAC, Ogg, Opus e M4A della tua libreria.</p>
+
 <h2 id="eq">Equalizzatore</h2>
-<p><strong>Impostazioni → Equalizzatore</strong> apre dieci bande da 31&nbsp;Hz a 16&nbsp;kHz, ognuna da −12 a +12&nbsp;dB.</p>
+<p><strong>Impostazioni → Equalizzatore</strong> chiede quale usare: <strong>Grafico (10 bande)</strong> o <strong>Parametrico</strong> (sotto). Quello grafico ha dieci bande da 31&nbsp;Hz a 16&nbsp;kHz, ognuna da −12 a +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="L'equalizzatore: dieci cursori verticali con il preset Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Tasto</th><th>Cosa fa</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Chiudi (le modifiche si applicano mentre le fai)</td></tr>
 </table>
 <p>Muovere tu una banda trasforma il preset in <strong>Personale</strong>. Sugli schermi touch, tocca una colonna per impostarne l'altezza. Con l'equalizzatore attivo, dieci bande costano circa il 5&nbsp;% della CPU di una console portatile alla frequenza più bassa; piatto, non costa nulla.</p>
+
+<h2 id="parametric-eq">Equalizzatore parametrico</h2>
+<p>Fino a otto bande che modelli tu, con la curva disegnata sopra. Ogni banda ha un tipo, <strong>Picco</strong>, <strong>Shelf bassi</strong>, <strong>Shelf alti</strong>, <strong>Passa basso</strong> o <strong>Passa alto</strong>, una frequenza (da 20&nbsp;Hz a 20&nbsp;kHz), un guadagno (±15&nbsp;dB; i filtri passa non lo usano) e un Q (da 0,3, largo, a 10, stretto). La prima riga è il <strong>Preamp</strong>, per fare spazio agli aumenti.</p>
+<table>
+<tr><th>Tasto</th><th>Cosa fa</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Scegli una riga (il preamp o una banda)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Scegli un campo: tipo, frequenza, guadagno, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Cambialo (<kbd>L1</kbd>/<kbd>R1</kbd>: passi più grandi)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Aggiungi una banda / togli quella scelta</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Chiudi (le modifiche valgono man mano)</td></tr>
+</table>
+<p>Il limitatore continua a evitare la saturazione. Tornando a quello grafico, le bande parametriche restano per dopo.</p>
+
+<h2 id="resampler">Ricampionamento</h2>
+<p>I brani a una frequenza diversa dall'uscita (file a 44,1&nbsp;kHz su 48&nbsp;kHz, per esempio) si convertono mentre suonano. <strong>Impostazioni → Ricampionamento</strong>:</p>
+<ul>
+<li><strong>Batteria</strong>: semplice e leggerissimo, la scelta migliore su una console portatile.</li>
+<li><strong>Qualità</strong>: un filtro di alta qualità, pulito fino al limite dell'udibile, che usa circa cinque volte più CPU (comunque poca su un computer).</li>
+<li><strong>Auto</strong> (di serie): Qualità sul desktop, Batteria sulle console portatili.</li>
+</ul>
+<p>Vale dal brano successivo.</p>
 
 <h2 id="crossfade">Dissolvenza</h2>
 <p><strong>Impostazioni → Dissolvenza</strong>: No, oppure da 2 a 12 secondi di sovrapposizione tra i brani. Non sfuma tra brani consecutivi dello stesso album ascoltati in ordine, così gli album restano senza pause. Salta anche i brani molto corti e quelli dei server non ancora scaricati.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>I file DSF e DFF si riproducono, convertiti in PCM. DSD64 è abbastanza leggero per una console portatile; con DSD256 potrebbe non farcela.</p>
+<p>Il DSD non può uscire "nativo" (DoP) verso un DAC: servirebbe che i campioni gli arrivino bit per bit, e l'uscita di audiofilus passa dal mixer del sistema come PCM, come quella di qualsiasi app. La conversione è fatta con cura, ma resta una conversione.</p>
 
     <nav class="pager" aria-label="Pagine"><a href="playback.html">← Riproduzione</a><a href="lyrics.html">Testi →</a></nav>
   </article>

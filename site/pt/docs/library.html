@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Letras</a></li>
           <li><a href="radio-podcasts.html">Rádio e podcasts</a></li>
           <li><a href="modules.html">Módulos</a></li>
+          <li><a href="network.html">Rede</a></li>
           <li><a href="servers.html">Servidores</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>As playlists <code>.m3u</code> da sua pasta de música aparecem em <strong>Playlists</strong>.</li>
 <li>Suas próprias playlists são salvas como arquivos <code>.m3u8</code> em <code>data/playlists</code>. Crie uma com <kbd>START</kbd> na aba Playlists, ou com <strong>Numa playlist</strong> em qualquer música, álbum ou artista. <strong>Salvar fila</strong> (menu MAIS de Tocando agora) guarda o que está na fila.</li>
 <li>Dentro de uma playlist sua, o menu de uma música pode subi-la, descê-la ou tirá-la; o menu da playlist a renomeia ou apaga.</li>
+<li>As playlists de um servidor Subsonic ou Jellyfin também podem ser editadas; veja <a href="servers.html#server-playlists">Servidores</a>.</li>
 </ul>
 
 <h2 id="liked">Curtidas, Recentes, Mais tocadas e Estatísticas</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Uma música conta como ouvida quando toca metade dela (ou quatro minutos), com o player aberto ou não. A <strong>Nota</strong> vai de 1 a 5 (cada <kbd>A</kbd> passa ao valor seguinte). As curtidas e notas de músicas de um servidor Subsonic ou Jellyfin também são enviadas ao servidor; veja <a href="servers.html">Servidores</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Estatísticas: plays, horas, último mês e artistas mais ouvidos" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Playlists inteligentes</h2>
+<p>Depois das listas acima vêm as <strong>playlists inteligentes</strong>, que se preenchem sozinhas com regras toda vez que você as abre. As prontas: <strong>Mais ouvidas (30 dias)</strong>, <strong>Adicionadas recentemente</strong>, <strong>Nunca ouvidas</strong>, <strong>Curtidas</strong>, <strong>Mais bem avaliadas</strong>, <strong>Favoritas esquecidas</strong> (músicas que você ouviu muito, mas não nos últimos três meses) e <strong>Mix aleatório (hoje)</strong>, que muda uma vez por dia.</p>
+<ul>
+<li><kbd>START</kbd> na aba Playlists → <strong>Nova playlist inteligente</strong> abre o editor: <strong>Adicionar regra</strong> (escolha um campo, uma condição e um valor), <strong>Todas as regras</strong> ou <strong>Qualquer regra</strong>, <strong>Ordem</strong> e <strong>Limite</strong>, depois <strong>Salvar</strong> e dê um nome. Escolher uma regra no editor a remove.</li>
+<li>Campos: título, artista, álbum, artista do álbum, gênero, ano, duração, formato, bitrate, pasta, caminho, número da faixa, quando foi adicionada, reproduções, última reprodução, curtida e nota. As condições dependem do campo: <em>é</em>, <em>contém</em>, <em>começa com</em>, <em>maior/menor que</em>, <em>entre</em>, <em>nos últimos … dias</em> e por aí vai.</li>
+<li>O menu de uma playlist inteligente tem <strong>Editar regras</strong>, <strong>Renomear</strong> e <strong>Apagar playlist</strong>. Elas ficam salvas em <code>data/smart.json</code>.</li>
+<li>Gênero, ano e data em que foi adicionada vêm do escaneamento da biblioteca; o primeiro escaneamento depois de atualizar lê cada arquivo uma vez para pegá-los.</li>
+</ul>
+
+<h2 id="edit-tags">Tags, capas e MusicBrainz</h2>
+<p>O menu <kbd>START</kbd> de uma música, álbum ou artista da sua própria biblioteca (arquivos no cartão ou no disco, em MP3, FLAC, Ogg, Opus ou M4A) tem ferramentas para arrumar os dados. Os trabalhos longos rodam em segundo plano e aparecem em Downloads.</p>
+<ul>
+<li><strong>Editar tags</strong> (uma música): título, artista, álbum, artista do álbum, gênero, ano, faixa e disco. Escolha um campo para digitar e depois <strong>Salvar nos arquivos</strong>. <strong>Tags do álbum</strong> muda álbum, artista do álbum, gênero e ano de todas as músicas do álbum de uma vez.</li>
+<li><strong>Buscar capa</strong> (um álbum): procura no Cover Art Archive do MusicBrainz e depois no iTunes, e oferece <strong>Salvar na pasta</strong> (como <code>cover.jpg</code>), <strong>Embutir nos arquivos</strong> ou <strong>Os dois</strong>.</li>
+<li><strong>Buscar no MusicBrainz</strong> (um álbum): mostra as edições que batem (título, ano, país, faixas, gravadora); escolha uma e ele mostra quantas das suas músicas batem por faixa e duração, depois <strong>Aplicar</strong> ou <strong>Aplicar com a capa</strong> grava os títulos, artistas, números, ano e gênero certos. Músicas que não batem não são tocadas.</li>
+<li><strong>Calcular ReplayGain</strong> (música, álbum ou artista): mede o volume de cada música e grava o ReplayGain nas que não têm; veja <a href="sound.html#replaygain-compute">Som</a>.</li>
+</ul>
+<p>Só as tags mudam: o áudio do arquivo fica exatamente como estava, e a biblioteca vê as mudanças na hora.</p>
 
 <h2 id="formats">Formatos</h2>
 <table>

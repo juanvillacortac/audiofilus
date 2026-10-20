@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Tekst</a></li>
           <li><a href="radio-podcasts.html">Radio i podcasty</a></li>
           <li><a href="modules.html">Moduły</a></li>
+          <li><a href="network.html">Sieć</a></li>
           <li><a href="servers.html">Serwery</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Nigdy nie podbija utworu ponad jego szczyt, więc nic nie przesterowuje. Utwory bez tagów ReplayGain (i utwory zdalne) grają bez zmian.</p>
 
+<h2 id="replaygain-compute">Obliczanie ReplayGain</h2>
+<p>Dla utworów bez tagów ReplayGain <strong>Oblicz ReplayGain</strong> w menu utworu, albumu albo wykonawcy je mierzy (EBU R128, jak ReplayGain 2.0) i zapisuje tagi w plikach: dla każdego utworu i, jeśli robisz to na albumie, dla całego albumu. Działa w tle (zobacz Pobrane); na konsoli zajmuje kilka sekund na utwór. Utwory, które już mają ReplayGain, są pomijane; <strong>Przelicz ReplayGain</strong> mierzy je od nowa. Działa z MP3, FLAC, Ogg, Opus i M4A w twojej bibliotece.</p>
+
 <h2 id="eq">Korektor</h2>
-<p><strong>Ustawienia → Korektor</strong> otwiera dziesięć pasm od 31&nbsp;Hz do 16&nbsp;kHz, każde od −12 do +12&nbsp;dB.</p>
+<p><strong>Ustawienia → Korektor</strong> pyta, którego użyć: <strong>Graficzny (10 pasm)</strong> albo <strong>Parametryczny</strong> (niżej). Graficzny ma dziesięć pasm od 31&nbsp;Hz do 16&nbsp;kHz, każde od −12 do +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="Korektor: dziesięć pionowych suwaków z presetem Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Przycisk</th><th>Co robi</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Zamknij (zmiany działają od razu)</td></tr>
 </table>
 <p>Samodzielne przesunięcie pasma zmienia preset na <strong>Własny</strong>. Na ekranach dotykowych dotknij kolumny, by ustawić jej wysokość. Z włączonym korektorem dziesięć pasm kosztuje około 5&nbsp;% procesora konsoli przy najniższym taktowaniu; płaskie nic nie kosztują.</p>
+
+<h2 id="parametric-eq">Korektor parametryczny</h2>
+<p>Do ośmiu pasm, które kształtujesz sam, z krzywą narysowaną nad nimi. Każde pasmo ma typ, <strong>Szczyt</strong>, <strong>Półka niska</strong>, <strong>Półka wysoka</strong>, <strong>Dolnoprzepustowy</strong> albo <strong>Górnoprzepustowy</strong>, częstotliwość (od 20&nbsp;Hz do 20&nbsp;kHz), wzmocnienie (±15&nbsp;dB; filtry przepustowe go nie używają) i Q (od 0,3, szerokie, do 10, wąskie). Pierwszy wiersz to <strong>Przedwzmacniacz</strong>, żeby zrobić miejsce na podbicia.</p>
+<table>
+<tr><th>Przycisk</th><th>Działanie</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Wybierz wiersz (przedwzmacniacz albo pasmo)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Wybierz pole: typ, częstotliwość, wzmocnienie, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Zmień je (<kbd>L1</kbd>/<kbd>R1</kbd>: większe kroki)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Dodaj pasmo / usuń wybrane</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Zamknij (zmiany działają od razu)</td></tr>
+</table>
+<p>Limiter dalej chroni przed przesterowaniem. Po powrocie do graficznego pasma parametryczne zostają na później.</p>
+
+<h2 id="resampler">Resampling</h2>
+<p>Utwory o innej częstotliwości niż wyjście (na przykład pliki 44,1&nbsp;kHz przy 48&nbsp;kHz) są przeliczane podczas grania. <strong>Ustawienia → Resampling</strong>:</p>
+<ul>
+<li><strong>Bateria</strong>: prosty i bardzo lekki, najlepszy wybór na konsoli.</li>
+<li><strong>Jakość</strong>: filtr wysokiej jakości, czysty aż do granicy słyszalności, zużywa około pięć razy więcej CPU (na komputerze to wciąż niewiele).</li>
+<li><strong>Auto</strong> (domyślnie): Jakość na komputerze, Bateria na konsolach.</li>
+</ul>
+<p>Działa od następnego utworu.</p>
 
 <h2 id="crossfade">Przenikanie</h2>
 <p><strong>Ustawienia → Przenikanie</strong>: Wył. albo od 2 do 12 sekund nakładania się utworów. Nie przenika kolejnych utworów z tego samego albumu granych po kolei, więc albumy zostają bez przerw. Pomija też bardzo krótkie utwory i utwory z serwerów, które jeszcze się nie pobrały.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>Pliki DSF i DFF grają po konwersji do PCM. DSD64 jest dość lekkie dla konsoli; DSD256 może na niej nie nadążyć.</p>
+<p>DSD nie może wyjść „natywnie” (DoP) do przetwornika: próbki musiałyby do niego dotrzeć bit po bicie, a wyjście audiofilus idzie przez mikser systemu jako PCM, jak w każdej aplikacji. Konwersja jest staranna, ale to wciąż konwersja.</p>
 
     <nav class="pager" aria-label="Strony"><a href="playback.html">← Odtwarzanie</a><a href="lyrics.html">Tekst →</a></nav>
   </article>

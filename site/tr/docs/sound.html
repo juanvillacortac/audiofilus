@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Şarkı sözleri</a></li>
           <li><a href="radio-podcasts.html">Radyo ve podcast'ler</a></li>
           <li><a href="modules.html">Modüller</a></li>
+          <li><a href="network.html">Ağ</a></li>
           <li><a href="servers.html">Sunucular</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Bir şarkıyı asla tepe seviyesinin ötesine itmez, böylece hiçbir şey kırpılmaz. ReplayGain etiketi olmayan şarkılar (ve uzak şarkılar) değişmeden çalar.</p>
 
+<h2 id="replaygain-compute">ReplayGain hesaplama</h2>
+<p>ReplayGain etiketi olmayan şarkılar için bir şarkının, albümün ya da sanatçının menüsündeki <strong>ReplayGain hesapla</strong> onları ölçer (EBU R128, ReplayGain 2.0 yöntemiyle) ve etiketleri dosyalara yazar: şarkı başına ve bir albümde tüm albüm için. Arka planda çalışır (bkz. İndirmeler); bir el konsolunda şarkı başına birkaç saniye sürer. Zaten ReplayGain'i olan şarkılar atlanır; <strong>ReplayGain'i yeniden hesapla</strong> onları tekrar ölçer. Kendi kütüphanendeki MP3, FLAC, Ogg, Opus ve M4A ile çalışır.</p>
+
 <h2 id="eq">Ekolayzer</h2>
-<p><strong>Ayarlar → Ekolayzer</strong> 31&nbsp;Hz'den 16&nbsp;kHz'e, her biri −12 ile +12&nbsp;dB arasında on bant açar.</p>
+<p><strong>Ayarlar → Ekolayzer</strong> hangisinin kullanılacağını sorar: <strong>Grafik (10 bant)</strong> ya da <strong>Parametrik</strong> (aşağıda). Grafik olanın 31&nbsp;Hz'den 16&nbsp;kHz'e, her biri −12 ile +12&nbsp;dB arasında on bandı vardır.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="Ekolayzer: Rock hazır ayarıyla on dikey kaydırıcı" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Tuş</th><th>İşlev</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Kapat (değişiklikler yaptıkça uygulanır)</td></tr>
 </table>
 <p>Bir bandı kendiniz oynatmak hazır ayarı <strong>Özel</strong>'e çevirir. Dokunmatik ekranlarda yüksekliğini ayarlamak için bir sütuna dokunun. Ekolayzer açıkken on bant, bir el konsolunun en düşük hızında işlemcisinin yaklaşık %5'ini harcar; düzken hiçbir şey harcamaz.</p>
+
+<h2 id="parametric-eq">Parametrik ekolayzer</h2>
+<p>Kendin şekillendirdiğin en fazla sekiz bant, üstlerinde çizilen eğriyle. Her bandın bir türü, <strong>Tepe</strong>, <strong>Alçak raf</strong>, <strong>Yüksek raf</strong>, <strong>Alçak geçiren</strong> ya da <strong>Yüksek geçiren</strong>, bir frekansı (20&nbsp;Hz – 20&nbsp;kHz), bir kazancı (±15&nbsp;dB; geçiren filtreler kullanmaz) ve bir Q'su (0,3 geniş, 10 dar) vardır. İlk satır, yükseltmelere yer açmak için <strong>Ön kazanç</strong>'tır.</p>
+<table>
+<tr><th>Tuş</th><th>Ne yapar</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Bir satır seç (ön kazanç ya da bir bant)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Bir alan seç: tür, frekans, kazanç, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Değiştir (<kbd>L1</kbd>/<kbd>R1</kbd>: büyük adımlar)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Bant ekle / seçileni kaldır</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Kapat (değişiklikler hemen uygulanır)</td></tr>
+</table>
+<p>Sınırlayıcı kırpılmaya karşı korumaya devam eder. Grafiğe geri dönmek parametrik bantlarını sonraya saklar.</p>
+
+<h2 id="resampler">Yeniden örnekleme</h2>
+<p>Çıkıştan farklı frekanstaki şarkılar (örneğin 48&nbsp;kHz'de 44,1&nbsp;kHz dosyalar) çalarken dönüştürülür. <strong>Ayarlar → Yeniden örnekleme</strong>:</p>
+<ul>
+<li><strong>Pil</strong>: basit ve çok hafif, el konsolunda en iyi seçim.</li>
+<li><strong>Kalite</strong>: duyulabilir aralığın tepesine kadar temiz, yüksek kaliteli bir filtre; yaklaşık beş kat daha fazla işlemci kullanır (bilgisayarda yine de az).</li>
+<li><strong>Otomatik</strong> (varsayılan): masaüstünde Kalite, el konsollarında Pil.</li>
+</ul>
+<p>Bir sonraki şarkıdan itibaren uygulanır.</p>
 
 <h2 id="crossfade">Crossfade</h2>
 <p><strong>Ayarlar → Crossfade</strong>: Kapalı ya da şarkılar arasında 2 ile 12 saniye örtüşme. Sırayla çalınan aynı albümün ardışık şarkıları arasında geçiş yapmaz, böylece albümler boşluksuz kalır. Çok kısa şarkıları ve henüz inmemiş sunucu şarkılarını da atlar.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>DSF ve DFF dosyaları PCM'e dönüştürülerek çalar. DSD64 bir el konsolu için yeterince hafiftir; DSD256 yetişemeyebilir.</p>
+<p>DSD bir DAC'a "yerel" (DoP) olarak gidemez: bunun için örneklerin ona bit bit ulaşması gerekir, audiofilus'un çıkışı ise her uygulama gibi sistem karıştırıcısından PCM olarak geçer. Dönüştürme özenle yapılır ama yine de bir dönüştürmedir.</p>
 
     <nav class="pager" aria-label="Sayfalar"><a href="playback.html">← Çalma</a><a href="lyrics.html">Şarkı sözleri →</a></nav>
   </article>

@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Letras</a></li>
           <li><a href="radio-podcasts.html">Radio y podcasts</a></li>
           <li><a href="modules.html">Módulos</a></li>
+          <li><a href="network.html">Red</a></li>
           <li><a href="servers.html">Servidores</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Las listas <code>.m3u</code> de tu carpeta de música aparecen en <strong>Listas</strong>.</li>
 <li>Tus propias listas se guardan como archivos <code>.m3u8</code> en <code>data/playlists</code>. Crea una con <kbd>START</kbd> en la pestaña Listas, o con <strong>Añadir a una lista</strong> en cualquier canción, álbum o artista. <strong>Guardar la cola como lista</strong> (en el menú Más de la pantalla de reproducción) conserva lo que hay en la cola.</li>
 <li>Dentro de una lista tuya, el menú de una canción puede subirla, bajarla o quitarla; el menú de la lista la renombra o la borra.</li>
+<li>Las listas de un servidor Subsonic o Jellyfin también se pueden editar; mira <a href="servers.html#server-playlists">Servidores</a>.</li>
 </ul>
 
 <h2 id="liked">Me gusta, Recientes, Más escuchadas y Estadísticas</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Una canción cuenta como escuchada cuando ha sonado la mitad (o cuatro minutos), con el reproductor abierto o no. La <strong>Valoración</strong> va de 1 a 5 (cada <kbd>A</kbd> pasa al siguiente valor). Los Me gusta y las valoraciones de canciones de un servidor Subsonic o Jellyfin también se envían al servidor; mira <a href="servers.html">Servidores</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Estadísticas: escuchas, horas, el último mes y los artistas más escuchados" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Listas inteligentes</h2>
+<p>Después de las listas de arriba vienen las <strong>listas inteligentes</strong>, que se llenan solas según unas reglas cada vez que las abres. Las que vienen hechas: <strong>Lo más escuchado (30 días)</strong>, <strong>Añadido hace poco</strong>, <strong>Nunca escuchado</strong>, <strong>Me gusta</strong>, <strong>Mejor valorado</strong>, <strong>Favoritos olvidados</strong> (canciones que escuchaste mucho pero no en los últimos tres meses) y <strong>Mezcla al azar (hoy)</strong>, que cambia una vez al día.</p>
+<ul>
+<li><kbd>START</kbd> en la pestaña Listas → <strong>Nueva lista inteligente</strong> abre su editor: <strong>Añadir regla</strong> (elige un campo, una condición y un valor), <strong>Cumple todas las reglas</strong> o <strong>Cumple alguna regla</strong>, <strong>Orden</strong> y <strong>Límite</strong>, y luego <strong>Guardar</strong> y ponle nombre. Elegir una regla en el editor la quita.</li>
+<li>Campos: título, artista, álbum, artista del álbum, género, año, duración, formato, bitrate, carpeta, ruta, número de pista, cuándo se añadió, escuchas, última escucha, me gusta y valoración. Las condiciones dependen del campo: <em>es</em>, <em>contiene</em>, <em>empieza por</em>, <em>mayor/menor que</em>, <em>entre</em>, <em>en los últimos … días</em>, etc.</li>
+<li>El menú de una lista inteligente tiene <strong>Editar las reglas</strong>, <strong>Renombrar</strong> y <strong>Borrar lista</strong>. Se guardan en <code>data/smart.json</code>.</li>
+<li>El género, el año y la fecha en que se añadió salen del escaneo de la biblioteca; el primer escaneo después de actualizar lee cada archivo una vez para sacarlos.</li>
+</ul>
+
+<h2 id="edit-tags">Etiquetas, portadas y MusicBrainz</h2>
+<p>El menú <kbd>START</kbd> de una canción, un álbum o un artista de tu propia biblioteca (archivos en la tarjeta o el disco, en MP3, FLAC, Ogg, Opus o M4A) tiene herramientas para arreglar sus datos. Los trabajos largos van en segundo plano y se ven en Descargas.</p>
+<ul>
+<li><strong>Editar etiquetas</strong> (una canción): título, artista, álbum, artista del álbum, género, año, pista y disco. Elige un campo para escribirlo y luego <strong>Guardar en los archivos</strong>. <strong>Etiquetas del álbum</strong> cambia el álbum, el artista del álbum, el género y el año de todas sus canciones a la vez.</li>
+<li><strong>Buscar portada</strong> (un álbum): la busca en el Cover Art Archive de MusicBrainz y luego en iTunes, y ofrece <strong>Guardar en la carpeta</strong> (como <code>cover.jpg</code>), <strong>Meter en los archivos</strong> o <strong>Las dos cosas</strong>.</li>
+<li><strong>Buscar en MusicBrainz</strong> (un álbum): muestra las ediciones que coinciden (título, año, país, pistas, sello); elige una y te dice cuántas de tus canciones coinciden por pista y duración, y luego <strong>Aplicar</strong> o <strong>Aplicar con la portada</strong> escribe los títulos, artistas, números, año y género correctos. Las canciones que no coinciden no se tocan.</li>
+<li><strong>Calcular ReplayGain</strong> (canción, álbum o artista): mide qué tan fuerte suena cada canción y escribe su ReplayGain, en las que no lo tienen; mira <a href="sound.html#replaygain-compute">Sonido</a>.</li>
+</ul>
+<p>Solo cambian las etiquetas: el audio del archivo queda exactamente como estaba, y la biblioteca ve los cambios al momento.</p>
 
 <h2 id="formats">Formatos</h2>
 <table>

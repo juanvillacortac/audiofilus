@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Testi</a></li>
           <li><a href="radio-podcasts.html">Radio e podcast</a></li>
           <li><a href="modules.html">Moduli</a></li>
+          <li><a href="network.html">Rete</a></li>
           <li><a href="servers.html">Server</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Le playlist <code>.m3u</code> nella tua cartella della musica compaiono in <strong>Playlist</strong>.</li>
 <li>Le tue playlist si salvano come file <code>.m3u8</code> in <code>data/playlists</code>. Creane una con <kbd>START</kbd> nella scheda Playlist, o con <strong>In una playlist</strong> su qualsiasi brano, album o artista. <strong>Salva la coda</strong> (nel menu ALTRO di In riproduzione) conserva ciò che c'è nella coda.</li>
 <li>Dentro una tua playlist, il menu di un brano può spostarlo su o giù o toglierlo; il menu della playlist la rinomina o la elimina.</li>
+<li>Anche le playlist di un server Subsonic o Jellyfin si possono modificare; vedi <a href="servers.html#server-playlists">Server</a>.</li>
 </ul>
 
 <h2 id="liked">Mi piace, Recenti, Più ascoltati e Statistiche</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Un brano conta come ascoltato quando ne è passata metà (o quattro minuti), che il lettore fosse aperto o no. <strong>Voto</strong> va da 1 a 5 (ogni <kbd>A</kbd> passa al valore successivo). Mi piace e voti dei brani di un server Subsonic o Jellyfin vengono inviati anche al server; vedi <a href="servers.html">Server</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="Statistiche: ascolti, ore, ultimo mese e artisti più ascoltati" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Playlist smart</h2>
+<p>Dopo le liste qui sopra ci sono le <strong>playlist smart</strong>, che si riempiono da sole secondo delle regole ogni volta che le apri. Quelle già pronte: <strong>Più ascoltati (30 giorni)</strong>, <strong>Aggiunti di recente</strong>, <strong>Mai ascoltati</strong>, <strong>Mi piace</strong>, <strong>Più votati</strong>, <strong>Preferiti dimenticati</strong> (brani che hai ascoltato molto ma non negli ultimi tre mesi) e <strong>Mix casuale (oggi)</strong>, che cambia una volta al giorno.</p>
+<ul>
+<li><kbd>START</kbd> nella scheda Playlist → <strong>Nuova playlist smart</strong> apre il suo editor: <strong>Aggiungi regola</strong> (scegli un campo, una condizione e un valore), <strong>Tutte le regole</strong> o <strong>Almeno una regola</strong>, <strong>Ordine</strong> e <strong>Limite</strong>, poi <strong>Salva</strong> e dagli un nome. Scegliere una regola nell'editor la toglie.</li>
+<li>Campi: titolo, artista, album, artista dell'album, genere, anno, durata, formato, bitrate, cartella, percorso, numero di traccia, quando è stato aggiunto, ascolti, ultimo ascolto, mi piace e voto. Le condizioni dipendono dal campo: <em>è</em>, <em>contiene</em>, <em>inizia con</em>, <em>maggiore/minore di</em>, <em>tra</em>, <em>negli ultimi … giorni</em> e così via.</li>
+<li>Il menu di una playlist smart ha <strong>Modifica regole</strong>, <strong>Rinomina</strong> ed <strong>Elimina playlist</strong>. Si salvano in <code>data/smart.json</code>.</li>
+<li>Genere, anno e data di aggiunta vengono dalla scansione della libreria; la prima scansione dopo l'aggiornamento legge una volta tutti i file per averli.</li>
+</ul>
+
+<h2 id="edit-tags">Tag, copertine e MusicBrainz</h2>
+<p>Il menu <kbd>START</kbd> di un brano, un album o un artista della tua libreria (file sulla scheda SD o sul disco, in MP3, FLAC, Ogg, Opus o M4A) ha strumenti per sistemarne i dati. I lavori lunghi vanno in sottofondo e compaiono in Download.</p>
+<ul>
+<li><strong>Modifica tag</strong> (un brano): titolo, artista, album, artista dell'album, genere, anno, traccia e disco. Scegli un campo per scriverlo, poi <strong>Salva nei file</strong>. <strong>Tag dell’album</strong> cambia album, artista dell'album, genere e anno di tutti i brani dell'album in una volta.</li>
+<li><strong>Cerca copertina</strong> (un album): la cerca nel Cover Art Archive di MusicBrainz, poi su iTunes, e offre <strong>Salva nella cartella</strong> (come <code>cover.jpg</code>), <strong>Incorpora nei file</strong> o <strong>Entrambi</strong>.</li>
+<li><strong>Cerca su MusicBrainz</strong> (un album): elenca le edizioni che corrispondono (titolo, anno, paese, tracce, etichetta); scegline una e mostra quanti dei tuoi brani corrispondono per traccia e durata, poi <strong>Applica</strong> o <strong>Applica con la copertina</strong> scrive titoli, artisti, numeri, anno e genere giusti. I brani che non corrispondono restano come sono.</li>
+<li><strong>Calcola ReplayGain</strong> (brano, album o artista): misura quanto è forte ogni brano e ne scrive il ReplayGain, per i brani che non ce l'hanno; vedi <a href="sound.html#replaygain-compute">Suono</a>.</li>
+</ul>
+<p>Cambiano solo i tag: l'audio nel file resta esattamente com'era, e la libreria vede subito le modifiche.</p>
 
 <h2 id="formats">Formati</h2>
 <table>

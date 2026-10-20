@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Réseau · Documentation d’audiofilus</title>
+<meta name="description" content="Envoyer la musique vers des enceintes et des télés (DLNA/UPnP et Chromecast), partager ta bibliothèque en DLNA et recevoir la musique du téléphone et d’autres télécommandes.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/network.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/network.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/network.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/network.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/network.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/network.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/network.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/network.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/network.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/network.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/network.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/network.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Accueil audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Accueil</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Télécharger</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Langue: Français"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>FR</summary><div class="menu"><a href="../../docs/network.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/network.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/network.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/network.html" hreflang="fr" lang="fr" aria-current="true">Français<span>FR</span></a><a href="../../it/docs/network.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/network.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/network.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/network.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/network.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/network.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/network.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/network.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/network.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs&nbsp;: toutes les pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Vue d’ensemble</a></li>
+          <li><a href="getting-started.html">Bien démarrer</a></li>
+          <li><a href="library.html">Bibliothèque</a></li>
+          <li><a href="playback.html">Lecture</a></li>
+          <li><a href="sound.html">Son</a></li>
+          <li><a href="lyrics.html">Paroles</a></li>
+          <li><a href="radio-podcasts.html">Radio et podcasts</a></li>
+          <li><a href="modules.html">Modules</a></li>
+          <li><a href="network.html" aria-current="page">Réseau</a></li>
+          <li><a href="servers.html">Serveurs</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Commandes</a></li>
+          <li><a href="visualizers-games.html">Visualiseurs et jeux</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Réglages</a></li>
+          <li><a href="handhelds.html">Systèmes portables</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Réseau</h1>
+    <p class="lede">Écoute sur une enceinte ou une télé de la maison, laisse d’autres appareils parcourir ta bibliothèque ou laisse ton téléphone envoyer de la musique à la console. Tout reste sur ton réseau local.</p>
+
+<h2 id="send-to">Envoyer vers une enceinte ou une télé</h2>
+<p>Dans <strong>En lecture</strong>, <kbd>START</kbd> → <strong>Envoyer vers…</strong> cherche des appareils sur ton réseau pendant environ trois secondes et les liste&nbsp;: enceintes et télés DLNA/UPnP, et Chromecast (télés avec Chromecast intégré, enceintes Google/Nest).</p>
+<ul>
+<li>Choisis-en un et le morceau continue là-bas à la même seconde&#8239;; la console ou l’ordinateur se met en pause et devient la télécommande. Le morceau suivant de la file est envoyé à l’avance, pour que l’appareil continue la file.</li>
+<li>Pendant l’envoi, la barre du haut affiche <strong>→ &lt;appareil&gt;</strong>, et pause, suivant, précédent et les sauts commandent l’appareil&#8239;; la barre de progression montre sa position.</li>
+<li><kbd>START</kbd> → <strong>Volume de l’appareil</strong> monte ou baisse son volume. <strong>Arrêter l’envoi vers &lt;appareil&gt;</strong> l’arrête et reprend ici, au même morceau et à la même seconde.</li>
+<li>Tout ce que lit audiofilus peut être envoyé. MP3, FLAC, AAC/M4A, WAV et Ogg partent tels quels&#8239;; les modules, la musique de consoles, le DSD et les pistes de CUE sont convertis à la volée en WAV. Les morceaux d’un serveur Subsonic/Jellyfin et les radios partent par leur propre adresse.</li>
+</ul>
+
+<h2 id="dlna-server">Partager ta bibliothèque (serveur DLNA)</h2>
+<p><strong>Réglages → Partager la bibliothèque (DLNA)</strong> fait apparaître ta bibliothèque sur les télés, consoles et applis DLNA du même réseau, sous le nom <strong>audiofilus (&lt;nom de l’appareil&gt;)</strong>. On peut y parcourir les <strong>Artistes</strong>, <strong>Albums</strong>, <strong>Morceaux</strong>, <strong>Playlists</strong> et <strong>Dossiers</strong>, avec les pochettes, et lancer la lecture. Les formats qu’une télé ne connaît pas lui sont convertis en WAV. C’est la bibliothèque déjà scannée par audiofilus qui est partagée&nbsp;; les morceaux des serveurs ne le sont pas.</p>
+
+<h2 id="dlna-renderer">Recevoir de la musique (renderer DLNA)</h2>
+<p><strong>Réglages → Recevoir de la musique (DLNA)</strong> fait de la console ou de l’ordinateur une enceinte pour d’autres applis&nbsp;: depuis un téléphone avec BubbleUPnP, le <em>Caster sur un appareil</em> de Windows ou n’importe quelle télécommande UPnP, choisis <strong>audiofilus</strong> et envoie des morceaux. Ils sont lus par audiofilus avec leur titre et leur artiste, et l’appli qui les envoie commande lecture, pause, sauts et volume. Chaque morceau est d’abord téléchargé puis lu, donc en Wi-Fi il faut un petit moment pour démarrer.</p>
+
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Les deux options DLNA sont <strong>désactivées par défaut</strong>. Désactivées, rien n’écoute sur le réseau.</li>
+<li>Partager et recevoir ne gardent pas la console éveillée d’eux-mêmes&nbsp;: si elle se met en veille, elle ne répond plus jusqu’à son réveil.</li>
+<li>Un pare-feu sur l’ordinateur doit laisser les appareils atteindre audiofilus (le port des fichiers est choisi au hasard à chaque fois).</li>
+<li>Dans un terminal&nbsp;: <code>audiofilus dlna</code> affiche l’état, et <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> et <code>audiofilus dlna name &lt;nom&gt;</code> le changent.</li>
+<li>Sur iPhone et iPad, la première recherche demande l’autorisation d’utiliser le réseau local.</li>
+</ul>
+
+    <nav class="pager" aria-label="Pages"><a href="modules.html">← Modules</a><a href="servers.html">Serveurs →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
+    <span>Une erreur dans la doc&#8239;? <a href="https://github.com/juanvillacortac/audiofilus/issues">Ouvre une issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

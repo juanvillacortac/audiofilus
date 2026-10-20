@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Letras</a></li>
           <li><a href="radio-podcasts.html">Radio y podcasts</a></li>
           <li><a href="modules.html">Módulos</a></li>
+          <li><a href="network.html">Red</a></li>
           <li><a href="servers.html">Servidores</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Nunca lleva una canción más allá de su pico, así que nada satura. Las canciones sin etiquetas ReplayGain (y las remotas) suenan sin cambios.</p>
 
+<h2 id="replaygain-compute">Calcular el ReplayGain</h2>
+<p>Para las canciones sin etiquetas de ReplayGain, <strong>Calcular ReplayGain</strong> en el menú de una canción, un álbum o un artista las mide (EBU R128, como hace ReplayGain 2.0) y escribe las etiquetas en los archivos: por canción, y para el álbum entero cuando lo haces con un álbum. Va en segundo plano (mira Descargas); en una portátil tarda unos segundos por canción. Las canciones que ya tienen ReplayGain se saltan; <strong>Recalcular ReplayGain</strong> las vuelve a medir. Funciona con MP3, FLAC, Ogg, Opus y M4A de tu propia biblioteca.</p>
+
 <h2 id="eq">Ecualizador</h2>
-<p><strong>Ajustes → Ecualizador</strong> abre diez bandas de 31&nbsp;Hz a 16&nbsp;kHz, cada una de −12 a +12&nbsp;dB.</p>
+<p><strong>Ajustes → Ecualizador</strong> pregunta cuál usar: <strong>Gráfico (10 bandas)</strong> o <strong>Paramétrico</strong> (abajo). El gráfico tiene diez bandas de 31&nbsp;Hz a 16&nbsp;kHz, cada una de −12 a +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="El ecualizador: diez deslizadores verticales con el ajuste Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Botón</th><th>Hace</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Cerrar (los cambios se aplican al hacerlos)</td></tr>
 </table>
 <p>Si mueves una banda tú mismo, el ajuste pasa a <strong>A mano</strong>. En pantallas táctiles, toca una columna para fijar su altura. Con el ecualizador activo, las diez bandas cuestan un 5&nbsp;% de la CPU de una portátil a su velocidad más baja; en plano, no cuestan nada.</p>
+
+<h2 id="parametric-eq">Ecualizador paramétrico</h2>
+<p>Hasta ocho bandas que das forma tú, con una curva dibujada encima. Cada banda tiene un tipo, <strong>Pico</strong>, <strong>Graves</strong> (estante bajo), <strong>Agudos</strong> (estante alto), <strong>Paso bajo</strong> o <strong>Paso alto</strong>, una frecuencia (20&nbsp;Hz a 20&nbsp;kHz), una ganancia (±15&nbsp;dB; los filtros de paso no la usan) y una Q (0,3, ancha, a 10, estrecha). La primera fila es el <strong>Preamp</strong>, para dejar margen a los realces.</p>
+<table>
+<tr><th>Botón</th><th>Hace</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Elegir una fila (el preamp o una banda)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Elegir un campo: tipo, frecuencia, ganancia, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Cambiarlo (<kbd>L1</kbd>/<kbd>R1</kbd>: pasos más grandes)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Añadir una banda / quitar la elegida</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Cerrar (los cambios se aplican mientras los haces)</td></tr>
+</table>
+<p>El limitador sigue evitando la saturación. Volver al gráfico guarda tus bandas paramétricas para luego.</p>
+
+<h2 id="resampler">Remuestreo</h2>
+<p>Las canciones a una frecuencia distinta de la de salida (archivos de 44,1&nbsp;kHz en una salida de 48&nbsp;kHz, por ejemplo) se convierten mientras suenan. <strong>Ajustes → Remuestreo</strong>:</p>
+<ul>
+<li><strong>Batería</strong>: simple y muy ligero, lo mejor en una portátil.</li>
+<li><strong>Calidad</strong>: un filtro de alta calidad, limpio hasta lo más agudo que se oye, que usa unas cinco veces más CPU (sigue siendo poco en una computadora).</li>
+<li><strong>Auto</strong> (por defecto): Calidad en la computadora y Batería en las portátiles.</li>
+</ul>
+<p>Se aplica desde la siguiente canción.</p>
 
 <h2 id="crossfade">Fundido</h2>
 <p><strong>Ajustes → Fundido</strong>: No, o de 2 a 12 segundos de solapamiento entre canciones. No funde entre canciones seguidas del mismo álbum en orden, así que los álbumes siguen sin cortes. Tampoco funde canciones muy cortas ni canciones de servidores que aún no se han descargado.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>Los archivos DSF y DFF suenan, convertidos a PCM. DSD64 es lo bastante ligero para una portátil; DSD256 puede que no le dé tiempo.</p>
+<p>El DSD no puede salir "nativo" (DoP) a un DAC: eso necesita que las muestras le lleguen bit a bit, y la salida de audiofilus pasa por el mezclador del sistema como PCM, como la de cualquier app. La conversión se hace con cuidado, pero es una conversión.</p>
 
     <nav class="pager" aria-label="Páginas"><a href="playback.html">← Reproducción</a><a href="lyrics.html">Letras →</a></nav>
   </article>

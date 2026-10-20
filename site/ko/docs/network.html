@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>네트워크 · audiofilus 문서</title>
+<meta name="description" content="스피커와 TV로 음악 보내기(DLNA/UPnP와 Chromecast), DLNA로 보관함 공유, 휴대폰 등에서 음악 받기.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/network.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/network.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/network.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/network.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/network.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/network.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/network.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/network.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/network.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/network.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/network.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/network.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/network.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/network.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/network.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/network.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/network.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/network.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/network.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/network.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/network.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/network.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/network.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/network.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/network.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/network.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="modules.html">모듈</a></li>
+          <li><a href="network.html" aria-current="page">네트워크</a></li>
+          <li><a href="servers.html">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>네트워크</h1>
+    <p class="lede">집에 있는 스피커나 TV로 재생하고, 다른 기기가 내 보관함을 둘러보게 하고, 휴대폰에서 휴대용 게임기로 음악을 보낼 수 있어요. 모든 것이 로컬 네트워크 안에서만 이뤄져요.</p>
+
+<h2 id="send-to">스피커나 TV로 보내기</h2>
+<p><strong>재생 중</strong>에서 <kbd>START</kbd> → <strong>보내기…</strong>를 고르면 약 3초 동안 네트워크의 기기를 찾아 목록으로 보여 줘요. DLNA/UPnP 스피커와 TV, 그리고 Chromecast(Chromecast 내장 TV, Google/Nest 스피커)예요.</p>
+<ul>
+<li>기기를 고르면 같은 초부터 곡이 거기서 이어져요. 휴대용 게임기나 컴퓨터는 일시 정지하고 리모컨이 돼요. 대기열의 다음 곡도 미리 보내 두어서 기기가 대기열을 계속 이어 가요.</li>
+<li>보내는 동안 위쪽 바에 <strong>→ &lt;기기&gt;</strong>가 표시되고, 일시 정지·다음·이전·탐색은 기기를 조작해요. 진행 바는 기기의 재생 위치를 보여 줘요.</li>
+<li><kbd>START</kbd> → <strong>기기 볼륨</strong>으로 기기 소리를 키우거나 줄여요. <strong>&lt;기기&gt;(으)로 보내기 중지</strong>는 기기를 멈추고 같은 곡의 같은 초부터 여기서 이어서 재생해요.</li>
+<li>audiofilus가 재생하는 것은 무엇이든 보낼 수 있어요. MP3, FLAC, AAC/M4A, WAV, Ogg는 그대로 보내고, 모듈, 게임기 음악, DSD, CUE 트랙은 그 자리에서 WAV로 변환해요. Subsonic/Jellyfin 서버의 곡과 라디오 방송은 각자의 주소로 보내요.</li>
+</ul>
+
+<h2 id="dlna-server">보관함 공유하기(DLNA 서버)</h2>
+<p><strong>설정 → 보관함 공유 (DLNA)</strong>를 켜면 같은 네트워크의 TV, 게임기, DLNA 앱에서 내 보관함이 <strong>audiofilus (&lt;기기 이름&gt;)</strong>로 보여요. <strong>아티스트</strong>, <strong>앨범</strong>, <strong>곡</strong>, <strong>재생목록</strong>, <strong>폴더</strong>를 커버와 함께 둘러보고 거기서 재생할 수 있어요. TV가 모르는 형식은 WAV로 변환해 줘요. 공유되는 것은 audiofilus가 이미 스캔한 보관함이고, 서버의 곡은 공유되지 않아요.</p>
+
+<h2 id="dlna-renderer">음악 받기(DLNA 렌더러)</h2>
+<p><strong>설정 → 음악 받기 (DLNA)</strong>를 켜면 휴대용 게임기나 컴퓨터가 다른 앱의 스피커가 돼요. 휴대폰의 BubbleUPnP, Windows의 <em>장치로 캐스트</em>, 그 밖의 UPnP 컨트롤 포인트에서 <strong>audiofilus</strong>를 골라 곡을 보내세요. 곡은 제목과 아티스트와 함께 audiofilus로 재생되고, 재생·일시 정지·탐색·볼륨은 보낸 앱이 조작해요. 곡마다 먼저 내려받은 뒤 재생하므로, Wi-Fi에서는 시작까지 잠깐 걸려요.</p>
+
+<h2 id="notes">참고</h2>
+<ul>
+<li>DLNA 설정 두 가지는 <strong>처음에는 꺼져 있어요</strong>. 꺼져 있으면 네트워크에서 아무것도 기다리지 않아요.</li>
+<li>공유와 받기가 휴대용 게임기를 깨어 있게 하지는 않아요. 잠들면 깨어날 때까지 응답하지 않아요.</li>
+<li>컴퓨터의 방화벽이 기기가 audiofilus에 닿도록 허용해야 해요(미디어 포트는 매번 무작위로 정해져요).</li>
+<li>터미널에서는 <code>audiofilus dlna</code>로 상태를 보고, <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code>, <code>audiofilus dlna name &lt;이름&gt;</code>으로 바꿀 수 있어요.</li>
+<li>iPhone과 iPad에서는 처음 찾을 때 로컬 네트워크 사용 권한을 물어봐요.</li>
+</ul>
+
+    <nav class="pager" aria-label="페이지"><a href="modules.html">← 모듈</a><a href="servers.html">서버 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

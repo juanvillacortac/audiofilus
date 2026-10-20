@@ -69,6 +69,7 @@ body { line-break: strict; }
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="modules.html">模块</a></li>
+          <li><a href="network.html">网络</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">播放记录</a></li>
@@ -96,8 +97,11 @@ body { line-break: strict; }
 </ul>
 <p>它绝不会把歌曲推过峰值，所以不会削波。没有 ReplayGain 标签的歌曲（以及远程歌曲）按原样播放。</p>
 
+<h2 id="replaygain-compute">计算 ReplayGain</h2>
+<p>对于没有 ReplayGain 标签的歌曲，歌曲、专辑或艺人菜单里的<strong>计算 ReplayGain</strong> 会测量响度（EBU R128，即 ReplayGain 2.0 的方式）并把标签写入文件：按歌曲写，对专辑操作时还会写整张专辑的值。它在后台运行（见下载）；在掌机上每首歌要几秒钟。已经有 ReplayGain 的歌会跳过；<strong>重新计算 ReplayGain</strong> 会重新测量。适用于你自己音乐库中的 MP3、FLAC、Ogg、Opus 和 M4A。</p>
+
 <h2 id="eq">均衡器</h2>
-<p><strong>设置 → 均衡器</strong> 打开从 31&nbsp;Hz 到 16&nbsp;kHz 的十个频段，每个范围为 −12 到 +12&nbsp;dB。</p>
+<p><strong>设置 → 均衡器</strong>会问你用哪一种：<strong>图形 (10段)</strong>或<strong>参数</strong>（见下文）。图形均衡器有从 31&nbsp;Hz 到 16&nbsp;kHz 的十个频段，每个范围为 −12 到 +12&nbsp;dB。</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="均衡器：使用摇滚预设的十个垂直滑块" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>按键</th><th>作用</th></tr>
@@ -108,6 +112,27 @@ body { line-break: strict; }
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>关闭（调整即时生效）</td></tr>
 </table>
 <p>自己调整频段后，预设会变为 <strong>自定义</strong>。在触摸屏上，点按某一列即可设置其高度。开启均衡器时，十个频段在掌机最低频率下约占 5&nbsp;% 的 CPU；保持平直时完全不占用。</p>
+
+<h2 id="parametric-eq">参数均衡器</h2>
+<p>最多八个由你自己塑形的频段，上方会画出曲线。每个频段有类型（<strong>峰值</strong>、<strong>低架</strong>、<strong>高架</strong>、<strong>低通</strong>或<strong>高通</strong>）、频率（20&nbsp;Hz 到 20&nbsp;kHz）、增益（±15&nbsp;dB；通滤波器不用它）和 Q（0.3 宽，10 窄）。第一行是<strong>前级增益</strong>，为提升留出余量。</p>
+<table>
+<tr><th>按键</th><th>作用</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>选择一行（前级增益或某个频段）</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>选择字段：类型、频率、增益、Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>修改（<kbd>L1</kbd>/<kbd>R1</kbd>：大步调整）</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>添加频段 / 删除所选频段</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>关闭（改动即时生效）</td></tr>
+</table>
+<p>限幅器仍会防止削波。切回图形均衡器时，参数频段会保留下来以后再用。</p>
+
+<h2 id="resampler">重采样</h2>
+<p>采样率与输出不同的歌曲（例如在 48&nbsp;kHz 输出下播放 44.1&nbsp;kHz 的文件）会在播放时转换。<strong>设置 → 重采样</strong>：</p>
+<ul>
+<li><strong>省电</strong>：简单且非常轻量，最适合掌机。</li>
+<li><strong>高质量</strong>：高质量滤波器，直到可听范围顶端都很干净，CPU 占用约为五倍（在电脑上仍然很少）。</li>
+<li><strong>自动</strong>（默认）：桌面上用高质量，掌机上用省电。</li>
+</ul>
+<p>从下一首歌开始生效。</p>
 
 <h2 id="crossfade">淡入淡出</h2>
 <p><strong>设置 → 淡入淡出</strong>：关闭，或歌曲之间重叠 2 到 12 秒。按顺序播放同一专辑的相邻歌曲时不会淡化，因此专辑保持无缝。很短的歌曲和尚未下载完成的服务器歌曲也会跳过淡化。</p>
@@ -120,6 +145,7 @@ body { line-break: strict; }
 
 <h2 id="dsd">DSD</h2>
 <p>可以播放 DSF 和 DFF 文件，会转换为 PCM。DSD64 对掌机来说足够轻量；DSD256 在掌机上可能跟不上。</p>
+<p>DSD 无法以“原生”（DoP）方式输出到 DAC：那需要采样一位不差地送到 DAC，而 audiofilus 的输出和其他应用一样，以 PCM 形式经过系统混音器。转换做得很仔细，但它仍然是一次转换。</p>
 
     <nav class="pager" aria-label="页面"><a href="playback.html">← 播放</a><a href="lyrics.html">歌词 →</a></nav>
   </article>

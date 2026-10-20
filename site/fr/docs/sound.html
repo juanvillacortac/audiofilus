@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Paroles</a></li>
           <li><a href="radio-podcasts.html">Radio et podcasts</a></li>
           <li><a href="modules.html">Modules</a></li>
+          <li><a href="network.html">Réseau</a></li>
           <li><a href="servers.html">Serveurs</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Il ne pousse jamais une chanson au-delà de son pic, donc rien ne sature. Les chansons sans tags ReplayGain (et les chansons distantes) sont jouées telles quelles.</p>
 
+<h2 id="replaygain-compute">Calculer le ReplayGain</h2>
+<p>Pour les morceaux sans tags ReplayGain, <strong>Calculer le ReplayGain</strong> dans le menu d’un morceau, d’un album ou d’un artiste les mesure (EBU R128, à la manière de ReplayGain 2.0) et écrit les tags dans les fichiers&nbsp;: par morceau, et pour l’album entier quand tu le fais sur un album. Ça tourne en arrière-plan (vois Téléchargements)&#8239;; sur une console portable, il faut quelques secondes par morceau. Les morceaux qui ont déjà le ReplayGain sont sautés&#8239;; <strong>Recalculer le ReplayGain</strong> les remesure. Ça marche avec les MP3, FLAC, Ogg, Opus et M4A de ta propre bibliothèque.</p>
+
 <h2 id="eq">Égaliseur</h2>
-<p><strong>Réglages → Égaliseur</strong> ouvre dix bandes de 31&nbsp;Hz à 16&nbsp;kHz, chacune de −12 à +12&nbsp;dB.</p>
+<p><strong>Réglages → Égaliseur</strong> demande lequel utiliser&nbsp;: <strong>Graphique (10 bandes)</strong> ou <strong>Paramétrique</strong> (plus bas). Le graphique a dix bandes de 31&nbsp;Hz à 16&nbsp;kHz, chacune de −12 à +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="L’égaliseur&nbsp;: dix curseurs verticaux avec le préréglage Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Bouton</th><th>Effet</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Fermer (les changements s’appliquent au fur et à mesure)</td></tr>
 </table>
 <p>Déplacer une bande toi-même transforme le préréglage en <strong>Perso</strong>. Sur écran tactile, touche une colonne pour régler sa hauteur. Égaliseur actif, les dix bandes coûtent environ 5&nbsp;% du processeur d’une console portable à sa fréquence la plus basse&#8239;; à plat, elles ne coûtent rien.</p>
+
+<h2 id="parametric-eq">Égaliseur paramétrique</h2>
+<p>Jusqu’à huit bandes que tu façonnes toi-même, avec une courbe dessinée au-dessus. Chaque bande a un type, <strong>Cloche</strong>, <strong>Shelf grave</strong>, <strong>Shelf aigu</strong>, <strong>Passe-bas</strong> ou <strong>Passe-haut</strong>, une fréquence (20&nbsp;Hz à 20&nbsp;kHz), un gain (±15&nbsp;dB&#8239;; les filtres passe ne l’utilisent pas) et un Q (0,3, large, à 10, étroit). La première ligne est le <strong>Préampli</strong>, pour laisser de la marge aux renforts.</p>
+<table>
+<tr><th>Bouton</th><th>Effet</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Choisir une ligne (le préampli ou une bande)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Choisir un champ&nbsp;: type, fréquence, gain, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Le changer (<kbd>L1</kbd>/<kbd>R1</kbd>&nbsp;: pas plus grands)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Ajouter une bande / retirer celle choisie</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Fermer (les changements s’appliquent au fur et à mesure)</td></tr>
+</table>
+<p>Le limiteur continue d’éviter la saturation. Revenir au graphique garde tes bandes paramétriques pour plus tard.</p>
+
+<h2 id="resampler">Rééchantillonnage</h2>
+<p>Les morceaux à une fréquence différente de la sortie (des fichiers en 44,1&nbsp;kHz sur une sortie en 48&nbsp;kHz, par exemple) sont convertis pendant la lecture. <strong>Réglages → Rééchantillonnage</strong>&nbsp;:</p>
+<ul>
+<li><strong>Batterie</strong>&nbsp;: simple et très léger, le meilleur choix sur une console portable.</li>
+<li><strong>Qualité</strong>&nbsp;: un filtre de haute qualité, propre jusqu’en haut de ce qu’on entend, qui utilise environ cinq fois plus de processeur (ça reste peu sur un ordinateur).</li>
+<li><strong>Auto</strong> (par défaut)&nbsp;: Qualité sur ordinateur, Batterie sur les consoles portables.</li>
+</ul>
+<p>Ça s’applique à partir du morceau suivant.</p>
 
 <h2 id="crossfade">Fondu enchaîné</h2>
 <p><strong>Réglages → Fondu enchaîné</strong>&nbsp;: Off, ou de 2 à 12 secondes de chevauchement entre les chansons. Il ne fait pas de fondu entre deux chansons consécutives du même album jouées dans l’ordre, pour que les albums restent sans blanc. Il ignore aussi les chansons très courtes et celles des serveurs qui ne sont pas encore téléchargées.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>Les fichiers DSF et DFF sont lus, convertis en PCM. Le DSD64 est assez léger pour une console portable&#8239;; le DSD256 peut ne pas suivre.</p>
+<p>Le DSD ne peut pas sortir en «&nbsp;natif&nbsp;» (DoP) vers un DAC&nbsp;: il faudrait que les échantillons lui arrivent bit pour bit, et la sortie d’audiofilus passe par le mixeur du système en PCM, comme celle de n’importe quelle appli. La conversion est soignée, mais c’est une conversion.</p>
 
     <nav class="pager" aria-label="Pages"><a href="playback.html">← Lecture</a><a href="lyrics.html">Paroles →</a></nav>
   </article>

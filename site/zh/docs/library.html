@@ -69,6 +69,7 @@ body { line-break: strict; }
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="modules.html">模块</a></li>
+          <li><a href="network.html">网络</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">播放记录</a></li>
@@ -98,6 +99,7 @@ body { line-break: strict; }
 <li>音乐文件夹中的 <code>.m3u</code> 播放列表会出现在 <strong>歌单</strong> 中。</li>
 <li>你自己的歌单以 <code>.m3u8</code> 文件保存在 <code>data/playlists</code> 中。在“歌单”标签页按 <kbd>START</kbd>，或在任意歌曲、专辑或艺人上使用 <strong>加入歌单</strong> 即可创建。<strong>把队列存为歌单</strong>（正在播放界面的“更多”菜单）会保留队列中的内容。</li>
 <li>在你自己的歌单中，歌曲菜单可以上移、下移或移除它；歌单菜单可以重命名或删除它。</li>
+<li>Subsonic 或 Jellyfin 服务器上的歌单也可以编辑；见<a href="servers.html#server-playlists">服务器</a>。</li>
 </ul>
 
 <h2 id="liked">喜欢、最近播放、最常播放和统计</h2>
@@ -110,6 +112,25 @@ body { line-break: strict; }
 </ul>
 <p>一首歌播放过半（或满四分钟）即算作收听，无论播放器是否打开。<strong>评分</strong> 从 1 到 5（每按一次 <kbd>A</kbd> 切换到下一个值）。来自 Subsonic 或 Jellyfin 服务器的歌曲，其喜欢和评分也会发送到服务器；参见<a href="servers.html">服务器</a>。</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="统计：播放次数、时长、上个月和最常听的艺人" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">智能歌单</h2>
+<p>上面这些列表之后是<strong>智能歌单</strong>，每次打开时都会按规则自动填满。现成的有：<strong>最常听 (30天)</strong>、<strong>最近添加</strong>、<strong>从未听过</strong>、<strong>喜欢</strong>、<strong>评分最高</strong>、<strong>被遗忘的最爱</strong>（听过很多次但最近三个月没听的歌）和<strong>随机混合（今天）</strong>，每天换一次。</p>
+<ul>
+<li>在歌单标签页按 <kbd>START</kbd> → <strong>新建智能歌单</strong>打开编辑器：<strong>添加规则</strong>（选择字段、条件和值），<strong>满足所有规则</strong>或<strong>满足任一规则</strong>，设定排序和上限，然后<strong>保存</strong>并命名。在编辑器里选中一条规则会把它删除。</li>
+<li>字段：标题、艺人、专辑、专辑艺人、流派、年份、时长、格式、码率、文件夹、路径、音轨号、添加时间、播放次数、最近播放、喜欢和评分。条件取决于字段：<em>等于</em>、<em>包含</em>、<em>开头为</em>、<em>大于/小于</em>、<em>介于</em>、<em>最近 … 天</em>等。</li>
+<li>智能歌单的菜单里有<strong>编辑规则</strong>、<strong>重命名</strong>和<strong>删除歌单</strong>。它们保存在 <code>data/smart.json</code>。</li>
+<li>流派、年份和添加时间来自音乐库扫描；更新后的第一次扫描会把所有文件读一遍来获取它们。</li>
+</ul>
+
+<h2 id="edit-tags">标签、封面和 MusicBrainz</h2>
+<p>在你自己的音乐库（SD 卡或磁盘上的 MP3、FLAC、Ogg、Opus 或 M4A 文件）中，歌曲、专辑或艺人的 <kbd>START</kbd> 菜单里有修正信息的工具。耗时的任务在后台运行，并显示在下载中。</p>
+<ul>
+<li><strong>编辑标签</strong>（歌曲）：标题、艺人、专辑、专辑艺人、流派、年份、音轨和碟号。选一个字段输入，然后<strong>保存到文件</strong>。<strong>专辑标签</strong>会一次修改整张专辑所有歌曲的专辑、专辑艺人、流派和年份。</li>
+<li><strong>查找封面</strong>（专辑）：先在 MusicBrainz 的 Cover Art Archive 查找，再找 iTunes，然后可以<strong>保存到文件夹</strong>（存为 <code>cover.jpg</code>）、<strong>嵌入到文件</strong>或<strong>两者都要</strong>。</li>
+<li><strong>在 MusicBrainz 查找</strong>（专辑）：列出匹配的发行版本（标题、年份、国家、曲目数、厂牌）；选一个后，会按音轨号和时长显示你的多少首歌匹配，然后<strong>应用</strong>或<strong>连同封面应用</strong>写入正确的标题、艺人、编号、年份和流派。不匹配的歌保持不变。</li>
+<li><strong>计算 ReplayGain</strong>（歌曲、专辑或艺人）：测量没有 ReplayGain 的歌曲的响度并写入；见<a href="sound.html#replaygain-compute">音质</a>。</li>
+</ul>
+<p>只会修改标签：文件里的音频完全不变，音乐库会立即更新。</p>
 
 <h2 id="formats">格式</h2>
 <table>

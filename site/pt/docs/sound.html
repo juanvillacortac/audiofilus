@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Letras</a></li>
           <li><a href="radio-podcasts.html">Rádio e podcasts</a></li>
           <li><a href="modules.html">Módulos</a></li>
+          <li><a href="network.html">Rede</a></li>
           <li><a href="servers.html">Servidores</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -83,8 +84,11 @@
 </ul>
 <p>Nunca leva uma música acima do pico, então nada distorce. Músicas sem tags ReplayGain (e as remotas) tocam sem mudança.</p>
 
+<h2 id="replaygain-compute">Calcular o ReplayGain</h2>
+<p>Para músicas sem tags de ReplayGain, <strong>Calcular ReplayGain</strong> no menu de uma música, álbum ou artista as mede (EBU R128, do jeito do ReplayGain 2.0) e grava as tags nos arquivos: por música, e para o álbum inteiro quando você faz um álbum. Roda em segundo plano (veja Downloads); num portátil leva alguns segundos por música. Músicas que já têm ReplayGain são puladas; <strong>Recalcular ReplayGain</strong> mede de novo. Funciona com MP3, FLAC, Ogg, Opus e M4A da sua própria biblioteca.</p>
+
 <h2 id="eq">Equalizador</h2>
-<p><strong>Ajustes → Equalizador</strong> abre dez bandas de 31&nbsp;Hz a 16&nbsp;kHz, cada uma de −12 a +12&nbsp;dB.</p>
+<p><strong>Ajustes → Equalizador</strong> pergunta qual usar: <strong>Gráfico (10 bandas)</strong> ou <strong>Paramétrico</strong> (abaixo). O gráfico tem dez bandas de 31&nbsp;Hz a 16&nbsp;kHz, cada uma de −12 a +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="O equalizador: dez controles verticais com o preset Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Botão</th><th>Faz</th></tr>
@@ -95,6 +99,27 @@
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Fechar (as mudanças valem na hora)</td></tr>
 </table>
 <p>Mexer numa banda você mesmo transforma o preset em <strong>Manual</strong>. Em telas de toque, toque numa coluna para definir a altura. Com o equalizador ligado, dez bandas custam cerca de 5&nbsp;% da CPU de um portátil no clock mais baixo; no plano, não custam nada.</p>
+
+<h2 id="parametric-eq">Equalizador paramétrico</h2>
+<p>Até oito bandas que você mesmo molda, com a curva desenhada acima. Cada banda tem um tipo, <strong>Pico</strong>, <strong>Shelf grave</strong>, <strong>Shelf agudo</strong>, <strong>Passa-baixa</strong> ou <strong>Passa-alta</strong>, uma frequência (20&nbsp;Hz a 20&nbsp;kHz), um ganho (±15&nbsp;dB; os filtros passa não usam) e um Q (0,3, largo, a 10, estreito). A primeira linha é o <strong>Pré-amp</strong>, para dar espaço aos reforços.</p>
+<table>
+<tr><th>Botão</th><th>Faz</th></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Escolher uma linha (o pré-amp ou uma banda)</td></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Escolher um campo: tipo, frequência, ganho, Q</td></tr>
+<tr><td><kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Mudar (<kbd>L1</kbd>/<kbd>R1</kbd>: passos maiores)</td></tr>
+<tr><td><kbd>X</kbd> / <kbd>Y</kbd></td><td>Adicionar uma banda / remover a escolhida</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Fechar (as mudanças valem na hora)</td></tr>
+</table>
+<p>O limitador continua evitando distorção. Voltar ao gráfico guarda suas bandas paramétricas para depois.</p>
+
+<h2 id="resampler">Reamostragem</h2>
+<p>Músicas numa taxa diferente da saída (arquivos de 44,1&nbsp;kHz numa saída de 48&nbsp;kHz, por exemplo) são convertidas enquanto tocam. <strong>Ajustes → Reamostragem</strong>:</p>
+<ul>
+<li><strong>Bateria</strong>: simples e bem leve, a melhor escolha num portátil.</li>
+<li><strong>Qualidade</strong>: um filtro de alta qualidade, limpo até o topo do que se ouve, usando umas cinco vezes mais CPU (ainda pouco num computador).</li>
+<li><strong>Auto</strong> (padrão): Qualidade no computador, Bateria nos portáteis.</li>
+</ul>
+<p>Vale a partir da próxima música.</p>
 
 <h2 id="crossfade">Crossfade</h2>
 <p><strong>Ajustes → Crossfade</strong>: Não, ou de 2 a 12 segundos de sobreposição entre músicas. Não faz fade entre músicas seguidas do mesmo álbum tocado em ordem, para que os álbuns fiquem sem pausa. Também pula músicas muito curtas e músicas de servidores que ainda não foram baixadas.</p>
@@ -107,6 +132,7 @@
 
 <h2 id="dsd">DSD</h2>
 <p>Arquivos DSF e DFF tocam, convertidos para PCM. DSD64 é leve o bastante para um portátil; DSD256 pode não dar conta num deles.</p>
+<p>O DSD não sai "nativo" (DoP) para um DAC: isso exige que as amostras cheguem bit a bit, e a saída do audiofilus passa pelo mixer do sistema como PCM, como a de qualquer app. A conversão é feita com cuidado, mas é uma conversão.</p>
 
     <nav class="pager" aria-label="Páginas"><a href="playback.html">← Reprodução</a><a href="lyrics.html">Letras →</a></nav>
   </article>

@@ -56,6 +56,7 @@
           <li><a href="lyrics.html">Şarkı sözleri</a></li>
           <li><a href="radio-podcasts.html">Radyo ve podcast'ler</a></li>
           <li><a href="modules.html">Modüller</a></li>
+          <li><a href="network.html">Ağ</a></li>
           <li><a href="servers.html">Sunucular</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">Scrobbling</a></li>
@@ -85,6 +86,7 @@
 <li>Müzik klasörünüzdeki <code>.m3u</code> çalma listeleri <strong>Çalma listeleri</strong>'nde görünür.</li>
 <li>Kendi çalma listeleriniz <code>data/playlists</code> içinde <code>.m3u8</code> dosyaları olarak kaydedilir. Çalma listeleri sekmesinde <kbd>START</kbd> ile ya da herhangi bir şarkı, albüm veya sanatçıda <strong>Çalma listesine ekle</strong> ile bir tane oluşturun. <strong>Sırayı çalma listesi olarak kaydet</strong> (Şimdi Çalıyor'un Daha fazla menüsü) sıradakileri saklar.</li>
 <li>Kendi çalma listenizin içinde bir şarkının menüsü onu yukarı ya da aşağı taşıyabilir veya kaldırabilir; listenin menüsü onu yeniden adlandırır ya da siler.</li>
+<li>Subsonic ya da Jellyfin sunucusundaki çalma listeleri de düzenlenebilir; bkz. <a href="servers.html#server-playlists">Sunucular</a>.</li>
 </ul>
 
 <h2 id="liked">Beğenilenler, Son çalınanlar, En çok çalınanlar ve İstatistikler</h2>
@@ -97,6 +99,25 @@
 </ul>
 <p>Bir şarkı, yarısı (ya da dört dakikası) çaldığında dinlenmiş sayılır; çalar açık olsun ya da olmasın. <strong>Puan</strong> 1'den 5'e gider (her <kbd>A</kbd> bir sonraki değere geçer). Subsonic ya da Jellyfin sunucusundaki şarkıların beğenileri ve puanları sunucuya da gönderilir; bkz. <a href="servers.html">Sunucular</a>.</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="İstatistikler: çalmalar, saatler, geçen ay ve en sevilen sanatçılar" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">Akıllı listeler</h2>
+<p>Yukarıdaki listelerden sonra her açtığında kurallarla kendini dolduran <strong>akıllı listeler</strong> gelir. Hazır olanlar: <strong>En çok dinlenen (30 gün)</strong>, <strong>Yeni eklenenler</strong>, <strong>Hiç dinlenmeyen</strong>, <strong>Beğenilenler</strong>, <strong>En yüksek puanlı</strong>, <strong>Unutulan favoriler</strong> (çok dinlediğin ama son üç ayda dinlemediğin şarkılar) ve günde bir kez değişen <strong>Rastgele karışım (bugün)</strong>.</p>
+<ul>
+<li>Çalma listeleri sekmesinde <kbd>START</kbd> → <strong>Yeni akıllı liste</strong> düzenleyiciyi açar: <strong>Kural ekle</strong> (bir alan, bir koşul ve bir değer seç), <strong>Tüm kurallara uy</strong> ya da <strong>Herhangi bir kurala uy</strong>, <strong>Sıralama</strong> ve <strong>Sınır</strong>, sonra <strong>Kaydet</strong> ve ona bir ad ver. Düzenleyicide bir kuralı seçmek onu kaldırır.</li>
+<li>Alanlar: başlık, sanatçı, albüm, albüm sanatçısı, tür, yıl, süre, biçim, bit hızı, klasör, yol, parça numarası, eklenme tarihi, dinlenme sayısı, son dinlenme, beğeni ve puan. Koşullar alana göre değişir: <em>eşittir</em>, <em>içerir</em>, <em>ile başlar</em>, <em>büyüktür/küçüktür</em>, <em>arasında</em>, <em>son … gün içinde</em> vb.</li>
+<li>Bir akıllı listenin menüsünde <strong>Kuralları düzenle</strong>, <strong>Yeniden adlandır</strong> ve <strong>Listeyi sil</strong> vardır. <code>data/smart.json</code> içine kaydedilirler.</li>
+<li>Tür, yıl ve eklenme tarihi kütüphane taramasından gelir; güncellemeden sonraki ilk tarama bunları almak için her dosyayı bir kez okur.</li>
+</ul>
+
+<h2 id="edit-tags">Etiketler, kapaklar ve MusicBrainz</h2>
+<p>Kendi kütüphanendeki (SD karttaki ya da diskteki MP3, FLAC, Ogg, Opus veya M4A dosyaları) bir şarkının, albümün ya da sanatçının <kbd>START</kbd> menüsünde bilgilerini düzeltecek araçlar vardır. Uzun işler arka planda çalışır ve İndirmeler'de görünür.</p>
+<ul>
+<li><strong>Etiketleri düzenle</strong> (bir şarkı): başlık, sanatçı, albüm, albüm sanatçısı, tür, yıl, parça ve disk. Yazmak için bir alan seç, sonra <strong>Dosyalara kaydet</strong>. <strong>Albüm etiketleri</strong> albümün tüm şarkıları için albümü, albüm sanatçısını, türü ve yılı bir kerede değiştirir.</li>
+<li><strong>Kapak bul</strong> (bir albüm): MusicBrainz'in Cover Art Archive'ında, sonra iTunes'ta arar ve <strong>Klasöre kaydet</strong> (<code>cover.jpg</code> olarak), <strong>Dosyalara göm</strong> ya da <strong>İkisi de</strong> seçeneklerini sunar.</li>
+<li><strong>MusicBrainz'de ara</strong> (bir albüm): eşleşen sürümleri listeler (başlık, yıl, ülke, parça sayısı, plak şirketi); birini seç, şarkılarından kaçının parça ve süreyle eşleştiğini gösterir, sonra <strong>Uygula</strong> ya da <strong>Kapakla uygula</strong> doğru başlıkları, sanatçıları, numaraları, yılı ve türü yazar. Eşleşmeyen şarkılara dokunulmaz.</li>
+<li><strong>ReplayGain hesapla</strong> (şarkı, albüm ya da sanatçı): ReplayGain'i olmayan şarkıların ses yüksekliğini ölçer ve yazar; bkz. <a href="sound.html#replaygain-compute">Ses</a>.</li>
+</ul>
+<p>Yalnızca etiketler değişir: dosyadaki ses olduğu gibi kalır ve kütüphane değişiklikleri hemen alır.</p>
 
 <h2 id="formats">Biçimler</h2>
 <table>

@@ -59,6 +59,7 @@
           <li><a href="lyrics.html">歌詞</a></li>
           <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
           <li><a href="modules.html">モジュール</a></li>
+          <li><a href="network.html">ネットワーク</a></li>
           <li><a href="servers.html">サーバー</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
           <li><a href="scrobbling.html">スクロブル</a></li>
@@ -88,6 +89,7 @@
 <li>音楽フォルダー内の <code>.m3u</code> プレイリストは<strong>リスト</strong>に表示されます。</li>
 <li>自分で作ったプレイリストは <code>data/playlists</code> に <code>.m3u8</code> ファイルとして保存されます。リストタブで <kbd>START</kbd> を押すか、曲・アルバム・アーティストの<strong>リストに追加</strong>で作成できます。<strong>キューを保存</strong>（再生中のその他メニュー）でキューの内容を保存できます。</li>
 <li>自分のプレイリストの中では、曲のメニューで上下に移動したり削除したりできます。プレイリストのメニューでは名前の変更や削除ができます。</li>
+<li>Subsonic や Jellyfin サーバーのプレイリストも編集できます。<a href="servers.html#server-playlists">サーバー</a>を参照してください。</li>
 </ul>
 
 <h2 id="liked">お気に入り、最近、よく聴く曲、統計</h2>
@@ -100,6 +102,25 @@
 </ul>
 <p>曲の半分（または 4 分）が再生されると、プレイヤーが開いていたかどうかに関係なく「聴いた」とカウントされます。<strong>評価</strong>は 1 から 5 まで（<kbd>A</kbd> を押すたびに次の値へ）。Subsonic や Jellyfin のサーバーの曲のお気に入りと評価はサーバーにも送られます。<a href="servers.html">サーバー</a>を参照してください。</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="統計：再生回数、時間、直近 1 か月、よく聴くアーティスト" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="smart-playlists">スマートリスト</h2>
+<p>上のリストのあとに<strong>スマートリスト</strong>が並びます。開くたびにルールに従って自動で曲が集まります。最初から用意されているもの：<strong>よく聴いた曲 (30日)</strong>、<strong>最近追加</strong>、<strong>未再生</strong>、<strong>お気に入り</strong>、<strong>高評価</strong>、<strong>忘れていたお気に入り</strong>（たくさん聴いたのに直近 3 か月は聴いていない曲）、<strong>ランダムミックス (今日)</strong>（1 日 1 回変わります）。</p>
+<ul>
+<li>リストタブで <kbd>START</kbd> → <strong>新しいスマートリスト</strong>でエディターが開きます。<strong>ルールを追加</strong>（項目・条件・値を選ぶ）、<strong>すべてのルールに一致</strong>または<strong>いずれかに一致</strong>、並び順と上限を決めて<strong>保存</strong>し、名前を付けます。エディターでルールを選ぶと、そのルールは削除されます。</li>
+<li>項目：タイトル、アーティスト、アルバム、アルバムアーティスト、ジャンル、年、長さ、形式、ビットレート、フォルダー、パス、トラック番号、追加日、再生回数、最後の再生、お気に入り、評価。条件は項目によって変わります：<em>と同じ</em>、<em>を含む</em>、<em>で始まる</em>、<em>より大きい／小さい</em>、<em>の間</em>、<em>直近 … 日</em>など。</li>
+<li>スマートリストのメニューには<strong>ルールを編集</strong>、<strong>名前を変更</strong>、<strong>リストを削除</strong>があります。<code>data/smart.json</code> に保存されます。</li>
+<li>ジャンル、年、追加日はライブラリのスキャンで取得します。アップデート後の最初のスキャンでは、それを読むために全ファイルを一度読み込みます。</li>
+</ul>
+
+<h2 id="edit-tags">タグ、ジャケット、MusicBrainz</h2>
+<p>自分のライブラリ（SD カードやディスクの MP3、FLAC、Ogg、Opus、M4A ファイル）の曲・アルバム・アーティストの <kbd>START</kbd> メニューに、情報を直すための道具があります。時間のかかる作業はバックグラウンドで進み、ダウンロードに表示されます。</p>
+<ul>
+<li><strong>タグを編集</strong>（曲）：タイトル、アーティスト、アルバム、アルバムアーティスト、ジャンル、年、トラック、ディスク。項目を選んで入力し、<strong>ファイルに保存</strong>します。<strong>アルバムのタグ</strong>は、アルバムの全曲のアルバム、アルバムアーティスト、ジャンル、年を一度に変えます。</li>
+<li><strong>カバーを探す</strong>（アルバム）：MusicBrainz の Cover Art Archive、次に iTunes で探し、<strong>フォルダに保存</strong>（<code>cover.jpg</code> として）、<strong>ファイルに埋め込む</strong>、<strong>両方</strong>から選べます。</li>
+<li><strong>MusicBrainz で検索</strong>（アルバム）：一致するリリース（タイトル、年、国、トラック数、レーベル）を一覧にします。ひとつ選ぶと、トラック番号と長さで何曲が一致するかを示し、<strong>適用</strong>または<strong>カバーも適用</strong>で正しいタイトル、アーティスト、番号、年、ジャンルを書き込みます。一致しない曲はそのままです。</li>
+<li><strong>ReplayGain を計算</strong>（曲、アルバム、アーティスト）：ReplayGain のない曲の音の大きさを測り、ReplayGain を書き込みます。<a href="sound.html#replaygain-compute">サウンド</a>を参照してください。</li>
+</ul>
+<p>変わるのはタグだけです。ファイルの音声はそのままで、ライブラリにはすぐに反映されます。</p>
 
 <h2 id="formats">対応フォーマット</h2>
 <table>
