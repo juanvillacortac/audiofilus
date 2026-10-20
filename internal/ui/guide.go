@@ -64,6 +64,8 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"A", "ru_g_jump"}, {"v", "ru_g_duck"}, {"Y", "g_pause"}, {"START", "h_pause"}}
 	case a.screen == Games:
 		own = []hint{{"<>", "gm_choose"}, {"A", "gm_play"}, {"B", "h_back"}}
+	case a.screen == Visual && a.vis.kind == visMilk:
+		own = []hint{{"<>", "h_visual"}, {"L1/R1", "milk_h_preset"}, {"A", "milk_lock"}, {"B", "h_back"}}
 	case a.screen == Visual:
 		own = []hint{{"<>", "h_visual"}, {"A", "g_camera"}, {"B", "h_back"}}
 	case a.screen == Modules:

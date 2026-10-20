@@ -2246,6 +2246,12 @@ func (a *App) writeFrames() error {
 			return err
 		}
 		a.screen, a.vis.kind, a.vis.switchAt = Visual, kind, 0
+		if kind == visMilk {
+			if err := a.milkFrames(dir); err != nil {
+				return err
+			}
+			continue
+		}
 		frames := 60
 		if kind == visDrift {
 			a.drift = newDrift()

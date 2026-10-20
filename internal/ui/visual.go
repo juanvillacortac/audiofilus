@@ -30,6 +30,8 @@ import (
 //     a la música (lake.go).
 //   - Crestas: las líneas apiladas de Unknown Pleasures, hechas del espectro
 //     de cada momento (ridges.go).
+//   - MilkDrop: presets de MilkDrop 1, en color (milkdrop.go e
+//     internal/milkdrop).
 //
 // El servicio da el espectro, no la forma de onda: los osciloscopios la
 // sintetizan del espectro real (reaccionan a la música, pero no son la onda).
@@ -43,11 +45,12 @@ const (
 	visTrench
 	visLake
 	visRidges
+	visMilk
 	visCount
 )
 
 // visNames son las claves de los nombres de cada visualizador.
-var visNames = [visCount]string{"vis_drift", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake", "vis_ridges"}
+var visNames = [visCount]string{"vis_drift", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake", "vis_ridges", "vis_milk"}
 
 // visState es la pantalla de visualizadores.
 type visState struct {
@@ -67,11 +70,16 @@ type visState struct {
 	ridgeBatch rectBatch
 	frame      int // para redibujar a 30 fps
 	lastKind   int
+	milk       *milkState    // MilkDrop (milkdrop.go)
+	milkOut    *ebiten.Image // su último fotograma
 }
 
 // updateVisual atiende la pantalla de visualizadores.
 func (a *App) updateVisual() {
 	v, in := &a.vis, &a.input
+	if v.kind == visMilk && a.updateMilk() {
+		return
+	}
 	switch {
 	case in.Pressed(ActRight):
 		v.kind, v.switchAt = (v.kind+1)%visCount, a.t
@@ -150,6 +158,10 @@ func (a *App) drawVisual(dst *ebiten.Image) {
 	v := &a.vis
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	top, bottom := topH, h-bottomH
+	if v.kind == visMilk {
+		a.drawMilk(dst, top, bottom)
+		return
+	}
 	// A media resolución (píxeles gordos), salvo Derrape: el coche necesita
 	// detalle.
 	scale := 2

@@ -1,0 +1,49 @@
+[preset00]
+fRating=4.000000
+fGammaAdj=1.700000
+fDecay=0.930000
+fVideoEchoZoom=1.000000
+fVideoEchoAlpha=0.000000
+nWaveMode=0
+fWaveAlpha=0.000000
+bTexWrap=0
+zoom=1.010000
+rot=0.000000
+warp=0.000000
+dy=0.006000
+ib_size=0.004000
+ib_r=0.200000
+ib_g=0.400000
+ib_b=0.900000
+ib_a=0.300000
+wavecode_0_enabled=1
+wavecode_0_samples=160
+wavecode_0_bSpectrum=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.000000
+wavecode_0_r=1.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=0.900000
+wave_0_per_frame1=t1 = time*0.1;
+wave_0_per_point1=x = 0.05 + sample*0.9;
+wave_0_per_point2=y = 0.08 + value1*1.1;
+wave_0_per_point3=h = sample*6.2832 + t1;
+wave_0_per_point4=r = 0.5 + 0.5*sin(h); g = 0.5 + 0.5*sin(h + 2.09); b = 0.5 + 0.5*sin(h + 4.18);
+wavecode_1_enabled=1
+wavecode_1_samples=64
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.000000
+wavecode_1_r=1.000000
+wavecode_1_g=0.900000
+wavecode_1_b=0.600000
+wavecode_1_a=0.800000
+wave_1_per_frame1=t2 = q1;
+wave_1_per_point1=x = 0.5 + 0.45*sin(sample*37 + t2)*(0.3 + abs(value1)*2);
+wave_1_per_point2=y = 0.1 + 0.6*abs(value2)*(0.5 + sample);
+wave_1_per_point3=a = 0.3 + abs(value1)*2;
+per_frame_1=q1 = time*0.7;
+per_frame_2=dy = 0.004 + 0.006*bass_att;
+per_frame_3=ib_a = 0.15 + 0.2*treb_att;

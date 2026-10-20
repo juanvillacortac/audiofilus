@@ -233,6 +233,9 @@ func (a *App) openVisualMenu() {
 			do:     func() { v.kind, v.switchAt = k, a.t },
 			active: func() bool { return v.kind == k }})
 	}
+	if v.kind == visMilk {
+		m.items = append(a.milkMenuItems(), m.items...)
+	}
 	m.items = append(m.items, menuItem{label: T("h_pause"), icon: "pause", do: func() { a.send("toggle") }})
 	a.menu = m
 }

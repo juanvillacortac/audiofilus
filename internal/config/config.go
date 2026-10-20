@@ -129,6 +129,9 @@ type UI struct {
 	// LyricsOffline apaga la búsqueda de letras en internet (LRCLIB): solo
 	// se usan los .lrc y las etiquetas.
 	LyricsOffline bool `json:"lyrics_offline,omitempty"`
+	// MilkDropColors son los colores del visualizador MilkDrop: "" los de
+	// cada preset, "album" los del disco que suena (el tema).
+	MilkDropColors string `json:"milkdrop_colors,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen
