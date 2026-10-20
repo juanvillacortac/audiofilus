@@ -26,6 +26,7 @@ jobs:
         run: |
           mkdir -p out
           cp dist/audiofilus.zip out/audiofilus-portmaster.zip
+          cp dist/audiofilus.muxapp out/audiofilus.muxapp
           for arch in amd64 arm64; do
             d=audiofilus-linux-$arch
             mkdir -p "$d/licenses"

@@ -51,3 +51,17 @@ mkdir -p "$pkg/audiofilus/licenses"
 cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip
+
+# La aplicación de muOS, sin PortMaster: dist/audiofilus.muxapp, un zip con la
+# carpeta de la app (su lanzador mux_launch.sh, el icono, el binario y las
+# licencias) que muOS instala desde su gestor de archivos en su carpeta de
+# aplicaciones.
+app=dist/muxapp
+rm -rf "$app" dist/audiofilus.muxapp
+mkdir -p "$app/audiofilus"
+cp -r muos/audiofilus/. "$app/audiofilus/"
+cp dist/audiofilus-arm64 "$app/audiofilus/audiofilus.aarch64"
+cp -r "$pkg/audiofilus/licenses" "$app/audiofilus/"
+chmod +x "$app/audiofilus/mux_launch.sh" "$app/audiofilus/audiofilus.aarch64"
+(cd "$app" && zip -qr ../audiofilus.muxapp .)
+echo dist/audiofilus.muxapp

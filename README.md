@@ -170,6 +170,8 @@ The same player on iOS, touch first: every row, cover, tab and button is tappabl
 
 Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
+**On muOS, without PortMaster:** download `audiofilus.muxapp`, copy it to the `ARCHIVE` folder on your SD card, and install it from muOS's Archive Manager. audiofilus then shows up in **Applications**.
+
 **YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds. Songs that need a signed-in account (age-restricted) are played from another upload of the same song when there is one. If YouTube asks your network to confirm it's not a bot, or you want signed-in access, put a `cookies.txt` exported from your browser in that `yt-dlp/` folder ([how](https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies)).
 
 ### Linux desktop

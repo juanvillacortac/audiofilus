@@ -18,3 +18,9 @@ audiofilus also runs on **muOS** (MustardOS), which works on the same Anbernic H
 | Governor in sleep, frozen `gptokeyb`, power button (`KEY_POWER`) | — | Same as on Knulli (it's sysfs and evdev) |
 
 If something doesn't work on muOS, the most likely causes: its `muhotkey` grabbing the power button (then a tap wouldn't trigger the app's sleep, but it wouldn't suspend either, because of `caffeine`) or the controller (the sleep gestures arrive through the device SDL sees, which on muOS may be its "muOS-Keys" virtual controller). The first thing to check is `data/audiofilus.log` (it says which controller and which power button it found).
+
+## As a muOS application (no PortMaster)
+
+Releases also ship `audiofilus.muxapp` (built by `build.sh`): a zip with an `audiofilus/` folder that muOS's Archive Manager extracts into its applications folder (`MUOS/application`), so audiofilus shows up in **Applications** instead of Ports. The folder holds `mux_launch.sh` (from `muos/audiofilus/`), the `glyph/audiofilus.png` icon its `ICON` header names, the arm64 binary and the licenses; settings and `data/` live in that same folder (`AUDIOFILUS_HOME`).
+
+muOS runs `mux_launch.sh <app folder>`. The launcher works with both launcher generations, Jacaranda and later (`SETUP_APP`) and the older ones (`SETUP_SDL_ENVIRONMENT`), sourcing whichever of `func.sh`, `stage.sh` and `retro.sh` exist. It needs nothing from PortMaster: the gamepad mapping comes from the system's SDL, and there is no `gptokeyb`. muOS closes an application with `pgrep -f <foreground_process>`, which would also match the music service (`audiofilusd daemon`). So the launcher starts the UI in the background and registers its **PID** as the foreground process, which muOS kills directly, and the music keeps playing only if "Background" was chosen, as with the port. Not tested on a muOS device yet.
