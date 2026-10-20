@@ -99,7 +99,14 @@ func TestParseVGMRips(t *testing.T) {
 	if !strings.HasSuffix(it.URL, ".zip") || it.Artist != "Masato Nakamura" || it.Size < 800*1024 {
 		t.Errorf("item = %+v", it)
 	}
-	p, ok := parseVGMRipsPack(fixture(t, "vgmrips_pack.html"), "https://vgmrips.net/packs/pack/famicom-grand-prix-ii")
+	// Un paquete de chips que libgme no emula (NES APU y FDS en VGM) no se
+	// ofrece: sonaría en silencio.
+	if p, ok := parseVGMRipsPack(fixture(t, "vgmrips_pack.html"), "https://vgmrips.net/packs/pack/famicom-grand-prix-ii"); ok {
+		t.Errorf("unplayable pack offered: %+v", p)
+	}
+	// Con los chips de la Mega Drive, sí.
+	page := strings.ReplaceAll(strings.ReplaceAll(fixture(t, "vgmrips_pack.html"), "chip/fds", "chip/ym2612"), "chip/nes-apu", "chip/sn76489")
+	p, ok := parseVGMRipsPack(page, "https://vgmrips.net/packs/pack/famicom-grand-prix-ii")
 	if !ok || p.Title != "Famicom Grand Prix II: 3D Hot Rally" || !strings.HasSuffix(p.URL, ".zip") || !strings.Contains(p.Artist, "Soyo Oka") {
 		t.Errorf("pack = %+v (ok %v)", p, ok)
 	}

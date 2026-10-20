@@ -147,6 +147,9 @@ func gmeOpen(file string) (uintptr, error) {
 	if err := loadGME(); err != nil {
 		return 0, errNoLib(err)
 	}
+	if err := vgmCheck(file); err != nil {
+		return 0, err
+	}
 	var emu uintptr
 	if err := gmeError("gme_open_file", gme.open(cString(file), &emu, gmeRate)); err != nil {
 		return 0, fmt.Errorf("%w: %v", ErrUnsupported, err)

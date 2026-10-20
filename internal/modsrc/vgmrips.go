@@ -96,7 +96,24 @@ var (
 	vrH1Re       = regexp.MustCompile(`(?s)<h1>(.*?)</h1>`)
 	vrZipRe      = regexp.MustCompile(`href="([^"]+/files/[^"]+\.zip)"`)
 	vrComposerA  = regexp.MustCompile(`(?s)<a href="[^"]*/packs/composer/[^"]*">(.*?)</a>`)
+	vrChipRe     = regexp.MustCompile(`/packs/chip/([a-z0-9-]+)"`)
 )
+
+// vgmChips son los chips de VGM que libgme emula (los de Genesis y Master
+// System). Un paquete con otros (los de las placas arcade: YM2151,
+// SegaPCM, QSound...) sonaría en silencio, así que no se ofrece.
+var vgmChips = map[string]bool{"sn76489": true, "sn76496": true, "ym2612": true, "ym2413": true}
+
+// vgmPlayable dice si los chips de un paquete (los de su bloque o su
+// página) se pueden tocar todos. Sin chips a la vista, sí.
+func vgmPlayable(b string) bool {
+	for _, m := range vrChipRe.FindAllStringSubmatch(b, -1) {
+		if !vgmChips[m[1]] {
+			return false
+		}
+	}
+	return true
+}
 
 // parseVGMRips saca los paquetes de una lista de VGMRips (cada uno, un
 // bloque "result row").
@@ -113,7 +130,7 @@ func parseVGMRips(page string) []Item {
 			}
 		}
 		dm := vrDownRe.FindStringSubmatch(b)
-		if pm == nil || dm == nil {
+		if pm == nil || dm == nil || !vgmPlayable(b) {
 			continue
 		}
 		it := Item{Source: "vgmrips", ID: pm[2], Title: text(pm[3]), Format: "VGM", Pack: true,
@@ -138,7 +155,7 @@ func parseVGMRipsPack(page, final string) (Item, bool) {
 	h := vrH1Re.FindStringSubmatch(page)
 	z := vrZipRe.FindStringSubmatch(page)
 	slug := final[strings.LastIndex(final, "/")+1:]
-	if h == nil || z == nil || !strings.Contains(final, "/packs/pack/") {
+	if h == nil || z == nil || !strings.Contains(final, "/packs/pack/") || !vgmPlayable(page) {
 		return Item{}, false
 	}
 	it := Item{Source: "vgmrips", ID: slug, Title: text(h[1]), Format: "VGM", Pack: true, Page: final, URL: html2url(z[1])}
