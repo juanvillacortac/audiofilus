@@ -32,6 +32,24 @@ type Config struct {
 	// Servers son las bibliotecas remotas (Subsonic/OpenSubsonic: Navidrome,
 	// gonic, Airsonic...), ver internal/remote.
 	Servers []Server `json:"servers,omitempty"`
+	// Scrobble son las cuentas donde contar lo que se escucha.
+	Scrobble Scrobble `json:"scrobble,omitzero"`
+}
+
+// Scrobble son las cuentas de Last.fm y ListenBrainz (ver internal/scrobble).
+type Scrobble struct {
+	ListenBrainzToken string `json:"listenbrainz_token,omitempty"`
+	ListenBrainzUser  string `json:"listenbrainz_user,omitempty"`
+	LastFMSession     string `json:"lastfm_session,omitempty"`
+	LastFMUser        string `json:"lastfm_user,omitempty"`
+	// LastFMKey y LastFMSecret son la aplicación de Last.fm; vacías, las
+	// que trae audiofilus (scrobble.DefaultLastFMKey).
+	LastFMKey    string `json:"lastfm_api_key,omitempty"`
+	LastFMSecret string `json:"lastfm_secret,omitempty"`
+	// NoServer: no contar las escuchas en Subsonic/Jellyfin (de lo que
+	// suena de sus servidores; por defecto sí, y Navidrome las reenvía a
+	// Last.fm y ListenBrainz si el usuario lo configuró allí).
+	NoServer bool `json:"no_server,omitempty"`
 }
 
 // Server es una biblioteca remota.

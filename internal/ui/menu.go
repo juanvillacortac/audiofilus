@@ -196,6 +196,7 @@ func (a *App) openItemMenu(v *view) {
 			artist = al.Artist
 		}
 		a.menu = a.songsMenu(s.Title, songs, al, artist)
+		a.menu.items = append(a.menu.items, a.markItems(s)...)
 		if v.kind == vPlaylist && v.pl != nil && !v.pl.Remote {
 			a.menu.items = append(a.menu.items, a.playlistSongItems(v.pl, v.sel)...)
 		}
@@ -219,7 +220,9 @@ func (a *App) openNowMenu() {
 	}
 	if a.playingSong.Path != "" {
 		m.items = append(m.items, menuItem{label: T("lyr_title"), icon: "lyrics", do: a.openLyrics})
+		m.items = append(m.items, a.markItems(a.playingSong)...)
 	}
+	m.items = append(m.items, a.timerItem())
 	if song := a.playingSong; song.Path != "" {
 		if remote.IsRemote(song.Path) {
 			m.items = append(m.items, menuItem{label: T("ytm_download"), icon: "download", do: func() { a.downloadRemote([]Song{song}) }})

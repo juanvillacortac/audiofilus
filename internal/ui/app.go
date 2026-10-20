@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/juanvillacortac/audiofilus/internal/engine"
+	"github.com/juanvillacortac/audiofilus/internal/history"
 	"github.com/juanvillacortac/audiofilus/internal/lyrics"
 	"github.com/juanvillacortac/audiofilus/internal/podcast"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
@@ -51,6 +53,16 @@ type App struct {
 	offline bool // maqueta sin servicio (capturas y pruebas de memoria)
 
 	// La vista de letras de Now Playing (lyrics.go).
+	// Las favoritas y el historial (marks.go): marks se carga la primera
+	// vez; hist es el historial leído y histAt la fecha de su archivo
+	// entonces; timerChoice, la última opción del temporizador.
+	eqEdit      *eqEditor   // el editor del ecualizador abierto (sound.go)
+	acctCh      chan func() // lo que vuelve de comprobar una cuenta (sound.go)
+	marks       *history.Marks
+	hist        []history.Listen
+	histAt      time.Time
+	timerChoice int
+
 	lyricsOn  bool
 	lyr       lyricsView
 	lyrCh     chan lyricsResult
@@ -251,6 +263,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
 		lyrCh:  make(chan lyricsResult, 4),
+		acctCh: make(chan func(), 4),
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 		kbEvents: make(chan kbEvent, 64),
 	}
@@ -437,6 +450,7 @@ func (a *App) Update() error {
 	a.syncStatus()
 	a.sendArt()
 	a.updateLyricsFetch()
+	a.updateAccounts()
 	a.updateKeyboard()
 	if a.drawer != nil {
 		a.updateDrawer()
@@ -611,6 +625,10 @@ func (a *App) updateMain() {
 	}
 	if a.prompt != nil {
 		a.updatePrompt()
+		return
+	}
+	if a.eqEdit != nil {
+		a.updateEQ()
 		return
 	}
 	if a.updateDock() {
@@ -1111,6 +1129,7 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 		}
 		a.drawYTBar(dst)
 		a.drawMenu(dst)
+		a.drawEQ(dst)
 		a.drawPrompt(dst)
 		a.drawDock(dst)
 		a.drawGuide(dst)
@@ -1432,6 +1451,12 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.settingsQR = false
+	// El editor del ecualizador, con el preajuste Rock.
+	a.eqEdit = &eqEditor{gains: engine.PresetGains("rock"), preset: "rock", sel: 6}
+	if err := shot("ecualizador"); err != nil {
+		return err
+	}
+	a.eqEdit = nil
 	a.screen = NowPlaying
 	a.openNowMenu()
 	if err := shot("menu"); err != nil {

@@ -80,10 +80,10 @@ func (j *jellyfin) call(ctx context.Context, method, path string, body, out any)
 	if resp.StatusCode == http.StatusUnauthorized {
 		return fmt.Errorf("jellyfin: wrong user or password")
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("jellyfin: %s %s", path, resp.Status)
 	}
-	if out != nil {
+	if out != nil && resp.StatusCode != http.StatusNoContent {
 		return json.NewDecoder(resp.Body).Decode(out)
 	}
 	return nil
@@ -133,6 +133,9 @@ type jfItem struct {
 	ImageTags         struct {
 		Primary string `json:"Primary"`
 	} `json:"ImageTags"`
+	UserData struct {
+		IsFavorite bool `json:"IsFavorite"`
+	} `json:"UserData"`
 }
 
 // song pasa un Item a Song (la portada: la del álbum o la propia).
@@ -140,6 +143,9 @@ func (it jfItem) song() Song {
 	s := Song{ID: it.ID, Title: it.Name, Album: it.Album, AlbumID: it.AlbumID, AlbumArtist: it.AlbumArtist,
 		Track: it.IndexNumber, Disc: it.ParentIndexNumber, Duration: int(it.RunTimeTicks / 10_000_000), Suffix: it.Container}
 	s.Artist = strings.Join(it.Artists, ", ")
+	if it.UserData.IsFavorite {
+		s.Starred = "1"
+	}
 	if s.Artist == "" {
 		s.Artist = it.AlbumArtist
 	}

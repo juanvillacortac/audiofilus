@@ -40,6 +40,12 @@ type Backend interface {
 	StreamURL(id string) string
 	DownloadURL(id string) string
 	CoverURL(coverArt string, size int) string
+	// SetFavorite marca o desmarca una canción como favorita, SetRating la
+	// valora (0 a 5; Jellyfin no valora y no hace nada) y Scrobble cuenta que
+	// se escuchó en at (ver userdata.go).
+	SetFavorite(ctx context.Context, id string, on bool) error
+	SetRating(ctx context.Context, id string, rating int) error
+	Scrobble(ctx context.Context, id string, at time.Time) error
 	fetch(ctx context.Context, u string) (*http.Response, error)
 }
 
@@ -70,6 +76,11 @@ type Song struct {
 	Duration    int    `json:"duration"`
 	Suffix      string `json:"suffix"`
 	CoverArt    string `json:"coverArt"`
+	// Starred no está vacío si la canción es favorita en el servidor (en
+	// Subsonic, la fecha en que se marcó); Rating es su valoración (1 a 5,
+	// 0 sin valorar; Jellyfin no tiene).
+	Starred string `json:"starred,omitempty"`
+	Rating  int    `json:"userRating,omitempty"`
 }
 
 // Playlist es una lista del servidor, con los ids de sus canciones.

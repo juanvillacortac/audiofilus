@@ -390,6 +390,28 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 		drawIcon(dst, "radio", cx+ox+6, cy+size-11, th.Accent)
 	}
 
+	// En las esquinas de arriba de la portada: el corazón si es favorita y
+	// lo que le queda al temporizador.
+	if a.isFavSong(song.Path) {
+		panel(dst, cx+ox+size-15, cy+3, 12, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "heart", cx+ox+size-13, cy+5, th.Accent)
+	}
+	if a.status.TimerLeft > 0 || a.status.StopAfter {
+		// La luna, y los minutos que quedan o una nota (al acabar la canción).
+		label := fmt.Sprint(int(a.status.TimerLeft/60) + 1)
+		lw := textWidth(label, SmallFace)
+		if a.status.StopAfter {
+			lw = 7
+		}
+		panel(dst, cx+ox+3, cy+3, lw+15, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "moon", cx+ox+5, cy+5, th.Accent)
+		if a.status.StopAfter {
+			drawIcon(dst, "note", cx+ox+14, cy+5, th.Text)
+		} else {
+			drawText(dst, label, SmallFace, cx+ox+14, cy+5, th.Text)
+		}
+	}
+
 	// Los textos.
 	var tx, tw, ty int
 	if wide {

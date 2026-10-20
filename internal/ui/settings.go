@@ -5,6 +5,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
 	"image"
 	"math"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -33,6 +34,10 @@ const (
 	setDonate
 	setCloseBg
 	setLyricsWeb
+	setReplayGain
+	setEQ
+	setCrossfade
+	setScrobble
 	setCount
 )
 
@@ -85,6 +90,14 @@ var settingSections = []settingSection{
 		{setShuffle, "shuffle", tileToggle},
 		{setRepeat, "repeat", tileChoice},
 		{setVolume, "speaker", tileSlider},
+		{setCrossfade, "repeat", tileChoice},
+	}},
+	{"sec_sound", []settingTile{
+		{setReplayGain, "speaker", tileChoice},
+		{setEQ, "eq", tileAction},
+	}},
+	{"sec_online", []settingTile{
+		{setScrobble, "user", tileAction},
 		{setLyricsWeb, "lyrics", tileToggle},
 	}},
 	{"sec_screen", []settingTile{
@@ -229,6 +242,10 @@ func (a *App) updateSettings() {
 			a.settingsQR, a.qrURL = true, donateURL
 		case setServers:
 			a.openServersMenu()
+		case setEQ:
+			a.openEQ()
+		case setScrobble:
+			a.openScrobbleMenu()
 		}
 	}
 }
@@ -306,6 +323,16 @@ func (a *App) changeSetting(id, step int) {
 	case setLyricsWeb:
 		a.cfg.UI.LyricsOffline = !a.cfg.UI.LyricsOffline
 		a.saveConfig()
+	case setReplayGain:
+		n, i := a.settingChoice(id)
+		mode := rgModes[cycle(n, i)]
+		a.send("replaygain", mode)
+		a.status.DSP.ReplayGain = mode
+	case setCrossfade:
+		n, i := a.settingChoice(id)
+		v := xfChoices[cycle(n, i)]
+		a.send("crossfade", fmt.Sprint(v))
+		a.status.DSP.Crossfade = v
 	case setSwapAB:
 		a.cfg.UI.SwapAB = !a.cfg.UI.SwapAB
 		a.input.swapAB = a.cfg.UI.SwapAB
@@ -353,6 +380,10 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.Sounds })
 	case setUISounds:
 		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.UISounds })
+	case setReplayGain:
+		return find(len(rgModes), func(i int) bool { return rgModes[i] == a.dspOf().ReplayGain })
+	case setCrossfade:
+		return find(len(xfChoices), func(i int) bool { return xfChoices[i] == a.dspOf().Crossfade })
 	}
 	return 0, 0
 }
@@ -397,6 +428,27 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.keepPlaying())
 	case setLyricsWeb:
 		return onOffLabel(!a.cfg.UI.LyricsOffline)
+	case setReplayGain:
+		return T("rg_" + a.dspOf().ReplayGain)
+	case setCrossfade:
+		if v := a.dspOf().Crossfade; v > 0 {
+			return fmt.Sprintf("%g s", v)
+		}
+		return onOffLabel(false)
+	case setEQ:
+		return T("eq_" + a.dspOf().EQPreset)
+	case setScrobble:
+		var names []string
+		if a.cfg.Scrobble.LastFMSession != "" {
+			names = append(names, "Last.fm")
+		}
+		if a.cfg.Scrobble.ListenBrainzToken != "" {
+			names = append(names, "ListenBrainz")
+		}
+		if len(names) == 0 {
+			return T("acct_none")
+		}
+		return strings.Join(names, ", ")
 	case setExitBg:
 		return T("exit_bg_sub")
 	case setExitStop:
@@ -441,7 +493,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
-		T("set_close_bg"), T("set_lyrics_web"),
+		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"),
 	}
 }
 
@@ -663,6 +715,13 @@ func choiceLabel(id, i int) string {
 		return T("mode_" + sleepModes[i])
 	case setSounds, setUISounds:
 		return T("snd_" + orDefault(soundLevels[i], "mid"))
+	case setReplayGain:
+		return T("rg_" + rgModes[i])
+	case setCrossfade:
+		if xfChoices[i] == 0 {
+			return onOffLabel(false)
+		}
+		return fmt.Sprintf("%gs", xfChoices[i])
 	case setSleep:
 		s := sleepChoices[i]
 		switch {

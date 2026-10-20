@@ -37,6 +37,7 @@ const (
 	vPlaylists                 // lista de listas .m3u
 	vPlaylist                  // las canciones de una lista
 	vFolder                    // una carpeta: subcarpetas y canciones
+	vStats                     // las estadísticas de lo escuchado (marks.go)
 )
 
 // view es una vista de la biblioteca. Cada sección tiene una pila de vistas:
@@ -53,7 +54,8 @@ type view struct {
 	pl        *Playlist // la lista que se ve (vPlaylist), para editarla
 	dir       string
 	dirs      []string
-	scr       scroller // el desplazamiento con el dedo (pointer.go)
+	stats     []statRow // las filas de las estadísticas (vStats)
+	scr       scroller  // el desplazamiento con el dedo (pointer.go)
 }
 
 // count es cuántos elementos se pueden elegir en la vista.
@@ -67,6 +69,8 @@ func (v *view) count() int {
 		return len(v.playlists)
 	case vFolder:
 		return len(v.dirs) + len(v.songs)
+	case vStats:
+		return len(v.stats)
 	}
 	return len(v.songs)
 }
@@ -80,7 +84,11 @@ func (a *App) rootView(tab int) *view {
 	case tabArtists:
 		return &view{kind: vArtists, title: T("tab_artists"), artists: l.Artists}
 	case tabLists:
-		return &view{kind: vPlaylists, title: T("tab_lists"), playlists: l.Playlists}
+		pls := l.Playlists
+		if l == a.local { // las que salen solas, en la biblioteca de aquí
+			pls = append(a.autoPlaylists(), pls...)
+		}
+		return &view{kind: vPlaylists, title: T("tab_lists"), playlists: pls}
 	case tabFolders:
 		if len(l.Roots) == 1 {
 			return a.folderView(l.Roots[0])
@@ -295,7 +303,16 @@ func (a *App) openItem(v *view) {
 		a.push(&view{kind: vAlbums, title: ar.Name, albums: ar.Albums})
 	case vPlaylists:
 		pl := v.playlists[v.sel]
+		if pl.stats {
+			a.push(a.statsView())
+			return
+		}
 		a.push(&view{kind: vPlaylist, title: pl.Name, songs: pl.Songs, pl: pl})
+	case vStats:
+		if p := v.stats[v.sel].path; p != "" {
+			a.playSongs([]Song{a.songFor(p, "", "", "")}, 0, false)
+			a.screen = NowPlaying
+		}
 	case vFolder:
 		if v.sel < len(v.dirs) {
 			a.push(a.folderView(v.dirs[v.sel]))
@@ -318,6 +335,11 @@ func (a *App) itemSongs(v *view) []Song {
 		return v.artists[v.sel].AllSongs()
 	case vPlaylists:
 		return v.playlists[v.sel].Songs
+	case vStats:
+		if p := v.stats[v.sel].path; p != "" {
+			return []Song{a.songFor(p, "", "", "")}
+		}
+		return nil
 	case vFolder:
 		if v.sel < len(v.dirs) {
 			_, songs := a.lib.Folder(v.dirs[v.sel])
@@ -454,7 +476,12 @@ func (a *App) rowFor(v *view, i int) listRow {
 		return listRow{"", ar.Name, N("n_albums", len(ar.Albums)), false}
 	case vPlaylists:
 		pl := v.playlists[i]
-		return listRow{"note", pl.Name, N("n_songs", len(pl.Songs)), false}
+		if pl.stats {
+			return listRow{"stats", pl.Name, "", false}
+		}
+		return listRow{orDefault(pl.icon, "note"), pl.Name, N("n_songs", len(pl.Songs)), false}
+	case vStats:
+		return v.stats[i].row
 	case vFolder:
 		if i < len(v.dirs) {
 			return listRow{"folder", filepath.Base(v.dirs[i]), "", false}

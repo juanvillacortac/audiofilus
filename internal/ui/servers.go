@@ -119,6 +119,9 @@ func (a *App) updateServers() {
 				}
 			}
 			r.src.lib, r.src.songs = buildRemoteLibrary(r.src.srv.Name, r.cat)
+			if r.fresh {
+				a.mergeServerMarks(r.src.srv.Name, r.cat.Songs)
+			}
 			if a.source > 0 && a.remotes[a.source-1] == r.src {
 				a.lib = r.src.lib
 				a.resetBrowse()

@@ -78,7 +78,9 @@ func (ar *Artist) AllSongs() []Song {
 type Playlist struct {
 	Name, Path string
 	Songs      []Song
-	Remote     bool // de un servidor: se oye, pero no se edita desde aquí
+	Remote     bool   // de un servidor (o de las que salen solas): no se edita desde aquí
+	icon       string // el icono de su fila (las que salen solas)
+	stats      bool   // la entrada de las estadísticas (marks.go)
 }
 
 // Song devuelve la canción de una ruta, si está en la biblioteca.

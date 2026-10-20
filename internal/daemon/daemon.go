@@ -221,6 +221,9 @@ func Run(paths config.Paths) error {
 	stopInput := d.startInput()
 	stopPower := d.startPower()
 	stopMedia := d.startMedia()
+	stopListens := make(chan struct{})
+	go d.trackListens(store, stopListens)
+	defer close(stopListens)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
