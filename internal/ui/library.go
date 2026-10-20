@@ -85,6 +85,11 @@ type Playlist struct {
 	icon       string // el icono de su fila (las que salen solas)
 	smart      int    // 1 + su índice en las listas inteligentes (smartui.go); 0 si no lo es
 	stats      bool   // la entrada de las estadísticas (marks.go)
+	// De un servidor (serverplaylists.go): su nombre, el id de la lista y,
+	// por cada canción que se ve, su posición en la lista del servidor.
+	server string
+	srvID  string
+	srvIdx []int
 }
 
 // songMeta son los datos de una canción para las listas inteligentes.
@@ -174,6 +179,13 @@ func buildLibrary(entries []entry) *Library {
 		lib.Songs = append(lib.Songs, s)
 		lib.byPath[s.Path] = a
 		lib.song[s.Path] = s
+	}
+	// Los álbumes sin portada en sus archivos: la de su carpeta, si hay
+	// (cover.jpg...; tagsui.go).
+	for _, al := range lib.Albums {
+		if al.coverPath == "" && len(al.Songs) > 0 && !strings.Contains(al.Songs[0].Path, "://") {
+			al.coverPath = folderCover(filepath.Dir(audioFile(al.Songs[0].Path)))
+		}
 	}
 	sort.Slice(lib.Albums, func(i, j int) bool {
 		ai, aj := lib.Albums[i], lib.Albums[j]

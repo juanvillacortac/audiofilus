@@ -57,6 +57,7 @@ type App struct {
 	// vez; hist es el historial leído y histAt la fecha de su archivo
 	// entonces; timerChoice, la última opción del temporizador.
 	eqEdit       *eqEditor   // el editor del ecualizador abierto (sound.go)
+	peqEdit      *peqEditor  // el del paramétrico (peq.go)
 	rateDirty    bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
 	acctCh       chan func() // lo que vuelve de comprobar una cuenta (sound.go)
 	meterTracker bool        // el medidor que se mira es el del tracker (meter.go)
@@ -117,6 +118,8 @@ type App struct {
 	splashing        bool         // se está mostrando el splash
 	upd              updateState  // las actualizaciones (update.go)
 	mods             modState     // los módulos de la red (modules.go)
+	meta             metaState    // las herramientas de las etiquetas (tagsui.go)
+	cast             castState    // mandar la música a un aparato de la red (castui.go)
 	splashT          float64      // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
@@ -180,6 +183,7 @@ type App struct {
 	source     int               // la que se ve: 0 la tarjeta, i>0 el servidor i-1
 	store      *remote.Store     // la caché de lo remoto
 	serversCh  chan remoteLoaded // catálogos que llegan
+	srvPlCh    chan srvPlDone    // listas de servidor editadas (serverplaylists.go)
 	pingCh     chan pingResult   // pruebas de servidores
 	prevScreen Screen            // la pantalla de antes (Select dos veces, B)
 	guideAt    float64           // desde cuándo se ve la guía de controles (FN)
@@ -357,6 +361,9 @@ func (a *App) Close() {
 // send manda un comando al servicio (en la maqueta no hace nada).
 func (a *App) send(cmd string, args ...string) {
 	a.soundFromSend(cmd, args)
+	if a.castSend(cmd, args) { // mandando a un aparato: la orden va allí (castui.go)
+		return
+	}
 	if a.client != nil {
 		a.client.Send(cmd, args...)
 	}
@@ -464,6 +471,7 @@ func (a *App) Update() error {
 	}
 
 	a.syncStatus()
+	a.pollCast() // mandando a un aparato: su canción y su posición (castui.go)
 	a.sendArt()
 	a.updateLyricsFetch()
 	a.updateAccounts()
@@ -474,8 +482,10 @@ func (a *App) Update() error {
 	}
 	a.updateYT()
 	a.updateServers()
+	a.pollSrvPlaylists() // las listas de servidor editadas (serverplaylists.go)
 	a.updateRadioResults()
 	a.updatePodResults()
+	a.pollMeta() // lo que vuelve de las herramientas de las etiquetas (tagsui.go)
 	a.pollModules()
 	a.trackPodcast()
 	a.updatePings()
@@ -644,6 +654,10 @@ func (a *App) updateMain() {
 	}
 	if a.eqEdit != nil {
 		a.updateEQ()
+		return
+	}
+	if a.peqEdit != nil { // el ecualizador paramétrico (peq.go)
+		a.updatePEQ()
 		return
 	}
 	if a.updateDock() {
@@ -1221,6 +1235,7 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 		a.drawYTBar(dst)
 		a.drawMenu(dst)
 		a.drawEQ(dst)
+		a.drawPEQ(dst)
 		a.drawPrompt(dst)
 		a.drawDock(dst)
 		a.drawGuide(dst)
@@ -1565,6 +1580,12 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.eqEdit = nil
+	a.peqEdit = &peqEditor{bands: []engine.PEQBand{{Type: "lowshelf", Freq: 90, Gain: 4, Q: 0.7}, {Type: "peak", Freq: 2500, Gain: -3, Q: 2},
+		{Type: "highshelf", Freq: 9000, Gain: 2.5, Q: 0.7}, {Type: "highpass", Freq: 30, Q: 0.7}}, preamp: -4, row: 2, col: 1}
+	if err := shot("ecualizador-parametrico"); err != nil {
+		return err
+	}
+	a.peqEdit = nil
 	// Ajustes en la sección Sonido, y el menú de las cuentas.
 	if tiles, _, _ := settingsLayout(a.w, a.sections()); len(tiles) > 0 {
 		for i, t := range tiles {

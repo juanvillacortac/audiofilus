@@ -326,6 +326,15 @@ func TestRendererTransport(t *testing.T) {
 	if s := state(); s != "PAUSED_PLAYBACK" {
 		t.Fatalf("after pause: %s", s)
 	}
+	soap(t, avt, svcAVT, "Stop", map[string]string{"InstanceID": "0"})
+	if s := state(); s != "STOPPED" {
+		t.Fatalf("after stop: %s", s)
+	}
+	soap(t, avt, svcAVT, "Play", map[string]string{"InstanceID": "0"})
+	if s := state(); s != "PLAYING" {
+		t.Fatalf("play after stop: %s", s)
+	}
+	soap(t, avt, svcAVT, "Pause", map[string]string{"InstanceID": "0"})
 	// La siguiente: el motor pasa a ella y es la actual.
 	soap(t, avt, svcAVT, "SetNextAVTransportURI", map[string]string{"InstanceID": "0", "NextURI": "http://x/b.mp3", "NextURIMetaData": ""})
 	p.Next()

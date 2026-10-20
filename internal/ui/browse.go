@@ -221,6 +221,9 @@ func (a *App) updateLibrary() {
 		// Sin listas aún: Start crea una.
 		a.menu = &menu{title: T("tab_lists"), items: []menuItem{{label: T("pl_new"), icon: "plus", do: a.openNewPlaylist},
 			{label: T("sm_new"), icon: "bolt", do: a.smartNew}}}
+		if it, ok := a.srvNewPlaylistItem(); ok { // en un servidor: una lista suya (serverplaylists.go)
+			a.menu.items = []menuItem{it}
+		}
 		return
 	case in.Pressed(ActShuffle) && a.shuffleTwice():
 		a.playRandomSong() // doble X: una canción al azar de toda la biblioteca

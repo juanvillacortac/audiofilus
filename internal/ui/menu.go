@@ -164,6 +164,7 @@ func (a *App) songsMenu(title string, songs []Song, al *Album, artist string) *m
 
 // openItemMenu abre el menú del elemento elegido en la biblioteca.
 func (a *App) openItemMenu(v *view) {
+	defer a.addMetaItems(v) // las herramientas de las etiquetas, al final (tagsui.go)
 	switch v.kind {
 	case vAlbums:
 		al := v.albums[v.sel]
@@ -178,6 +179,7 @@ func (a *App) openItemMenu(v *view) {
 		if !pl.Remote {
 			a.menu.items = append(a.menu.items, a.playlistItems(pl)...)
 		}
+		a.menu.items = append(a.menu.items, a.srvPlaylistItems(pl)...) // de un servidor (serverplaylists.go)
 		if pl.smart > 0 {
 			a.menu.items = append(a.menu.items, a.smartItems(pl)...)
 		}
@@ -207,6 +209,9 @@ func (a *App) openItemMenu(v *view) {
 		if v.kind == vPlaylist && v.pl != nil && !v.pl.Remote {
 			a.menu.items = append(a.menu.items, a.playlistSongItems(v.pl, v.sel)...)
 		}
+		if v.kind == vPlaylist && v.pl != nil && v.pl.srvID != "" {
+			a.menu.items = append(a.menu.items, a.srvPlaylistSongItems(v.pl, v.sel)...) // serverplaylists.go
+		}
 	}
 }
 
@@ -229,6 +234,7 @@ func (a *App) openNowMenu() {
 		m.items = append(m.items, menuItem{label: T("lyr_title"), icon: "lyrics", do: a.openLyrics})
 		m.items = append(m.items, a.markItems(a.playingSong)...)
 	}
+	m.items = append(m.items, a.castItems()...) // enviar a un aparato (castui.go)
 	m.items = append(m.items, a.timerItem())
 	if song := a.playingSong; song.Path != "" {
 		if remote.IsRemote(song.Path) {

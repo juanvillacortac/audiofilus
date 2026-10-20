@@ -136,6 +136,9 @@ func (a *App) refreshPlaylists() {
 // openAddToPlaylist es el menú de "Añadir a una lista": una nueva o una de
 // las que hay.
 func (a *App) openAddToPlaylist(songs []Song) {
+	if a.srvAddToPlaylist(songs) {
+		return // canciones de un servidor: a sus listas (serverplaylists.go)
+	}
 	m := &menu{title: T("t_addlist"), subtitle: N("n_songs", len(songs))}
 	m.items = append(m.items, menuItem{label: T("pl_new"), icon: "plus", do: func() {
 		a.openPrompt(T("pl_name"), "", func(name string) { a.createPlaylist(name, songs) })

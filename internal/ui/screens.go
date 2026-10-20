@@ -75,6 +75,7 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 	rect(dst, 0, 0, w, topH, withAlpha(th.Shadow, 0x99))
 	rect(dst, 0, topH, w, 1, withAlpha(th.Accent, 0x55))
 	drawIcon(dst, "note", margin-2, 4, th.Accent)
+	title = a.castTitle(title) // "→ aparato" mientras se manda (castui.go)
 	drawText(dst, title, SmallFace, margin+8, 5, th.Text)
 	clock := a.now.Format("15:04")
 	if !a.cfg.UI.Clock24 {

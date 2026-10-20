@@ -13,6 +13,10 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/config"
 )
 
+// resamplerModes son las formas de remuestrear: auto (calidad en el
+// escritorio, lineal en las portátiles), lineal (batería) y calidad (sinc).
+var resamplerModes = []string{"auto", "linear", "quality"}
+
 // Las opciones de Ajustes, en orden.
 const (
 	setFolder = iota
@@ -40,6 +44,9 @@ const (
 	setScrobble
 	setRate
 	setUpdate
+	setResampler
+	setDLNAServer
+	setDLNARenderer
 	setCount
 )
 
@@ -98,10 +105,13 @@ var settingSections = []settingSection{
 		{setReplayGain, "speaker", tileChoice},
 		{setEQ, "eq", tileAction},
 		{setRate, "headphones", tileChoice},
+		{setResampler, "headphones", tileChoice},
 	}},
 	{"sec_online", []settingTile{
 		{setScrobble, "user", tileAction},
 		{setLyricsWeb, "lyrics", tileToggle},
+		{setDLNAServer, "server", tileToggle},
+		{setDLNARenderer, "speaker", tileToggle},
 	}},
 	{"sec_screen", []settingTile{
 		{setSleep, "moon", tileChoice},
@@ -149,7 +159,8 @@ func (a *App) sections() []settingSection {
 	hide := map[int]bool{setSleep: !a.canSleep(), setSleepMode: !a.canSleep(),
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
-		setRate: a.mobile(), setUpdate: a.mobile()}
+		setRate: a.mobile(), setUpdate: a.mobile(), setResampler: a.mobile(),
+		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile()}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -255,7 +266,7 @@ func (a *App) updateSettings() {
 		case setServers:
 			a.openServersMenu()
 		case setEQ:
-			a.openEQ()
+			a.openEQMenu() // gráfico o paramétrico (peq.go)
 		case setScrobble:
 			a.openScrobbleMenu()
 		}
@@ -351,6 +362,21 @@ func (a *App) changeSetting(id, step int) {
 		} else {
 			a.send("restart")
 		}
+	case setResampler:
+		n, i := a.settingChoice(id)
+		m := resamplerModes[cycle(n, i)]
+		a.send("resampler", m)
+		a.status.DSP.Resampler = m
+	case setDLNAServer, setDLNARenderer:
+		// DLNA (internal/dlna, en el servicio): se guarda en audiofilus.json y
+		// el servicio lo vuelve a leer.
+		if id == setDLNAServer {
+			a.cfg.DLNA.Server = !a.cfg.DLNA.Server
+		} else {
+			a.cfg.DLNA.Renderer = !a.cfg.DLNA.Renderer
+		}
+		a.saveConfig()
+		a.send("dlna", "apply")
 	case setCrossfade:
 		n, i := a.settingChoice(id)
 		v := xfChoices[cycle(n, i)]
@@ -407,6 +433,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(rgModes), func(i int) bool { return rgModes[i] == a.dspOf().ReplayGain })
 	case setCrossfade:
 		return find(len(xfChoices), func(i int) bool { return xfChoices[i] == a.dspOf().Crossfade })
+	case setResampler:
+		return find(len(resamplerModes), func(i int) bool { return resamplerModes[i] == orDefault(a.dspOf().Resampler, "auto") })
 	case setRate:
 		return find(len(rateChoices), func(i int) bool { return rateChoices[i] == a.cfg.SampleRate })
 	}
@@ -461,7 +489,16 @@ func (a *App) settingValue(i int) string {
 		}
 		return onOffLabel(false)
 	case setEQ:
+		if a.dspOf().EQMode == "parametric" {
+			return T("eq_parametric")
+		}
 		return T("eq_" + a.dspOf().EQPreset)
+	case setResampler:
+		return T("rs_" + orDefault(a.dspOf().Resampler, "auto"))
+	case setDLNAServer:
+		return onOffLabel(a.cfg.DLNA.Server)
+	case setDLNARenderer:
+		return onOffLabel(a.cfg.DLNA.Renderer)
 	case setRate:
 		return rateLabel(a.cfg.SampleRate)
 	case setScrobble:
@@ -506,6 +543,10 @@ func (a *App) settingOn(id int) bool {
 		return a.status.Shuffle
 	case setClock:
 		return a.cfg.UI.Clock24
+	case setDLNAServer:
+		return a.cfg.DLNA.Server
+	case setDLNARenderer:
+		return a.cfg.DLNA.Renderer
 	case setSwapAB:
 		return a.cfg.UI.SwapAB
 	case setCloseBg:
@@ -522,7 +563,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
-		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"),
+		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
 	}
 }
 
@@ -746,6 +787,8 @@ func choiceLabel(id, i int) string {
 		return T("snd_" + orDefault(soundLevels[i], "mid"))
 	case setReplayGain:
 		return T("rg_" + rgModes[i])
+	case setResampler:
+		return T("rs_" + resamplerModes[i])
 	case setRate:
 		return rateLabel(rateChoices[i])
 	case setCrossfade:

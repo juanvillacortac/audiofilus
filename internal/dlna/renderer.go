@@ -139,7 +139,8 @@ type renderer struct {
 	cur     string // la ruta de lo puesto (dlna://r/<n>), o ""
 	next    string
 	muted   bool
-	unmuted int // el volumen de antes de silenciar
+	unmuted int  // el volumen de antes de silenciar
+	stopped bool // se pidió Stop (el motor queda en pausa al principio: para UPnP es STOPPED)
 	avt, rc *events
 	last    string // el último LastChange del AVTransport mandado
 	lastRC  string
@@ -156,7 +157,7 @@ func newRenderer(p Player, f *fetcher) *renderer {
 func (r *renderer) state() (state string, st PlayerStatus, mine bool) {
 	st = r.player.Status()
 	r.mu.Lock()
-	cur, next := r.cur, r.next
+	cur, next, stopped := r.cur, r.next, r.stopped
 	r.mu.Unlock()
 	mine = cur != "" && (st.Path == cur || st.Path == next)
 	switch {
@@ -168,6 +169,8 @@ func (r *renderer) state() (state string, st PlayerStatus, mine bool) {
 		return "TRANSITIONING", st, mine
 	case st.Playing:
 		return "PLAYING", st, mine
+	case stopped:
+		return "STOPPED", st, mine
 	case st.Paused:
 		return "PAUSED_PLAYBACK", st, mine
 	}
@@ -312,6 +315,16 @@ func (r *renderer) avTransport(a *action) ([]arg, error) {
 		return nil, err
 	}
 	defer func() { go r.changed() }()
+	switch a.Name {
+	case "SetAVTransportURI", "Play", "Pause":
+		r.mu.Lock()
+		r.stopped = false
+		r.mu.Unlock()
+	case "Stop":
+		r.mu.Lock()
+		r.stopped = true
+		r.mu.Unlock()
+	}
 	switch a.Name {
 	case "SetAVTransportURI":
 		uri := strings.TrimSpace(a.Args["CurrentURI"])

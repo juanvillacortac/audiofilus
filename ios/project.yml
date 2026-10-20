@@ -57,6 +57,12 @@ targets:
         UIStatusBarHidden: false
         UIStatusBarStyle: UIStatusBarStyleLightContent
         UIViewControllerBasedStatusBarAppearance: true
+        # Enviar a altavoces y teles de la red (DLNA/UPnP y Chromecast) y
+        # DLNA: iOS pide permiso para la red local y la lista de servicios
+        # Bonjour que se buscan.
+        NSLocalNetworkUsageDescription: Audiofilus looks for speakers and TVs on your network to send music to them.
+        NSBonjourServices:
+          - _googlecast._tcp
         # La música sigue con la app en segundo plano o la pantalla
         # bloqueada (con la sesión de audio de reproducción: AppDelegate).
         UIBackgroundModes:

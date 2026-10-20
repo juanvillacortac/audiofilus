@@ -32,6 +32,7 @@ type remoteSource struct {
 	srv     config.Server
 	lib     *Library
 	songs   map[string]remote.Song // por id, para descargarlas
+	cat     catalog                // el catálogo con que se armó (serverplaylists.go lo pone al día)
 	loading bool                   // pidiendo el catálogo al servidor
 	err     error                  // lo que falló la última vez
 }
@@ -119,6 +120,7 @@ func (a *App) updateServers() {
 				}
 			}
 			r.src.lib, r.src.songs = buildRemoteLibrary(r.src.srv.Name, r.cat)
+			r.src.cat = r.cat
 			if r.fresh {
 				a.mergeServerMarks(r.src.srv.Name, r.cat.Songs)
 			}
@@ -152,10 +154,11 @@ func buildRemoteLibrary(server string, cat catalog) (*Library, map[string]remote
 	}
 	lib := buildLibrary(entries)
 	for _, p := range cat.Playlists {
-		pl := &Playlist{Name: p.Name, Remote: true}
-		for _, id := range p.Songs {
+		pl := &Playlist{Name: p.Name, Remote: true, server: server, srvID: p.ID}
+		for k, id := range p.Songs {
 			if s, ok := lib.song[remote.SongPath(server, id)]; ok {
 				pl.Songs = append(pl.Songs, s)
+				pl.srvIdx = append(pl.srvIdx, k)
 			}
 		}
 		lib.Playlists = append(lib.Playlists, pl)
