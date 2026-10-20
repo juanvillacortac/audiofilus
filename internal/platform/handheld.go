@@ -57,6 +57,7 @@ type handheld struct {
 	opts Options
 
 	mu            sync.Mutex
+	awake         bool     // SetAwake(true) puesto (con o sin inhibidor)
 	inhibit       *os.File // el inhibidor de logind (se suelta al cerrarlo)
 	mounted       []string
 	sleeping      bool
@@ -117,21 +118,33 @@ func writeSys(path, value string) {
 func (h *handheld) SetAwake(awake bool) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	if awake && h.inhibit == nil {
-		f, err := logindInhibit()
-		if err != nil {
-			log.Printf("logind inhibit: %v", err)
+	// Se mira awake, no el inhibidor: logind puede negarlo (en dArkOS los
+	// ports corren como ark, y pedirlo exige autorización), y entonces no
+	// se quitaba nunca la copia de pause.sh y el botón de encendido no
+	// suspendía con la música en segundo plano.
+	if awake && !h.awake {
+		h.awake = true
+		// En ArkOS sin root, logind no lo da (y no hace falta: el botón lo
+		// lleva ogage, y la copia de pause.sh ya no suspende).
+		if h.name != "arkos" || os.Geteuid() == 0 {
+			f, err := logindInhibit()
+			if err != nil {
+				log.Printf("logind inhibit: %v", err)
+			}
+			h.inhibit = f
 		}
-		h.inhibit = f
 		if h.name == "arkos" {
 			h.bindLocked(arkPause, "#!/bin/sh\n# audiofilus is open: it handles the power button (its app sleep)\nexit 0\n")
 			h.bindLocked(arkProcessCheck, "#!/bin/sh\n# audiofilus is open: no idle suspend\nprintf Running\n")
 		}
 		return
 	}
-	if !awake && h.inhibit != nil {
-		h.inhibit.Close()
-		h.inhibit = nil
+	if !awake && h.awake {
+		h.awake = false
+		if h.inhibit != nil {
+			h.inhibit.Close()
+			h.inhibit = nil
+		}
 		for i := len(h.mounted) - 1; i >= 0; i-- {
 			_ = asRoot("umount", "-l", h.mounted[i])
 		}
