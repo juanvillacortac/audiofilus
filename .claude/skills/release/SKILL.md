@@ -39,6 +39,10 @@ Releases are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
 
 The website's download button points at `releases/latest`, so it updates by itself.
 
+6. Write the release notes (`gh release edit vX.Y.Z --notes-file ...`), then rebuild the website so the AltStore source (`site/altstore.json`, which carries the notes) picks them up: `gh workflow run pages.yml`. The Pages workflow also runs by itself when the Release workflow finishes, but that is before the notes are edited. (It doesn't run on the `release` event: that run is on the tag, and the github-pages environment only deploys from main.)
+
+The binaries know their version (`-X .../internal/version.Version`, from the tag): installed copies from v0.9.1 on find the new release by themselves (Settings → Update).
+
 ## Manual builds
 
 `gh workflow run release.yml` builds without publishing a release; the files are attached to the run as an artifact. Use it to test the workflow.

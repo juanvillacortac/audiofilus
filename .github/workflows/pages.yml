@@ -5,12 +5,12 @@ on:
     branches: [main]
     paths: ["site/**", ".github/workflows/pages.yml", "tools/site/altstore.py"]
   # The AltStore source lists the releases: rebuilt when one is made (the
-  # Release workflow) and when its notes are edited.
+  # Release workflow). Not on the `release` event: that run is on the tag, and
+  # the github-pages environment only deploys from main. After editing a
+  # release's notes, run this workflow by hand (workflow_dispatch).
   workflow_run:
     workflows: [Release]
     types: [completed]
-  release:
-    types: [published, edited]
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +18,8 @@ permissions:
   id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Queued, not cancelled: a site push must not drop the post-release rebuild.
+  cancel-in-progress: false
 jobs:
   deploy:
     runs-on: ubuntu-latest
