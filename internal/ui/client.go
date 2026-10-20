@@ -55,6 +55,9 @@ type Client struct {
 	// quit: el servicio avisó de que se cierra del todo (Salir en la bandeja,
 	// `audiofilus quit`...): la interfaz se cierra y no lo vuelve a arrancar.
 	quit atomic.Bool
+	// restartUntil: se pidió reiniciar el servicio y hasta entonces no
+	// contestar es normal (no se arranca otro).
+	restartUntil atomic.Int64
 
 	// OnWake se llama (desde otro hilo) cuando el servicio sale del sleep: la
 	// interfaz no dibuja nada en sleep y necesita que la despierten.
@@ -235,7 +238,16 @@ func (c *Client) loop() {
 
 // do ejecuta una petición y guarda el estado que devuelve.
 func (c *Client) do(req control.Request) {
+	if req.Cmd == "restart" {
+		// Se va a cerrar y volver: unos segundos sin contestar son normales.
+		c.restartUntil.Store(time.Now().Add(8 * time.Second).UnixNano())
+		_, _ = control.Call(c.paths.Socket, req)
+		return
+	}
 	resp, err := control.Call(c.paths.Socket, req)
+	if time.Now().UnixNano() < c.restartUntil.Load() && err != nil {
+		return // reiniciándose: ni error ni otro servicio
+	}
 	if errors.Is(err, control.ErrNotRunning) && !c.quit.Load() {
 		// El servicio murió: se vuelve a arrancar (si lo cerraron a
 		// propósito, avisó antes y la interfaz se cierra).

@@ -57,6 +57,7 @@ type App struct {
 	// vez; hist es el historial leído y histAt la fecha de su archivo
 	// entonces; timerChoice, la última opción del temporizador.
 	eqEdit      *eqEditor   // el editor del ecualizador abierto (sound.go)
+	rateDirty   bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
 	acctCh      chan func() // lo que vuelve de comprobar una cuenta (sound.go)
 	marks       *history.Marks
 	hist        []history.Listen

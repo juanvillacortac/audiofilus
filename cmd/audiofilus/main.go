@@ -99,8 +99,12 @@ func runDaemon(paths config.Paths, args []string) {
 	// al cerrarla: el servicio se muda a uno propio.
 	proc.LeaveGameScope()
 	err := daemon.Run(paths)
-	if errors.Is(err, daemon.ErrRestart) {
+	switch {
+	case errors.Is(err, daemon.ErrRestart):
 		err = restartSelf() // restart_*.go
+	case errors.Is(err, daemon.ErrAlreadyRunning):
+		log.Print(err)
+		return
 	}
 	if err != nil {
 		log.Fatal(err)

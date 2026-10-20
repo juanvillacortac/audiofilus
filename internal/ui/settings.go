@@ -207,6 +207,10 @@ func (a *App) updateSettings() {
 			a.changeSetting(cur.id, 1)
 		case in.Pressed(ActConfirm), in.Pressed(ActBack):
 			a.settingsEdit = false
+			if a.rateDirty {
+				a.rateDirty = false
+				a.send("restart")
+			}
 		}
 		return
 	}
@@ -337,7 +341,12 @@ func (a *App) changeSetting(id, step int) {
 		n, i := a.settingChoice(id)
 		a.cfg.SampleRate = rateChoices[cycle(n, i)]
 		a.saveConfig()
-		a.send("restart")
+		// Con la cruceta se reinicia al cerrar la elección, no en cada paso.
+		if a.settingsEdit {
+			a.rateDirty = true
+		} else {
+			a.send("restart")
+		}
 	case setCrossfade:
 		n, i := a.settingChoice(id)
 		v := xfChoices[cycle(n, i)]

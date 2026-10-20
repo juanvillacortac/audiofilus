@@ -79,6 +79,12 @@ type Daemon struct {
 
 // Run arranca el daemon y bloquea hasta recibir quit o una señal.
 func Run(paths config.Paths) error {
+	// Si ya hay otro servicio contestando en el socket, este sobra (dos
+	// interfaces que lo arrancan a la vez, o una que lo arranca mientras el
+	// otro se reinicia): se va antes de tocar nada (el audio, la plataforma).
+	if _, err := control.Call(paths.Socket, control.Request{Cmd: "status"}); err == nil {
+		return ErrAlreadyRunning
+	}
 	cfg, err := config.Load(paths)
 	if err != nil {
 		return fmt.Errorf("config %s: %w", paths.Config, err)
@@ -292,6 +298,9 @@ loop:
 	log.Print("bye")
 	return nil
 }
+
+// ErrAlreadyRunning es lo que devuelve Run si ya había otro servicio.
+var ErrAlreadyRunning = errors.New("another audiofilus daemon is already running")
 
 // ErrRestart es lo que devuelve Run cuando le pidieron reiniciarse
 // (restart): quien lo lanzó tiene que volver a ejecutarlo.
@@ -732,7 +741,9 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		d.mu.Lock()
 		d.restarting = true
 		d.mu.Unlock()
-		d.quitOnce.Do(func() { close(d.quit) })
+		// Un poco después: primero se contesta (si no, la interfaz ve la
+		// conexión cortada).
+		time.AfterFunc(200*time.Millisecond, func() { d.quitOnce.Do(func() { close(d.quit) }) })
 		return nil, nil
 	default:
 		return nil, fmt.Errorf("unknown command %q", req.Cmd)
