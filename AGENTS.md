@@ -93,7 +93,7 @@ What the service touches on the console, how it cleans up, and the known risks a
 ## Code conventions
 
 - **Documentation (`docs/`, READMEs, this file, skills) is in English.** Code comments are in Spanish, in full sentences: every type, function and constant says what it is and why. Doc comments start with the name (`// Load lee audiofilus.json...`). Match the comment density and language of the file you touch.
-- **Error messages (`fmt.Errorf`, `errors.New`), test messages (`t.Errorf`) and log lines (`log.Printf`) are in English.** Text the user sees in the interface comes from `internal/ui/lang.go` (Spanish, English, Turkish) and `lang_<code>.go` (German, French, Japanese, Chinese); a new key goes in all seven.
+- **Error messages (`fmt.Errorf`, `errors.New`), test messages (`t.Errorf`) and log lines (`log.Printf`) are in English.** Text the user sees in the interface comes from `internal/ui/lang.go` (Spanish, English, Turkish) and `lang_<code>.go` (the other ten); a new key goes in all thirteen.
 - The engine is called from two threads (`oto`'s audio thread and the commands): anything that touches its state holds `e.mu`, and callbacks go out through `emit`, never with the lock held. To change songs or seek, use `apply` (it flushes the audio buffer with `Player.Seek`).
 - **When killing processes in tests, don't use `pgrep -f`/`pkill -f` with a pattern that also appears in your own command**: it kills the shell running it. Match the exact name (`pgrep -x`) and filter by `/proc/<pid>/exe`.
 - One test per behavior, with a comment saying what it checks. Test audio is synthetic tones (see `internal/decode/testdata/README.md`); **never put real music in the repo**.

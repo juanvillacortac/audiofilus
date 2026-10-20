@@ -127,7 +127,7 @@ Eight visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, W
 - On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
 - The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.
 - Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
-- English, Spanish, Turkish (thanks to volkybaba), German, French, Japanese and Chinese, with Japanese and Chinese text (song titles too) in a pixel font, Fusion Pixel. 12 h (AM/PM) or 24 h clock.
+- 13 languages: English, Spanish, Portuguese, French, Italian, German, Polish, Turkish (thanks to volkybaba), Russian, Indonesian, Japanese, Chinese and Korean. Japanese, Chinese and Korean text (song titles too) shows in a pixel font, Fusion Pixel. 12 h (AM/PM) or 24 h clock.
 - On desktop: fullscreen with sharp pixels.
 
 <p align="center">
