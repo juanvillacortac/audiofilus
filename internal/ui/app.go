@@ -892,6 +892,15 @@ func (a *App) syncStatus() {
 		}
 	}
 	if st.Track.Path == a.lastTrack {
+		// La misma pista, pero una emisora anuncia otra canción (su título
+		// ICY): lo que suena se pone al día sin tratarla como pista nueva.
+		if radio.IsRadio(st.Track.Path) && st.Track.Title != "" &&
+			(st.Track.Title != a.playingSong.Title || st.Track.Artist != a.playingSong.Artist) {
+			a.playingSong.Title, a.playingSong.Artist = st.Track.Title, st.Track.Artist
+			if a.playing != nil && a.playing.stray && len(a.playing.Songs) > 0 {
+				a.playing.Songs[0] = a.playingSong
+			}
+		}
 		return
 	}
 	a.shownPos, a.seekAt = st.Position, -1 // canción nueva: la barra no viaja hacia atrás

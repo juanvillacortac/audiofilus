@@ -603,26 +603,51 @@ func (e *Engine) Playing() bool {
 	return e.playing
 }
 
-// Next salta a la siguiente canción.
-func (e *Engine) Next() {
-	e.apply(func() {
-		if !e.advanceLocked(false) {
-			e.ended = true
-			e.setPlayingLocked(false)
-		}
-	})
+// live dice si lo que suena es un directo (una emisora: sin duración). Con
+// un directo, siguiente y anterior cambian de emisora y dan la vuelta a la
+// lista, en vez de pararse al final o reiniciar.
+func (e *Engine) liveLocked() bool { return e.src != nil && e.src.Length() <= 0 }
+
+// Next salta a la siguiente canción (con una emisora, tras la última vuelve
+// a la primera).
+func (e *Engine) Next() { e.apply(e.nextLocked) }
+
+// nextLocked es Next con e.mu tomado.
+func (e *Engine) nextLocked() {
+	live := e.liveLocked()
+	if e.advanceLocked(false) {
+		return
+	}
+	if live && e.q.Len() > 1 && e.q.Jump(0) && e.openLocked() {
+		e.setPlayingLocked(true)
+		return
+	}
+	e.ended = true
+	e.setPlayingLocked(false)
 }
 
-// Prev reinicia la canción, o va a la anterior si acaba de empezar.
+// Prev reinicia la canción, o va a la anterior si acaba de empezar. Con una
+// emisora siempre va a la anterior (reiniciar un directo no tiene sentido), y
+// antes de la primera, a la última.
 func (e *Engine) Prev() {
 	pos := e.Status().Position
-	e.apply(func() {
-		if time.Duration(pos*float64(time.Second)) > restartThreshold || !e.q.Prev() {
-			e.seekLocked(0)
+	e.apply(func() { e.prevLocked(pos) })
+}
+
+// prevLocked es Prev con e.mu tomado; pos es por dónde iba.
+func (e *Engine) prevLocked(pos float64) {
+	if e.liveLocked() {
+		if !e.q.Prev() && !e.q.Jump(e.q.Len()-1) {
 			return
 		}
 		e.openLocked()
-	})
+		return
+	}
+	if time.Duration(pos*float64(time.Second)) > restartThreshold || !e.q.Prev() {
+		e.seekLocked(0)
+		return
+	}
+	e.openLocked()
 }
 
 // Jump reproduce la posición i de la cola.
