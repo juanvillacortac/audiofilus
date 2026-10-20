@@ -3,6 +3,7 @@
 package main
 
 import (
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 	"os"
 	"syscall"
 )
@@ -11,7 +12,7 @@ import (
 // PID y la misma línea de comandos, "audiofilusd daemon"), para aplicar lo
 // que solo se lee al arrancar.
 func restartSelf() error {
-	exe, err := os.Executable()
+	exe, err := proc.Executable()
 	if err != nil {
 		return err
 	}

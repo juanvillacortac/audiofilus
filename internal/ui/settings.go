@@ -39,6 +39,7 @@ const (
 	setCrossfade
 	setScrobble
 	setRate
+	setUpdate
 	setCount
 )
 
@@ -114,6 +115,7 @@ var settingSections = []settingSection{
 		{setSwapAB, "pad", tileToggle},
 	}},
 	{"sec_about", []settingTile{
+		{setUpdate, "download", tileAction},
 		{setGitHub, "gh", tileAction},
 		{setDonate, "cup", tileAction},
 	}},
@@ -147,7 +149,7 @@ func (a *App) sections() []settingSection {
 	hide := map[int]bool{setSleep: !a.canSleep(), setSleepMode: !a.canSleep(),
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
-		setRate: a.mobile()}
+		setRate: a.mobile(), setUpdate: a.mobile()}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -244,6 +246,8 @@ func (a *App) updateSettings() {
 			a.startScan()
 		case setExitBg, setExitStop:
 			a.exit(cur.id == setExitBg)
+		case setUpdate:
+			a.pressUpdate()
 		case setGitHub:
 			a.settingsQR, a.qrURL = true, projectURL
 		case setDonate:
@@ -476,6 +480,8 @@ func (a *App) settingValue(i int) string {
 		return T("exit_bg_sub")
 	case setExitStop:
 		return T("exit_stop_sub")
+	case setUpdate:
+		return a.updateValue()
 	case setGitHub:
 		return projectURL[len("https://"):]
 	case setDonate:
@@ -516,7 +522,7 @@ func settingNames() [setCount]string {
 		T("set_folder"), T("set_rescan"), T("set_language"), T("set_shuffle"), T("set_repeat"),
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
-		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"),
+		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"),
 	}
 }
 

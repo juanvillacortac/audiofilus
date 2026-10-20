@@ -62,6 +62,7 @@ GOOS=windows go vet ./...
 | `internal/desktop/` | The Linux launcher entry and icon (`audiofilus desktop install`); see [docs/linux-desktop.md](docs/linux-desktop.md) |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
 | `internal/tray/` | The desktop tray icon: StatusNotifierItem over D-Bus on Linux, `Shell_NotifyIcon` on Windows |
+| `internal/update/`, `internal/version/` | Self-update from the GitHub releases (detects PortMaster, muOS, Linux or Windows from the files next to the binary, checks SHA256SUMS, swaps files atomically) and the version baked in at build time (`-X .../version.Version`, `dev` otherwise) |
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |

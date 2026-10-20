@@ -15,7 +15,9 @@ COPY . .
 # The Last.fm application key (build.sh), from the repository secrets.
 ARG LASTFM_KEY=""
 ARG LASTFM_SECRET=""
-RUN go vet ./... && go test ./... && LASTFM_KEY="$LASTFM_KEY" LASTFM_SECRET="$LASTFM_SECRET" ./build.sh
+# La versión: la etiqueta de la release (si no, build.sh pone "dev").
+ARG VERSION=""
+RUN go vet ./... && go test ./... && LASTFM_KEY="$LASTFM_KEY" LASTFM_SECRET="$LASTFM_SECRET" VERSION="$VERSION" ./build.sh
 
 # Only the results, to export them with --output.
 FROM scratch AS dist

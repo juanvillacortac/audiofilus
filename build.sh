@@ -10,7 +10,11 @@ cd "$(dirname "$0")"
 # La aplicación de Last.fm de audiofilus (internal/scrobble), si está en el
 # entorno: los releases la sacan de los secretos del repositorio. Sin ella,
 # Last.fm pide la clave propia en audiofilus.json.
-lfm="-X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMKey=${LASTFM_KEY:-} -X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMSecret=${LASTFM_SECRET:-}"
+# La versión (internal/version): la etiqueta de la release (VERSION, que pone el
+# workflow) o, compilando aquí, la de git si este commit tiene una; si no, "dev"
+# (sin actualizaciones).
+version=${VERSION:-$(git describe --tags --exact-match 2>/dev/null || echo dev)}
+lfm="-X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMKey=${LASTFM_KEY:-} -X github.com/juanvillacortac/audiofilus/internal/scrobble.DefaultLastFMSecret=${LASTFM_SECRET:-} -X github.com/juanvillacortac/audiofilus/internal/version.Version=$version"
 mkdir -p dist
 rm -f dist/audiofilus-ui dist/audiofilus-ui-* # los de antes, cuando eran dos
 for arch in amd64 arm64; do

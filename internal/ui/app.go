@@ -115,6 +115,7 @@ type App struct {
 	runnerDuckY      int          // en Carrera, desde dónde un dedo apoyado agacha
 	settingsScr      scroller     // y el de Ajustes (su posición va en settingsScroll)
 	splashing        bool         // se está mostrando el splash
+	upd              updateState  // las actualizaciones (update.go)
 	splashT          float64      // segundos de splash
 
 	// El indicador de volumen: aparece un momento al cambiar. volume es el
@@ -503,6 +504,7 @@ func (a *App) Update() error {
 		a.sleepFade += 1.0 / 60
 		a.fadingIn = a.sleepFade < fadeInLen
 	}
+	a.pollUpdate()
 	a.updateMain()
 	a.maybeSleep()
 	return nil

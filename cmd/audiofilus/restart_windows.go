@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 	"os"
 	"os/exec"
 )
@@ -8,7 +9,7 @@ import (
 // restartSelf lanza otro servicio igual y deja terminar este (Windows no
 // puede reemplazar un proceso por otro).
 func restartSelf() error {
-	exe, err := os.Executable()
+	exe, err := proc.Executable() // sin el .old de una actualización
 	if err != nil {
 		return err
 	}

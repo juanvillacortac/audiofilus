@@ -14,6 +14,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/juanvillacortac/audiofilus/internal/version"
 	"io"
 	"log"
 	"os"
@@ -49,6 +50,8 @@ const usage = `usage:
   audiofilus ytm search|fetch|download <text>
                                   YouTube Music: search, get the first result to listen
                                   or save it to the library (needs yt-dlp next to the binary)
+  audiofilus update [-check]      install the latest release (from GitHub) over this one
+  audiofilus version              show the version
   audiofilus desktop install|uninstall
                                   add audiofilus to the Linux app launcher (Omarchy, GNOME, KDE...)
 
@@ -82,6 +85,10 @@ func main() {
 		os.Exit(runYTM(args))
 	case "desktop":
 		os.Exit(runDesktop(args))
+	case "update":
+		os.Exit(runUpdate(paths, args)) // update.go
+	case "version":
+		fmt.Println("audiofilus", version.Version)
 	case "help", "-h", "--help":
 		fmt.Print(usage)
 	default:
