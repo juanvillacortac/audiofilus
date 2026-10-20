@@ -160,7 +160,7 @@ func (a *App) updateRhythm() {
 	}
 	now := a.beatClock()
 	per, anchor := a.steadyBeat()
-	if per > 0 && a.isPlaying {
+	if per > 0 && a.hearing() {
 		// Notas para las corcheas que van a llegar en rhTravel: los
 		// instrumentos que sonaron en esa corchea en los últimos compases,
 		// cada uno en su carril (bombo, caja, charles, platillo). Hasta
@@ -433,7 +433,7 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 	}
 	if a.beat.period() <= 0 {
 		msg := T("rh_listening")
-		if !a.isPlaying {
+		if !a.hearing() {
 			msg = T("rh_play")
 		}
 		drawTextW(dst, msg, SmallFace, fx+max(0, (fw-textWidth(msg, SmallFace))/2), top+(hitY-top)/2, fw, th.Dim)

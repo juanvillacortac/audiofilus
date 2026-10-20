@@ -1,8 +1,10 @@
 package ui
 
 import (
+	"encoding/binary"
 	"fmt"
 	"image/color"
+	"io"
 	"math"
 	"os"
 	"path/filepath"
@@ -11,6 +13,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
 	"github.com/juanvillacortac/audiofilus/internal/tracker"
 )
@@ -38,6 +41,9 @@ type trackerState struct {
 	file      string // dónde se guarda (en data/tracker/)
 	player    *tracker.Player
 	streaming bool // su salida de audio está abierta
+	// an mide lo que sale (meterTap): con él reaccionan los visualizadores y
+	// los juegos a lo que toca el tracker.
+	an        *engine.Analyzer
 	playing   bool
 	songView  bool
 	pat       int // el patrón que se edita
@@ -209,7 +215,9 @@ func (a *App) trackerToggle() {
 func (a *App) updateTracker() {
 	t, in := a.tracker, &a.input
 	if !t.streaming && !a.offline {
-		a.playStream(t.player)
+		// Lo que sale se oye tras el búfer de la salida (50 ms) y el de oto.
+		t.an = engine.NewAnalyzer(sfx.Rate, 100*time.Millisecond)
+		a.playStream(&meterTap{r: t.player, an: t.an})
 		t.streaming = true
 	}
 	t.player.SetGain(0.8 * math.Min(1, a.volume))
@@ -725,4 +733,25 @@ func (a *App) deleteTrackerSong() {
 		}
 	}
 	a.openTrackerSong(tracker.Empty(fmt.Sprintf(T("tk_new_name"), 1)), fmt.Sprintf("song-%d.json", time.Now().Unix()), true)
+}
+
+// meterTap pasa el audio del tracker a la salida y, de paso, al medidor.
+type meterTap struct {
+	r   io.Reader
+	an  *engine.Analyzer
+	buf []float32
+}
+
+func (m *meterTap) Read(p []byte) (int, error) {
+	n, err := m.r.Read(p)
+	frames := n / 4
+	if cap(m.buf) < frames {
+		m.buf = make([]float32, frames)
+	}
+	buf := m.buf[:frames]
+	for i := range buf {
+		buf[i] = math.Float32frombits(binary.LittleEndian.Uint32(p[i*4:]))
+	}
+	m.an.Add(buf)
+	return n, err
 }

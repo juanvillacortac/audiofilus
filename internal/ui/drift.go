@@ -343,12 +343,12 @@ func (d *driftState) at(s float64) (v3, float64, float64) {
 func (a *App) stepDrift(dt float64) {
 	d := a.drift
 	level, _, _, ok := a.meterNow()
-	if !ok || !a.isPlaying {
+	if !ok || !a.hearing() {
 		level = 0
 	}
 	// La velocidad: con el tempo y lo fuerte que suena; parado, frena.
 	want := 0.0
-	if a.isPlaying {
+	if a.hearing() {
 		tempo := 1.0
 		if bpm := a.beat.BPM(); bpm > 0 {
 			tempo = math.Max(0.7, math.Min(1.4, float64(bpm)/120))

@@ -153,7 +153,7 @@ func (a *App) updateDuel() {
 		}
 		return
 	}
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		g.frozen = true
 		return
 	}

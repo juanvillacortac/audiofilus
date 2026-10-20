@@ -2,6 +2,7 @@ package engine
 
 import (
 	"math"
+	"sync"
 	"time"
 )
 
@@ -111,14 +112,50 @@ func meterByte(rms, gain float64) uint8 {
 func (e *Engine) Meter() []MeterPoint {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	return e.meter.list()
+}
+
+// list son los puntos guardados, del más viejo al más nuevo.
+func (m *meter) list() []MeterPoint {
 	out := make([]MeterPoint, 0, meterPoints)
 	for i := 0; i < meterPoints; i++ {
-		p := e.meter.points[(e.meter.next+i)%meterPoints]
+		p := m.points[(m.next+i)%meterPoints]
 		if p.At != 0 {
 			out = append(out, p)
 		}
 	}
 	return out
+}
+
+// Analyzer es el mismo medidor (nivel, graves y espectro) para otro audio
+// que el del engine: el tracker de la interfaz, que suena por su propia
+// salida. Con sus puntos reaccionan a él los visualizadores y los juegos.
+type Analyzer struct {
+	mu   sync.Mutex
+	m    meter
+	rate int
+}
+
+// NewAnalyzer mide audio a rate, que se oye latency después de medirlo (lo
+// que tarda en salir por el búfer).
+func NewAnalyzer(rate int, latency time.Duration) *Analyzer {
+	a := &Analyzer{m: newMeter(rate, latency), rate: rate}
+	a.m.spectrum = true
+	return a
+}
+
+// Add mide buf (estéreo intercalado), que se acaba de mandar a la salida.
+func (a *Analyzer) Add(buf []float32) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.m.add(buf, time.Now().Add(a.m.latency), a.rate)
+}
+
+// Points son los puntos medidos, del más viejo al más nuevo.
+func (a *Analyzer) Points() []MeterPoint {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.m.list()
 }
 
 // bands calcula el espectro de la ventana: FFT con ventana de Hann y, por

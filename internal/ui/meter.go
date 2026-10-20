@@ -14,14 +14,41 @@ import (
 // instante actual (interpolando entre dos), así el visualizador y el tetris van
 // a tiempo con lo que suena aunque el estado llegue a saltos.
 
+// Lo que suena y se mira: la música del servicio o, si el tracker está
+// tocando (la música se pausa), lo que toca él (trackerui.go, meterTap).
+// Así los visualizadores, los juegos y el fondo siguen también al tracker.
+
+// trackerSounding dice si el tracker está tocando.
+func (a *App) trackerSounding() bool {
+	t := a.tracker
+	return t != nil && t.playing && t.an != nil
+}
+
+// hearing dice si suena algo (la música o el tracker).
+func (a *App) hearing() bool { return a.isPlaying || a.trackerSounding() }
+
+// meterPts son los puntos del medidor de lo que suena. Al cambiar de una
+// fuente a la otra, el ritmo se vuelve a buscar (otro tempo).
+func (a *App) meterPts() []engine.MeterPoint {
+	tr := a.trackerSounding()
+	if tr != a.meterTracker {
+		a.meterTracker = tr
+		a.resetBeat()
+	}
+	if tr {
+		return a.tracker.an.Points()
+	}
+	return a.status.Meter
+}
+
 // meterNow son el nivel, los graves y el espectro (0..1) de lo que suena ahora;
 // ok es false si el servicio no mandó medidor (en pausa o sin servicio).
 func (a *App) meterNow() (level, bass float64, bands [engine.MeterBands]float64, ok bool) {
-	if a.offline && a.isPlaying {
+	if a.offline && a.hearing() {
 		return a.fakeMeter()
 	}
-	pts := a.status.Meter
-	if len(pts) == 0 || !a.isPlaying {
+	pts := a.meterPts()
+	if len(pts) == 0 || !a.hearing() {
 		return 0, 0, bands, false
 	}
 	now := time.Now().UnixMilli()
@@ -254,16 +281,16 @@ func (b *beat) onset(t float64) {
 // fotograma hay un golpe (de la rejilla o, sin tempo, detectado).
 func (a *App) updateBeat() bool {
 	b := &a.beat
-	if a.offline && a.isPlaying {
+	if a.offline && a.hearing() {
 		return a.fakeBeat()
 	}
 	clock := a.beatClock()
-	if !a.isPlaying {
+	if !a.hearing() {
 		return false
 	}
 	now := time.Now().UnixMilli()
 	detected := false
-	for _, p := range a.status.Meter {
+	for _, p := range a.meterPts() {
 		if p.At <= b.last || p.At > now {
 			continue
 		}
@@ -378,7 +405,7 @@ type steadyGrid struct {
 // steadyBeat da la rejilla suave, al día. Sin música sonando no hay golpes
 // (per 0): la rejilla se guarda, pero no se inventan golpes en silencio.
 func (a *App) steadyBeat() (per, anchor float64) {
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		return 0, 0
 	}
 	s := &a.steady
@@ -457,7 +484,7 @@ func (a *App) updatePump() {
 	follow(&bgPump, bass)
 	follow(&bgTreble, treble)
 	bgSince = 9
-	if a.beat.at > 0 && a.isPlaying {
+	if a.beat.at > 0 && a.hearing() {
 		bgSince = float32(math.Max(0, a.beatClock()-a.beat.at) / gain)
 	}
 	// Cada golpe lanza la onda desde un sitio distinto (lejos de los bordes y

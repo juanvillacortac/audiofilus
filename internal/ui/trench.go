@@ -161,11 +161,11 @@ func buildShip() []face {
 func (a *App) stepTrench(dt float64) {
 	t := a.trench
 	level, _, bands, ok := a.meterNow()
-	if !ok || !a.isPlaying {
+	if !ok || !a.hearing() {
 		level = 0
 	}
 	want := 0.0
-	if a.isPlaying {
+	if a.hearing() {
 		tempo := 1.0
 		if bpm := a.beat.BPM(); bpm > 0 {
 			tempo = math.Max(0.7, math.Min(1.4, float64(bpm)/120))
@@ -211,7 +211,7 @@ func (a *App) stepTrench(dt float64) {
 		t.roll += step
 	}
 	// Disparos: la nave en cada golpe; una torreta de vez en cuando.
-	if a.beatHit && a.isPlaying {
+	if a.beatHit && a.hearing() {
 		t.beats++
 		ship := v3{t.x, t.y, t.z}
 		// Salen de los cañones bajo las alas (la punta de los motores),

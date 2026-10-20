@@ -427,7 +427,7 @@ func (a *App) updateCrypt() {
 		return
 	}
 	// Sin música no hay ritmo: todo se queda quieto hasta que vuelva.
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		g.frozen = true
 		return
 	}

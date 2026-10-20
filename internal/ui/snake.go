@@ -148,7 +148,7 @@ func (a *App) updateSnake() {
 			g.next = d.p
 		}
 	}
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		g.frozen = true
 		return
 	}

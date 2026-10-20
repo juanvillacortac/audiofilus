@@ -158,7 +158,7 @@ func (a *App) stepLake(dt float64) {
 	t := a.t
 	dr := &a.beat.drums
 	// La onda de cada golpe, en un sitio del lago.
-	if a.beatHit && a.isPlaying {
+	if a.beatHit && a.hearing() {
 		ang, r := l.rng.Float64()*2*math.Pi, l.rng.Float64()*(lkRadius-3)
 		l.ripples = append(l.ripples, lkRipple{r * math.Cos(ang), r * math.Sin(ang), t, 0.12 + 0.2*level})
 	}
@@ -167,7 +167,7 @@ func (a *App) stepLake(dt float64) {
 	if dr.last[drumKick] != l.seenKick {
 		l.seenKick, kick = dr.last[drumKick], true
 	}
-	if kick && a.isPlaying {
+	if kick && a.hearing() {
 		for i := range l.frogs {
 			f := &l.frogs[i]
 			if f.jumpAt == 0 {

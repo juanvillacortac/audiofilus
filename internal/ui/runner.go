@@ -268,7 +268,7 @@ func (a *App) updateRunner() {
 		}
 		return
 	}
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		g.frozen = true
 		return
 	}

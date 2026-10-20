@@ -95,7 +95,7 @@ func (a *App) updateShooter() {
 		}
 		return
 	}
-	if !a.isPlaying && !a.offline {
+	if !a.hearing() && !a.offline {
 		g.frozen = true
 		return
 	}
