@@ -10,10 +10,11 @@ import (
 // (Jersey 10 y Tiny5 cubren el latín básico con tildes, ñ, ¿ y ¡): otro
 // alfabeto obligaría a cargar otra fuente. Para añadir uno, se copia el bloque
 // de "en" y se comprueba que todas sus letras salen en las capturas.
-var languages = []string{"es", "en", "tr", "de", "fr", "ja", "zh"}
+var languages = []string{"es", "en", "pt", "fr", "it", "de", "pl", "tr", "ru", "id", "ja", "zh", "ko"}
 
 // langNames es el nombre de cada idioma en su propio idioma.
-var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe", "de": "Deutsch", "fr": "Français", "ja": "日本語", "zh": "中文"}
+var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe", "de": "Deutsch", "fr": "Français", "ja": "日本語", "zh": "中文",
+	"pt": "Português", "it": "Italiano", "pl": "Polski", "ru": "Русский", "id": "Indonesia", "ko": "한국어"}
 
 var strs = map[string]map[string]string{
 	"es": {
@@ -1801,7 +1802,7 @@ func SetLanguage(l string) {
 // la usan.
 func decimal(s string) string {
 	switch lang {
-	case "es", "tr", "de", "fr":
+	case "es", "tr", "de", "fr", "pt", "it", "pl", "ru", "id":
 		return strings.Replace(s, ".", ",", 1)
 	}
 	return s

@@ -70,7 +70,17 @@ func LoadFonts() error {
 	if err != nil {
 		return err
 	}
-	bigBase, smallBase = text.NewGoXFace(big), text.NewGoXFace(small)
+	// Jersey no tiene cirílico ni griego y Tiny5 sí: en los títulos, lo que
+	// le falta a Jersey sale de Tiny5 al doble (el mismo grosor de bloque).
+	tinyBig, err := loadFace("fonts/Tiny5-Regular.ttf", 16, big)
+	if err != nil {
+		return err
+	}
+	bigMain := text.Face(text.NewGoXFace(big))
+	if m, err := text.NewMultiFace(bigMain, text.NewGoXFace(tinyBig)); err == nil {
+		bigMain = m
+	}
+	bigBase, smallBase = bigMain, text.NewGoXFace(small)
 	cjkBig, cjkSmall = [2]text.Face{}, [2]text.Face{}
 	setFontOrder()
 	cjkLoaded = make(chan [2][2]text.Face, 1)
