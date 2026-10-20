@@ -192,15 +192,21 @@ func ResolveCueFile(dir, name string) (string, bool) {
 	if !filepath.IsAbs(p) {
 		p = filepath.Join(dir, p)
 	}
-	if st, err := os.Stat(p); err == nil && !st.IsDir() {
-		return p, true
-	}
 	dir = filepath.Dir(p)
 	base := filepath.Base(p)
 	stem := strings.TrimSuffix(base, filepath.Ext(base))
 	ents, err := os.ReadDir(dir)
 	if err != nil {
 		return "", false
+	}
+	// Tal cual, con el nombre que tiene en el disco (en Windows, Stat
+	// encuentra "bonus.wav" aunque se llame "BONUS.WAV").
+	if st, err := os.Stat(p); err == nil && !st.IsDir() {
+		for _, e := range ents {
+			if e.Name() == base {
+				return p, true
+			}
+		}
 	}
 	for _, e := range ents {
 		if !e.IsDir() && strings.EqualFold(e.Name(), base) {
