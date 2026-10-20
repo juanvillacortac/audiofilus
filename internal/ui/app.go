@@ -414,6 +414,12 @@ func (a *App) Update() error {
 	a.now = time.Now()
 	a.watchKonami()
 	a.readBattery()
+	// Los botones cuentan también en el explorador de carpetas y mientras
+	// se escanea: si no, al llegar a la biblioteca el sleep creía que nadie
+	// había tocado nada desde el arranque y apagaba la pantalla al momento.
+	if a.input.any {
+		a.lastInput = a.t
+	}
 	if a.splashing && a.updateSplash() {
 		return nil // el splash se come los botones; la biblioteca carga detrás
 	}
@@ -436,6 +442,7 @@ func (a *App) Update() error {
 			}
 			a.setLocal(lib) // y lo que suena se vuelve a buscar en la biblioteca nueva
 			a.mode = modeMain
+			a.lastInput = a.t // el escaneo pudo ser largo: el sleep cuenta desde aquí
 			if a.offline {
 				a.simulatePlaying()
 			}
@@ -477,9 +484,6 @@ func (a *App) Update() error {
 	}
 	if a.BenchVisual != "" {
 		return a.benchVisual()
-	}
-	if a.input.any {
-		a.lastInput = a.t
 	}
 	if !a.sleeping && a.lidClosed() {
 		// Cerrar la tapa apaga la pantalla enseguida, sin fundido (ya no se ve).
