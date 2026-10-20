@@ -1796,6 +1796,7 @@ func SetLanguage(l string) {
 		l = "en"
 	}
 	lang = l
+	setFontOrder()
 }
 
 // N es T para cantidades: con 1 usa la forma en singular (key_one), si existe.

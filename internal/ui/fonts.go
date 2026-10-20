@@ -1,9 +1,12 @@
 package ui
 
 import (
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"image"
 	"image/color"
+	"io"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -16,7 +19,13 @@ import (
 
 // Las dos fuentes, como en Trancazo: Jersey 10 para títulos y Tiny5 para el
 // resto. Las dos son pixel art y se usan a su tamaño nativo, para que cada
-// píxel del diseño de la letra sea uno del lienzo.
+// píxel del diseño de la letra sea uno del lienzo. No tienen japonés ni chino:
+// lo que les falta sale de Fusion Pixel 8px (también pixel art, OFL), a 8 px
+// en el texto y al doble en los títulos (a 12 px queda fina al lado de
+// Jersey). Hay dos variantes, porque el japonés y el chino dibujan distinto
+// los mismos caracteres: va primero la del idioma de la interfaz (la china en
+// chino, la japonesa en los demás) y la otra detrás. Así los kanji de un
+// título salen en cualquier idioma.
 var (
 	// BigFace es Jersey 10: rejilla de 75 unidades sobre 1400, así que a
 	// 1400/75 px cada píxel de la letra cae en uno del lienzo. Mayúsculas de
@@ -25,7 +34,17 @@ var (
 	// SmallFace es Tiny5 a 8 px: mayúsculas de 5 px, empiezan 2 px bajo la parte
 	// de arriba, y la línea mide 9.
 	SmallFace text.Face
+
+	// Las fuentes sueltas, para armar BigFace y SmallFace según el idioma
+	// (setFontOrder): las de base y las de Fusion Pixel ([0] japonesa, [1]
+	// china), si cargaron.
+	bigBase, smallBase text.Face
+	cjkBig, cjkSmall   [2]text.Face
 )
+
+// cjkFonts son los archivos de Fusion Pixel 8px, comprimidos (sin
+// comprimir pesan 3,7 MB cada uno).
+var cjkFonts = [2]string{"fonts/FusionPixel8-ja.ttf.gz", "fonts/FusionPixel8-zh_hans.ttf.gz"}
 
 const (
 	bigCapTop   = 5
@@ -34,31 +53,114 @@ const (
 	smallCap    = 5
 )
 
-// LoadFonts carga las dos fuentes.
+// LoadFonts carga las fuentes. Si Fusion Pixel no carga, sigue sin ella (el
+// japonés y el chino no se ven, como antes).
 func LoadFonts() error {
-	var err error
-	if BigFace, err = loadFace("fonts/Jersey10-Regular.ttf", 1400.0/75); err != nil {
+	big, err := loadFace("fonts/Jersey10-Regular.ttf", 1400.0/75, nil)
+	if err != nil {
 		return err
 	}
-	SmallFace, err = loadFace("fonts/Tiny5-Regular.ttf", 8)
-	return err
+	small, err := loadFace("fonts/Tiny5-Regular.ttf", 8, nil)
+	if err != nil {
+		return err
+	}
+	for i, name := range cjkFonts {
+		f, err := parseFont(name)
+		if err != nil {
+			continue
+		}
+		b, err1 := newFace(f, name, 16, big)
+		s, err2 := newFace(f, name, 8, small)
+		if err1 == nil && err2 == nil {
+			cjkBig[i], cjkSmall[i] = text.NewGoXFace(b), text.NewGoXFace(s)
+		}
+	}
+	bigBase, smallBase = text.NewGoXFace(big), text.NewGoXFace(small)
+	setFontOrder()
+	return nil
 }
 
-func loadFace(name string, px float64) (text.Face, error) {
+// setFontOrder arma BigFace y SmallFace para el idioma en uso: la base y
+// detrás las de Fusion Pixel, primero la del idioma.
+func setFontOrder() {
+	if smallBase == nil {
+		return // aún no se cargaron (SetLanguage va antes que LoadFonts)
+	}
+	order := [2]int{0, 1}
+	if lang == "zh" {
+		order = [2]int{1, 0}
+	}
+	build := func(base text.Face, cjk [2]text.Face) text.Face {
+		faces := []text.Face{base}
+		for _, i := range order {
+			if cjk[i] != nil {
+				faces = append(faces, cjk[i])
+			}
+		}
+		if len(faces) == 1 {
+			return base
+		}
+		m, err := text.NewMultiFace(faces...)
+		if err != nil {
+			return base
+		}
+		return m
+	}
+	BigFace, SmallFace = build(bigBase, cjkBig), build(smallBase, cjkSmall)
+}
+
+// parseFont lee una fuente de los assets (descomprimiéndola si es .gz).
+func parseFont(name string) (*opentype.Font, error) {
 	data, err := assets.FS.ReadFile(name)
 	if err != nil {
 		return nil, err
+	}
+	if bytes.HasPrefix(data, []byte{0x1f, 0x8b}) {
+		zr, err := gzip.NewReader(bytes.NewReader(data))
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
+		if data, err = io.ReadAll(zr); err != nil {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
 	}
 	f, err := opentype.Parse(data)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", name, err)
 	}
+	return f, nil
+}
+
+// loadFace carga una fuente a px píxeles.
+func loadFace(name string, px float64, like font.Face) (font.Face, error) {
+	f, err := parseFont(name)
+	if err != nil {
+		return nil, err
+	}
+	return newFace(f, name, px, like)
+}
+
+// newFace es f a px píxeles, nítida. Con like, dice tener sus medidas: las
+// de Fusion Pixel dicen tener las de Tiny5 o Jersey, porque la mezcla
+// (MultiFace) toma la más alta de todas y el texto latino bajaría.
+func newFace(f *opentype.Font, name string, px float64, like font.Face) (font.Face, error) {
 	face, err := opentype.NewFace(f, &opentype.FaceOptions{Size: px, DPI: 72, Hinting: font.HintingNone})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", name, err)
 	}
-	return text.NewGoXFace(crispFace{face}), nil
+	if like != nil {
+		return crispFace{metricsFace{face, like.Metrics()}}, nil
+	}
+	return crispFace{face}, nil
 }
+
+// metricsFace es una fuente con las medidas de otra.
+type metricsFace struct {
+	font.Face
+	m font.Metrics
+}
+
+func (f metricsFace) Metrics() font.Metrics { return f.m }
 
 // crispFace deja cada píxel de cada letra encendido o apagado: el rasterizador
 // suaviza los bordes aunque la rejilla caiga justa, y a 240 px de alto eso se
