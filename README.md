@@ -40,6 +40,11 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
 - **Output rate** of 44.1, 48, 96 or 192 kHz.
 
+<p align="center">
+  <img src="site/img/eq.png" alt="The 10-band equalizer with the Rock preset" width="360">
+  <img src="site/img/stats.png" alt="Listening stats: plays, hours and top artists" width="360">
+</p>
+
 ### Library
 
 - Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** and tracker modules (**MOD, XM, IT, S3M**). Albums ripped to one file with a **CUE sheet** show up as their tracks.
@@ -50,7 +55,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS and dArkOS** through PortMaster (tested o
 - **Liked songs and ratings** (1 to 5), synced with Subsonic/Navidrome and Jellyfin.
 - **History:** Recent and Most played lists, and stats (plays, hours, top artists, albums and songs).
 - **Scrobbling** to Last.fm and ListenBrainz (queued while offline), and play counts on your Subsonic or Jellyfin server.
-- **Lyrics**, synced karaoke-style when available (each line tints as it's sung, and dots count down the instrumental parts): from a `.lrc` or `.txt` next to the song (or in a `lyrics` folder), from the file's tags (ID3 USLT and SYLT, `LYRICS` in FLAC and Ogg, `©lyr` in M4A), or found online on [LRCLIB](https://lrclib.net). Pick a different version from the list, nudge the timing, or turn online lookups off in Settings.
+- **Lyrics**, synced karaoke-style when available (each line tints as it's sung, and dots count down the instrumental parts): from a `.lrc` or `.txt` next to the song (or in a `lyrics` folder), from the file's tags (ID3 USLT and SYLT, `LYRICS` in FLAC and Ogg, `©lyr` in M4A), or found online on [LRCLIB](https://lrclib.net), also for radio stations that send the song title. Pick a different version from the list, nudge the timing, or turn online lookups off in Settings.
 
 <p align="center">
   <img src="site/img/colors.webp" alt="Colors following four album covers" width="360">
