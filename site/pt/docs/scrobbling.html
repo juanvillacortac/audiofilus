@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scrobbling · Documentação do audiofilus</title>
+<meta name="description" content="Registre o que você ouve no Last.fm e no ListenBrainz.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/scrobbling.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/scrobbling.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/scrobbling.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/scrobbling.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/scrobbling.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/scrobbling.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/scrobbling.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/scrobbling.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/scrobbling.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/scrobbling.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/scrobbling.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/scrobbling.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Início do audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Início</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Baixar</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Idioma: Português"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>PT</summary><div class="menu"><a href="../../docs/scrobbling.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/scrobbling.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/scrobbling.html" hreflang="pt-BR" lang="pt-BR" aria-current="true">Português<span>PT</span></a><a href="../../fr/docs/scrobbling.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/scrobbling.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/scrobbling.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/scrobbling.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/scrobbling.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/scrobbling.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/scrobbling.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/scrobbling.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/scrobbling.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/scrobbling.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: todas as páginas</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Visão geral</a></li>
+          <li><a href="getting-started.html">Primeiros passos</a></li>
+          <li><a href="library.html">Biblioteca</a></li>
+          <li><a href="playback.html">Reprodução</a></li>
+          <li><a href="sound.html">Som</a></li>
+          <li><a href="lyrics.html">Letras</a></li>
+          <li><a href="radio-podcasts.html">Rádio e podcasts</a></li>
+          <li><a href="servers.html">Servidores</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html" aria-current="page">Scrobbling</a></li>
+          <li><a href="controls.html">Controles</a></li>
+          <li><a href="visualizers-games.html">Visualizadores e jogos</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Ajustes</a></li>
+          <li><a href="handhelds.html">Sistemas portáteis</a></li>
+          <li><a href="faq.html">Perguntas frequentes</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Scrobbling</h1>
+    <p class="lede">Registre o que você ouve no Last.fm e no ListenBrainz.</p>
+
+<p><strong>Ajustes → Scrobbling</strong> reúne as duas contas. Uma música conta quando toca metade dela (ou quatro minutos), se durar pelo menos 30 segundos; o “now playing” é enviado alguns segundos depois do início. Quem envia é o serviço, então funciona com o player fechado. Rádio e episódios de podcast não fazem scrobble.</p>
+<h2 id="lastfm">Last.fm</h2>
+<ol>
+<li>Escolha <strong>Last.fm</strong>. Aparece um QR code com a página de autorização do Last.fm.</li>
+<li>Escaneie com o celular e autorize o audiofilus com sua conta do Last.fm.</li>
+<li>Em poucos segundos o audiofilus diz que está conectado com o seu usuário.</li>
+</ol>
+<p>Escolha de novo para desconectar. Se aparecer <strong>Falta a chave de API</strong>, sua compilação não inclui a chave do aplicativo do audiofilus no Last.fm; as versões oficiais incluem.</p>
+
+<h2 id="listenbrainz">ListenBrainz</h2>
+<p>Escolha <strong>ListenBrainz</strong> e digite seu token de usuário (da página de ajustes do ListenBrainz). O audiofilus o verifica e mostra seu nome de usuário.</p>
+
+<h2 id="offline">Sem conexão</h2>
+<p>Os plays que não podem ser enviados esperam e saem quando a conexão volta (são tentados de novo a cada dois minutos, mais ou menos). Um token errado ou uma sessão revogada é descartado em vez de tentado de novo.</p>
+
+<h2 id="servers">No seu servidor</h2>
+<p>Músicas de um servidor Subsonic ou Jellyfin também contam nesse servidor, a menos que você desligue <strong>Contar no servidor</strong>.</p>
+
+    <nav class="pager" aria-label="Páginas"><a href="youtube-music.html">← YouTube Music</a><a href="controls.html">Controles →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Início</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Versão mais recente</a></span>
+    <span>Achou um erro na documentação? <a href="https://github.com/juanvillacortac/audiofilus/issues">Abra uma issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

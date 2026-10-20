@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suono · guida di audiofilus</title>
+<meta name="description" content="ReplayGain, l'equalizzatore, la dissolvenza e la frequenza di uscita. Li applica il servizio, quindi funzionano anche con il lettore chiuso.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/sound.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Pagina principale di audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Sito">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Guida</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Scarica</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Lingua: Italiano"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>IT</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/sound.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/sound.html" hreflang="it" lang="it" aria-current="true">Italiano<span>IT</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/sound.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/sound.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/sound.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/sound.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Guida">
+      <details open id="toc">
+        <summary>Guida: tutte le pagine</summary>
+        <div class="label">Guida</div>
+        <ol>
+          <li><a href="index.html">Panoramica</a></li>
+          <li><a href="getting-started.html">Per iniziare</a></li>
+          <li><a href="library.html">Libreria</a></li>
+          <li><a href="playback.html">Riproduzione</a></li>
+          <li><a href="sound.html" aria-current="page">Suono</a></li>
+          <li><a href="lyrics.html">Testi</a></li>
+          <li><a href="radio-podcasts.html">Radio e podcast</a></li>
+          <li><a href="servers.html">Server</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Comandi</a></li>
+          <li><a href="visualizers-games.html">Visualizzatori e giochi</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Impostazioni</a></li>
+          <li><a href="handhelds.html">Sistemi delle console</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Suono</h1>
+    <p class="lede">ReplayGain, l'equalizzatore, la dissolvenza e la frequenza di uscita. Li applica il servizio, quindi funzionano anche con il lettore chiuso.</p>
+
+<p>Sono tutti in <strong>Impostazioni</strong>: Dissolvenza sotto Riproduzione, il resto sotto Suono.</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>Riproduce ogni brano (o ogni album) allo stesso volume, usando i tag ReplayGain dei tuoi file (anche i guadagni R128 di Opus). <strong>Impostazioni → ReplayGain</strong>:</p>
+<ul>
+<li><strong>Auto</strong>: per album quando suoni in ordine, per brano in casuale.</li>
+<li><strong>Per brano</strong> o <strong>Per album</strong>.</li>
+<li><strong>No</strong>.</li>
+</ul>
+<p>Non spinge mai un brano oltre il suo picco, quindi niente distorce. I brani senza tag ReplayGain (e i brani remoti) suonano invariati.</p>
+
+<h2 id="eq">Equalizzatore</h2>
+<p><strong>Impostazioni → Equalizzatore</strong> apre dieci bande da 31&nbsp;Hz a 16&nbsp;kHz, ognuna da −12 a +12&nbsp;dB.</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="L'equalizzatore: dieci cursori verticali con il preset Rock" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>Tasto</th><th>Cosa fa</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Scegli una banda</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Spostala di 1 dB</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Scorri i preset: Piatto, Bassi, Acuti, Voce, Rock, Metal, Pop, Elettronica, Jazz, Classica, Loudness</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Torna a Piatto</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Chiudi (le modifiche si applicano mentre le fai)</td></tr>
+</table>
+<p>Muovere tu una banda trasforma il preset in <strong>Personale</strong>. Sugli schermi touch, tocca una colonna per impostarne l'altezza. Con l'equalizzatore attivo, dieci bande costano circa il 5&nbsp;% della CPU di una console portatile alla frequenza più bassa; piatto, non costa nulla.</p>
+
+<h2 id="crossfade">Dissolvenza</h2>
+<p><strong>Impostazioni → Dissolvenza</strong>: No, oppure da 2 a 12 secondi di sovrapposizione tra i brani. Non sfuma tra brani consecutivi dello stesso album ascoltati in ordine, così gli album restano senza pause. Salta anche i brani molto corti e quelli dei server non ancora scaricati.</p>
+
+<h2 id="output-rate">Frequenza di uscita</h2>
+<p><strong>Impostazioni → Frequenza di uscita</strong>: 44,1, 48, 96 o 192&nbsp;kHz. Cambiarla riavvia il servizio audio, che riprende da dov'era. Con il file alla stessa frequenza e niente applicato (volume al 100&nbsp;%, niente ReplayGain né equalizzatore), i campioni escono intatti, anche se PipeWire o PulseAudio possono comunque ricampionare. Non disponibile su iPhone.</p>
+
+<h2 id="volume">Volume e amplificazione</h2>
+<p>Il volume va da 0 a 200&nbsp;%. Fino al 100&nbsp;% è il volume del sistema; oltre, audiofilus amplifica il segnale con un limitatore così i master forti non distorcono.</p>
+
+<h2 id="dsd">DSD</h2>
+<p>I file DSF e DFF si riproducono, convertiti in PCM. DSD64 è abbastanza leggero per una console portatile; con DSD256 potrebbe non farcela.</p>
+
+    <nav class="pager" aria-label="Pagine"><a href="playback.html">← Riproduzione</a><a href="lyrics.html">Testi →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Ultima release</a></span>
+    <span>Hai trovato un errore nella guida? <a href="https://github.com/juanvillacortac/audiofilus/issues">Apri una segnalazione</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

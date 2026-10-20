@@ -50,7 +50,7 @@ h1, h2, h3 { text-wrap: balance; margin: 0; -webkit-font-smoothing: none; font-s
   border-bottom: 1px solid var(--line);
 }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
-.top img { height: 56px; width: auto; }
+.top img { height: 56px; width: auto; object-fit: contain; flex-shrink: 0; min-width: 0; }
 .top nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; font: 600 var(--step--1)/1 var(--mono); }
 .top nav a { color: var(--muted); text-decoration: none; }
 .top nav a:hover, .top nav a[aria-current] { color: var(--fg); }
@@ -60,6 +60,10 @@ h1, h2, h3 { text-wrap: balance; margin: 0; -webkit-font-smoothing: none; font-s
   .top nav .wide { display: none; }
 }
 @media (max-width: 400px) { .top img { height: 30px; } .top nav { flex-wrap: nowrap; } }
+/* En pantallas estrechas el logo no se encoge, y el enlace a la portada se
+   oculta: el logo ya lleva a ella (los menús de algunos idiomas no caben). */
+.top .wrap > a:first-child { flex-shrink: 0; }
+@media (max-width: 420px) { .top nav > a:first-child, .top nav > a[href^="https://github.com"] { display: none; } .top img { height: 34px; } .top nav { gap: 0.7rem; } .top .wrap { gap: 0.6rem; } }
 
 /* Language switcher: a globe with the current language; the others drop down */
 .lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }

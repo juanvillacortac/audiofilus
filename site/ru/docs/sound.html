@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Звук · документация audiofilus</title>
+<meta name="description" content="ReplayGain, эквалайзер, плавный переход и частота вывода. Их применяет сервис, поэтому они работают и при закрытом плеере.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&amp;family=Pixelify+Sans:wght@400;600&amp;display=swap">
+<style>:root{--display:"Jersey 10","Pixelify Sans","Arial Narrow",sans-serif;--body:"PT Sans",system-ui,-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/sound.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Сайт">
+      <a href="../index.html">Главная</a>
+      <a href="index.html" aria-current="page">Справка</a>
+      <a class="wide" href="faq.html">Вопросы</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Скачать</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Язык: Русский"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>RU</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/sound.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/sound.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/sound.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/sound.html" hreflang="ru" lang="ru" aria-current="true">Русский<span>RU</span></a><a href="../../id/docs/sound.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/sound.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Справка">
+      <details open id="toc">
+        <summary>Документация: все страницы</summary>
+        <div class="label">Справка</div>
+        <ol>
+          <li><a href="index.html">Обзор</a></li>
+          <li><a href="getting-started.html">Начало работы</a></li>
+          <li><a href="library.html">Библиотека</a></li>
+          <li><a href="playback.html">Воспроизведение</a></li>
+          <li><a href="sound.html" aria-current="page">Звук</a></li>
+          <li><a href="lyrics.html">Тексты</a></li>
+          <li><a href="radio-podcasts.html">Радио и подкасты</a></li>
+          <li><a href="servers.html">Серверы</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Скробблинг</a></li>
+          <li><a href="controls.html">Управление</a></li>
+          <li><a href="visualizers-games.html">Визуализаторы и игры</a></li>
+          <li><a href="tracker.html">Трекер</a></li>
+          <li><a href="settings.html">Настройки</a></li>
+          <li><a href="handhelds.html">Портативные системы</a></li>
+          <li><a href="faq.html">Вопросы</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Звук</h1>
+    <p class="lede">ReplayGain, эквалайзер, плавный переход и частота вывода. Их применяет сервис, поэтому они работают и при закрытом плеере.</p>
+
+<p>Всё это в <strong>Настройках</strong>: Плавный переход — в разделе Воспроизведение, остальное — в разделе Звук.</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>Играет каждую песню (или каждый альбом) с одинаковой громкостью по тегам ReplayGain в твоих файлах (а также по усилению R128 в Opus). <strong>Настройки → ReplayGain</strong>:</p>
+<ul>
+<li><strong>Авто</strong>: по альбому при игре по порядку, по песне при перемешивании.</li>
+<li><strong>По песне</strong> или <strong>По альбому</strong>.</li>
+<li><strong>Выкл</strong>.</li>
+</ul>
+<p>Песня никогда не поднимается выше своего пика, так что ничего не клиппует. Песни без тегов ReplayGain (и песни с серверов) играют без изменений.</p>
+
+<h2 id="eq">Эквалайзер</h2>
+<p><strong>Настройки → Эквалайзер</strong> открывает десять полос от 31&nbsp;Гц до 16&nbsp;кГц, каждая от −12 до +12&nbsp;дБ.</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="Эквалайзер: десять вертикальных ползунков с пресетом Рок" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>Кнопка</th><th>Действие</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Выбрать полосу</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Сдвинуть на 1 дБ</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Перебрать пресеты: Ровно, Басы, Высокие, Вокал, Рок, Метал, Поп, Электроника, Джаз, Классика, Громкость+</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Вернуть Ровно</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Закрыть (изменения применяются сразу)</td></tr>
+</table>
+<p>Если сдвинуть полосу вручную, пресет становится <strong>Своё</strong>. На сенсорных экранах нажми на столбец, чтобы задать его высоту. Со включённым эквалайзером десять полос занимают около 5&nbsp;% процессора портативной консоли на минимальной частоте; в положении «ровно» — ничего.</p>
+
+<h2 id="crossfade">Плавный переход</h2>
+<p><strong>Настройки → Плавный переход</strong>: Выкл или от 2 до 12 секунд наложения между песнями. Между соседними песнями одного альбома, играющими по порядку, перехода нет, так что альбомы звучат без пауз. Также пропускаются очень короткие песни и песни с серверов, которые ещё не скачались.</p>
+
+<h2 id="output-rate">Частота вывода</h2>
+<p><strong>Настройки → Частота вывода</strong>: 44,1, 48, 96 или 192&nbsp;кГц. Её смена перезапускает аудиосервис, и он продолжает с того же места. Если частота файла совпадает и ничего не применяется (громкость 100&nbsp;%, без ReplayGain и эквалайзера), сэмплы выходят нетронутыми, хотя PipeWire или PulseAudio всё равно могут их пересэмплировать. На iPhone недоступно.</p>
+
+<h2 id="volume">Громкость и усиление</h2>
+<p>Громкость — от 0 до 200&nbsp;%. До 100&nbsp;% это системная громкость; выше audiofilus усиливает сигнал с лимитером, чтобы громкие мастеры не искажались.</p>
+
+<h2 id="dsd">DSD</h2>
+<p>Файлы DSF и DFF играют с преобразованием в PCM. DSD64 достаточно лёгкий для портативной консоли; DSD256 может на ней не успевать.</p>
+
+    <nav class="pager" aria-label="Страницы"><a href="playback.html">← Воспроизведение</a><a href="lyrics.html">Тексты →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

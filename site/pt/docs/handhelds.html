@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sistemas portáteis · Documentação do audiofilus</title>
+<meta name="description" content="O que o audiofilus faz de diferente no Knulli, muOS, ROCKNIX, ArkOS e dArkOS.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/handhelds.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/handhelds.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/handhelds.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/handhelds.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/handhelds.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/handhelds.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/handhelds.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/handhelds.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/handhelds.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/handhelds.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/handhelds.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/handhelds.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Início do audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Início</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Baixar</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Idioma: Português"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>PT</summary><div class="menu"><a href="../../docs/handhelds.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/handhelds.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/handhelds.html" hreflang="pt-BR" lang="pt-BR" aria-current="true">Português<span>PT</span></a><a href="../../fr/docs/handhelds.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/handhelds.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/handhelds.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/handhelds.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/handhelds.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/handhelds.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/handhelds.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/handhelds.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/handhelds.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/handhelds.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: todas as páginas</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Visão geral</a></li>
+          <li><a href="getting-started.html">Primeiros passos</a></li>
+          <li><a href="library.html">Biblioteca</a></li>
+          <li><a href="playback.html">Reprodução</a></li>
+          <li><a href="sound.html">Som</a></li>
+          <li><a href="lyrics.html">Letras</a></li>
+          <li><a href="radio-podcasts.html">Rádio e podcasts</a></li>
+          <li><a href="servers.html">Servidores</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controles</a></li>
+          <li><a href="visualizers-games.html">Visualizadores e jogos</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Ajustes</a></li>
+          <li><a href="handhelds.html" aria-current="page">Sistemas portáteis</a></li>
+          <li><a href="faq.html">Perguntas frequentes</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Sistemas portáteis</h1>
+    <p class="lede">O que o audiofilus faz de diferente no Knulli, muOS, ROCKNIX, ArkOS e dArkOS.</p>
+
+<p>O audiofilus detecta o sistema ao iniciar e usa as ferramentas do próprio sistema para a tampa, o botão de energia, o volume e a bateria. Testado num Anbernic RG34XX-SP com Knulli.</p>
+
+<h2 id="files">Onde ficam seus arquivos</h2>
+<p>Os ajustes (<code>audiofilus.json</code>) e os dados (<code>data/</code>: cache da biblioteca, playlists, histórico, letras, podcasts, o log <code>audiofilus.log</code>) ficam ao lado do programa, na pasta do port:</p>
+<table>
+<tr><th>Sistema</th><th>Pasta</th></tr>
+<tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
+<tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, ou <code>/roms2/ports/audiofilus</code> se seus jogos estão no segundo cartão SD</td></tr>
+<tr><td>muOS (app)</td><td>a pasta do app em <code>MUOS/application</code></td></tr>
+</table>
+
+<h2 id="power">O botão de energia</h2>
+<ul>
+<li><strong>Com o player aberto</strong>, um toque no botão de energia põe o audiofilus em sleep (tela apagada, som ligado) em vez de suspender o console. Segurar continua desligando.</li>
+<li><strong>Depois de Ir para 2º plano</strong>, o console suspende normalmente quando você o aperta.</li>
+</ul>
+<p>Com o player aberto, a suspensão por inatividade do sistema e o escurecimento da tela também ficam em espera.</p>
+
+<h2 id="knulli">Knulli</h2>
+<ul>
+<li>Os botões de volume passam pelo audiofilus enquanto o player está aberto, então dá para passar de 100 %.</li>
+<li>Fechar a tampa põe o audiofilus em sleep; abrir não o acorda: <kbd>START</kbd> acorda.</li>
+</ul>
+<h2 id="muos">muOS</h2>
+<ul>
+<li>Instale pelo PortMaster ou como app nativo (<code>audiofilus.muxapp</code>, veja <a href="getting-started.html#muos">Primeiros passos</a>).</li>
+<li>Acima de 100 % o volume é aumentado pelo app; os botões do próprio muOS cuidam do volume do sistema.</li>
+</ul>
+<h2 id="rocknix">ROCKNIX</h2>
+<ul>
+<li>Com o “fake suspend” do ROCKNIX (modo de suspensão desligado nos ajustes dele), apertar o botão de energia silencia e congela tudo, e o audiofilus não consegue impedir. Com a suspensão normal (o padrão), o botão põe o audiofilus em sleep.</li>
+</ul>
+<h2 id="arkos">ArkOS e dArkOS</h2>
+<ul>
+<li>Em consoles cujo medidor de bateria sempre marca 0 % (como o RG353V com dArkOS), o nível da bateria é estimado pela carga ou pela tensão, ou fica oculto.</li>
+</ul>
+
+<h2 id="power-use">Consumo de bateria</h2>
+<p>Medido num RG34XX-SP: em sleep o audiofilus consome cerca de 260&nbsp;mA, umas 11 a 12 horas de música com a bateria de 3300&nbsp;mAh.</p>
+
+    <nav class="pager" aria-label="Páginas"><a href="settings.html">← Ajustes</a><a href="faq.html">Perguntas frequentes →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Início</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Versão mais recente</a></span>
+    <span>Achou um erro na documentação? <a href="https://github.com/juanvillacortac/audiofilus/issues">Abra uma issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

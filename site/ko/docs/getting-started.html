@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>시작하기 · audiofilus 문서</title>
+<meta name="description" content="기기에 audiofilus를 설치하고, 열고, 음악 폴더를 지정하세요.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/getting-started.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/getting-started.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/getting-started.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/getting-started.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/getting-started.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/getting-started.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/getting-started.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/getting-started.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/getting-started.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/getting-started.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/getting-started.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/getting-started.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/getting-started.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/getting-started.html">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/getting-started.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/getting-started.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/getting-started.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/getting-started.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/getting-started.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/getting-started.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/getting-started.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/getting-started.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/getting-started.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/getting-started.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/getting-started.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/getting-started.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/getting-started.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html" aria-current="page">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="servers.html">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>시작하기</h1>
+    <p class="lede">기기에 audiofilus를 설치하고, 열고, 음악 폴더를 지정하세요.</p>
+
+<h2 id="handhelds">PortMaster로 휴대용 게임기에 설치</h2>
+<p>Knulli, muOS, ROCKNIX, ArkOS, dArkOS에서 작동해요.</p>
+<ol>
+<li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a>에서 <code>audiofilus-portmaster.zip</code>을 내려받으세요.</li>
+<li>PortMaster로 설치하거나 <code>ports</code> 폴더에 압축을 푸세요.</li>
+<li>Ports에서 <strong>audiofilus</strong>를 여세요.</li>
+</ol>
+<p>포트에는 게임기 음악을 재생하는 라이브러리(libgme)를 포함해 필요한 게 모두 들어 있어요.</p>
+
+<h2 id="muos">muOS에서 PortMaster 없이 설치</h2>
+<ol>
+<li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a>에서 <code>audiofilus.muxapp</code>을 내려받으세요.</li>
+<li>SD 카드(또는 USB 드라이브) 최상위의 <code>ARCHIVE</code> 폴더에 복사하세요.</li>
+<li>muOS의 <strong>Archive Manager</strong>를 열고 설치하세요. audiofilus가 <strong>Applications</strong>에 나타납니다.</li>
+</ol>
+
+<h2 id="linux">리눅스 데스크톱</h2>
+<pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
+<p>audiofilus를 <code>~/.local/share/audiofilus</code>에 설치하고, <code>audiofilus</code>를 <code>~/.local/bin</code>에 링크하고, 앱 런처에 추가해요(오디오 파일과 폴더를 “연결 프로그램”으로 열 수 있게). 업데이트하려면 다시 실행하세요. 설정은 그대로 남아요.</p>
+<p>직접 설치: <code>audiofilus-linux-amd64.tar.gz</code>(또는 <code>-arm64</code>)를 아무 데나 풀고 <code>./audiofilus desktop install</code>을 한 번 실행하세요.</p>
+
+<h2 id="windows">윈도우</h2>
+<p>윈도우 10 이상에서는 <code>audiofilus-windows-amd64.zip</code>을 아무 데나 풀고 <code>audiofilus.exe</code>를 실행하세요. MP3, FLAC, Ogg Vorbis, ALAC, WAV, AIFF는 바로 재생돼요. AAC/M4A, Opus, 트래커 모듈을 쓰려면 MSYS2의 DLL을 <code>.exe</code> 옆에 넣으세요: <code>libfdk-aac-2.dll</code>, <code>libopusfile-0.dll</code>(<code>libopus-0.dll</code>, <code>libogg-0.dll</code>과 함께), <code>libmpg123-0.dll</code>, <code>libxmp-4.dll</code>. 게임기 음악은 아직 윈도우에서 쓸 수 없어요.</p>
+
+<h2 id="iphone">iPhone과 iPad</h2>
+<p>릴리스마다 서명되지 않은 <code>audiofilus-ios-unsigned.ipa</code>가 있어요. 본인의 Apple ID로 서명해 주는 <a href="https://sideloadly.io">Sideloadly</a>나 <a href="https://altstore.io">AltStore</a>로 설치하세요.</p>
+<p>또는 AltStore, SideStore, LiveContainer에 소스 <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code>을 추가하면 새 릴리스가 업데이트로 나타납니다.</p>
+
+<h2 id="first-run">처음 실행: 음악 폴더</h2>
+<p>휴대용 게임기나 데스크톱에서 audiofilus를 처음 열면 폴더 탐색기가 나와요. <kbd>A</kbd>는 폴더 열기, <kbd>B</kbd>는 위로, <kbd>X</kbd>는 지금 폴더를 사용합니다. 보관함은 진행 막대와 함께 한 번 스캔되고, 이후 실행할 땐 새로 생기거나 바뀐 파일만 읽어요. 폴더는 나중에 <strong>설정 → 폴더</strong>에서 바꿀 수 있고, <strong>다시 스캔</strong>으로 다시 읽을 수 있어요.</p>
+<p>내 음악이 없나요? 그래도 빈 보관함으로 열리니, 서버, 라디오, 팟캐스트, YouTube Music은 그대로 쓸 수 있어요.</p>
+<p>iPhone에서는 파일 앱의 <em>나의 iPhone → Audiofilus</em>에 곡을 복사하거나, <strong>설정 → 폴더</strong>에서 아무 폴더(iCloud Drive나 다른 앱)나 고르세요.</p>
+
+<h2 id="find-your-way">화면 둘러보기</h2>
+<ul>
+<li><kbd>SELECT</kbd>를 누르면 화면 바(재생 중, 보관함, 검색, 대기열, 라디오, 팟캐스트, 게임, 설정…)가 열려요. 두 번 누르면 직전 화면으로 돌아갑니다.</li>
+<li><kbd>START</kbd>를 누르면 지금 화면의 더보기 메뉴가 열려요.</li>
+<li><kbd>FN</kbd>(키보드에선 <kbd>F1</kbd>)을 누르고 있으면 그 화면에서 각 버튼이 하는 일을 볼 수 있어요.</li>
+</ul>
+<figure><img class="px shot" src="../../img/guide.png" alt="FN을 누르고 있는 동안 플레이어 위에 표시된 조작 가이드" width="360" height="240" loading="lazy"><figcaption>FN을 누르고 있는 동안의 조작 가이드.</figcaption></figure>
+
+<h2 id="update">업데이트</h2>
+<p>새 릴리스를 같은 방법으로 설치하세요. 설정(<code>audiofilus.json</code>)과 데이터(<code>data/</code>)는 프로그램 옆에 있어서 그대로 남아요.</p>
+
+    <nav class="pager" aria-label="페이지"><a href="index.html">← 개요</a><a href="library.html">보관함 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Серверы · документация audiofilus</title>
+<meta name="description" content="Музыкальный сервер как ещё одна библиотека — со стримингом, кешем, избранным и счётом прослушиваний.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&amp;family=Pixelify+Sans:wght@400;600&amp;display=swap">
+<style>:root{--display:"Jersey 10","Pixelify Sans","Arial Narrow",sans-serif;--body:"PT Sans",system-ui,-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/servers.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/servers.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/servers.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/servers.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/servers.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/servers.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/servers.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/servers.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/servers.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/servers.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/servers.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/servers.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Сайт">
+      <a href="../index.html">Главная</a>
+      <a href="index.html" aria-current="page">Справка</a>
+      <a class="wide" href="faq.html">Вопросы</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Скачать</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Язык: Русский"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>RU</summary><div class="menu"><a href="../../docs/servers.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/servers.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/servers.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/servers.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/servers.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/servers.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/servers.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/servers.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/servers.html" hreflang="ru" lang="ru" aria-current="true">Русский<span>RU</span></a><a href="../../id/docs/servers.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/servers.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/servers.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/servers.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Справка">
+      <details open id="toc">
+        <summary>Документация: все страницы</summary>
+        <div class="label">Справка</div>
+        <ol>
+          <li><a href="index.html">Обзор</a></li>
+          <li><a href="getting-started.html">Начало работы</a></li>
+          <li><a href="library.html">Библиотека</a></li>
+          <li><a href="playback.html">Воспроизведение</a></li>
+          <li><a href="sound.html">Звук</a></li>
+          <li><a href="lyrics.html">Тексты</a></li>
+          <li><a href="radio-podcasts.html">Радио и подкасты</a></li>
+          <li><a href="servers.html" aria-current="page">Серверы</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Скробблинг</a></li>
+          <li><a href="controls.html">Управление</a></li>
+          <li><a href="visualizers-games.html">Визуализаторы и игры</a></li>
+          <li><a href="tracker.html">Трекер</a></li>
+          <li><a href="settings.html">Настройки</a></li>
+          <li><a href="handhelds.html">Портативные системы</a></li>
+          <li><a href="faq.html">Вопросы</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Subsonic, Navidrome и Jellyfin</h1>
+    <p class="lede">Музыкальный сервер как ещё одна библиотека — со стримингом, кешем, избранным и счётом прослушиваний.</p>
+
+<h2 id="add">Добавление сервера</h2>
+<p><strong>Настройки → Серверы → Добавить сервер</strong>. Выбери тип (Subsonic/OpenSubsonic — это Navidrome, gonic, Airsonic и другие; или Jellyfin/Emby), затем введи имя, адрес (<code>http://ip:порт</code>), пользователя и пароль. Связь проверяется перед сохранением; если сервер не отвечает, можно попробовать ещё раз, исправить данные или всё равно сохранить.</p>
+<p>Каждый сервер становится ещё одной библиотекой на панели экранов, с альбомами, исполнителями, песнями, плейлистами и поиском. Его каталог сохраняется, поэтому показывается сразу, даже без сети.</p>
+
+<h2 id="options">Настройки сервера</h2>
+<ul>
+<li><strong>Качество</strong>: по умолчанию MP3 192&nbsp;кбит/с (мало качать, легко декодировать), 320, 128, 96 или Оригинал (без конвертации).</li>
+<li><strong>Проверить связь</strong>, <strong>Обновить каталог</strong>, <strong>Изменить данные</strong>, <strong>Удалить сервер</strong>.</li>
+</ul>
+
+<h2 id="cache">Стриминг и кеш</h2>
+<p>Песни кешируются на SD-карте по мере воспроизведения (по умолчанию 400&nbsp;МБ; первыми уходят давно не слушанные), а следующая песня загружается заранее. Песни из кеша играют без сети. Песни сервера можно также <strong>Скачать в библиотеку</strong>, с тегами и обложкой, в папку с музыкой.</p>
+
+<h2 id="favorites">Избранное, оценки и счёт прослушиваний</h2>
+<ul>
+<li>Отметка «Нравится» или оценка песни с сервера ставит звезду или оценку и на сервере. В Jellyfin есть избранное, но нет оценок от 1 до 5.</li>
+<li>Когда загружается каталог сервера, его отмеченные звездой и оценённые песни добавляются в твой список «Нравится».</li>
+<li>Прослушанные песни учитываются и на сервере (Navidrome может переслать их в Last.fm и ListenBrainz, если настроить это там). Выключается в <strong>Настройки → Скробблинг → Учёт на сервере</strong>.</li>
+</ul>
+<p>Плейлисты сервера можно воспроизводить, но не редактировать из audiofilus.</p>
+
+    <nav class="pager" aria-label="Страницы"><a href="radio-podcasts.html">← Радио &amp; подкасты</a><a href="youtube-music.html">YouTube Music →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

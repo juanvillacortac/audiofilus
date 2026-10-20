@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>서버 · audiofilus 문서</title>
+<meta name="description" content="음악 서버를 또 하나의 보관함으로. 스트리밍, 캐시, 좋아요, 재생 횟수까지.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/servers.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/servers.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/servers.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/servers.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/servers.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/servers.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/servers.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/servers.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/servers.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/servers.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/servers.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/servers.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/servers.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/servers.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/servers.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/servers.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/servers.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/servers.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/servers.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/servers.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/servers.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/servers.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/servers.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/servers.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/servers.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="servers.html" aria-current="page">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Subsonic, Navidrome, Jellyfin</h1>
+    <p class="lede">음악 서버를 또 하나의 보관함으로. 스트리밍, 캐시, 좋아요, 재생 횟수까지.</p>
+
+<h2 id="add">서버 추가하기</h2>
+<p><strong>설정 → 서버 → 서버 추가</strong>. 종류를 고르고(Navidrome, gonic, Airsonic 등을 포함하는 Subsonic/OpenSubsonic, 또는 Jellyfin/Emby) 이름, 주소(<code>http://ip:port</code>), 사용자와 비밀번호를 입력하세요. 저장하기 전에 연결을 테스트하고, 응답이 없으면 다시 시도하거나 정보를 고치거나 그래도 저장할 수 있어요.</p>
+<p>서버마다 화면 바에 보관함이 하나씩 늘어나고, 앨범, 아티스트, 곡, 재생목록, 검색이 있어요. 목록이 저장되어서 네트워크가 없어도 바로 보여요.</p>
+
+<h2 id="options">서버별 옵션</h2>
+<ul>
+<li><strong>음질</strong>: 기본은 MP3 192&nbsp;kbps(내려받을 양이 적고 디코딩이 가벼워요), 320, 128, 96, 또는 원본(변환 없음).</li>
+<li><strong>연결 테스트</strong>, <strong>목록 새로고침</strong>, <strong>정보 변경</strong>, <strong>서버 삭제</strong>.</li>
+</ul>
+
+<h2 id="cache">스트리밍과 캐시</h2>
+<p>곡은 재생하면서 SD 카드에 캐시돼요(기본 400&nbsp;MB, 가장 오래 안 쓴 것부터 지워져요). 다음 곡은 미리 받아 둬요. 캐시된 곡은 네트워크 없이 재생돼요. 서버 곡을 태그와 커버와 함께 음악 폴더로 <strong>보관함에 받기</strong>할 수도 있어요.</p>
+
+<h2 id="favorites">좋아요, 평점, 재생 횟수</h2>
+<ul>
+<li>서버 곡에 좋아요나 평점을 주면 서버에도 별표나 평점이 매겨져요. Jellyfin에는 즐겨찾기는 있지만 1~5 평점은 없어요.</li>
+<li>서버의 목록을 불러오면 별표나 평점이 매겨진 곡이 좋아요 목록에 추가돼요.</li>
+<li>들은 곡은 서버에도 기록돼요(서버에서 설정하면 Navidrome이 Last.fm과 ListenBrainz로 전달해 줄 수 있어요). <strong>설정 → 스크로블 → 서버에 기록</strong>에서 끌 수 있어요.</li>
+</ul>
+<p>서버의 재생목록은 재생할 수는 있지만 audiofilus에서 편집할 수는 없어요.</p>
+
+    <nav class="pager" aria-label="페이지"><a href="radio-podcasts.html">← 라디오와 팟캐스트</a><a href="youtube-music.html">YouTube Music →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

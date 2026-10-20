@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>audiofilus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Pemutar musik pixel-art untuk handheld Linux. Musik tetap jalan saat kamu main game, dan mode tidur mematikan layar supaya kamu bisa mengendalikannya dari saku.">
+<meta property="og:title" content="audiofilus">
+<meta property="og:description" content="Pemutar musik pixel-art untuk handheld Linux. Musik tetap jalan saat kamu main game.">
+<meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="../img/icon-64.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preload" as="fetch" href="../img/splash-bg.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="../img/splash-fg.webp" type="image/webp" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night-mode handheld. Each section is a band; screenshots sit in
+   bezels like the console's own screen, pixels never smoothed. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0b15;         /* the app's splash background */
+  --panel: #17121f;
+  --panel-2: #211829;
+  --line: #352a3d;
+  --fg: #eee6ec;
+  --muted: #a898a8;
+  --red: #f04a35;         /* the UI accent on a red cover */
+  --teal: #6fe3c4;        /* the logo's chrome */
+  --pink: #ee8cc2;
+  --display: "Jersey 10", "Arial Narrow", sans-serif;  /* pixel = 1/18.667 em: sizes are multiples of 18.667px */
+  --pixel: "Tiny5", "Courier New", monospace;          /* pixel = 1/8 em: sizes are multiples of 8px */
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --wrap: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+/* Pixel art is published at 4× with hard pixels; the browser only scales it
+   down, smoothly, so it stays sharp and even at any size and screen scaling. */
+.px { image-rendering: auto; }
+a { color: var(--teal); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h2 { font: 400 56px/56px var(--display); }
+@media (max-width: 560px) { h2 { font-size: 37.3333px; line-height: 40px; } }
+h3 { font: 400 37.3333px/38px var(--display); }
+/* Pixel fonts: no smoothing where the platform allows it. */
+h1, h2, h3, .btn, .chip { -webkit-font-smoothing: none; font-smooth: never; }
+p { margin: 0; }
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+.band + .band { border-top: 1px solid var(--line); }
+.eyebrow {
+  font: 600 var(--step--1)/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.lede { color: var(--muted); max-width: 38rem; font-size: var(--step-1); line-height: 1.5; }
+.head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+/* Top bar */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
+.top img { height: 56px; width: auto; object-fit: contain; flex-shrink: 0; min-width: 0; }
+.top nav { display: flex; align-items: center; gap: 1.5rem; font: 600 var(--step--1)/1 var(--mono); }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--fg); }
+.top nav .icon { display: inline-flex; padding-left: 1.5rem; border-left: 1px solid var(--line); }
+.top nav .get { color: #fff; background: var(--red); padding: 0.55rem 0.9rem; border-radius: 4px; box-shadow: 3px 3px 0 var(--pink); }
+.top nav .get:hover { color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--pink); }
+@media (max-width: 720px) {
+  .top nav { gap: 0.8rem; }
+  .top img { height: 40px; }
+  .top nav .sec { display: none; }
+  .top nav .icon { padding-left: 0; border-left: 0; }
+}
+
+/* Language switcher: a globe with the current language; the others drop down */
+.lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }
+.lang summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.5rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { color: var(--fg); }
+.lang .menu { position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 10; display: grid; min-width: 10rem; padding: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+.lang .menu a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.6rem; color: var(--muted); text-decoration: none; border-radius: 3px; }
+.lang .menu a span { color: var(--line); }
+.lang .menu a:hover { background: var(--panel-2); color: var(--fg); }
+.lang .menu a[aria-current] { color: var(--fg); }
+.lang .menu a[aria-current] span { color: var(--red); }
+
+/* Hero */
+.hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
+.hero h1 { font: 400 74.6667px/70px var(--display); }
+@media (max-width: 560px) { .hero h1 { font-size: 56px; line-height: 52px; } }
+.hero h1 em { font-style: normal; color: var(--teal); }
+.hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.8rem 1.15rem;
+  font: 400 24px/24px var(--pixel);
+  text-decoration: none; border-radius: 4px;
+  border: 2px solid var(--fg); color: var(--fg);
+}
+.btn.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 4px 4px 0 var(--pink); }
+.btn.primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+.btn:hover { background: var(--panel-2); }
+.btn.primary:hover { background: var(--red); }
+.note { font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted); }
+
+/* The console: a bezel around a 3:2 screen */
+.device {
+  background: linear-gradient(160deg, #2a2230, #17121c);
+  border-radius: 22px;
+  padding: clamp(14px, 3vw, 26px);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
+  position: relative;
+}
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; }
+.device .screen img { display: block; width: 100%; }
+.device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+.device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
+
+/* Format strip */
+.formats { border-block: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+.formats ul {
+  list-style: none; margin: 0; padding-block: 0.9rem;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.6rem;
+  font: 600 var(--step--1)/1.4 var(--mono); color: var(--muted);
+}
+.formats li::before { content: "▸ "; color: var(--red); }
+
+/* Background play */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+.points { display: grid; gap: 1.6rem; }
+.point { display: grid; gap: 0.4rem; min-width: 0; }
+.point p { color: var(--muted); }
+kbd {
+  font: 700 0.78em/1 var(--mono);
+  background: var(--red); color: #fff;
+  padding: 0.2em 0.45em; border-radius: 3px;
+  white-space: nowrap;
+}
+.figure { display: grid; gap: 0.6rem; min-width: 0; }
+.figure figcaption, .caption { font: 400 var(--step--1)/1.4 var(--mono); color: var(--muted); }
+.shot { border-radius: 6px; border: 1px solid var(--line); background: #000; width: 100%; }
+figure { margin: 0; }
+
+/* Visualizers */
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.vis-grid figure { display: grid; gap: 0.5rem; }
+.vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
+.vis-grid figcaption span { color: var(--muted); font-weight: 400; }
+.games { margin-top: 3rem; }
+
+/* Sources */
+.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+@media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
+.source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.source .tag { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.source p { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.trio.phones { max-width: 760px; margin-inline: auto; gap: 1.5rem; }
+.trio.phones img { border-radius: 18px; }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } .trio.phones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; } .trio.phones img { border-radius: 10px; } }
+
+/* Screens gallery */
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
+
+/* Any width */
+/* The five shapes side by side at the same height: each takes width in
+   proportion to its aspect (240, 320, 360, 427 and 560 px wide at 240 tall). */
+.widths { display: flex; align-items: flex-end; gap: 0.75rem; }
+.widths figure { display: grid; gap: 0.4rem; min-width: 0; }
+.widths figure:nth-child(1) { flex: 240 1 0; }
+.widths figure:nth-child(2) { flex: 320 1 0; }
+.widths figure:nth-child(3) { flex: 360 1 0; }
+.widths figure:nth-child(4) { flex: 427 1 0; }
+.widths figure:nth-child(5) { flex: 560 1 0; }
+.widths img { width: 100%; }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+
+/* Systems */
+.systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip { font: 400 24px/24px var(--pixel); padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; color: var(--muted); }
+ol.steps strong { color: var(--fg); }
+pre {
+  margin: 0; padding: 1rem 1.2rem; overflow-x: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  font: 400 0.88rem/1.6 var(--mono); color: var(--fg);
+}
+pre .c { color: var(--muted); }
+
+/* Copyable command */
+.copy-block { display: flex; gap: 0.5rem; align-items: stretch; min-width: 0; }
+.copy-block pre { flex: 1; min-width: 0; }
+.copy-btn {
+  flex: none;
+  font: 400 16px/16px var(--pixel); -webkit-font-smoothing: none;
+  padding: 0 0.8rem; border-radius: 6px; cursor: pointer;
+  background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+}
+.copy-btn:hover { border-color: var(--teal); }
+.steps code.inline { font: 400 0.85em/1.4 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.35em; word-break: break-word; }
+.note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
+
+/* Roadmap */
+.road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
+.stop { border: 1px solid var(--line); border-radius: 6px; padding: 1.3rem; display: grid; gap: 0.6rem; align-content: start; background: var(--panel); }
+.stop p { color: var(--muted); font-size: var(--step--1); }
+.state { justify-self: start; font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.5rem; border-radius: 3px; }
+.state.now { background: var(--teal); color: var(--ink); }
+.state.next { border: 1px solid var(--pink); color: var(--pink); }
+
+/* Support */
+.support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; }
+.support .head { margin: 0; max-width: 40rem; }
+.btn.coffee { background: var(--teal); border-color: var(--teal); color: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
+.btn.coffee:hover { background: var(--teal); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+
+/* Splash, like the app's: the logo intro on the dark screen, then a fade. */
+.splash {
+  position: fixed; inset: 0; z-index: 50;
+  background: #0b0a13; /* the edge of the app's splash background */
+  cursor: pointer;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+/* The app's splash in two layers: its pulsing background, stretched to cover
+   any screen shape, and the logo on top, whole and centered. */
+.splash img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+.splash .bg { object-fit: cover; image-rendering: pixelated; }
+/* The logo layer is cropped to its content (234×161 of the app's 240-tall
+   screen): as tall as the app would draw it, but never wider than the screen. */
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92vw, 97.5vh); height: auto; }
+.splash.ready img { visibility: visible; }
+.splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash.out img { visibility: hidden; }
+.splash[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .splash { display: none; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
+footer img { height: 56px; width: auto; }
+
+/* Cabecera en pantallas estrechas: el logo no se encoge y el icono de GitHub
+   (también en el pie) se oculta, para que quepan los menús de todos los idiomas. */
+.top .wrap > a:first-child { flex-shrink: 0; }
+@media (max-width: 420px) {
+  .top img { height: 28px; }
+  .top .wrap { gap: 0.4rem; }
+  .top nav { gap: 0.55rem; }
+  .top nav .get { padding: 0.5rem 0.6rem; }
+  .top nav .icon { display: none; }
+  .lang summary { font-size: 0; gap: 0; }
+}
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/">
+</head>
+<body>
+
+<div class="splash" id="splash" hidden aria-hidden="true">
+  <img class="px bg" id="splash-bg" alt="" width="427" height="240">
+  <img class="px fg" id="splash-fg" alt="" width="234" height="161">
+</div>
+<script>
+// The splash plays on every load, as in the app; any click or key skips it.
+(function () {
+  var el = document.getElementById("splash");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var started = false;
+  el.hidden = false;
+  function done() {
+    el.classList.add("out");
+    removeEventListener("keydown", done);
+    setTimeout(function () { el.hidden = true; }, 500);
+  }
+  // Both layers start together once both have arrived; if that takes too
+  // long, go straight to the page. Blob URLs make each load a new image, so
+  // the animation (which plays once) starts over even from the cache.
+  function blob(u) {
+    return fetch(u).then(function (r) { if (!r.ok) throw r.status; return r.blob(); });
+  }
+  Promise.all([blob("../img/splash-bg.webp"), blob("../img/splash-fg.webp")]).then(function (bs) {
+    var imgs = [document.getElementById("splash-bg"), document.getElementById("splash-fg")];
+    var left = 2;
+    imgs.forEach(function (img, i) {
+      img.onload = function () {
+        if (--left || started) return;
+        started = true;
+        el.classList.add("ready");
+        setTimeout(done, 2480); // splashLen - splashOut in internal/ui/splash.go
+      };
+      img.src = URL.createObjectURL(bs[i]);
+    });
+  }).catch(done);
+  setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
+  el.addEventListener("click", done);
+  addEventListener("keydown", done);
+})();
+</script>
+
+<header class="top">
+  <div class="wrap">
+    <a href="#top" aria-label="audiofilus"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Bagian">
+      <a class="sec" href="#background">Fitur</a>
+      <a class="sec" href="#sources">Sumber</a>
+      <a class="sec" href="#install">Platform</a>
+      <a href="docs/index.html">Dokumentasi</a>
+      <a class="icon" href="https://github.com/juanvillacortac/audiofilus" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <a class="get" href="#install">Unduh</a>
+      <details class="lang"><summary aria-label="Bahasa: Indonesia"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ID</summary><div class="menu"><a href="../index.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../es/index.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../pt/index.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../fr/index.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../it/index.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../de/index.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../pl/index.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../ru/index.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../id/index.html" hreflang="id" lang="id" aria-current="true">Indonesia<span>ID</span></a><a href="../ja/index.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../ko/index.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <span class="eyebrow">Pemutar musik untuk handheld Linux</span>
+        <h1>Musikmu tetap jalan <em>saat kamu main game.</em></h1>
+        <p class="lede">audiofilus adalah pemutar musik pixel-art dengan sampul album, visualisasi, delapan game arcade, dan tracker chiptune. Tutup aplikasinya, buka emulator, dan musik terus berputar. Matikan layar dan kendalikan dari saku.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Unduh untuk PortMaster</a>
+          <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Kode sumber di GitHub</a>
+        </div>
+        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — juga di desktop Linux dan Windows, serta di iPhone.</p>
+      </div>
+      <div class="device">
+        <span class="led" aria-hidden="true"></span>
+        <div class="screen"><img class="px" src="../img/player.webp" alt="Layar Sedang diputar: sampul album, info lagu, dan visualisasi spektrum yang berdenyut mengikuti lagu" width="360" height="240"></div>
+        <span class="label" aria-hidden="true">AUDIOFILUS</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="formats">
+    <div class="wrap">
+      <ul aria-label="Format yang didukung">
+        <li>MP3</li><li>AAC / M4A</li><li>ALAC</li><li>FLAC</li><li>Ogg Vorbis</li><li>Opus</li><li>WAV</li><li>AIFF</li><li>DSD (DSF · DFF)</li><li>NSF · SPC · GBS · VGM · HES · KSS · AY · SAP</li><li>MOD · XM · IT · S3M</li><li>CUE sheet</li><li>Playlist M3U</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="band" id="background">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Putar di latar belakang</span>
+          <h2>Pemutar yang tidak mengganggu</h2>
+        </div>
+        <div class="point">
+          <h3>Audionya hidup di layanannya sendiri</h3>
+          <p>Antarmukanya hanya remote. Tutup, musik tetap jalan; buka game, musik tetap berputar, dengan pergantian lagu tanpa jeda dan fade singkat saat kamu menjeda.</p>
+        </div>
+        <div class="point">
+          <h3>Kendali dari dalam game apa pun</h3>
+          <p>Tahan <kbd>FN</kbd> lalu tekan tombol untuk jeda, lewati, kembali, atau maju-mundur. Tombol play di headphone juga berfungsi, lewat Bluetooth atau kabel: sekali tekan jeda, dua kali lewati, tiga kali kembali.</p>
+        </div>
+        <div class="point">
+          <h3>Mode tidur untuk di saku</h3>
+          <p>Tekan <kbd>START</kbd> dua kali atau tombol power: layar mati, CPU melambat, dan tombol pemicu jadi gestur. Tutup lipatannya dan tetap tidur. Di RG34XX-SP mode ini memakai sekitar 260&nbsp;mA: kira-kira 11 sampai 12 jam musik dengan baterai 3300&nbsp;mAh-nya.</p>
+        </div>
+        <div class="point">
+          <h3>Bantuan cukup satu tombol</h3>
+          <p>Tahan <kbd>FN</kbd> di layar mana pun untuk melihat fungsi tiap tombol di sana.</p>
+        </div>
+      </div>
+      <div class="figure">
+        <img class="shot px" src="../img/guide.png" alt="Panduan kontrol di atas pemutar, berisi tombol untuk di layar ini, di mana saja, mode tidur, dan latar" width="360" height="240" loading="lazy">
+        <p class="caption">Panduan kontrol, tampil selama FN ditahan.</p>
+        <img class="shot px" src="../img/menu.png" alt="Menu Lainnya dengan Album, Artis, Tambah ke playlist, Antrean, Acak, Ulangi, Layar mati, Latar, dan Keluar" width="360" height="240" loading="lazy">
+        <p class="caption">START membuka menu Lainnya, termasuk “Latar” untuk keluar dari aplikasi sambil tetap mendengarkan.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="visuals">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Visualisasi dan game</span>
+        <h2>Sesuatu untuk dilihat</h2>
+        <p class="lede">Delapan visualisasi yang mengikuti ketukan, semua digambar dengan resolusi rendah dan ringan untuk CPU. Warnanya diambil dari sampul album.</p>
+      </div>
+      <div class="vis-grid">
+        <figure><img class="shot px" src="../img/vis-lake.webp" alt="Visualisasi Danau: danau malam yang daun teratainya beriak mengikuti musik" width="320" height="240" loading="lazy"><figcaption>Danau <span>beriak pas ketukan</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-drift.webp" alt="Visualisasi Hanyut: mobil melaju di jalan terang pada malam hari" width="320" height="240" loading="lazy"><figcaption>Hanyut <span>tiga kamera</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-trench.webp" alt="Visualisasi Palung: terbang menyusuri ngarai kota" width="320" height="240" loading="lazy"><figcaption>Palung <span>ngarai kota</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-plasma.webp" alt="Visualisasi Plasma: plasma bercahaya dengan dithering" width="320" height="240" loading="lazy"><figcaption>Plasma <span>dithering</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-tunnel.webp" alt="Visualisasi Terowongan: terowongan cincin yang berdenyut" width="320" height="240" loading="lazy"><figcaption>Terowongan <span>berdenyut dengan bass</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-waves.webp" alt="Visualisasi Gelombang: jejak osiloskop" width="320" height="240" loading="lazy"><figcaption>Gelombang <span>osiloskop</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-bars.webp" alt="Visualisasi Batang: batang spektrum dengan puncak yang jatuh" width="320" height="240" loading="lazy"><figcaption>Batang <span>spektrum</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-ridges.webp" alt="Visualisasi Punggungan: garis spektrum bertumpuk yang naik seperti sampul Unknown Pleasures" width="320" height="240" loading="lazy"><figcaption>Punggungan <span>spektrum bertumpuk</span></figcaption></figure>
+      </div>
+      <div class="vis-grid games">
+        <figure><img class="shot px" src="../img/crypt.webp" alt="Kripta: pahlawan berkerudung melangkah di dungeon yang ubinnya berkedip tiap ketukan, dengan slime, koin, dan bilah ritme" width="360" height="240" loading="lazy"><figcaption>Kripta <span>roguelike ritme</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/blocks.webp" alt="Blok: game balok jatuh yang dimainkan di samping pemutar mini" width="360" height="240" loading="lazy"><figcaption>Blok <span>balok jatuh</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/rhythm.webp" alt="Ritme: not jatuh di jalur yang dibuat dari drum lagu, dengan pesan SEMPURNA" width="360" height="240" loading="lazy"><figcaption>Ritme <span>jalur drum</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/runner.webp" alt="Pelari: pelari pixel ber-headphone melompati speaker dan merunduk di bawah vinil terbang yang datang mengikuti drum lagu, di bawah langit plasma redup" width="360" height="240" loading="lazy"><figcaption>Pelari <span>lompat pas kick</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/snake.webp" alt="Ular: ular melangkah mengikuti subdivisi ketukan lagu di atas grid titik yang ikut berdenyut" width="360" height="240" loading="lazy"><figcaption>Ular <span>bergerak pas ketukan</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/ships.webp" alt="Pesawat: pesawat menembak ke atas ke alien pixel di langit berbintang" width="360" height="240" loading="lazy"><figcaption>Pesawat <span>menembak tiap seperdelapan</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/duel.webp" alt="Duel: monster vinil satu bit menembakkan not sementara sebuah hati menghindar di dalam kotak" width="360" height="240" loading="lazy"><figcaption>Duel <span>bertarung sesuai ketukan</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/quiz.png" alt="Tebak lagu: empat lagu dari pustaka untuk dipilih sementara satu diputar" width="360" height="240" loading="lazy"><figcaption>Tebak lagu <span>sepuluh ronde</span></figcaption></figure>
+      </div>
+      <div class="split" style="margin-top: 3rem">
+        <div class="points">
+          <div class="head">
+            <span class="eyebrow">Tracker</span>
+            <h3>Bikin chiptune sendiri</h3>
+          </div>
+          <p class="lede">Tracker ala LSDJ untuk D-pad, dengan sentuhan PICO-8: rantai dan frasa, instrumen dengan envelope dan tabel, groove dengan swing, gelombang yang bisa diedit, 21 perintah efek, dan piano roll. Tulis untuk empat kanal Game Boy atau pilih mode Bebas dengan delapan kanal synth. Ekspor lagu sebagai WAV dan lagu itu masuk ke pustakamu, siap diputar di latar belakang seperti lagu lain. <a href="docs/tracker.html">Panduan tracker</a>.</p>
+        </div>
+        <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Tracker memutar Pocket Pop: sebuah frasa dengan not, instrumen, dan volume yang menyala saat diputar, lalu tampilan lagu dengan osiloskop langsung per kanal" width="360" height="240" loading="lazy"></figure>
+      </div>
+      <p class="note">Game dan tracker ada di balik satu entri <strong>Game</strong> di bilah layar, tiap game dengan rekornya sendiri. Dan ada beberapa rahasia tersembunyi di dalam aplikasi.</p>
+    </div>
+  </section>
+
+  <section class="band" id="colors">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Warna</span>
+          <h2>Tiap album mewarnainya</h2>
+          <p class="lede">Antarmuka mengambil warnanya dari sampul yang sedang diputar. Ganti album dan seluruh pemutar, visualisasi, dan game ikut berubah.</p>
+        </div>
+        <p class="note">Ditampilkan dengan empat album dari pustaka sungguhan: tiap sampul memberi dua warna aksen dan satu warna untuk latar.</p>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/colors.webp" alt="Pemutar berganti di antara empat album, warna aksennya jadi oranye, biru, hijau, dan merah muda mengikuti tiap sampul" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="lyrics">
+    <div class="wrap split">
+      <figure class="figure"><img class="shot px" src="../img/lyrics.webp" alt="Lirik tersinkron di Sedang diputar: tiga titik terisi selama intro, lalu tiap baris berwarna seperti albumnya saat dinyanyikan, dan baris di sekitarnya memudar ke tepi" width="360" height="240" loading="lazy"></figure>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Lirik</span>
+          <h2>Ikut bernyanyi</h2>
+          <p class="lede">Lirik tersinkron berwarna kata demi kata saat dinyanyikan, dengan titik yang menghitung mundur bagian instrumental. Liriknya diambil dari .lrc di samping lagu, dari tag-nya, atau dari LRCLIB secara online.</p>
+        </div>
+        <p class="note">Pilih versi lain dari daftar, geser waktunya setengah detik, atau tetap offline. Lirik di animasi ini karangan.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sound">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Suara</span>
+          <h2>Atur sesukamu</h2>
+        </div>
+        <div class="point">
+          <h3>ReplayGain</h3>
+          <p>Semua lagu dengan kekerasan yang sama, atau per album, atau otomatis: per album saat urut, per lagu saat acak. Tidak pernah mendorong lagu melewati puncaknya.</p>
+        </div>
+        <div class="point">
+          <h3>Ekualiser 10 band</h3>
+          <p>Preset untuk rock, metal, vokal, bass, dan lainnya, atau geser sendiri band-nya. Memakai sekitar 5&nbsp;% CPU handheld, dan nol saat datar.</p>
+        </div>
+        <div class="point">
+          <h3>Crossfade, DSD, dan CUE sheet</h3>
+          <p>Crossfade hingga 12 detik yang tetap membuat album tanpa jeda. File DSD bisa diputar, album yang di-rip jadi satu file dengan CUE sheet muncul sebagai lagu-lagunya, dan keluarannya berjalan di 44,1, 48, 96, atau 192&nbsp;kHz.</p>
+        </div>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/eq.png" alt="Ekualiser: sepuluh slider vertikal dari 31 Hz sampai 16 kHz dengan preset Rock" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="listening">
+    <div class="wrap split">
+      <div class="figure">
+        <img class="shot px" src="../img/stats.png" alt="Statistik: total putar dan jam, bulan lalu, dan artis paling sering diputar" width="360" height="240" loading="lazy">
+        <p class="caption">Statistik dari semua yang kamu putar, dihitung oleh layanan bahkan saat pemutar ditutup.</p>
+        <img class="shot px" src="../img/player-timer.png" alt="Sedang diputar dengan hati pada lagu yang disukai dan bulan dengan sisa 26 menit pada timer tidur" width="360" height="240" loading="lazy">
+        <p class="caption">Hati untuk lagu yang disukai, bulan dengan sisa menit pada timer tidur.</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Kebiasaan dengarmu</span>
+          <h2>Ia ingat apa yang kamu putar</h2>
+        </div>
+        <div class="point">
+          <h3>Lagu yang disukai dan rating</h3>
+          <p>Sukai lagu atau beri rating satu sampai lima. Di server Subsonic, Navidrome, atau Jellyfin, hati dan bintangnya tersinkron dua arah.</p>
+        </div>
+        <div class="point">
+          <h3>Terbaru, Paling sering, dan Statistik</h3>
+          <p>Daftar yang tersusun sendiri, plus jam dengarmu, artis, album, dan lagu teratas.</p>
+        </div>
+        <div class="point">
+          <h3>Scrobbling</h3>
+          <p>Masuk ke Last.fm dengan kode QR, atau tempel token ListenBrainz-mu. Riwayat dengar menunggu saat kamu offline dan dikirim saat kamu kembali online, dan jumlah putar juga dihitung di servermu sendiri.</p>
+        </div>
+        <div class="point">
+          <h3>Timer tidur</h3>
+          <p>Hentikan musik setelah 15 sampai 90 menit atau di akhir lagu, bahkan saat pemutar ditutup.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sources">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Sumber</span>
+        <h2>Filemu, servermu, radio</h2>
+        <p class="lede">Semuanya muncul di pustaka dan pemutar yang sama. Lagu dari server disimpan di kartu SD supaya putar berikutnya gratis.</p>
+      </div>
+      <div class="sources">
+        <div class="source"><span class="tag">Lokal</span><h3>Pustakamu</h3><p>Folder, tag, sampul tertanam dan sampul folder, playlist M3U, dan playlist buatanmu. Dipindai sekali, lalu hanya file baru yang dibaca. Lirik tersinkron menyala baris demi baris, dari .lrc, tag, atau LRCLIB. Soundtrack konsol juga: NES, SNES, Game Boy, Genesis, dan lainnya, satu track per lagu.</p></div>
+        <div class="source"><span class="tag">Server</span><h3>Subsonic</h3><p>Navidrome dan server Subsonic atau OpenSubsonic lainnya. Lagu di-stream, tersimpan untuk putar berikutnya, dan bisa diunduh.</p></div>
+        <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Masuk dengan akun Jellyfin-mu dan jelajahi pustaka musik serta playlist-nya seperti file milikmu sendiri.</p></div>
+        <div class="source"><span class="tag">Langsung</span><h3>Radio internet</h3><p>Ribuan stasiun dari radio-browser.info, per negara atau genre, dengan judul lagu yang sedang diputar dari stream-nya. Bawa daftar stasiun .m3u atau .pls milikmu, atau tambahkan stasiun lewat alamatnya.</p></div>
+        <div class="source"><span class="tag">Episode</span><h3>Podcast</h3><p>Acara teratas di negaramu, pencarian, atau feed RSS apa pun lewat alamatnya. Episode bisa diunduh untuk didengar offline dan ingat di mana kamu berhenti.</p></div>
+        <div class="source"><span class="tag">Bawa sendiri</span><h3>YouTube Music</h3><p>Salin yt-dlp milikmu ke samping aplikasi dan pencarian pun muncul: dengar tanpa mengunduh, atau simpan lagu ke pustakamu lengkap dengan sampul dan tag.</p></div>
+      </div>
+      <div class="trio">
+        <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Pencarian dengan filter Semua, Pustaka, dan YouTube; lagu yang sudah kamu punya diberi centang" width="360" height="240" loading="lazy"><figcaption>Satu pencarian untuk pustaka dan YouTube. Centang menandai lagu yang sudah kamu punya.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="Pemutar dengan lencana STREAMING saat lagu dimuat" width="360" height="240" loading="lazy"><figcaption>Lagu streaming diberi lencana, dan kamu bisa menyimpannya.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/radio.png" alt="Pemutar menampilkan stasiun radio langsung dengan lagu yang sedang diputar" width="360" height="240" loading="lazy"><figcaption>Radio diputar langsung, dengan judul lagu dari stasiunnya.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="screens">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Layar</span>
+        <h2>Dibuat untuk D-pad</h2>
+        <p class="lede"><kbd>SELECT</kbd> membuka bilah berisi semua layar; tekan dua kali untuk kembali ke layar terakhir. Keyboard QWERTY di layar dipakai untuk pencarian dan nama playlist. Suara antarmuka opsional, dengan dua sakelar terpisah untuk menu dan untuk aksi musik.</p>
+      </div>
+      <div class="gallery">
+        <figure class="figure"><img class="shot px" src="../img/albums.png" alt="Grid album dengan sampul" width="360" height="240" loading="lazy"><figcaption>Album, dengan artis, lagu, playlist, dan folder di sampingnya.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/dock.png" alt="Bilah layar di bagian bawah tampilan" width="360" height="240" loading="lazy"><figcaption>Bilah layar.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/queue.png" alt="Antrean putar" width="360" height="240" loading="lazy"><figcaption>Antrean, dengan acak, ulangi, dan “Putar berikutnya”.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/playlist-add.png" alt="Dialog Tambah ke playlist" width="360" height="240" loading="lazy"><figcaption>Playlist buatanmu, disimpan sebagai file M3U8 di samping aplikasi.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="widths">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Layar apa pun</span>
+        <h2>Dari persegi sampai ultrawide</h2>
+        <p class="lede">Tata letaknya menyesuaikan lebar layar yang sebenarnya alih-alih memilih dari beberapa bentuk tetap, jadi pas di RGB30 1:1, clamshell 3:2, dan monitor 21:9.</p>
+      </div>
+      <div class="widths">
+        <figure><img class="shot px" src="../img/width-1x1.png" alt="Pemutar di layar 1:1" width="240" height="240" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-4x3.png" alt="Pemutar di layar 4:3" width="320" height="240" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-3x2.png" alt="Pemutar di layar 3:2" width="360" height="240" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-16x9.png" alt="Pemutar di layar 16:9" width="427" height="240" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-21x9.png" alt="Pemutar di layar 21:9" width="560" height="240" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="install">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Instal</span>
+          <h2>Lewat PortMaster</h2>
+        </div>
+        <div class="systems" aria-label="Sistem yang didukung">
+          <span class="chip">Knulli</span><span class="chip">muOS</span><span class="chip">ROCKNIX</span><span class="chip">ArkOS</span><span class="chip">dArkOS</span>
+        </div>
+        <ol class="steps">
+          <li>Unduh <strong>audiofilus-portmaster.zip</strong> dari <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">rilis terbaru</a>.</li>
+          <li>Instal dengan PortMaster, atau ekstrak ke folder <strong>ports</strong>-mu.</li>
+          <li>Buka <strong>audiofilus</strong> dari Ports lalu pilih folder musikmu.</li>
+          <li>Opsional: taruh binary <strong>yt-dlp</strong> di folder <strong>yt-dlp/</strong> aplikasi untuk mengaktifkan YouTube Music.</li>
+        </ol>
+        <p class="note">Di muOS kamu bisa melewati PortMaster: salin <strong>audiofilus.muxapp</strong> ke folder <strong>ARCHIVE</strong> di kartu SD dan instal dari Archive Manager; aplikasinya muncul di Applications.</p>
+        <p class="note">Di PC Linux atau Windows, lihat <a href="#desktop">Desktop</a>.</p>
+        <p class="note">Tiap sistem dideteksi saat mulai. Lipatan, tombol power, penghemat baterai, dan volume memakai alat bawaan sistem itu; di desktop semua itu dilewati.</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Build dari kode sumber</span>
+          <h2>Satu perintah</h2>
+        </div>
+        <p class="lede">Ditulis dengan Go tanpa cgo untuk handheld. Pustaka codec dimuat saat berjalan jika sistemnya punya.</p>
+<pre><span class="c"># dengan Docker, tidak perlu instal apa-apa lagi</span>
+git clone https://github.com/juanvillacortac/audiofilus
+cd audiofilus
+docker build --target dist --output dist .
+
+<span class="c"># atau dengan Go terinstal</span>
+./build.sh</pre>
+        <p class="note">Keduanya menghasilkan binary desktop dan arm64 serta zip PortMaster di dist/.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="desktop">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Desktop</span>
+          <h2>Betah di PC-mu</h2>
+          <p class="lede">Pemutar yang sama berjalan di Linux dan Windows, dalam satu binary kecil. Di Linux ia menyatu seperti aplikasi bawaan di GNOME, KDE, Hyprland, dan Omarchy.</p>
+        </div>
+        <div class="point">
+          <h3>Di peluncur aplikasimu</h3>
+          <p>Audiofilus muncul dengan ikonnya, dan klik kanan menawarkan putar/jeda, berikutnya, dan sebelumnya. Aturan jendela dan dock mengenali jendelanya. File dan folder bisa dibuka dengannya dari pengelola file, di Linux dan Windows.</p>
+        </div>
+        <div class="point">
+          <h3>Tombol media dan bilahmu</h3>
+          <p>Ia mendukung MPRIS, jadi tombol media keyboard, headphone, dan widget media desktop bisa mengendalikannya, lengkap dengan sampul dan judul lagu. Di Omarchy itu langsung jalan tanpa pengaturan.</p>
+        </div>
+        <div class="point">
+          <h3>Tetap berputar di latar belakang</h3>
+          <p>Tutup jendelanya dan musik tetap jalan (sebuah pengaturan, aktif secara bawaan di desktop); buka lagi dan ia melanjutkan dari posisinya, tanpa splash. Keluar menghentikan semuanya.</p>
+        </div>
+        <div class="point">
+          <h3>Di system tray-mu</h3>
+          <p>CD audiofilus ada di tray, di Linux dan Windows: klik untuk membuka pemutar, klik tengah untuk jeda, atau buka menunya untuk lagu yang diputar, putar/jeda, berikutnya, sebelumnya, acak, dan keluar.</p>
+        </div>
+        <div class="point">
+          <h3>Bentuk jendela apa pun</h3>
+          <p>Lebarkan atau buat tinggi dan sempit: dalam posisi potret ia berubah jadi pemutar bergaya ponsel dengan sampul besar, tetap dengan piksel tajam.</p>
+        </div>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Linux</span>
+          <h2>Instal dengan satu baris</h2>
+        </div>
+        <div class="copy-block">
+<pre id="curl-cmd">curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</pre>
+          <button class="copy-btn" type="button" id="copy-curl" data-target="curl-cmd">Salin</button>
+        </div>
+        <ol class="steps">
+          <li>Mengunduh rilis terbaru untuk <strong>x86_64</strong> atau <strong>aarch64</strong> ke <strong>~/.local/share/audiofilus</strong>.</li>
+          <li>Membuat tautan <strong>audiofilus</strong> di <strong>~/.local/bin</strong>.</li>
+          <li>Menambahkan Audiofilus ke peluncur aplikasimu. Jalankan lagi kapan saja untuk memperbarui; pengaturanmu tetap.</li>
+        </ol>
+        <h3>Atau pasang secara manual</h3>
+        <ol class="steps">
+          <li>Unduh <strong>audiofilus-linux-amd64.tar.gz</strong> (atau <strong>-arm64</strong>) dari <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">rilis terbaru</a> dan ekstrak di mana saja.</li>
+          <li>Di folder itu, jalankan <code class="inline">./audiofilus desktop install</code>. Perintah ini menambahkan entri peluncur dan ikon ke <strong>~/.local/share</strong>.</li>
+          <li>Buka Audiofilus dari peluncur aplikasimu. Jika kamu memindahkan foldernya, jalankan langkah 2 lagi.</li>
+        </ol>
+        <p class="note">Hapus instalan: <code>audiofilus quit; audiofilus desktop uninstall; rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus*</code></p>
+        <p class="note">Windows 10 atau lebih baru: unduh <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">audiofilus-windows-amd64.zip</a>, ekstrak di mana saja, lalu jalankan <strong>audiofilus.exe</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="mobile">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">iPhone dan iPad</span>
+        <h2>Benar-benar di sakumu</h2>
+        <p class="lede">Pemutar pixel yang sama di iOS, dibuat untuk jarimu: semuanya bisa diketuk, daftar bergulir mengikuti jempolmu dengan momentum, dan musik tetap jalan saat layar terkunci.</p>
+      </div>
+      <div class="trio phones">
+        <figure class="figure"><img class="shot px" src="../img/phone-player.png" alt="Sedang diputar di iPhone: sampul album besar dengan vinil mengintip, lagu, kontrol, dan spektrum, dengan tombol sentuh besar di bawah" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-library.png" alt="Pustaka di iPhone: tombol tab di atas, daftar lagu, dan pemutar mini dengan sebelumnya, mundur 10 detik, jeda, maju 10 detik, dan berikutnya" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-tabs.webp" alt="Tab pustaka turun dari bilah atas saat diketuk, Album dipilih, lalu menunya naik kembali" width="240" height="520" loading="lazy"></figure>
+      </div>
+      <div class="trio">
+        <div class="point"><h3>Utamakan sentuhan</h3><p>Ketuk baris, sampul, tab, dan tombol; seret daftar dengan jempol; bilah tombol berisi tombol sungguhan, dan game punya kontrol sentuhnya sendiri. Dalam posisi potret, tab dibuka dari sebuah tombol.</p></div>
+        <div class="point"><h3>Layar kunci dan Control Center</h3><p>Sampul, lagu, dan kontrol di layar kunci, di Control Center, di headphone, dan di CarPlay. AAC dari iTunes dan radio AAC diputar lewat decoder bawaan Apple.</p></div>
+        <div class="point"><h3>Musikmu, caramu</h3><p>Salin lagu ke <em>Di iPhone Saya → Audiofilus</em> di aplikasi File, pilih folder mana pun dari iCloud Drive, atau lewati musik lokal dan streaming dari Subsonic, Navidrome, atau Jellyfin, radio, podcast, dan YouTube Music. Lagu juga bisa dibuka di Audiofilus dari File dan aplikasi lain.</p></div>
+      </div>
+      <p class="note"><strong>audiofilus-ios-unsigned.ipa</strong> tanpa tanda tangan disertakan di setiap <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">rilis</a>: instal dengan <a href="https://sideloadly.io">Sideloadly</a> atau <a href="https://altstore.io">AltStore</a>, yang menandatanganinya dengan Apple ID-mu sendiri. Atau tambahkan sumber <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> ke AltStore, SideStore, atau LiveContainer: rilis baru muncul di sana sebagai pembaruan.</p>
+    </div>
+  </section>
+
+  <section class="band" id="roadmap">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Rencana</span>
+        <h2>Lebih dari handheld</h2>
+        <p class="lede">Pemutar yang sama di setiap layar yang kamu punya.</p>
+      </div>
+      <div class="road">
+        <div class="stop"><span class="state now">Sudah jalan</span><h3>Desktop</h3><p>Linux dan Windows, dengan peluncur, tray, tombol media, mouse dan sentuh, serta skala piksel tajam di bentuk jendela apa pun. Berikutnya: tata letak untuk jendela besar.</p></div>
+        <div class="stop"><span class="state now">Sudah jalan</span><h3>iOS</h3><p>iPhone dan iPad sebagai aplikasi tanpa tanda tangan: antarmuka yang mengutamakan sentuhan, putar di latar belakang, layar kunci, dan Control Center. Berikutnya: build bertanda tangan.</p></div>
+        <div class="stop"><span class="state next">Direncanakan</span><h3>Android</h3><p>Aplikasi seluler yang sama di Android, dengan putar di latar belakang lewat sesi media sistem.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="band" id="support">
+    <div class="wrap support">
+      <div class="head">
+        <span class="eyebrow">Dukung</span>
+        <h2>Biarkan tetap berputar</h2>
+        <p class="lede">audiofilus gratis dan dibuat di waktu luangku. Jika ia berputar di handheld-mu setiap hari, secangkir kopi membantuku terus mengerjakannya dan membawanya ke desktop dan ponsel.</p>
+      </div>
+      <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Traktir aku kopi di Ko-fi</a>
+    </div>
+  </section>
+</main>
+<script>
+// Copy buttons: the clipboard when allowed, otherwise select the text.
+document.querySelectorAll(".copy-btn").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.dataset.target);
+    var text = pre.textContent.trim();
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "Selected";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { b.textContent = "Copied"; }, selectIt);
+    } catch (e) { selectIt(); }
+    setTimeout(function () { b.textContent = "Copy"; }, 1800);
+  });
+});
+</script>
+
+<footer>
+  <div class="wrap">
+    <img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56">
+    <p>Dibuat oleh <a href="https://github.com/juanvillacortac">@juanvillacortac</a>. Dibangun dengan Go dan Ebitengine. <a href="https://github.com/juanvillacortac/audiofilus/blob/main/LICENSE">Lisensi MIT</a>. <a href="docs/index.html">Baca dokumentasi</a>. <a href="#support">Dukung proyek ini</a>.</p>
+  </div>
+</footer>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>트래커 · audiofilus 문서</title>
+<meta name="description" content="십자키로 LSDJ처럼 칩튠을 만들어요: 곡, 체인, 프레이즈, 악기, 테이블, 그루브, 파형을 게임보이 모드나 자유 모드로.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/tracker.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/tracker.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/tracker.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/tracker.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/tracker.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/tracker.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/tracker.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="servers.html">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html" aria-current="page">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>트래커</h1>
+    <p class="lede">십자키로 LSDJ처럼 칩튠을 만들어요. PICO-8에서 빌려 온 것도 몇 가지 있어요.</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="곡을 재생 중인 트래커: 채널마다 실시간 오실로스코프가 있고, 노트가 울릴 때 칸이 빛나요" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">개요</h2>
+<p><strong>게임 → 트래커</strong>를 여세요. 곡은 LSDJ처럼 만들어요. <strong>곡</strong>은 여러 줄로 이루어지고, 각 줄은 채널마다 어떤 <strong>체인</strong>을 재생할지 정해요. 체인은 <strong>프레이즈</strong>의 목록이고, 프레이즈는 16스텝의 노트예요. 소리는 <strong>악기</strong>에서 나오고, 악기는 노트마다 <strong>테이블</strong>을 실행할 수 있어요. <strong>그루브</strong>는 스윙을 정하고, <strong>파형</strong>은 손으로 그려요. PICO-8에서는 여덟 가지 파형, 스텝마다 악기 지정, 피아노 롤을 가져왔어요.</p>
+<p>곡은 바꿀 때마다 1초 뒤 저절로 저장돼요. 트래커가 재생되는 동안에는 내 음악이 일시정지되고, 비주얼라이저와 게임은 트래커에 반응해요.</p>
+
+<h2 id="song-modes">곡 모드: 게임보이와 자유</h2>
+<p>곡마다 모드가 있고, <strong>PROJ</strong> 화면에서 정해요.</p>
+<ul>
+<li><strong>게임보이</strong>: <strong>PU1</strong>, <strong>PU2</strong>(펄스), <strong>WAV</strong>(파형), <strong>NOI</strong>(노이즈)의 4채널로, 게임기의 한계를 그대로 따라요: 12.5, 25, 50, 75 %의 펄스 폭, 64 Hz 단위로 바뀌는 볼륨 엔벨로프, PU1의 주파수 스윕, 100, 50, 25 % 볼륨으로 재생되는 32샘플 4비트 파형, 15비트 또는 7비트 레지스터의 노이즈, 하드웨어의 11비트 주기로 반올림된 음높이. 악기는 펄스, 파형, 노이즈예요.</li>
+<li><strong>자유</strong>: <strong>CH1</strong>부터 <strong>CH8</strong>까지 8채널로, 그런 한계가 없어요. 모든 악기에 ADSR 엔벨로프가 있고, 네 번째 종류인 <strong>신스</strong>가 있어서 사인, 삼각, 톱니, 사각, 오르간, 팬텀, 노이즈 모양을 쓸 수 있어요.</li>
+</ul>
+<p>어떤 악기든 어떤 채널에나 넣을 수 있어요. 곡을 게임보이로 바꿔도 5~8번 채널의 내용은 남아 있고, 재생만 안 돼요.</p>
+
+<h2 id="structure">곡, 체인, 프레이즈</h2>
+<ul>
+<li><strong>곡</strong>: 최대 256줄. 각 줄에는 채널마다 체인 번호가 있거나 비어 있어요.</li>
+<li><strong>체인</strong>(256개): 최대 16개 프레이즈를 순서대로 두고, 각각 반음 단위의 <strong>조옮김</strong>이 있어요. 체인은 첫 빈칸에서 끝나요.</li>
+<li><strong>프레이즈</strong>(256개): 16스텝. 스텝마다 <strong>노트</strong>(C-0~B-9 또는 OFF), <strong>악기</strong>, <strong>볼륨</strong>(0~F), <strong>명령 두 개</strong>(글자와 16진수 값)가 있어요.</li>
+</ul>
+<p>채널마다 자기 체인을 재생하고, 끝나면 다음 줄로 넘어가요. 어떤 줄에 체인이 없는 채널은 체인이 있는 채널들이 넘어갈 때까지 쉬어서, 줄이 맞춰진 채로 유지돼요. 체인이 하나도 없는 줄은 프레이즈 하나만큼 쉬어요.</p>
+<p>시간은 <strong>틱</strong> 단위로 흘러요. 한 박에 24틱이에요. 기본 그루브에서는 스텝 하나가 6틱, 즉 16분음표라서 프레이즈 하나가 한 마디예요.</p>
+
+<h2 id="views">여덟 가지 화면</h2>
+<p>위쪽 탭은 왼쪽부터 오른쪽으로 이어진 지도예요: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd>과 <kbd>R1</kbd>로 옆 화면으로 가요. <kbd>R1</kbd>로 오른쪽으로 가면 커서 아래에 있는 것을 열어요.</p>
+<table>
+<tr><th>어디서</th><th><kbd>R1</kbd>로 여는 것</th></tr>
+<tr><td>SONG</td><td>칸에 있는 체인</td></tr>
+<tr><td>CHAIN</td><td>스텝에 있는 프레이즈</td></tr>
+<tr><td>PHRASE</td><td>스텝의 악기(없으면 그 위의 마지막 악기)</td></tr>
+<tr><td>INSTR</td><td>악기의 테이블</td></tr>
+<tr><td>GROOVE</td><td>파형 악기라면 그 악기의 파형</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: 곡 이름(<kbd>A</kbd>로 키보드를 열어요), 모드, 템포(40~300 BPM), 시작 그루브.</li>
+<li><strong>SONG</strong>: 줄 × 채널의 체인 번호와 채널마다의 오실로스코프. 여기서 고른 채널에서 체인과 프레이즈가 재생돼요.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: 16줄 격자.</li>
+<li><strong>INSTR</strong>: 악기 설정 목록.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: 아래를 보세요.</li>
+</ul>
+<p>좁은 화면에서는 탭이 PRJ, SNG, CHN, PHR, INS, TBL, GRV, WAV로 줄어들어요.</p>
+
+<h2 id="editing">편집하기</h2>
+<p>모든 화면에서 같은 방식으로 편집해요.</p>
+<table>
+<tr><th>버튼</th><th>기능</th></tr>
+<tr><td>십자키</td><td>커서 이동</td></tr>
+<tr><td><kbd>A</kbd> 누른 채 <kbd>↑</kbd>/<kbd>↓</kbd></td><td>값을 하나씩 바꾸기</td></tr>
+<tr><td><kbd>A</kbd> 누른 채 <kbd>←</kbd>/<kbd>→</kbd></td><td>크게 바꾸기: 노트는 한 옥타브, 숫자는 16, 볼륨은 4</td></tr>
+<tr><td>빈칸에서 <kbd>A</kbd></td><td>마지막으로 쓴 값 넣기</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd>(빠르게 두 번)</td><td>안 쓴 새 체인, 프레이즈, 악기, 테이블 넣기</td></tr>
+<tr><td>체인이나 프레이즈 번호에서 <kbd>A</kbd></td><td>열기(곡과 체인 화면)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>삭제</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>이전 / 다음 체인, 프레이즈, 악기, 테이블, 그루브, 파형</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>16줄 이동(곡 화면)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>재생 또는 정지: 커서가 있는 줄부터 곡(PROJ, SONG), 체인 반복(CHAIN), 또는 열린 프레이즈 반복(그 밖의 화면)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>작업 중인 채널 음소거</td></tr>
+<tr><td><kbd>X</kbd></td><td>프레이즈 화면: 피아노 롤로 바꾸고 되돌리기</td></tr>
+<tr><td><kbd>Start</kbd></td><td>트래커 메뉴</td></tr>
+</table>
+<p>노트는 쓰는 순간 소리가 나고, 노트에서 <kbd>A</kbd>를 누르면 재생돼요. 악기가 없는 스텝에 노트를 쓰면 마지막으로 쓴 악기가 들어가요. C-0 아래는 OFF로, 노트를 놓아요. 체인, 프레이즈, 악기, 테이블은 처음 편집할 때 만들어져요.</p>
+<p><kbd>Start</kbd> 메뉴에는 다음이 있어요.</p>
+<ul>
+<li>처음부터 <strong>곡 재생</strong>.</li>
+<li><strong>실행 취소</strong>: <kbd>A</kbd>를 누른 한 번이 한 단계예요. 최대 64단계.</li>
+<li>화면에 보이는 것(체인, 프레이즈, 악기, 테이블, 그루브, 파형)에 대한 <strong>복사</strong>, <strong>붙여넣기</strong>, <strong>새 번호로 복제</strong>, <strong>비우기</strong>. 복제하면 첫 빈 번호에 복사되고, 원래 왔던 곡 칸이나 체인 스텝이 복사본으로 바뀌어요.</li>
+<li>파형 화면에서는 열린 파형에 복사할 수 있는 여덟 가지 <strong>PICO-8 모양</strong>.</li>
+<li><strong>곡</strong>: 새 게임보이 곡이나 자유 곡, 저장한 곡, 예제.</li>
+<li><strong>보관함으로 내보내기</strong>, <strong>이 곡 삭제</strong>, <strong>게임으로</strong>.</li>
+</ul>
+<p><kbd>FN</kbd>을 누르고 있으면 지금 화면의 조작을 볼 수 있어요.</p>
+
+<h2 id="piano-roll">피아노 롤</h2>
+<p>프레이즈 화면에서 <kbd>X</kbd>를 누르면 PICO-8처럼 프레이즈를 볼 수 있어요. 가로는 스텝, 세로는 음높이이고, 각 노트는 다음 노트까지 이어져요.</p>
+<table>
+<tr><th>버튼</th><th>기능</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>스텝 고르기(커서가 그 스텝의 노트로 가요)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>음높이 고르기</td></tr>
+<tr><td><kbd>A</kbd></td><td>노트 넣기, 이미 있으면 빼기</td></tr>
+<tr><td><kbd>A</kbd> 누른 채 <kbd>↑</kbd>/<kbd>↓</kbd></td><td>스텝의 노트를 위아래로 옮기기</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>스텝의 노트 삭제</td></tr>
+<tr><td><kbd>X</kbd></td><td>스텝 격자로 돌아가기</td></tr>
+</table>
+
+<h2 id="instruments">악기</h2>
+<p>최대 64개. 새 곡에는 펄스, 파형, 노이즈 악기가 하나씩 있어요(자유 모드에선 신스도). INSTR 화면에 나오는 항목은 종류와 모드에 따라 달라요.</p>
+<table>
+<tr><th>설정</th><th>하는 일</th></tr>
+<tr><td>이름</td><td><kbd>A</kbd>로 키보드를 열어요</td></tr>
+<tr><td>종류</td><td>펄스, 파형, 노이즈, 또는 신스(자유 모드만). 바꾸면 악기가 초기화돼요.</td></tr>
+<tr><td>볼륨</td><td>0~F. 스텝의 볼륨에 곱해져요</td></tr>
+<tr><td>엔벨로프, 방향, 속도</td><td>게임보이(파형 제외): 시작 레벨(0–F), 내림 / 고정 / 올림, 속도(1–7: 속도/64초마다 한 단계, 0이면 레벨 유지)</td></tr>
+<tr><td>어택, 디케이, 서스테인, 릴리스</td><td>자유: 틱 단위의 ADSR 엔벨로프(서스테인은 레벨, 0–F)</td></tr>
+<tr><td>길이</td><td>노트를 끊을 때까지의 틱(<code>--</code>: 끊지 않음)</td></tr>
+<tr><td>테이블</td><td>노트마다 실행되는 테이블(<code>--</code>: 없음)</td></tr>
+<tr><td>팬</td><td>L, LR, R</td></tr>
+<tr><td>조옮김</td><td>체인의 조옮김을 받을지(드럼은 끄세요)</td></tr>
+<tr><td>비브라토</td><td>속도와 깊이(16진수의 윗자리와 아랫자리)</td></tr>
+<tr><td>듀티</td><td>펄스와 신스 사각: 12.5, 25, 50, 75 %</td></tr>
+<tr><td>스윕</td><td>펄스, 게임보이: PU1의 주파수 스윕. 게임기의 NR10 레지스터 형식(시간, 방향, 시프트)</td></tr>
+<tr><td>파형</td><td>파형 악기: 어떤 파형인지(00–FF)</td></tr>
+<tr><td>파형 볼륨</td><td>파형, 게임보이: 100, 50, 25 %. 게임보이의 파형 채널에는 엔벨로프가 없고, 볼륨은 네 단계예요.</td></tr>
+<tr><td>짧은 노이즈</td><td>노이즈: 7비트 레지스터. 더 음정감 있고 금속적이에요</td></tr>
+<tr><td>모양</td><td>신스: 삼각, 사인, 톱니, 사각, 오르간, 팬텀, 노이즈</td></tr>
+</table>
+<p>노이즈 악기의 노트는 노이즈가 도는 속도를 정해요. 낮은 노트는 웅웅거리고, 높은 노트는 쉬익 소리가 나요. 설정에서 <kbd>A</kbd>를 누르면 그 악기로 마지막 노트를 재생해요.</p>
+
+<h2 id="tables">테이블</h2>
+<p>테이블은 노트가 울리는 동안 틱마다 한 줄씩 실행되는 16줄이에요. 테이블을 쓰는 악기의 노트마다(또는 <code>A</code> 명령으로) 시작해요. 줄마다 <strong>볼륨</strong>(또는 없음), 노트에서 반음 단위의 <strong>조옮김</strong>, 명령 두 개가 있어요. 테이블 안의 <code>H</code>는 다른 줄로 건너뛰어서 반복을 만들어요. 0, +4, +7로 조옮김하는 세 줄의 마지막에 <code>H00</code>을 두면 장조 아르페지오가 되고, 짧은 노이즈에 조옮김을 빠르게 떨어뜨리면 킥 드럼이 돼요.</p>
+
+<h2 id="grooves">그루브</h2>
+<p>그루브는 최대 16개 숫자의 목록이에요: 스텝마다 차례로 몇 틱씩 이어질지. 기본값 6/6은 정박이고, 7/5나 8/4는 스윙이에요. GROOVE 화면에서 마지막 숫자 다음의 빈칸에서 <kbd>A</kbd>를 누르면 하나를 더하고, <kbd>B</kbd>+<kbd>A</kbd>로 하나를 빼요. 제목에 스윙 비율이 나와요. 그루브는 32개이고, 곡이 시작할 그루브는 PROJ에서 정하며, <code>G</code> 명령은 한 채널을 이미 있는 다른 그루브로 바꿔요.</p>
+
+<h2 id="waves">파형</h2>
+<p>0부터 F까지의 32샘플로 된 파형 256개로, 파형 악기가 재생해요. 처음 여덟 개는 PICO-8의 것이에요: 삼각, 기운 톱니, 톱니, 사각, 펄스, 오르간, 노이즈, 팬텀. WAVE 화면에서 <kbd>←</kbd>/<kbd>→</kbd>로 샘플을 고르고, <kbd>A</kbd>를 누른 채 <kbd>↑</kbd>/<kbd>↓</kbd>로 바꾸고, <kbd>A</kbd>를 누른 채 <kbd>←</kbd>/<kbd>→</kbd>로 그려요(다음 샘플이 이 샘플의 값을 가져가요). <kbd>Start</kbd>에 출발점으로 쓸 PICO-8 모양이 있어요.</p>
+
+<h2 id="effects-reference">명령 레퍼런스</h2>
+<p>스텝과 테이블 줄마다 명령이 두 개 있어요. 새 노트가 나오면 진행 중이던 명령(C, F, K, P, V, R, 페이드, 드롭)이 초기화돼요.</p>
+<table>
+<tr><th>명령</th><th>기능</th></tr>
+<tr><td><code>Axx</code></td><td>테이블 xx 시작(<code>AFF</code>로 멈춤)</td></tr>
+<tr><td><code>Cxy</code></td><td>코드: 틱마다 노트, +x, +y 반음을 돌아가며 재생(<code>C47</code> 장조, <code>C37</code> 단조)</td></tr>
+<tr><td><code>Dxx</code></td><td>딜레이: 스텝이 xx틱 늦게 재생(스텝보다 길면 사라져요)</td></tr>
+<tr><td><code>Exy</code></td><td>엔벨로프: x는 시작 레벨, y의 최상위 비트는 올림, 아래 3비트는 속도(0: 유지)</td></tr>
+<tr><td><code>Fxx</code></td><td>미세 조율, 반음의 100분의 1 단위(부호 있음: 01–7F 올림, 80–FF 내림)</td></tr>
+<tr><td><code>Gxx</code></td><td>이 채널을 그루브 xx로 바꾸기</td></tr>
+<tr><td><code>Hxx</code></td><td>홉. 프레이즈에서: 이 스텝 다음에 끝내고 다음 프레이즈를 xx 스텝부터 시작. 테이블에서: xx 줄로 건너뛰기.</td></tr>
+<tr><td><code>Ixx</code></td><td>xx틱 동안 페이드인</td></tr>
+<tr><td><code>Kxx</code></td><td>킬: xx틱 뒤에 노트를 놓기</td></tr>
+<tr><td><code>Lxx</code></td><td>슬라이드: 노트가 있는 스텝에서, 다시 치지 않고 xx틱에 걸쳐 그 노트로 미끄러지기</td></tr>
+<tr><td><code>M0x</code></td><td>마스터 볼륨, 0~F</td></tr>
+<tr><td><code>Oxx</code></td><td>출력: 0 끔, 1 왼쪽, 2 오른쪽, 3 양쪽</td></tr>
+<tr><td><code>Pxx</code></td><td>피치 벤드: 틱마다 반음의 100분의 1 단위(부호 있음)</td></tr>
+<tr><td><code>Rxy</code></td><td>y틱마다 노트를 다시 치기. x(부호 있음, 0–7 올림, 8–F 내림)가 매번 볼륨을 바꿔요</td></tr>
+<tr><td><code>Sxx</code></td><td>노이즈에서: <code>S01</code> 짧은(7비트) 노이즈, <code>S00</code> 긴 노이즈. 펄스에서: PU1 스윕 레지스터.</td></tr>
+<tr><td><code>Txx</code></td><td>템포, BPM 단위(28~FF, 즉 40~255)</td></tr>
+<tr><td><code>Uxx</code></td><td>xx틱 동안 페이드아웃</td></tr>
+<tr><td><code>Vxy</code></td><td>비브라토: 속도 x, 깊이 y</td></tr>
+<tr><td><code>Wxx</code></td><td>파형 악기에서: 파형 xx로 바꾸기. 그 밖에는: 펄스 듀티, 0~3.</td></tr>
+<tr><td><code>Xxx</code></td><td>드롭: xx틱에 걸쳐 음높이가 떨어지며 노트가 사라져요</td></tr>
+<tr><td><code>Zxx</code></td><td>랜덤: 다른 명령의 값에 0~xx를 더해요</td></tr>
+</table>
+
+<h2 id="examples">예제</h2>
+<p><kbd>Start</kbd> → <strong>곡</strong>에 예제 네 곡이 있고, 저마다 보여 주는 게 있어요. 열기만 해서는 아무것도 저장되지 않고, 편집해야 저장돼요.</p>
+<ul>
+<li><strong>Pocket Pop</strong>(게임보이, 120 BPM): 곡 전체에서 재사용하는 체인 파트와 <code>C</code>로 만든 코드.</li>
+<li><strong>Crypt Crawl</strong>(게임보이, 140 BPM): 아르페지오와 킥을 위한 테이블, <code>L</code>로 미끄러지고 <code>P</code>로 떨어지는 노트, PICO-8의 기운 톱니파 베이스.</li>
+<li><strong>Night Drive</strong>(자유, 100 BPM): 신스 8채널, 7/5 스윙 그루브, 패닝, <code>D</code>로 만든 에코, <code>U</code>로 하는 페이드아웃.</li>
+<li><strong>Amen Chip</strong>(게임보이, 170 BPM): <code>R</code>로 만든 드럼 롤, <code>D</code>로 늦게 치는 타격, <code>H</code>로 다음 프레이즈로 넘어가는 반쪽 프레이즈, 체인이 조옮김하는 베이스 라인, <code>W</code>로 바꾸는 펄스 폭.</li>
+</ul>
+
+<h2 id="import-export">가져오기와 내보내기</h2>
+<p><kbd>Start</kbd> → <strong>보관함으로 내보내기</strong>는 곡을 한 번 렌더링해서 음악 폴더 안의 <code>audiofilus tracker</code> 폴더에 WAV로 저장해요. 보관함이 그 파일을 찾으니 다른 곡처럼 백그라운드로 재생돼요.</p>
+<p>예전 트래커로 만든 곡은 변환되어 열려요. 패턴 하나가 채널마다 프레이즈 하나와 체인 하나가 되고, 이펙트는 명령이 돼요(아르페지오 → <code>C</code>, 듀티 → <code>W</code>, 벤드 → <code>P</code>).</p>
+<p>계획 중: MOD/XM 가져오기와 내보내기, LSDJ 곡 가져오기, MIDI 싱크.</p>
+
+    <nav class="pager" aria-label="페이지"><a href="visualizers-games.html">← 비주얼라이저와 게임</a><a href="settings.html">설정 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>audiofilus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Um player de música em pixel art para portáteis Linux. A música continua tocando enquanto você joga, e o modo sleep apaga a tela para você controlar tudo do bolso.">
+<meta property="og:title" content="audiofilus">
+<meta property="og:description" content="Um player de música em pixel art para portáteis Linux. A música continua enquanto você joga.">
+<meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="../img/icon-64.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preload" as="fetch" href="../img/splash-bg.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="../img/splash-fg.webp" type="image/webp" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night-mode handheld. Each section is a band; screenshots sit in
+   bezels like the console's own screen, pixels never smoothed. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0b15;         /* the app's splash background */
+  --panel: #17121f;
+  --panel-2: #211829;
+  --line: #352a3d;
+  --fg: #eee6ec;
+  --muted: #a898a8;
+  --red: #f04a35;         /* the UI accent on a red cover */
+  --teal: #6fe3c4;        /* the logo's chrome */
+  --pink: #ee8cc2;
+  --display: "Jersey 10", "Arial Narrow", sans-serif;  /* pixel = 1/18.667 em: sizes are multiples of 18.667px */
+  --pixel: "Tiny5", "Courier New", monospace;          /* pixel = 1/8 em: sizes are multiples of 8px */
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --wrap: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+/* Pixel art is published at 4× with hard pixels; the browser only scales it
+   down, smoothly, so it stays sharp and even at any size and screen scaling. */
+.px { image-rendering: auto; }
+a { color: var(--teal); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h2 { font: 400 56px/56px var(--display); }
+@media (max-width: 560px) { h2 { font-size: 37.3333px; line-height: 40px; } }
+h3 { font: 400 37.3333px/38px var(--display); }
+/* Pixel fonts: no smoothing where the platform allows it. */
+h1, h2, h3, .btn, .chip { -webkit-font-smoothing: none; font-smooth: never; }
+p { margin: 0; }
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+.band + .band { border-top: 1px solid var(--line); }
+.eyebrow {
+  font: 600 var(--step--1)/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.lede { color: var(--muted); max-width: 38rem; font-size: var(--step-1); line-height: 1.5; }
+.head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+/* Top bar */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
+.top img { height: 56px; width: auto; object-fit: contain; flex-shrink: 0; min-width: 0; }
+.top nav { display: flex; align-items: center; gap: 1.5rem; font: 600 var(--step--1)/1 var(--mono); }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--fg); }
+.top nav .icon { display: inline-flex; padding-left: 1.5rem; border-left: 1px solid var(--line); }
+.top nav .get { color: #fff; background: var(--red); padding: 0.55rem 0.9rem; border-radius: 4px; box-shadow: 3px 3px 0 var(--pink); }
+.top nav .get:hover { color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--pink); }
+@media (max-width: 720px) {
+  .top nav { gap: 0.8rem; }
+  .top img { height: 40px; }
+  .top nav .sec { display: none; }
+  .top nav .icon { padding-left: 0; border-left: 0; }
+}
+
+/* Language switcher: a globe with the current language; the others drop down */
+.lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }
+.lang summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.5rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { color: var(--fg); }
+.lang .menu { position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 10; display: grid; min-width: 10rem; padding: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+.lang .menu a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.6rem; color: var(--muted); text-decoration: none; border-radius: 3px; }
+.lang .menu a span { color: var(--line); }
+.lang .menu a:hover { background: var(--panel-2); color: var(--fg); }
+.lang .menu a[aria-current] { color: var(--fg); }
+.lang .menu a[aria-current] span { color: var(--red); }
+
+/* Hero */
+.hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
+.hero h1 { font: 400 74.6667px/70px var(--display); }
+@media (max-width: 560px) { .hero h1 { font-size: 56px; line-height: 52px; } }
+.hero h1 em { font-style: normal; color: var(--teal); }
+.hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.8rem 1.15rem;
+  font: 400 24px/24px var(--pixel);
+  text-decoration: none; border-radius: 4px;
+  border: 2px solid var(--fg); color: var(--fg);
+}
+.btn.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 4px 4px 0 var(--pink); }
+.btn.primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+.btn:hover { background: var(--panel-2); }
+.btn.primary:hover { background: var(--red); }
+.note { font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted); }
+
+/* The console: a bezel around a 3:2 screen */
+.device {
+  background: linear-gradient(160deg, #2a2230, #17121c);
+  border-radius: 22px;
+  padding: clamp(14px, 3vw, 26px);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
+  position: relative;
+}
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; }
+.device .screen img { display: block; width: 100%; }
+.device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+.device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
+
+/* Format strip */
+.formats { border-block: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+.formats ul {
+  list-style: none; margin: 0; padding-block: 0.9rem;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.6rem;
+  font: 600 var(--step--1)/1.4 var(--mono); color: var(--muted);
+}
+.formats li::before { content: "▸ "; color: var(--red); }
+
+/* Background play */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+.points { display: grid; gap: 1.6rem; }
+.point { display: grid; gap: 0.4rem; min-width: 0; }
+.point p { color: var(--muted); }
+kbd {
+  font: 700 0.78em/1 var(--mono);
+  background: var(--red); color: #fff;
+  padding: 0.2em 0.45em; border-radius: 3px;
+  white-space: nowrap;
+}
+.figure { display: grid; gap: 0.6rem; min-width: 0; }
+.figure figcaption, .caption { font: 400 var(--step--1)/1.4 var(--mono); color: var(--muted); }
+.shot { border-radius: 6px; border: 1px solid var(--line); background: #000; width: 100%; }
+figure { margin: 0; }
+
+/* Visualizers */
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.vis-grid figure { display: grid; gap: 0.5rem; }
+.vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
+.vis-grid figcaption span { color: var(--muted); font-weight: 400; }
+.games { margin-top: 3rem; }
+
+/* Sources */
+.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+@media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
+.source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.source .tag { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.source p { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.trio.phones { max-width: 760px; margin-inline: auto; gap: 1.5rem; }
+.trio.phones img { border-radius: 18px; }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } .trio.phones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; } .trio.phones img { border-radius: 10px; } }
+
+/* Screens gallery */
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
+
+/* Any width */
+/* The five shapes side by side at the same height: each takes width in
+   proportion to its aspect (240, 320, 360, 427 and 560 px wide at 240 tall). */
+.widths { display: flex; align-items: flex-end; gap: 0.75rem; }
+.widths figure { display: grid; gap: 0.4rem; min-width: 0; }
+.widths figure:nth-child(1) { flex: 240 1 0; }
+.widths figure:nth-child(2) { flex: 320 1 0; }
+.widths figure:nth-child(3) { flex: 360 1 0; }
+.widths figure:nth-child(4) { flex: 427 1 0; }
+.widths figure:nth-child(5) { flex: 560 1 0; }
+.widths img { width: 100%; }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+
+/* Systems */
+.systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip { font: 400 24px/24px var(--pixel); padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; color: var(--muted); }
+ol.steps strong { color: var(--fg); }
+pre {
+  margin: 0; padding: 1rem 1.2rem; overflow-x: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  font: 400 0.88rem/1.6 var(--mono); color: var(--fg);
+}
+pre .c { color: var(--muted); }
+
+/* Copyable command */
+.copy-block { display: flex; gap: 0.5rem; align-items: stretch; min-width: 0; }
+.copy-block pre { flex: 1; min-width: 0; }
+.copy-btn {
+  flex: none;
+  font: 400 16px/16px var(--pixel); -webkit-font-smoothing: none;
+  padding: 0 0.8rem; border-radius: 6px; cursor: pointer;
+  background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+}
+.copy-btn:hover { border-color: var(--teal); }
+.steps code.inline { font: 400 0.85em/1.4 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.35em; word-break: break-word; }
+.note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
+
+/* Roadmap */
+.road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
+.stop { border: 1px solid var(--line); border-radius: 6px; padding: 1.3rem; display: grid; gap: 0.6rem; align-content: start; background: var(--panel); }
+.stop p { color: var(--muted); font-size: var(--step--1); }
+.state { justify-self: start; font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.5rem; border-radius: 3px; }
+.state.now { background: var(--teal); color: var(--ink); }
+.state.next { border: 1px solid var(--pink); color: var(--pink); }
+
+/* Support */
+.support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; }
+.support .head { margin: 0; max-width: 40rem; }
+.btn.coffee { background: var(--teal); border-color: var(--teal); color: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
+.btn.coffee:hover { background: var(--teal); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+
+/* Splash, like the app's: the logo intro on the dark screen, then a fade. */
+.splash {
+  position: fixed; inset: 0; z-index: 50;
+  background: #0b0a13; /* the edge of the app's splash background */
+  cursor: pointer;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+/* The app's splash in two layers: its pulsing background, stretched to cover
+   any screen shape, and the logo on top, whole and centered. */
+.splash img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+.splash .bg { object-fit: cover; image-rendering: pixelated; }
+/* The logo layer is cropped to its content (234×161 of the app's 240-tall
+   screen): as tall as the app would draw it, but never wider than the screen. */
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92vw, 97.5vh); height: auto; }
+.splash.ready img { visibility: visible; }
+.splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash.out img { visibility: hidden; }
+.splash[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .splash { display: none; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
+footer img { height: 56px; width: auto; }
+
+/* Cabecera en pantallas estrechas: el logo no se encoge y el icono de GitHub
+   (también en el pie) se oculta, para que quepan los menús de todos los idiomas. */
+.top .wrap > a:first-child { flex-shrink: 0; }
+@media (max-width: 420px) {
+  .top img { height: 28px; }
+  .top .wrap { gap: 0.4rem; }
+  .top nav { gap: 0.55rem; }
+  .top nav .get { padding: 0.5rem 0.6rem; }
+  .top nav .icon { display: none; }
+  .lang summary { font-size: 0; gap: 0; }
+}
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/">
+</head>
+<body>
+
+<div class="splash" id="splash" hidden aria-hidden="true">
+  <img class="px bg" id="splash-bg" alt="" width="427" height="240">
+  <img class="px fg" id="splash-fg" alt="" width="234" height="161">
+</div>
+<script>
+// The splash plays on every load, as in the app; any click or key skips it.
+(function () {
+  var el = document.getElementById("splash");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var started = false;
+  el.hidden = false;
+  function done() {
+    el.classList.add("out");
+    removeEventListener("keydown", done);
+    setTimeout(function () { el.hidden = true; }, 500);
+  }
+  // Both layers start together once both have arrived; if that takes too
+  // long, go straight to the page. Blob URLs make each load a new image, so
+  // the animation (which plays once) starts over even from the cache.
+  function blob(u) {
+    return fetch(u).then(function (r) { if (!r.ok) throw r.status; return r.blob(); });
+  }
+  Promise.all([blob("../img/splash-bg.webp"), blob("../img/splash-fg.webp")]).then(function (bs) {
+    var imgs = [document.getElementById("splash-bg"), document.getElementById("splash-fg")];
+    var left = 2;
+    imgs.forEach(function (img, i) {
+      img.onload = function () {
+        if (--left || started) return;
+        started = true;
+        el.classList.add("ready");
+        setTimeout(done, 2480); // splashLen - splashOut in internal/ui/splash.go
+      };
+      img.src = URL.createObjectURL(bs[i]);
+    });
+  }).catch(done);
+  setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
+  el.addEventListener("click", done);
+  addEventListener("keydown", done);
+})();
+</script>
+
+<header class="top">
+  <div class="wrap">
+    <a href="#top" aria-label="audiofilus"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Seções">
+      <a class="sec" href="#background">Recursos</a>
+      <a class="sec" href="#sources">Fontes</a>
+      <a class="sec" href="#install">Plataformas</a>
+      <a href="docs/index.html">Docs</a>
+      <a class="icon" href="https://github.com/juanvillacortac/audiofilus" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <a class="get" href="#install">Baixar</a>
+      <details class="lang"><summary aria-label="Idioma: Português"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>PT</summary><div class="menu"><a href="../index.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../es/index.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../pt/index.html" hreflang="pt-BR" lang="pt-BR" aria-current="true">Português<span>PT</span></a><a href="../fr/index.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../it/index.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../de/index.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../pl/index.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../ru/index.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../id/index.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../ja/index.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../ko/index.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <span class="eyebrow">Player de música para portáteis Linux</span>
+        <h1>Sua música continua tocando <em>enquanto você joga.</em></h1>
+        <p class="lede">O audiofilus é um player de música em pixel art com capas de álbum, visualizadores, oito jogos arcade e um tracker chiptune. Feche o app, abra um emulador e a música continua. Apague a tela e controle tudo do bolso.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Baixar para PortMaster</a>
+          <a class="btn" href="https://github.com/juanvillacortac/audiofilus">Código no GitHub</a>
+        </div>
+        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — também no Linux e no Windows, e no iPhone.</p>
+      </div>
+      <div class="device">
+        <span class="led" aria-hidden="true"></span>
+        <div class="screen"><img class="px" src="../img/player.webp" alt="A tela Tocando agora: capa do álbum, dados da faixa e um visualizador de espectro pulsando com a música" width="360" height="240"></div>
+        <span class="label" aria-hidden="true">AUDIOFILUS</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="formats">
+    <div class="wrap">
+      <ul aria-label="Formatos compatíveis">
+        <li>MP3</li><li>AAC / M4A</li><li>ALAC</li><li>FLAC</li><li>Ogg Vorbis</li><li>Opus</li><li>WAV</li><li>AIFF</li><li>DSD (DSF · DFF)</li><li>NSF · SPC · GBS · VGM · HES · KSS · AY · SAP</li><li>MOD · XM · IT · S3M</li><li>Arquivos CUE</li><li>Playlists M3U</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="band" id="background">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Música em 2º plano</span>
+          <h2>Um player que não atrapalha</h2>
+        </div>
+        <div class="point">
+          <h3>O áudio vive no seu próprio serviço</h3>
+          <p>A interface é só um controle remoto. Feche e a música continua; abra um jogo e ela segue tocando, com troca de faixa sem pausas e um fade rápido ao pausar.</p>
+        </div>
+        <div class="point">
+          <h3>Controles de dentro de qualquer jogo</h3>
+          <p>Segure <kbd>FN</kbd> e toque um botão para pausar, pular, voltar ou avançar. O botão de play do seu fone também funciona, por Bluetooth ou cabo: um toque pausa, dois pulam, três voltam.</p>
+        </div>
+        <div class="point">
+          <h3>Modo sleep para o bolso</h3>
+          <p>Aperte <kbd>START</kbd> duas vezes ou o botão de energia: a tela apaga, a CPU desacelera e os gatilhos viram gestos. Feche a tampa e ele continua dormindo. Num RG34XX-SP ele consome cerca de 260&nbsp;mA nesse modo: umas 11 a 12 horas de música com a bateria de 3300&nbsp;mAh.</p>
+        </div>
+        <div class="point">
+          <h3>A ajuda está a um botão</h3>
+          <p>Segure <kbd>FN</kbd> em qualquer tela para ver o que cada botão faz ali.</p>
+        </div>
+      </div>
+      <div class="figure">
+        <img class="shot px" src="../img/guide.png" alt="O guia de controles sobre o player, com os botões desta tela, de todas, do sleep e do 2º plano" width="360" height="240" loading="lazy">
+        <p class="caption">O guia de controles, enquanto FN está pressionado.</p>
+        <img class="shot px" src="../img/menu.png" alt="O menu MAIS com Álbum, Artista, Numa playlist, Fila, Aleatório, Repetir, Apagar, 2º plano e Sair" width="360" height="240" loading="lazy">
+        <p class="caption">START abre o menu MAIS, com “2º plano” para sair do app e continuar ouvindo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="visuals">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Visualizadores e jogos</span>
+        <h2>Algo para ver</h2>
+        <p class="lede">Oito visualizadores que seguem o ritmo, todos em baixa resolução e leves para a CPU. As cores vêm da capa do álbum.</p>
+      </div>
+      <div class="vis-grid">
+        <figure><img class="shot px" src="../img/vis-lake.webp" alt="Visualizador Lago: um lago à noite com vitórias-régias que ondulam com a música" width="320" height="240" loading="lazy"><figcaption>Lago <span>ondula no ritmo</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-drift.webp" alt="Visualizador Deriva: um carro numa estrada iluminada à noite" width="320" height="240" loading="lazy"><figcaption>Deriva <span>três câmeras</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-trench.webp" alt="Visualizador Trincheira: voando por um cânion de cidade" width="320" height="240" loading="lazy"><figcaption>Trincheira <span>cânion urbano</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-plasma.webp" alt="Visualizador Plasma: plasma brilhante com dithering" width="320" height="240" loading="lazy"><figcaption>Plasma <span>com dithering</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-tunnel.webp" alt="Visualizador Túnel: um túnel de anéis que pulsa" width="320" height="240" loading="lazy"><figcaption>Túnel <span>pulsa com o grave</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-waves.webp" alt="Visualizador Ondas: o traço de um osciloscópio" width="320" height="240" loading="lazy"><figcaption>Ondas <span>osciloscópio</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-bars.webp" alt="Visualizador Barras: barras de espectro com picos caindo" width="320" height="240" loading="lazy"><figcaption>Barras <span>espectro</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-ridges.webp" alt="Visualizador Cristas: linhas de espectro empilhadas, como na capa de Unknown Pleasures" width="320" height="240" loading="lazy"><figcaption>Cristas <span>espectro empilhado</span></figcaption></figure>
+      </div>
+      <div class="vis-grid games">
+        <figure><img class="shot px" src="../img/crypt.webp" alt="Cripta: um herói encapuzado avança por uma masmorra cujo piso pisca a cada batida, com slimes, moedas e uma barra de ritmo" width="360" height="240" loading="lazy"><figcaption>Cripta <span>roguelike de ritmo</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/blocks.webp" alt="Blocos: um jogo de blocos que caem ao lado do mini player" width="360" height="240" loading="lazy"><figcaption>Blocos <span>blocos que caem</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/rhythm.webp" alt="Ritmo: notas caem por pistas feitas com a bateria da música, com a mensagem PERFEITO!" width="360" height="240" loading="lazy"><figcaption>Ritmo <span>pistas de bateria</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/runner.webp" alt="Corrida: um corredor pixelado de fone pula caixas de som e se abaixa sob vinis voadores que chegam com a bateria da música, sob um céu de plasma escuro" width="360" height="240" loading="lazy"><figcaption>Corrida <span>pula no bumbo</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/snake.webp" alt="Cobrinha: a cobra anda nas subdivisões do ritmo da música sobre uma grade de pontos que pulsam junto" width="360" height="240" loading="lazy"><figcaption>Cobrinha <span>anda no ritmo</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/ships.webp" alt="Naves: uma nave atirando para cima em aliens pixelados sobre um céu estrelado" width="360" height="240" loading="lazy"><figcaption>Naves <span>atira em colcheias</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/duel.webp" alt="Duelo: um monstro de vinil de um bit lança notas enquanto um coração desvia dentro de uma caixa" width="360" height="240" loading="lazy"><figcaption>Duelo <span>batalhas no ritmo</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/quiz.png" alt="Que música é?: quatro músicas da biblioteca para escolher enquanto uma toca" width="360" height="240" loading="lazy"><figcaption>Que música é? <span>dez rodadas</span></figcaption></figure>
+      </div>
+      <div class="split" style="margin-top: 3rem">
+        <div class="points">
+          <div class="head">
+            <span class="eyebrow">Tracker</span>
+            <h3>Faça seu próprio chiptune</h3>
+          </div>
+          <p class="lede">Um tracker no estilo LSDJ para o direcional, com um toque de PICO-8: cadeias e frases, instrumentos com envelopes e tabelas, grooves com swing, ondas editáveis, 21 comandos de efeito e um piano roll. Componha para os quatro canais do Game Boy ou vá para o modo Livre com oito canais de synth. Exporte uma música como WAV e ela vai para a sua biblioteca, pronta para tocar em 2º plano como qualquer outra. <a href="docs/tracker.html">Guia do tracker</a>.</p>
+        </div>
+        <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="O tracker tocando Pocket Pop: uma frase com notas, instrumentos e volumes acendendo enquanto tocam, e depois a vista da música com osciloscópios ao vivo por canal" width="360" height="240" loading="lazy"></figure>
+      </div>
+      <p class="note">Os jogos e o tracker ficam atrás de uma entrada <strong>Jogos</strong> na barra de telas, cada jogo com seu recorde. E há alguns segredos escondidos pelo app.</p>
+    </div>
+  </section>
+
+  <section class="band" id="colors">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Cores</span>
+          <h2>Cada álbum pinta tudo</h2>
+          <p class="lede">A interface pega as cores da capa que está tocando. Troque de álbum e o player inteiro, os visualizadores e os jogos acompanham.</p>
+        </div>
+        <p class="note">Exemplo com quatro álbuns de uma biblioteca real: cada capa dá dois tons de destaque e uma cor para o fundo.</p>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/colors.webp" alt="O player trocando entre quatro álbuns, com o destaque ficando laranja, azul, verde e rosa com cada capa" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="lyrics">
+    <div class="wrap split">
+      <figure class="figure"><img class="shot px" src="../img/lyrics.webp" alt="Letra sincronizada em Tocando agora: três pontos se enchem durante a introdução, e cada verso ganha a cor do álbum enquanto é cantado, com os versos em volta sumindo nas bordas" width="360" height="240" loading="lazy"></figure>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Letra</span>
+          <h2>Cante junto</h2>
+          <p class="lede">A letra sincronizada se colore palavra por palavra enquanto é cantada, com pontos contando as partes instrumentais. Ela vem de um .lrc ao lado da música, das tags ou do LRCLIB, pela internet.</p>
+        </div>
+        <p class="note">Escolha outra versão da lista, ajuste o tempo de meio em meio segundo ou use só offline. A letra desta animação é inventada.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sound">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Som</span>
+          <h2>Ajuste do seu jeito</h2>
+        </div>
+        <div class="point">
+          <h3>ReplayGain</h3>
+          <p>Todas as músicas no mesmo volume, ou todos os álbuns, ou automático: por álbum em ordem, por música no aleatório. Nunca leva uma música acima do pico.</p>
+        </div>
+        <div class="point">
+          <h3>Um equalizador de 10 bandas</h3>
+          <p>Presets para rock, metal, vocal, graves e mais, ou mexa nas bandas você mesmo. Custa cerca de 5&nbsp;% da CPU de um portátil, e nada quando está plano.</p>
+        </div>
+        <div class="point">
+          <h3>Crossfade, DSD e arquivos CUE</h3>
+          <p>Até 12 segundos de crossfade sem quebrar os álbuns sem pausa. Arquivos DSD tocam, álbuns ripados num arquivo só com CUE aparecem com as faixas, e a saída roda a 44,1, 48, 96 ou 192&nbsp;kHz.</p>
+        </div>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/eq.png" alt="O equalizador: dez controles verticais de 31 Hz a 16 kHz com o preset Rock" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="listening">
+    <div class="wrap split">
+      <div class="figure">
+        <img class="shot px" src="../img/stats.png" alt="Estatísticas: total de plays e horas, último mês e os artistas mais tocados" width="360" height="240" loading="lazy">
+        <p class="caption">Estatísticas de tudo o que você ouviu, contadas pelo serviço mesmo com o player fechado.</p>
+        <img class="shot px" src="../img/player-timer.png" alt="Tocando agora com um coração numa música curtida e uma lua com 26 minutos restantes no temporizador" width="360" height="240" loading="lazy">
+        <p class="caption">Um coração nas músicas curtidas, uma lua com os minutos que faltam no temporizador.</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Seu histórico</span>
+          <h2>Ele lembra o que você ouve</h2>
+        </div>
+        <div class="point">
+          <h3>Curtidas e notas</h3>
+          <p>Curta uma música ou dê uma nota de um a cinco. Num servidor Subsonic, Navidrome ou Jellyfin, os corações e as estrelas sincronizam nos dois sentidos.</p>
+        </div>
+        <div class="point">
+          <h3>Recentes, mais tocadas e estatísticas</h3>
+          <p>Listas que se montam sozinhas, além das suas horas e dos artistas, álbuns e músicas mais ouvidos.</p>
+        </div>
+        <div class="point">
+          <h3>Scrobbling</h3>
+          <p>Entre no Last.fm com um QR code ou cole seu token do ListenBrainz. Os plays esperam enquanto você está offline e são enviados quando volta, e também contam no seu próprio servidor.</p>
+        </div>
+        <div class="point">
+          <h3>Temporizador</h3>
+          <p>Pare a música depois de 15 a 90 minutos ou no fim da música, mesmo com o player fechado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sources">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Fontes</span>
+        <h2>Seus arquivos, seu servidor, o rádio</h2>
+        <p class="lede">Tudo aparece na mesma biblioteca e no mesmo player. Músicas remotas ficam em cache no cartão SD, então a próxima vez sai de graça.</p>
+      </div>
+      <div class="sources">
+        <div class="source"><span class="tag">Local</span><h3>Sua biblioteca</h3><p>Pastas, tags, capas embutidas e de pasta, playlists M3U e as suas próprias playlists. Lida uma vez; depois só os arquivos novos. Letras sincronizadas acendem verso a verso, de um .lrc, das tags ou do LRCLIB. Trilhas de console também: NES, SNES, Game Boy, Genesis e mais, uma faixa por música.</p></div>
+        <div class="source"><span class="tag">Servidor</span><h3>Subsonic</h3><p>Navidrome e outros servidores Subsonic ou OpenSubsonic. As músicas tocam em streaming, ficam em cache para a próxima vez e podem ser baixadas.</p></div>
+        <div class="source"><span class="tag">Servidor</span><h3>Jellyfin</h3><p>Entre com seu usuário do Jellyfin e navegue pela biblioteca de música e pelas playlists como se fossem seus arquivos.</p></div>
+        <div class="source"><span class="tag">Ao vivo</span><h3>Rádio pela internet</h3><p>Milhares de rádios do radio-browser.info, por país ou gênero, com o título da música atual vindo do stream. Use suas próprias listas .m3u ou .pls, ou adicione uma rádio pelo endereço.</p></div>
+        <div class="source"><span class="tag">Episódios</span><h3>Podcasts</h3><p>Os mais ouvidos do seu país, busca ou qualquer feed RSS pelo endereço. Os episódios são baixados para ouvir offline e lembram onde você parou.</p></div>
+        <div class="source"><span class="tag">Traga o seu</span><h3>YouTube Music</h3><p>Coloque seu próprio yt-dlp ao lado do app e a busca aparece: ouça sem baixar ou salve músicas na sua biblioteca com capa e tags.</p></div>
+      </div>
+      <div class="trio">
+        <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="Busca com os filtros Tudo, Biblioteca e YouTube; as músicas que você já tem aparecem marcadas" width="360" height="240" loading="lazy"><figcaption>Uma busca só para a biblioteca e o YouTube. Uma marca mostra as músicas que você já tem.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="O player com o selo STREAMING enquanto uma música carrega" width="360" height="240" loading="lazy"><figcaption>Músicas em streaming ganham um selo, e você pode guardá-las.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/radio.png" alt="O player mostrando uma rádio ao vivo com a música atual" width="360" height="240" loading="lazy"><figcaption>O rádio toca ao vivo, com o título da música vindo da emissora.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="screens">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Telas</span>
+        <h2>Feito para o direcional</h2>
+        <p class="lede"><kbd>SELECT</kbd> abre uma barra com todas as telas; aperte duas vezes para voltar à última. Um teclado QWERTY na tela cuida da busca e dos nomes das playlists. Os sons da interface são opcionais, em dois ajustes separados: para os menus e para as ações da música.</p>
+      </div>
+      <div class="gallery">
+        <figure class="figure"><img class="shot px" src="../img/albums.png" alt="Grade de álbuns com capas" width="360" height="240" loading="lazy"><figcaption>Álbuns, com artistas, músicas, playlists e pastas ao lado.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/dock.png" alt="A barra de telas na parte de baixo da tela" width="360" height="240" loading="lazy"><figcaption>A barra de telas.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/queue.png" alt="A fila de reprodução" width="360" height="240" loading="lazy"><figcaption>A fila, com aleatório, repetir e “tocar a seguir”.</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/playlist-add.png" alt="Janela de adicionar a uma playlist" width="360" height="240" loading="lazy"><figcaption>Suas próprias playlists, salvas como arquivos M3U8 ao lado do app.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="widths">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Qualquer tela</span>
+        <h2>Do quadrado ao ultrawide</h2>
+        <p class="lede">O layout se adapta à largura real da tela em vez de escolher entre algumas formas fixas, então preenche um RGB30 1:1, um flip 3:2 e um monitor 21:9.</p>
+      </div>
+      <div class="widths">
+        <figure><img class="shot px" src="../img/width-1x1.png" alt="Player numa tela 1:1" width="240" height="240" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-4x3.png" alt="Player numa tela 4:3" width="320" height="240" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-3x2.png" alt="Player numa tela 3:2" width="360" height="240" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-16x9.png" alt="Player numa tela 16:9" width="427" height="240" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-21x9.png" alt="Player numa tela 21:9" width="560" height="240" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="install">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Instalar</span>
+          <h2>Pelo PortMaster</h2>
+        </div>
+        <div class="systems" aria-label="Sistemas compatíveis">
+          <span class="chip">Knulli</span><span class="chip">muOS</span><span class="chip">ROCKNIX</span><span class="chip">ArkOS</span><span class="chip">dArkOS</span>
+        </div>
+        <ol class="steps">
+          <li>Baixe <strong>audiofilus-portmaster.zip</strong> da <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">versão mais recente</a>.</li>
+          <li>Instale pelo PortMaster ou descompacte na sua pasta <strong>ports</strong>.</li>
+          <li>Abra o <strong>audiofilus</strong> em Ports e escolha sua pasta de música.</li>
+          <li>Opcional: coloque um binário do <strong>yt-dlp</strong> na pasta <strong>yt-dlp/</strong> do app para ativar o YouTube Music.</li>
+        </ol>
+        <p class="note">No muOS dá para pular o PortMaster: copie <strong>audiofilus.muxapp</strong> para a pasta <strong>ARCHIVE</strong> do cartão SD e instale pelo Archive Manager; ele aparece em Applications.</p>
+        <p class="note">Num PC com Linux ou Windows, veja <a href="#desktop">Desktop</a>.</p>
+        <p class="note">Cada sistema é detectado ao iniciar. Tampa, botão de energia, economia de bateria e volume usam as ferramentas do próprio sistema; no desktop tudo isso é ignorado.</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Compilar do código</span>
+          <h2>Um comando</h2>
+        </div>
+        <p class="lede">Escrito em Go sem cgo para os portáteis. As bibliotecas de codecs são carregadas na hora, quando o sistema as tem.</p>
+<pre><span class="c"># com Docker, sem instalar mais nada</span>
+git clone https://github.com/juanvillacortac/audiofilus
+cd audiofilus
+docker build --target dist --output dist .
+
+<span class="c"># ou com Go instalado</span>
+./build.sh</pre>
+        <p class="note">Os dois deixam os binários de desktop e arm64 e o zip do PortMaster em dist/.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="desktop">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Desktop</span>
+          <h2>Em casa no seu PC</h2>
+          <p class="lede">O mesmo player roda no Linux e no Windows, um binário pequeno. No Linux ele se integra como um app nativo no GNOME, KDE, Hyprland e Omarchy.</p>
+        </div>
+        <div class="point">
+          <h3>No seu lançador de apps</h3>
+          <p>O Audiofilus aparece com seu ícone, e o clique direito oferece tocar/pausar, próxima e anterior. Regras de janela e docks reconhecem a janela. Arquivos e pastas abrem com ele pelo gerenciador de arquivos, no Linux e no Windows.</p>
+        </div>
+        <div class="point">
+          <h3>Teclas de mídia e sua barra</h3>
+          <p>Ele fala MPRIS, então as teclas de mídia do teclado, os fones e o widget de mídia do desktop o controlam, com capa e título da música. No Omarchy funciona sem configurar nada.</p>
+        </div>
+        <div class="point">
+          <h3>Continua tocando em 2º plano</h3>
+          <p>Feche a janela e a música continua (um ajuste, ativado por padrão no desktop); abra de novo e ele volta de onde está, sem splash. Sair para tudo.</p>
+        </div>
+        <div class="point">
+          <h3>Na bandeja do sistema</h3>
+          <p>O CD do audiofilus fica na bandeja, no Linux e no Windows: clique para abrir o player, clique do meio para pausar, ou abra o menu para ver o que toca, tocar/pausar, próxima, anterior, aleatório e sair.</p>
+        </div>
+        <div class="point">
+          <h3>Qualquer formato de janela</h3>
+          <p>Estique em largura ou deixe alta e estreita: em retrato ele vira um player estilo celular com uma capa grande, sempre em pixels nítidos.</p>
+        </div>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Linux</span>
+          <h2>Uma linha para instalar</h2>
+        </div>
+        <div class="copy-block">
+<pre id="curl-cmd">curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</pre>
+          <button class="copy-btn" type="button" id="copy-curl" data-target="curl-cmd">Copiar</button>
+        </div>
+        <ol class="steps">
+          <li>Baixa a versão mais recente para <strong>x86_64</strong> ou <strong>aarch64</strong> em <strong>~/.local/share/audiofilus</strong>.</li>
+          <li>Cria o link <strong>audiofilus</strong> em <strong>~/.local/bin</strong>.</li>
+          <li>Adiciona o Audiofilus ao lançador de apps. Rode de novo quando quiser para atualizar; seus ajustes ficam.</li>
+        </ol>
+        <h3>Ou instale à mão</h3>
+        <ol class="steps">
+          <li>Baixe <strong>audiofilus-linux-amd64.tar.gz</strong> (ou <strong>-arm64</strong>) da <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">versão mais recente</a> e descompacte onde quiser.</li>
+          <li>Nessa pasta, rode <code class="inline">./audiofilus desktop install</code>. Isso adiciona a entrada do lançador e o ícone em <strong>~/.local/share</strong>.</li>
+          <li>Abra o Audiofilus pelo lançador de apps. Se mover a pasta, rode o passo 2 de novo.</li>
+        </ol>
+        <p class="note">Desinstalar: <code>audiofilus quit; audiofilus desktop uninstall; rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus*</code></p>
+        <p class="note">Windows 10 ou mais recente: baixe <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">audiofilus-windows-amd64.zip</a>, descompacte onde quiser e rode <strong>audiofilus.exe</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="mobile">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">iPhone e iPad</span>
+        <h2>No seu bolso, de verdade</h2>
+        <p class="lede">O mesmo player em pixels no iOS, feito para os dedos: tudo é tocável, as listas rolam sob o polegar com inércia e a música continua com a tela bloqueada.</p>
+      </div>
+      <div class="trio phones">
+        <figure class="figure"><img class="shot px" src="../img/phone-player.png" alt="Tocando agora num iPhone: uma capa grande com o vinil aparecendo, a música, os controles e o espectro, com botões de toque grandes embaixo" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-library.png" alt="A biblioteca num iPhone: um botão de abas no topo, a lista de músicas e um mini player com anterior, voltar 10 segundos, pausar, avançar 10 segundos e próxima" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-tabs.webp" alt="As abas da biblioteca descem da barra superior ao tocar, Álbuns é escolhido e o menu sobe de novo" width="240" height="520" loading="lazy"></figure>
+      </div>
+      <div class="trio">
+        <div class="point"><h3>Toque primeiro</h3><p>Toque em linhas, capas, abas e botões; arraste as listas com o polegar; a barra de botões tem botões de verdade, e os jogos têm seus próprios controles de toque. Em retrato, as abas abrem com um botão.</p></div>
+        <div class="point"><h3>Tela de bloqueio e Central de Controle</h3><p>A capa, a música e os controles na tela de bloqueio, na Central de Controle, nos fones e no CarPlay. AAC do iTunes e rádios AAC tocam pelo decodificador da própria Apple.</p></div>
+        <div class="point"><h3>Sua música, do seu jeito</h3><p>Copie músicas para <em>No Meu iPhone → Audiofilus</em> no app Arquivos, escolha qualquer pasta do iCloud Drive, ou dispense a música local e ouça do Subsonic, Navidrome ou Jellyfin, rádio, podcasts e YouTube Music. As músicas também abrem no Audiofilus a partir do Arquivos e de outros apps.</p></div>
+      </div>
+      <p class="note">Um <strong>audiofilus-ios-unsigned.ipa</strong> sem assinatura vem em cada <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">versão</a>: instale com o <a href="https://sideloadly.io">Sideloadly</a> ou o <a href="https://altstore.io">AltStore</a>, que assinam com seu próprio Apple ID. Ou adicione a fonte <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> ao AltStore, SideStore ou LiveContainer: as novas versões aparecem lá como atualizações.</p>
+    </div>
+  </section>
+
+  <section class="band" id="roadmap">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Planos</span>
+        <h2>Além dos portáteis</h2>
+        <p class="lede">O mesmo player em todas as suas telas.</p>
+      </div>
+      <div class="road">
+        <div class="stop"><span class="state now">Já funciona</span><h3>Desktop</h3><p>Linux e Windows, com lançador, bandeja, teclas de mídia, mouse e toque, e escala de pixels nítida em qualquer formato de janela. Próximo passo: layouts para janelas grandes.</p></div>
+        <div class="stop"><span class="state now">Já funciona</span><h3>iOS</h3><p>iPhone e iPad como app sem assinatura: interface feita para o toque, reprodução em 2º plano, tela de bloqueio e Central de Controle. Próximo passo: uma versão assinada.</p></div>
+        <div class="stop"><span class="state next">Planejado</span><h3>Android</h3><p>O mesmo app móvel no Android, com reprodução em 2º plano pela sessão de mídia do sistema.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="band" id="support">
+    <div class="wrap support">
+      <div class="head">
+        <span class="eyebrow">Apoie</span>
+        <h2>Mantenha tocando</h2>
+        <p class="lede">O audiofilus é gratuito e feito no meu tempo livre. Se ele toca todo dia no seu portátil, um café me ajuda a continuar trabalhando nele e levá-lo ao desktop e aos celulares.</p>
+      </div>
+      <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Me pague um café no Ko-fi</a>
+    </div>
+  </section>
+</main>
+<script>
+// Copy buttons: the clipboard when allowed, otherwise select the text.
+document.querySelectorAll(".copy-btn").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.dataset.target);
+    var text = pre.textContent.trim();
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "Selecionado";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { b.textContent = "Copiado"; }, selectIt);
+    } catch (e) { selectIt(); }
+    setTimeout(function () { b.textContent = "Copiar"; }, 1800);
+  });
+});
+</script>
+
+<footer>
+  <div class="wrap">
+    <img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56">
+    <p>Feito por <a href="https://github.com/juanvillacortac">@juanvillacortac</a>. Criado com Go e Ebitengine. <a href="https://github.com/juanvillacortac/audiofilus/blob/main/LICENSE">Licença MIT</a>. <a href="docs/index.html">Leia a documentação</a>. <a href="#support">Apoie o projeto</a>.</p>
+  </div>
+</footer>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker · guida di audiofilus</title>
+<meta name="description" content="Fai chiptune con la croce direzionale, alla maniera di LSDJ: brano, catene, frasi, strumenti, tabelle, groove e onde, in modo Game Boy o Libero.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/tracker.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Pagina principale di audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Sito">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Guida</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Scarica</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Lingua: Italiano"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>IT</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/tracker.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/tracker.html" hreflang="it" lang="it" aria-current="true">Italiano<span>IT</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/tracker.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/tracker.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/tracker.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/tracker.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Guida">
+      <details open id="toc">
+        <summary>Guida: tutte le pagine</summary>
+        <div class="label">Guida</div>
+        <ol>
+          <li><a href="index.html">Panoramica</a></li>
+          <li><a href="getting-started.html">Per iniziare</a></li>
+          <li><a href="library.html">Libreria</a></li>
+          <li><a href="playback.html">Riproduzione</a></li>
+          <li><a href="sound.html">Suono</a></li>
+          <li><a href="lyrics.html">Testi</a></li>
+          <li><a href="radio-podcasts.html">Radio e podcast</a></li>
+          <li><a href="servers.html">Server</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Comandi</a></li>
+          <li><a href="visualizers-games.html">Visualizzatori e giochi</a></li>
+          <li><a href="tracker.html" aria-current="page">Tracker</a></li>
+          <li><a href="settings.html">Impostazioni</a></li>
+          <li><a href="handhelds.html">Sistemi delle console</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Tracker</h1>
+    <p class="lede">Fai chiptune con la croce direzionale, alla maniera di LSDJ, con qualche idea presa da PICO-8.</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="Il tracker che suona un brano: canali con oscilloscopi dal vivo, celle che si accendono quando suonano le loro note" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">Panoramica</h2>
+<p>Apri <strong>Giochi → Tracker</strong>. Un brano si costruisce come in LSDJ: il <strong>brano</strong> è un elenco di righe, ogni riga dice quale <strong>catena</strong> suona ogni canale, una catena è un elenco di <strong>frasi</strong>, e una frase è fatta di 16 passi di note. I suoni vengono dagli <strong>strumenti</strong>, che possono far partire una <strong>tabella</strong> a ogni nota; il <strong>groove</strong> decide lo swing, e le <strong>onde</strong> si disegnano a mano. Da PICO-8 arrivano le sue otto forme d'onda, uno strumento su ogni passo e un piano roll.</p>
+<p>I brani si salvano da soli un secondo dopo ogni modifica. Mentre il tracker suona, la tua musica va in pausa, e i visualizzatori e i giochi reagiscono al tracker.</p>
+
+<h2 id="song-modes">Modi del brano: Game Boy e Libero</h2>
+<p>Ogni brano ha un modo, che si imposta nella vista <strong>PROJ</strong>:</p>
+<ul>
+<li><strong>Game Boy</strong>: quattro canali, <strong>PU1</strong>, <strong>PU2</strong> (pulse), <strong>WAV</strong> (onda) e <strong>NOI</strong> (rumore), con i limiti della console: larghezze di impulso del 12,5, 25, 50 e 75 %, un inviluppo del volume che avanza a 64 Hz, lo sweep di frequenza di PU1, onde di 32 campioni a 4 bit suonate al 100, 50 o 25 % del volume, rumore da un registro a 15 o 7 bit, e altezze arrotondate ai periodi a 11 bit dell'hardware. Gli strumenti sono pulse, onda o rumore.</li>
+<li><strong>Libero</strong>: otto canali, da <strong>CH1</strong> a <strong>CH8</strong>, senza quei limiti. Ogni strumento ha un inviluppo ADSR, e c'è un quarto tipo, <strong>synth</strong>, con le forme sinusoide, triangolo, dente di sega, quadra, organo, phantom e rumore.</li>
+</ul>
+<p>Qualsiasi strumento può andare su qualsiasi canale. Passare un brano a Game Boy conserva ciò che c'è nei canali da 5 a 8, solo che non lo suona.</p>
+
+<h2 id="structure">Brano, catene e frasi</h2>
+<ul>
+<li><strong>Brano</strong>: fino a 256 righe; ogni riga ha un numero di catena (o niente) per canale.</li>
+<li><strong>Catena</strong> (256 in tutto): fino a 16 frasi in ordine, ognuna con una <strong>trasposizione</strong> in semitoni. La catena finisce al suo primo posto vuoto.</li>
+<li><strong>Frase</strong> (256 in tutto): 16 passi. Ogni passo ha una <strong>nota</strong> (da C-0 a B-9, o OFF), uno <strong>strumento</strong>, un <strong>volume</strong> (da 0 a F) e <strong>due comandi</strong> (una lettera e un valore esadecimale).</li>
+</ul>
+<p>Ogni canale suona la sua catena e passa alla riga successiva quando finisce. Un canale senza catena in una riga resta in pausa finché i canali che ne hanno una non vanno avanti, così le righe restano allineate. Una riga senza nessuna catena resta in pausa per una frase.</p>
+<p>Il tempo scorre in <strong>tick</strong>, 24 per battuta. Con il groove predefinito ogni passo dura 6 tick, un sedicesimo, quindi una frase è una battuta intera.</p>
+
+<h2 id="views">Le otto viste</h2>
+<p>Le schede in alto sono una mappa, da sinistra a destra: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd> e <kbd>R1</kbd> passano alla vista accanto. Andando a destra con <kbd>R1</kbd> si apre ciò che c'è sotto il cursore:</p>
+<table>
+<tr><th>Da</th><th><kbd>R1</kbd> apre</th></tr>
+<tr><td>SONG</td><td>La catena nella cella</td></tr>
+<tr><td>CHAIN</td><td>La frase nel passo</td></tr>
+<tr><td>PHRASE</td><td>Lo strumento del passo (o l'ultimo sopra di esso)</td></tr>
+<tr><td>INSTR</td><td>La tabella dello strumento</td></tr>
+<tr><td>GROOVE</td><td>L'onda dello strumento, se è uno strumento a onda</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: il nome del brano (<kbd>A</kbd> apre la tastiera), il modo, il tempo (da 40 a 300 BPM) e il groove iniziale.</li>
+<li><strong>SONG</strong>: righe × canali di numeri di catena, con l'oscilloscopio di ogni canale. Il canale che scegli qui è quello su cui suonano catene e frasi.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: griglie di 16 righe.</li>
+<li><strong>INSTR</strong>: un elenco delle impostazioni dello strumento.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: vedi sotto.</li>
+</ul>
+<p>Sugli schermi stretti le schede si accorciano in PRJ, SNG, CHN, PHR, INS, TBL, GRV e WAV.</p>
+
+<h2 id="editing">Modificare</h2>
+<p>Tutte le viste si modificano allo stesso modo:</p>
+<table>
+<tr><th>Tasto</th><th>Cosa fa</th></tr>
+<tr><td>Croce direzionale</td><td>Muove il cursore</td></tr>
+<tr><td>Tieni <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Cambia il valore di uno</td></tr>
+<tr><td>Tieni <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Lo cambia di molto: un'ottava per le note, 16 per i numeri, 4 per i volumi</td></tr>
+<tr><td><kbd>A</kbd> su una cella vuota</td><td>Mette l'ultimo valore usato</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd> (due volte, veloce)</td><td>Mette una catena, frase, strumento o tabella nuova e non usata</td></tr>
+<tr><td><kbd>A</kbd> su un numero di catena o di frase</td><td>Lo apre (viste del brano e della catena)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Cancella</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>La catena, frase, strumento, tabella, groove o onda precedente / successiva</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Salta 16 righe (vista del brano)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Suona o ferma: il brano dalla riga del cursore (PROJ, SONG), la catena in loop (CHAIN), o la frase aperta in loop (le altre viste)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Muta il canale su cui stai lavorando</td></tr>
+<tr><td><kbd>X</kbd></td><td>Vista della frase: passa al piano roll e torna indietro</td></tr>
+<tr><td><kbd>Start</kbd></td><td>Il menu del tracker</td></tr>
+</table>
+<p>Una nota suona mentre la scrivi, e <kbd>A</kbd> su una nota la riproduce. Scrivendo una nota su un passo senza strumento si mette l'ultimo strumento usato. Sotto C-0 c'è OFF, che rilascia la nota. Catene, frasi, strumenti e tabelle si creano la prima volta che li modifichi.</p>
+<p>Il menu di <kbd>Start</kbd> ha:</p>
+<ul>
+<li><strong>Suona il brano</strong> dall'inizio.</li>
+<li><strong>Annulla</strong>: ogni pressione di <kbd>A</kbd> è un passo indietro, fino a 64.</li>
+<li><strong>Copia</strong>, <strong>Incolla</strong>, <strong>Clona in uno nuovo</strong> e <strong>Svuota</strong>, per ciò che mostra la vista (una catena, frase, strumento, tabella, groove o onda). Clonare lo copia nel primo numero libero, e la cella del brano o il passo della catena da cui venivi passa alla copia.</li>
+<li>Nella vista dell'onda, le otto forme di PICO-8 (<strong>Forma:</strong>), da copiare nell'onda aperta.</li>
+<li><strong>Brani</strong>: un nuovo brano Game Boy o Libero, i tuoi brani salvati e gli esempi.</li>
+<li><strong>Esporta in libreria</strong>, <strong>Elimina questo brano</strong> e <strong>Ai giochi</strong>.</li>
+</ul>
+<p>Tieni premuto <kbd>FN</kbd> per i comandi della vista in cui sei.</p>
+
+<h2 id="piano-roll">Piano roll</h2>
+<p>Premi <kbd>X</kbd> nella vista della frase per vederla come in PICO-8: i passi in orizzontale, le altezze in verticale, con ogni nota che dura fino alla successiva.</p>
+<table>
+<tr><th>Tasto</th><th>Cosa fa</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Sceglie il passo (il cursore salta alla nota di quel passo)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Sceglie l'altezza</td></tr>
+<tr><td><kbd>A</kbd></td><td>Mette la nota, o la toglie se c'è già</td></tr>
+<tr><td>Tieni <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Sposta su o giù la nota del passo</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Cancella la nota del passo</td></tr>
+<tr><td><kbd>X</kbd></td><td>Torna alla griglia dei passi</td></tr>
+</table>
+
+<h2 id="instruments">Strumenti</h2>
+<p>Fino a 64. Un brano nuovo arriva con uno strumento pulse, uno a onda e uno di rumore (e un synth in modo Libero). Ciò che mostra la vista INSTR dipende dal tipo e dal modo:</p>
+<table>
+<tr><th>Impostazione</th><th>Cosa fa</th></tr>
+<tr><td>Nome</td><td><kbd>A</kbd> apre la tastiera</td></tr>
+<tr><td>Tipo</td><td>Pulse, onda, rumore o synth (solo Libero). Cambiarlo azzera lo strumento.</td></tr>
+<tr><td>Volume</td><td>Da 0 a F; scala il volume del passo</td></tr>
+<tr><td>Inviluppo, Direzione, Velocità</td><td>Game Boy, tranne l'onda: livello iniziale (0–F), giù / fisso / su, e la velocità (1–7: un livello ogni velocità/64 s; 0 mantiene il livello)</td></tr>
+<tr><td>Attacco, Decadim., Sustain, Rilascio</td><td>Libero: l'inviluppo ADSR, in tick (il sustain è un livello, 0–F)</td></tr>
+<tr><td>Durata</td><td>Tick prima che la nota venga tagliata (<code>--</code>: nessun taglio)</td></tr>
+<tr><td>Tabella</td><td>La tabella che parte a ogni nota (<code>--</code>: nessuna)</td></tr>
+<tr><td>Pan</td><td>L, LR o R</td></tr>
+<tr><td>Trasponi</td><td>Se la trasposizione della catena lo influenza (disattivalo per la batteria)</td></tr>
+<tr><td>Vibrato</td><td>Velocità e profondità (cifra esadecimale alta e bassa)</td></tr>
+<tr><td>Duty</td><td>Pulse e synth quadra: 12,5, 25, 50 o 75 %</td></tr>
+<tr><td>Sweep</td><td>Pulse, Game Boy: lo sweep di frequenza di PU1, come il registro NR10 della console (tempo, direzione, shift)</td></tr>
+<tr><td>Onda</td><td>Strumenti a onda: quale onda (00–FF)</td></tr>
+<tr><td>Volume onda</td><td>Onda, Game Boy: 100, 50 o 25 %. Il canale d'onda del Game Boy non ha inviluppo; il suo volume va in quattro passi.</td></tr>
+<tr><td>Rumore corto</td><td>Rumore: il registro a 7 bit, più tonale e metallico</td></tr>
+<tr><td>Forma</td><td>Synth: triangolo, sinusoide, dente di sega, quadra, organo, phantom o rumore</td></tr>
+</table>
+<p>La nota di uno strumento di rumore decide quanto corre il rumore: le note basse rimbombano, quelle alte sibilano. <kbd>A</kbd> su un'impostazione suona l'ultima nota con lo strumento.</p>
+
+<h2 id="tables">Tabelle</h2>
+<p>Una tabella è fatta di 16 righe che scorrono una per tick mentre la nota suona, partendo con ogni nota di uno strumento che la usa (o dal comando <code>A</code>). Ogni riga ha un <strong>volume</strong> (o niente), una <strong>trasposizione</strong> in semitoni rispetto alla nota, e due comandi. <code>H</code> in una tabella salta a un'altra riga, ed è così che le tabelle vanno in loop: tre righe che traspongono di 0, +4 e +7 con <code>H00</code> sull'ultima fanno un arpeggio maggiore, e trasposizioni che scendono veloci con un rumore corto fanno una cassa.</p>
+
+<h2 id="grooves">Groove</h2>
+<p>Un groove è un elenco fino a 16 numeri: quanti tick dura ogni passo, a turno. Quello predefinito, 6/6, è dritto; 7/5 o 8/4 hanno lo swing. Nella vista GROOVE, <kbd>A</kbd> sul posto vuoto dopo l'ultimo numero ne aggiunge uno, e <kbd>B</kbd>+<kbd>A</kbd> ne toglie uno; il titolo mostra lo swing. Ci sono 32 groove; PROJ imposta quello con cui comincia il brano, e il comando <code>G</code> passa un canale a un altro groove esistente.</p>
+
+<h2 id="waves">Onde</h2>
+<p>256 onde di 32 campioni da 0 a F, suonate dagli strumenti a onda. Le prime otto sono quelle di PICO-8: triangolo, dente di sega inclinato, dente di sega, quadra, impulso, organo, rumore e phantom. Nella vista WAVE, <kbd>←</kbd>/<kbd>→</kbd> scelgono un campione, tieni <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> per cambiarlo, e tieni <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd> per disegnare (il campione successivo prende il valore di questo). <kbd>Start</kbd> ha le forme di PICO-8 da cui partire.</p>
+
+<h2 id="effects-reference">Riferimento dei comandi</h2>
+<p>Ogni passo e ogni riga di tabella ha due comandi. Una nota nuova azzera quelli in corso (C, F, K, P, V, R, le dissolvenze e la caduta).</p>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td><code>Axx</code></td><td>Avvia la tabella xx (<code>AFF</code> la ferma)</td></tr>
+<tr><td><code>Cxy</code></td><td>Accordo: alterna la nota, +x e +y semitoni a ogni tick (<code>C47</code> maggiore, <code>C37</code> minore)</td></tr>
+<tr><td><code>Dxx</code></td><td>Ritardo: il passo suona xx tick dopo (si perde se è più lungo del passo)</td></tr>
+<tr><td><code>Exy</code></td><td>Inviluppo: x è il livello iniziale; il bit alto di y significa su, i suoi 3 bit bassi la velocità (0: mantiene)</td></tr>
+<tr><td><code>Fxx</code></td><td>Intonazione fine, in centesimi di semitono (con segno: 01–7F su, 80–FF giù)</td></tr>
+<tr><td><code>Gxx</code></td><td>Passa questo canale al groove xx</td></tr>
+<tr><td><code>Hxx</code></td><td>Salto. In una frase: la chiude dopo questo passo, e fa partire la successiva dal passo xx. In una tabella: salta alla riga xx.</td></tr>
+<tr><td><code>Ixx</code></td><td>Dissolvenza in entrata in xx tick</td></tr>
+<tr><td><code>Kxx</code></td><td>Kill: rilascia la nota dopo xx tick</td></tr>
+<tr><td><code>Lxx</code></td><td>Slide: su un passo con una nota, scivola fino a lei in xx tick invece di risuonarla</td></tr>
+<tr><td><code>M0x</code></td><td>Volume generale, da 0 a F</td></tr>
+<tr><td><code>Oxx</code></td><td>Uscita: 0 spenta, 1 sinistra, 2 destra, 3 entrambe</td></tr>
+<tr><td><code>Pxx</code></td><td>Pitch bend: centesimi di semitono per tick (con segno)</td></tr>
+<tr><td><code>Rxy</code></td><td>Ripete la nota ogni y tick; x (con segno, 0–7 su, 8–F giù) cambia il volume a ogni ripetizione</td></tr>
+<tr><td><code>Sxx</code></td><td>Sul rumore: <code>S01</code> rumore corto (7 bit), <code>S00</code> lungo. Sul pulse: il registro dello sweep di PU1.</td></tr>
+<tr><td><code>Txx</code></td><td>Tempo, in BPM (da 28 a FF, cioè da 40 a 255)</td></tr>
+<tr><td><code>Uxx</code></td><td>Dissolvenza in uscita in xx tick</td></tr>
+<tr><td><code>Vxy</code></td><td>Vibrato: velocità x, profondità y</td></tr>
+<tr><td><code>Wxx</code></td><td>Su uno strumento a onda: passa all'onda xx. Altrimenti: il duty del pulse, da 0 a 3.</td></tr>
+<tr><td><code>Xxx</code></td><td>Caduta: l'altezza scende e la nota sfuma in xx tick</td></tr>
+<tr><td><code>Zxx</code></td><td>Casuale: aggiunge da 0 a xx al valore dell'altro comando</td></tr>
+</table>
+
+<h2 id="examples">Esempi</h2>
+<p><kbd>Start</kbd> → <strong>Brani</strong> ha quattro esempi, ognuno mostra qualcosa. Aprirne uno non salva nulla finché non lo modifichi.</p>
+<ul>
+<li><strong>Pocket Pop</strong> (Game Boy, 120 BPM): le parti come catene riusate nel brano, e accordi con <code>C</code>.</li>
+<li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM): tabelle per gli arpeggi e la cassa, note che scivolano con <code>L</code> e cadono con <code>P</code>, e un basso sul dente di sega inclinato di PICO-8.</li>
+<li><strong>Night Drive</strong> (Libero, 100 BPM): otto canali con synth, un groove swing 7/5, panning, un eco fatto con <code>D</code> e una dissolvenza finale con <code>U</code>.</li>
+<li><strong>Amen Chip</strong> (Game Boy, 170 BPM): rulli di batteria con <code>R</code>, colpi in ritardo con <code>D</code>, una mezza frase che salta nella successiva con <code>H</code>, una linea di basso trasposta dalla sua catena, e larghezze di impulso cambiate con <code>W</code>.</li>
+</ul>
+
+<h2 id="import-export">Importare ed esportare</h2>
+<p><kbd>Start</kbd> → <strong>Esporta in libreria</strong> rende il brano una volta in un WAV dentro una cartella <code>audiofilus tracker</code> nella tua cartella della musica. La libreria lo trova, quindi suona in sottofondo come tutto il resto.</p>
+<p>I brani fatti con il tracker precedente si aprono convertiti: ogni pattern diventa una frase e una catena per canale, e i suoi effetti diventano comandi (arpeggio → <code>C</code>, duty → <code>W</code>, bend → <code>P</code>).</p>
+<p>In programma: importazione ed esportazione MOD/XM, importazione dei brani di LSDJ e sincronizzazione MIDI.</p>
+
+    <nav class="pager" aria-label="Pagine"><a href="visualizers-games.html">← Visualizzatori e giochi</a><a href="settings.html">Impostazioni →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Ultima release</a></span>
+    <span>Hai trovato un errore nella guida? <a href="https://github.com/juanvillacortac/audiofilus/issues">Apri una segnalazione</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사운드 · audiofilus 문서</title>
+<meta name="description" content="ReplayGain, 이퀄라이저, 크로스페이드, 출력 샘플레이트. 서비스가 적용하므로 플레이어를 닫아도 작동해요.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/sound.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/sound.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/sound.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/sound.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/sound.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/sound.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/sound.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html" aria-current="page">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="servers.html">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>사운드</h1>
+    <p class="lede">ReplayGain, 이퀄라이저, 크로스페이드, 출력 샘플레이트. 서비스가 적용하므로 플레이어를 닫아도 작동해요.</p>
+
+<p>모두 <strong>설정</strong>에 있어요. 크로스페이드는 재생 섹션에, 나머지는 소리 섹션에 있습니다.</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>파일의 ReplayGain 태그(Opus의 R128 게인도)를 써서 모든 곡(또는 모든 앨범)을 같은 음량으로 재생해요. <strong>설정 → ReplayGain</strong>:</p>
+<ul>
+<li><strong>자동</strong>: 순서대로 들을 땐 앨범별, 셔플일 땐 곡별.</li>
+<li><strong>곡별</strong> 또는 <strong>앨범별</strong>.</li>
+<li><strong>끔</strong>.</li>
+</ul>
+<p>곡의 피크를 넘겨서 키우지 않으니 소리가 찌그러지지 않아요. ReplayGain 태그가 없는 곡(과 원격 곡)은 그대로 재생돼요.</p>
+
+<h2 id="eq">이퀄라이저</h2>
+<p><strong>설정 → 이퀄라이저</strong>를 열면 31&nbsp;Hz부터 16&nbsp;kHz까지 10개 밴드가 나오고, 각각 −12에서 +12&nbsp;dB까지 조절해요.</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="이퀄라이저: Rock 프리셋이 적용된 세로 슬라이더 열 개" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>버튼</th><th>기능</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>밴드 고르기</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>1 dB 이동</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>프리셋 순환: 플랫, 저음, 고음, 보컬, 록, 메탈, 팝, 일렉트로닉, 재즈, 클래식, 라우드니스</td></tr>
+<tr><td><kbd>Y</kbd></td><td>플랫으로 되돌리기</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>닫기(바꾸는 대로 바로 적용돼요)</td></tr>
+</table>
+<p>밴드를 직접 움직이면 프리셋이 <strong>사용자</strong>로 바뀌어요. 터치 화면에서는 열을 탭해서 높이를 정해요. 이퀄라이저를 켜면 10개 밴드가 가장 낮은 클럭의 휴대용 게임기 CPU를 약 5&nbsp;% 쓰고, 플랫이면 전혀 쓰지 않아요.</p>
+
+<h2 id="crossfade">크로스페이드</h2>
+<p><strong>설정 → 크로스페이드</strong>: 끔, 또는 곡 사이 2~12초 겹치기. 같은 앨범을 순서대로 들을 때 이어지는 곡 사이에는 페이드하지 않아서 앨범은 끊김 없이 이어져요. 아주 짧은 곡과 아직 내려받지 않은 서버 곡도 건너뛰어요.</p>
+
+<h2 id="output-rate">출력 샘플레이트</h2>
+<p><strong>설정 → 출력 샘플레이트</strong>: 44.1, 48, 96, 192&nbsp;kHz. 바꾸면 오디오 서비스가 다시 시작되고 하던 곳에서 이어져요. 파일이 같은 샘플레이트이고 아무것도 적용하지 않으면(볼륨 100&nbsp;%, ReplayGain과 이퀄라이저 없음) 샘플이 손대지 않은 채 나가요. 다만 PipeWire나 PulseAudio가 리샘플링할 수는 있어요. iPhone에서는 쓸 수 없어요.</p>
+
+<h2 id="volume">볼륨과 부스트</h2>
+<p>볼륨은 0부터 200&nbsp;%까지예요. 100&nbsp;%까지는 시스템 볼륨이고, 그 이상은 audiofilus가 리미터와 함께 신호를 키워서 큰 음량의 마스터도 찌그러지지 않아요.</p>
+
+<h2 id="dsd">DSD</h2>
+<p>DSF와 DFF 파일은 PCM으로 변환해서 재생해요. DSD64는 휴대용 게임기에서도 가볍지만, DSD256은 버거울 수 있어요.</p>
+
+    <nav class="pager" aria-label="페이지"><a href="playback.html">← 재생</a><a href="lyrics.html">가사 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

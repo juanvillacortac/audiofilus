@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Трекер · документация audiofilus</title>
+<meta name="description" content="Чиптюн на крестовине, в духе LSDJ: песня, цепочки, фразы, инструменты, таблицы, грувы и волны, в режиме Game Boy или Свободном.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&amp;family=Pixelify+Sans:wght@400;600&amp;display=swap">
+<style>:root{--display:"Jersey 10","Pixelify Sans","Arial Narrow",sans-serif;--body:"PT Sans",system-ui,-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/tracker.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Сайт">
+      <a href="../index.html">Главная</a>
+      <a href="index.html" aria-current="page">Справка</a>
+      <a class="wide" href="faq.html">Вопросы</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Скачать</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Язык: Русский"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>RU</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/tracker.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/tracker.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/tracker.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/tracker.html" hreflang="ru" lang="ru" aria-current="true">Русский<span>RU</span></a><a href="../../id/docs/tracker.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/tracker.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Справка">
+      <details open id="toc">
+        <summary>Документация: все страницы</summary>
+        <div class="label">Справка</div>
+        <ol>
+          <li><a href="index.html">Обзор</a></li>
+          <li><a href="getting-started.html">Начало работы</a></li>
+          <li><a href="library.html">Библиотека</a></li>
+          <li><a href="playback.html">Воспроизведение</a></li>
+          <li><a href="sound.html">Звук</a></li>
+          <li><a href="lyrics.html">Тексты</a></li>
+          <li><a href="radio-podcasts.html">Радио и подкасты</a></li>
+          <li><a href="servers.html">Серверы</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Скробблинг</a></li>
+          <li><a href="controls.html">Управление</a></li>
+          <li><a href="visualizers-games.html">Визуализаторы и игры</a></li>
+          <li><a href="tracker.html" aria-current="page">Трекер</a></li>
+          <li><a href="settings.html">Настройки</a></li>
+          <li><a href="handhelds.html">Портативные системы</a></li>
+          <li><a href="faq.html">Вопросы</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Трекер</h1>
+    <p class="lede">Чиптюн на крестовине, в духе LSDJ, с парой идей из PICO-8.</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="Трекер играет песню: каналы с живыми осциллографами, ячейки подсвечиваются, когда звучат их ноты" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">Обзор</h2>
+<p>Открой <strong>Игры → Трекер</strong>. Песня устроена как в LSDJ: <strong>песня</strong> — это список строк, каждая строка говорит, какую <strong>цепочку</strong> играет каждый канал, цепочка — это список <strong>фраз</strong>, а фраза — 16 шагов с нотами. Звук дают <strong>инструменты</strong>, которые могут запускать <strong>таблицу</strong> с каждой нотой; <strong>грув</strong> задаёт свинг, а <strong>волны</strong> рисуются вручную. Из PICO-8 пришли восемь его волн, инструмент на каждом шаге и пиано-ролл.</p>
+<p>Песни сохраняются сами через секунду после каждого изменения. Пока играет трекер, твоя музыка на паузе, а визуализаторы и игры реагируют на трекер.</p>
+
+<h2 id="song-modes">Режимы песни: Game Boy и Свободный</h2>
+<p>У каждой песни есть режим, он задаётся во вкладке <strong>PROJ</strong>:</p>
+<ul>
+<li><strong>Game Boy</strong>: четыре канала — <strong>PU1</strong>, <strong>PU2</strong> (пульс), <strong>WAV</strong> (волна) и <strong>NOI</strong> (шум), с ограничениями консоли: ширина импульса 12,5, 25, 50 и 75 %, огибающая громкости с шагом 64 Гц, свип частоты у PU1, 4-битные волны из 32 сэмплов с громкостью 100, 50 или 25 %, шум из 15- или 7-битного регистра и высоты, округлённые до 11-битных периодов железа. Инструменты: пульс, волна или шум.</li>
+<li><strong>Свободный</strong>: восемь каналов, с <strong>CH1</strong> по <strong>CH8</strong>, без этих ограничений. У каждого инструмента огибающая ADSR, и есть четвёртый тип — <strong>синт</strong>, с формами синус, треугольник, пила, меандр, орган, фантом и шум.</li>
+</ul>
+<p>Любой инструмент можно поставить на любой канал. Если переключить песню в Game Boy, то, что на каналах 5–8, сохранится, просто не будет звучать.</p>
+
+<h2 id="structure">Песня, цепочки и фразы</h2>
+<ul>
+<li><strong>Песня</strong>: до 256 строк; в каждой строке номер цепочки (или ничего) для каждого канала.</li>
+<li><strong>Цепочка</strong> (их 256): до 16 фраз по порядку, у каждой своя <strong>транспозиция</strong> в полутонах. Цепочка заканчивается на первой пустой ячейке.</li>
+<li><strong>Фраза</strong> (их 256): 16 шагов. У каждого шага есть <strong>нота</strong> (от C-0 до B-9 или OFF), <strong>инструмент</strong>, <strong>громкость</strong> (от 0 до F) и <strong>две команды</strong> (буква и шестнадцатеричное значение).</li>
+</ul>
+<p>Каждый канал играет свою цепочку и, когда она заканчивается, переходит к следующей строке. Канал без цепочки в строке ждёт, пока каналы с цепочками не перейдут дальше, так что строки идут ровно. Строка совсем без цепочек длится одну фразу тишины.</p>
+<p>Время идёт в <strong>тиках</strong>, 24 на долю. С грувом по умолчанию каждый шаг длится 6 тиков, шестнадцатую, так что фраза — это один такт.</p>
+
+<h2 id="views">Восемь видов</h2>
+<p>Вкладки сверху — это карта слева направо: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd> и <kbd>R1</kbd> переходят к соседнему виду. Переход вправо через <kbd>R1</kbd> открывает то, что под курсором:</p>
+<table>
+<tr><th>Откуда</th><th><kbd>R1</kbd> открывает</th></tr>
+<tr><td>SONG</td><td>Цепочку в ячейке</td></tr>
+<tr><td>CHAIN</td><td>Фразу в шаге</td></tr>
+<tr><td>PHRASE</td><td>Инструмент шага (или последний над ним)</td></tr>
+<tr><td>INSTR</td><td>Таблицу инструмента</td></tr>
+<tr><td>GROOVE</td><td>Волну инструмента, если это волновой инструмент</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: имя песни (<kbd>A</kbd> открывает клавиатуру), режим, темп (от 40 до 300 BPM) и начальный грув.</li>
+<li><strong>SONG</strong>: строки × каналы с номерами цепочек и осциллографом каждого канала. Выбранный здесь канал — тот, на котором играют цепочки и фразы.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: сетки из 16 строк.</li>
+<li><strong>INSTR</strong>: список настроек инструмента.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: смотри ниже.</li>
+</ul>
+<p>На узких экранах вкладки сокращаются до PRJ, SNG, CHN, PHR, INS, TBL, GRV и WAV.</p>
+
+<h2 id="editing">Редактирование</h2>
+<p>Во всех видах редактирование одинаковое:</p>
+<table>
+<tr><th>Кнопка</th><th>Действие</th></tr>
+<tr><td>Крестовина</td><td>Двигать курсор</td></tr>
+<tr><td>Удерживай <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Менять значение на один</td></tr>
+<tr><td>Удерживай <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Менять сильно: на октаву для нот, на 16 для чисел, на 4 для громкости</td></tr>
+<tr><td><kbd>A</kbd> на пустой ячейке</td><td>Поставить последнее значение</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd> (дважды, быстро)</td><td>Поставить новую неиспользованную цепочку, фразу, инструмент или таблицу</td></tr>
+<tr><td><kbd>A</kbd> на номере цепочки или фразы</td><td>Открыть её (виды песни и цепочки)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Удалить</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>Предыдущая / следующая цепочка, фраза, инструмент, таблица, грув или волна</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Прыжок на 16 строк (вид песни)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Играть или остановить: песню со строки курсора (PROJ, SONG), цепочку по кругу (CHAIN) или открытую фразу по кругу (остальные виды)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Заглушить канал, с которым работаешь</td></tr>
+<tr><td><kbd>X</kbd></td><td>Вид фразы: переключиться на пиано-ролл и обратно</td></tr>
+<tr><td><kbd>Start</kbd></td><td>Меню трекера</td></tr>
+</table>
+<p>Нота звучит, когда ты её пишешь, а <kbd>A</kbd> на ноте играет её. Если написать ноту на шаге без инструмента, ставится последний использованный. Ниже C-0 идёт OFF, который отпускает ноту. Цепочки, фразы, инструменты и таблицы создаются при первом редактировании.</p>
+<p>В меню <kbd>Start</kbd> есть:</p>
+<ul>
+<li><strong>Играть песню</strong> с начала.</li>
+<li><strong>Отменить</strong>: каждое нажатие <kbd>A</kbd> — один шаг назад, до 64.</li>
+<li><strong>Копировать</strong>, <strong>Вставить</strong>, <strong>Клонировать в новый</strong> и <strong>Очистить</strong> — для того, что показывает вид (цепочка, фраза, инструмент, таблица, грув или волна). Клонирование копирует в первый свободный номер, а ячейка песни или шаг цепочки, откуда ты пришёл, переключается на копию.</li>
+<li>В виде волны — восемь <strong>форм PICO-8</strong>, чтобы скопировать их в открытую волну.</li>
+<li><strong>Песни</strong>: новая песня Game Boy или Свободная, твои сохранённые песни и примеры.</li>
+<li><strong>Экспорт в библиотеку</strong>, <strong>Удалить эту песню</strong> и <strong>К играм</strong>.</li>
+</ul>
+<p>Удерживай <kbd>FN</kbd>, чтобы увидеть кнопки вида, в котором ты находишься.</p>
+
+<h2 id="piano-roll">Пиано-ролл</h2>
+<p>Нажми <kbd>X</kbd> в виде фразы, чтобы увидеть фразу как в PICO-8: шаги по горизонтали, высота по вертикали, и каждая нота длится до следующей.</p>
+<table>
+<tr><th>Кнопка</th><th>Действие</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Выбрать шаг (курсор прыгает к ноте этого шага)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Выбрать высоту</td></tr>
+<tr><td><kbd>A</kbd></td><td>Поставить ноту или убрать её, если она уже есть</td></tr>
+<tr><td>Удерживай <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Сдвинуть ноту шага выше или ниже</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Удалить ноту шага</td></tr>
+<tr><td><kbd>X</kbd></td><td>Вернуться к сетке шагов</td></tr>
+</table>
+
+<h2 id="instruments">Инструменты</h2>
+<p>До 64. Новая песня идёт с инструментами пульс, волна и шум (и синт в Свободном режиме). Что показывает вид INSTR, зависит от типа и режима:</p>
+<table>
+<tr><th>Настройка</th><th>Что делает</th></tr>
+<tr><td>Имя</td><td><kbd>A</kbd> открывает клавиатуру</td></tr>
+<tr><td>Тип</td><td>Пульс, волна, шум или синт (только Свободный). Смена типа сбрасывает инструмент.</td></tr>
+<tr><td>Громкость</td><td>От 0 до F; масштабирует громкость шага</td></tr>
+<tr><td>Огибающая, Направление, Скорость</td><td>Game Boy, кроме волны: начальный уровень (0–F), ВНИЗ / РОВНО / ВВЕРХ и скорость (1–7: один уровень за скорость/64 с; 0 держит уровень)</td></tr>
+<tr><td>Атака, Спад, Сустейн, Затухание</td><td>Свободный: огибающая ADSR, в тиках (сустейн — это уровень, 0–F)</td></tr>
+<tr><td>Длина</td><td>Тиков до обрыва ноты (<code>--</code>: без обрыва)</td></tr>
+<tr><td>Таблица</td><td>Таблица, которая запускается с каждой нотой (<code>--</code>: нет)</td></tr>
+<tr><td>Панорама</td><td>L, LR или R</td></tr>
+<tr><td>Транспоз.</td><td>Влияет ли на него транспозиция цепочки (выключи для ударных)</td></tr>
+<tr><td>Вибрато</td><td>Скорость и глубина (старшая и младшая шестнадцатеричная цифра)</td></tr>
+<tr><td>Скважность</td><td>Пульс и меандр синта: 12,5, 25, 50 или 75 %</td></tr>
+<tr><td>Свип</td><td>Пульс, Game Boy: свип частоты PU1, как регистр NR10 консоли (время, направление, сдвиг)</td></tr>
+<tr><td>Волна</td><td>Волновые инструменты: какая волна (00–FF)</td></tr>
+<tr><td>Громк. волны</td><td>Волна, Game Boy: 100, 50 или 25 %. У волнового канала Game Boy нет огибающей; его громкость — четыре ступени.</td></tr>
+<tr><td>Короткий шум</td><td>Шум: 7-битный регистр, более тональный и металлический</td></tr>
+<tr><td>Форма</td><td>Синт: треугольник, синус, пила, меандр, орган, фантом или шум</td></tr>
+</table>
+<p>Нота шумового инструмента задаёт скорость шума: низкие ноты рокочут, высокие шипят. <kbd>A</kbd> на настройке играет последнюю ноту этим инструментом.</p>
+
+<h2 id="tables">Таблицы</h2>
+<p>Таблица — это 16 строк, которые выполняются по одной за тик, пока звучит нота, начиная с каждой ноты инструмента, который её использует (или с команды <code>A</code>). В каждой строке есть <strong>громкость</strong> (или ничего), <strong>транспозиция</strong> в полутонах от ноты и две команды. <code>H</code> в таблице прыгает на другую строку — так таблицы зацикливаются: три строки с транспозицией 0, +4 и +7 и <code>H00</code> в последней дают мажорное арпеджио, а быстро падающая транспозиция с коротким шумом даёт бочку.</p>
+
+<h2 id="grooves">Грувы</h2>
+<p>Грув — это список до 16 чисел: сколько тиков по очереди длится каждый шаг. По умолчанию 6/6 — ровно; 7/5 или 8/4 — свинг. В виде GROOVE <kbd>A</kbd> на пустом месте после последнего числа добавляет ещё одно, а <kbd>B</kbd>+<kbd>A</kbd> удаляет; в заголовке показан свинг. Грувов 32; PROJ задаёт тот, с которого начинается песня, а команда <code>G</code> переключает один канал на другой существующий грув.</p>
+
+<h2 id="waves">Волны</h2>
+<p>256 волн по 32 сэмпла от 0 до F, их играют волновые инструменты. Первые восемь — из PICO-8: треугольник, наклонная пила, пила, меандр, импульс, орган, шум и фантом. В виде WAVE <kbd>←</kbd>/<kbd>→</kbd> выбирают сэмпл, удерживай <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd>, чтобы его менять, и <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd>, чтобы рисовать (следующий сэмпл берёт значение текущего). В <kbd>Start</kbd> есть формы PICO-8 для начала.</p>
+
+<h2 id="effects-reference">Справочник команд</h2>
+<p>У каждого шага и строки таблицы по две команды. Новая нота сбрасывает текущие (C, F, K, P, V, R, затухания и падение).</p>
+<table>
+<tr><th>Команда</th><th>Действие</th></tr>
+<tr><td><code>Axx</code></td><td>Запустить таблицу xx (<code>AFF</code> останавливает её)</td></tr>
+<tr><td><code>Cxy</code></td><td>Аккорд: перебирает ноту, +x и +y полутонов на каждом тике (<code>C47</code> мажор, <code>C37</code> минор)</td></tr>
+<tr><td><code>Dxx</code></td><td>Задержка: шаг звучит на xx тиков позже (теряется, если это дольше шага)</td></tr>
+<tr><td><code>Exy</code></td><td>Огибающая: x — начальный уровень; старший бит y означает вверх, его младшие 3 бита — скорость (0: держит)</td></tr>
+<tr><td><code>Fxx</code></td><td>Подстройка в сотых долях полутона (со знаком: 01–7F вверх, 80–FF вниз)</td></tr>
+<tr><td><code>Gxx</code></td><td>Переключить этот канал на грув xx</td></tr>
+<tr><td><code>Hxx</code></td><td>Прыжок. Во фразе: закончить её после этого шага и начать следующую с шага xx. В таблице: перейти на строку xx.</td></tr>
+<tr><td><code>Ixx</code></td><td>Нарастание громкости за xx тиков</td></tr>
+<tr><td><code>Kxx</code></td><td>Обрыв: отпустить ноту через xx тиков</td></tr>
+<tr><td><code>Lxx</code></td><td>Глиссандо: на шаге с нотой плавно съехать к ней за xx тиков, а не играть заново</td></tr>
+<tr><td><code>M0x</code></td><td>Общая громкость, от 0 до F</td></tr>
+<tr><td><code>Oxx</code></td><td>Выход: 0 выкл, 1 слева, 2 справа, 3 оба</td></tr>
+<tr><td><code>Pxx</code></td><td>Изгиб высоты: сотые доли полутона за тик (со знаком)</td></tr>
+<tr><td><code>Rxy</code></td><td>Повторять ноту каждые y тиков; x (со знаком: 0–7 вверх, 8–F вниз) меняет громкость при каждом повторе</td></tr>
+<tr><td><code>Sxx</code></td><td>На шуме: <code>S01</code> короткий (7-битный) шум, <code>S00</code> длинный. На пульсе: регистр свипа PU1.</td></tr>
+<tr><td><code>Txx</code></td><td>Темп в BPM (от 28 до FF, то есть от 40 до 255)</td></tr>
+<tr><td><code>Uxx</code></td><td>Затухание за xx тиков</td></tr>
+<tr><td><code>Vxy</code></td><td>Вибрато: скорость x, глубина y</td></tr>
+<tr><td><code>Wxx</code></td><td>На волновом инструменте: переключить на волну xx. Иначе: скважность пульса, от 0 до 3.</td></tr>
+<tr><td><code>Xxx</code></td><td>Падение: высота опускается, а нота затухает за xx тиков</td></tr>
+<tr><td><code>Zxx</code></td><td>Случайность: добавляет от 0 до xx к значению другой команды</td></tr>
+</table>
+
+<h2 id="examples">Примеры</h2>
+<p>В <kbd>Start</kbd> → <strong>Песни</strong> есть четыре примера, каждый что-то показывает. Открытие примера ничего не сохраняет, пока ты его не изменишь.</p>
+<ul>
+<li><strong>Pocket Pop</strong> (Game Boy, 120 BPM): части как цепочки, повторяемые по всей песне, и аккорды через <code>C</code>.</li>
+<li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM): таблицы для арпеджио и бочки, ноты, которые скользят через <code>L</code> и падают через <code>P</code>, и бас на наклонной пиле из PICO-8.</li>
+<li><strong>Night Drive</strong> (Свободный, 100 BPM): восемь каналов с синтами, грув со свингом 7/5, панорама, эхо через <code>D</code> и затухание через <code>U</code>.</li>
+<li><strong>Amen Chip</strong> (Game Boy, 170 BPM): барабанные дроби через <code>R</code>, запоздалые удары через <code>D</code>, половина фразы, которая прыгает в следующую через <code>H</code>, басовая линия, транспонированная цепочкой, и смена ширины импульса через <code>W</code>.</li>
+</ul>
+
+<h2 id="import-export">Импорт и экспорт</h2>
+<p><kbd>Start</kbd> → <strong>Экспорт в библиотеку</strong> один раз рендерит песню в WAV в папку <code>audiofilus tracker</code> внутри папки с музыкой. Библиотека его подхватит, и он будет играть в фоне, как всё остальное.</p>
+<p>Песни из прежнего трекера открываются сконвертированными: каждый паттерн становится одной фразой и одной цепочкой на канал, а его эффекты — командами (арпеджио → <code>C</code>, скважность → <code>W</code>, изгиб → <code>P</code>).</p>
+<p>В планах: импорт и экспорт MOD/XM, импорт песен LSDJ и MIDI-синхронизация.</p>
+
+    <nav class="pager" aria-label="Страницы"><a href="visualizers-games.html">← Визуализаторы &amp; игры</a><a href="settings.html">Настройки →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

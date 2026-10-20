@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odtwarzanie · dokumentacja audiofilus</title>
+<meta name="description" content="Teraz gra, kolejka, wyłącznik i jak muzyka gra dalej w tle.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/playback.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/playback.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/playback.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/playback.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/playback.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/playback.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/playback.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/playback.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/playback.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/playback.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/playback.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/playback.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/playback.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/playback.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Strona główna audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Strona">
+      <a href="../index.html">Start</a>
+      <a href="index.html" aria-current="page">Dokumentacja</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Pobierz</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Język: Polski"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>PL</summary><div class="menu"><a href="../../docs/playback.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/playback.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/playback.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/playback.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/playback.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/playback.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/playback.html" hreflang="pl" lang="pl" aria-current="true">Polski<span>PL</span></a><a href="../../tr/docs/playback.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/playback.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/playback.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/playback.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/playback.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/playback.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Dokumentacja">
+      <details open id="toc">
+        <summary>Dokumentacja: wszystkie strony</summary>
+        <div class="label">Dokumentacja</div>
+        <ol>
+          <li><a href="index.html">Przegląd</a></li>
+          <li><a href="getting-started.html">Pierwsze kroki</a></li>
+          <li><a href="library.html">Biblioteka</a></li>
+          <li><a href="playback.html" aria-current="page">Odtwarzanie</a></li>
+          <li><a href="sound.html">Dźwięk</a></li>
+          <li><a href="lyrics.html">Tekst</a></li>
+          <li><a href="radio-podcasts.html">Radio i podcasty</a></li>
+          <li><a href="servers.html">Serwery</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Sterowanie</a></li>
+          <li><a href="visualizers-games.html">Wizualizacje i gry</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Ustawienia</a></li>
+          <li><a href="handhelds.html">Systemy konsol</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Słuchanie muzyki</h1>
+    <p class="lede">Teraz gra, kolejka, wyłącznik i jak muzyka gra dalej w tle.</p>
+
+<h2 id="now-playing">Teraz gra</h2>
+<figure><img class="px shot" src="../../img/player.png" alt="Teraz gra z okładką, kręcącym się winylem, sterowaniem i widmem" width="360" height="240" loading="lazy"></figure>
+<ul>
+<li><kbd>A</kbd> lub <kbd>Y</kbd> pauzuje i wznawia.</li>
+<li>Dotknij <kbd>←</kbd>/<kbd>→</kbd>, by przejść do poprzedniego lub następnego utworu; przytrzymaj, by przewijać do tyłu lub do przodu. <kbd>L1</kbd>/<kbd>R1</kbd> też zmieniają utwór, a <kbd>L2</kbd>/<kbd>R2</kbd> przewijają o 10 sekund.</li>
+<li><kbd>X</kbd> włącza lub wyłącza losowanie; <kbd>X</kbd> dwa razy gra losowy utwór.</li>
+<li><kbd>↑</kbd>/<kbd>↓</kbd> skreczują winyl.</li>
+<li><kbd>B</kbd> przechodzi do biblioteki, <kbd>START</kbd> otwiera menu Więcej.</li>
+</ul>
+<p>Menu Więcej ma album i wykonawcę, <a href="lyrics.html">Tekst</a>, Lubię to, Ocena, Wyłącznik, Do playlisty, Zapisz kolejkę, Kolejka, Losowo, Powtarzaj (Wył., Wszystko, Jeden utwór), Wyłącz ekran, Przejdź w tło i Wyjdź.</p>
+
+<h2 id="queue">Kolejka</h2>
+<p>Ekran <strong>Kolejka</strong> pokazuje, co gra dalej. <strong>Graj następny</strong> wstawia utwór zaraz po bieżącym; <strong>Dodaj do kolejki</strong> wstawia go na koniec. Odtwarzanie jest bez przerw, pauza się wycisza, a kolejka i pozycja przetrwają restart.</p>
+
+<h2 id="timer">Wyłącznik</h2>
+<p>Teraz gra → Więcej → <strong>Wyłącznik</strong>. Każde <kbd>A</kbd> przechodzi do następnej opcji: 15, 30, 45, 60 lub 90 minut, <strong>Koniec utworu</strong> albo wyłączony. Na okładce pojawia się księżyc z pozostałymi minutami. Wyłącznik trzyma usługa, więc działa przy zamkniętym odtwarzaczu.</p>
+<figure><img class="px shot" src="../../img/player-timer.png" alt="Teraz gra z sercem przy polubionym utworze i księżycem z 26 minutami do końca" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="background">Odtwarzanie w tle</h2>
+<p>Muzyka działa we własnej usłudze; odtwarzacz to tylko pilot. Sposób zamknięcia decyduje, co dzieje się z muzyką:</p>
+<ul>
+<li><strong>Przejdź w tło</strong> (menu Więcej albo Ustawienia → Wyjście): odtwarzacz się zamyka, a muzyka gra dalej, także w grach. Konsola usypia się jak zwykle.</li>
+<li><strong>Wyjdź</strong>: zatrzymuje wszystko.</li>
+<li>Zamknięcie w każdy inny sposób (zamknięcie okna, <kbd>SELECT</kbd>+<kbd>START</kbd> w PortMaster albo awaria) zależy od <strong>Ustawienia → Graj po zamknięciu</strong>: domyślnie włączone na komputerze, wyłączone na konsolach.</li>
+</ul>
+
+<h3 id="fn-shortcut">Sterowanie z wnętrza gry</h3>
+<p>Naciśnij <kbd>FN</kbd> trzy razy z rzędu, a potem w ciągu 1,5 sekundy:</p>
+<table>
+<tr><th>Potem</th><th>Co robi</th></tr>
+<tr><td><kbd>L1</kbd> / <kbd>R1</kbd></td><td>Poprzedni / następny utwór</td></tr>
+<tr><td><kbd>L2</kbd> / <kbd>R2</kbd></td><td>Do tyłu / przód o 10 s</td></tr>
+<tr><td><kbd>SELECT</kbd></td><td>Pauza / wznów</td></tr>
+</table>
+<p>Działa zawsze, przy otwartym lub zamkniętym odtwarzaczu, i nie koliduje z systemem ani emulatorami.</p>
+
+<h2 id="sleep">Uśpienie: ekran wył., muzyka gra</h2>
+<p>Uśpienie wyłącza ekran i obniża taktowanie procesora, gdy muzyka gra, więc konsola może jechać w kieszeni. Włączysz je przez dwa naciśnięcia <kbd>START</kbd>, przycisk zasilania, zamknięcie klapki, Teraz gra → Więcej → <strong>Wyłącz ekran</strong> albo po chwili bez dotykania czegokolwiek (<strong>Ustawienia → Uśpij po</strong>). W uśpieniu spusty stają się gestami:</p>
+<table>
+<tr><th>Gest</th><th>Co robi</th></tr>
+<tr><td><kbd>L1</kbd>/<kbd>R1</kbd> dwa razy</td><td>Poprzedni / następny utwór</td></tr>
+<tr><td><kbd>L2</kbd>/<kbd>R2</kbd> dwa razy</td><td>Do tyłu / przód o 10 s</td></tr>
+<tr><td><kbd>L1</kbd>+<kbd>L2</kbd> razem, dwa razy</td><td>Pauza / wznów</td></tr>
+<tr><td><kbd>R1</kbd>+<kbd>R2</kbd> razem, dwa razy</td><td>Losowy utwór</td></tr>
+<tr><td><kbd>START</kbd> lub przycisk zasilania</td><td>Obudź (przycisk zasilania nie przy zamkniętej klapce)</td></tr>
+</table>
+<p>Pojedyncze dotknięcie nic nie robi, więc przypadkowe naciśnięcia w kieszeni się nie liczą. Na urządzeniach z wibracją każdy gest daje krótkie brzęczenie. Na RG34XX-SP uśpienie pobiera około 260&nbsp;mA: to około 11–12 godzin muzyki.</p>
+<p>Na komputerach uśpienie i jego ustawienia nie mają zastosowania i są ukryte.</p>
+
+<h2 id="headphones">Przyciski słuchawek</h2>
+<p>Przyciski słuchawek Bluetooth i przewodowych sterują muzyką przy otwartym lub zamkniętym odtwarzaczu. Zestaw z jednym przyciskiem działa jak zwykle: jedno naciśnięcie pauzuje, dwa przechodzą do następnego utworu, trzy cofają.</p>
+
+<h2 id="open-with">Otwieranie plików z menedżera plików</h2>
+<p>Pliki i foldery otwierane w audiofilus grają jako <strong>tymczasowa kolejka</strong>: foldery są rozwijane z całą zawartością, a nic nie zapisuje się jako playlista (użyj <strong>Zapisz kolejkę</strong>, by ją zachować). Jeśli odtwarzacz jest już otwarty, po prostu przełącza się na nową kolejkę.</p>
+<ul>
+<li><strong>Linux</strong>: prawy przycisk → Otwórz za pomocą → Audiofilus, dla plików audio, list M3U/PLS, plików CUE, muzyki z konsol i folderów (konfiguruje to instalator lub <code>audiofilus desktop install</code>).</li>
+<li><strong>Windows</strong>: audiofilus rejestruje się przy pierwszym otwarciu: <strong>Otwórz za pomocą</strong> na każdym obsługiwanym pliku i <strong>Play with Audiofilus</strong> na folderach. Zaznaczenie kilku plików dodaje je wszystkie do kolejki.</li>
+<li><strong>iPhone i iPad</strong>: „Otwórz w” lub „Udostępnij” z Plików i innych aplikacji.</li>
+</ul>
+
+<h2 id="desktop">Na komputerze</h2>
+<ul>
+<li><strong>Klawisze multimedialne i paski</strong>: na Linuksie audiofilus obsługuje MPRIS, więc klawisze multimedialne i widżet multimediów pulpitu nim sterują.</li>
+<li><strong>Zasobnik systemowy</strong> (Linux i Windows): kliknij, by otworzyć odtwarzacz, środkowym przyciskiem pauzuj, a menu ma to, co gra, odtwarzanie/pauzę, następny, poprzedni, losowanie i wyjście.</li>
+</ul>
+
+    <nav class="pager" aria-label="Strony"><a href="library.html">← Biblioteka</a><a href="sound.html">Dźwięk →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Start</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Najnowsze wydanie</a></span>
+    <span>Znalazłeś błąd w dokumentacji? <a href="https://github.com/juanvillacortac/audiofilus/issues">Zgłoś problem</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

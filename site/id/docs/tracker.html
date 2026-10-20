@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker · dokumentasi audiofilus</title>
+<meta name="description" content="Bikin chiptune dengan D-pad, ala LSDJ: lagu, rantai, frasa, instrumen, tabel, groove, dan gelombang, dalam mode Game Boy atau Bebas.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/tracker.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Beranda audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Situs">
+      <a href="../index.html">Beranda</a>
+      <a href="index.html" aria-current="page">Dokumentasi</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Unduh</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Bahasa: Indonesia"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ID</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/tracker.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/tracker.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/tracker.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/tracker.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/tracker.html" hreflang="id" lang="id" aria-current="true">Indonesia<span>ID</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/tracker.html" hreflang="ko" lang="ko">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Dokumentasi">
+      <details open id="toc">
+        <summary>Dokumentasi: semua halaman</summary>
+        <div class="label">Dokumentasi</div>
+        <ol>
+          <li><a href="index.html">Ikhtisar</a></li>
+          <li><a href="getting-started.html">Memulai</a></li>
+          <li><a href="library.html">Pustaka</a></li>
+          <li><a href="playback.html">Pemutaran</a></li>
+          <li><a href="sound.html">Suara</a></li>
+          <li><a href="lyrics.html">Lirik</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcast</a></li>
+          <li><a href="servers.html">Server</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Kontrol</a></li>
+          <li><a href="visualizers-games.html">Visualisasi &amp; game</a></li>
+          <li><a href="tracker.html" aria-current="page">Tracker</a></li>
+          <li><a href="settings.html">Pengaturan</a></li>
+          <li><a href="handhelds.html">Sistem handheld</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Tracker</h1>
+    <p class="lede">Bikin chiptune dengan D-pad, ala LSDJ, dengan beberapa hal yang dipinjam dari PICO-8.</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="Tracker memutar lagu: kanal dengan osiloskop langsung, sel yang menyala saat notnya diputar" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">Ikhtisar</h2>
+<p>Buka <strong>Game → Tracker</strong>. Sebuah lagu disusun seperti di LSDJ: <strong>lagu</strong> adalah daftar baris, tiap baris menentukan <strong>rantai</strong> mana yang dimainkan tiap kanal, rantai adalah daftar <strong>frasa</strong>, dan frasa adalah 16 langkah not. Suaranya berasal dari <strong>instrumen</strong>, yang bisa menjalankan <strong>tabel</strong> pada setiap not; <strong>groove</strong> mengatur swing, dan <strong>gelombang</strong> digambar dengan tangan. Dari PICO-8 diambil delapan bentuk gelombangnya, instrumen di setiap langkah, dan piano roll.</p>
+<p>Lagu tersimpan sendiri sedetik setelah setiap perubahan. Selama tracker berputar, musikmu dijeda, dan visualisasi serta game bereaksi terhadap tracker.</p>
+
+<h2 id="song-modes">Mode lagu: Game Boy dan Bebas</h2>
+<p>Setiap lagu punya mode, diatur di tampilan <strong>PROJ</strong>:</p>
+<ul>
+<li><strong>Game Boy</strong>: empat kanal, <strong>PU1</strong>, <strong>PU2</strong> (pulsa), <strong>WAV</strong> (gelombang), dan <strong>NOI</strong> (noise), dengan batasan konsolnya: lebar pulsa 12,5, 25, 50, dan 75 %, envelope volume yang melangkah di 64 Hz, sweep frekuensi PU1, gelombang 4-bit 32 sampel yang diputar di volume 100, 50, atau 25 %, noise dari register 15 atau 7 bit, dan nada yang dibulatkan ke periode 11-bit perangkat kerasnya. Instrumennya pulsa, gelombang, atau noise.</li>
+<li><strong>Bebas</strong>: delapan kanal, <strong>CH1</strong> sampai <strong>CH8</strong>, tanpa batasan itu. Setiap instrumen punya envelope ADSR, dan ada jenis keempat, <strong>synth</strong>, dengan bentuk sine, triangle, saw, square, organ, phantom, dan noise.</li>
+</ul>
+<p>Instrumen apa pun bisa dipakai di kanal mana pun. Mengubah lagu ke Game Boy tetap menyimpan isi kanal 5 sampai 8, hanya saja tidak diputar.</p>
+
+<h2 id="structure">Lagu, rantai, dan frasa</h2>
+<ul>
+<li><strong>Lagu</strong>: hingga 256 baris; tiap baris berisi nomor rantai (atau kosong) per kanal.</li>
+<li><strong>Rantai</strong> (256 buah): hingga 16 frasa berurutan, masing-masing dengan <strong>transpos</strong> dalam semitone. Rantai berakhir di slot kosong pertamanya.</li>
+<li><strong>Frasa</strong> (256 buah): 16 langkah. Tiap langkah punya <strong>not</strong> (C-0 sampai B-9, atau OFF), <strong>instrumen</strong>, <strong>volume</strong> (0 sampai F), dan <strong>dua perintah</strong> (sebuah huruf dan nilai heksadesimal).</li>
+</ul>
+<p>Tiap kanal memainkan rantainya sendiri dan pindah ke baris berikutnya saat rantai itu selesai. Kanal tanpa rantai di sebuah baris beristirahat sampai kanal yang punya rantai pindah, jadi baris-barisnya tetap sejajar. Baris yang sama sekali tanpa rantai beristirahat selama satu frasa.</p>
+<p>Waktu berjalan dalam <strong>tick</strong>, 24 per ketukan. Dengan groove bawaan, tiap langkah berlangsung 6 tick, seperenam belas not, jadi satu frasa sama dengan satu birama.</p>
+
+<h2 id="views">Delapan tampilan</h2>
+<p>Tab di atas adalah peta, dari kiri ke kanan: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd> dan <kbd>R1</kbd> pindah ke tampilan di sebelahnya. Bergerak ke kanan dengan <kbd>R1</kbd> membuka apa yang ada di bawah kursor:</p>
+<table>
+<tr><th>Dari</th><th><kbd>R1</kbd> membuka</th></tr>
+<tr><td>SONG</td><td>Rantai di sel itu</td></tr>
+<tr><td>CHAIN</td><td>Frasa di langkah itu</td></tr>
+<tr><td>PHRASE</td><td>Instrumen langkah itu (atau yang terakhir di atasnya)</td></tr>
+<tr><td>INSTR</td><td>Tabel instrumen itu</td></tr>
+<tr><td>GROOVE</td><td>Gelombang instrumen itu, jika itu instrumen gelombang</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: nama lagu (<kbd>A</kbd> membuka keyboard), mode, tempo (40 sampai 300 BPM), dan groove awal.</li>
+<li><strong>SONG</strong>: baris × kanal berisi nomor rantai, dengan osiloskop tiap kanal. Kanal yang kamu pilih di sini adalah kanal tempat rantai dan frasa dimainkan.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: grid 16 baris.</li>
+<li><strong>INSTR</strong>: daftar pengaturan instrumen.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: lihat di bawah.</li>
+</ul>
+<p>Di layar sempit, tab disingkat jadi PRJ, SNG, CHN, PHR, INS, TBL, GRV, dan WAV.</p>
+
+<h2 id="editing">Mengedit</h2>
+<p>Setiap tampilan diedit dengan cara yang sama:</p>
+<table>
+<tr><th>Tombol</th><th>Fungsi</th></tr>
+<tr><td>D-pad</td><td>Gerakkan kursor</td></tr>
+<tr><td>Tahan <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Ubah nilai satu-satu</td></tr>
+<tr><td>Tahan <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Ubah banyak: satu oktaf untuk not, 16 untuk angka, 4 untuk volume</td></tr>
+<tr><td><kbd>A</kbd> pada sel kosong</td><td>Pasang nilai terakhir yang dipakai</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd> (dua kali, cepat)</td><td>Pasang rantai, frasa, instrumen, atau tabel baru yang belum dipakai</td></tr>
+<tr><td><kbd>A</kbd> pada nomor rantai atau frasa</td><td>Buka (tampilan lagu dan rantai)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Hapus</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>Rantai, frasa, instrumen, tabel, groove, atau gelombang sebelum / berikutnya</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Lompat 16 baris (tampilan lagu)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Putar atau stop: lagu dari baris kursor (PROJ, SONG), rantai berulang (CHAIN), atau frasa yang terbuka berulang (tampilan lainnya)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Bisukan kanal yang sedang kamu kerjakan</td></tr>
+<tr><td><kbd>X</kbd></td><td>Tampilan frasa: beralih ke piano roll dan kembali</td></tr>
+<tr><td><kbd>Start</kbd></td><td>Menu tracker</td></tr>
+</table>
+<p>Not berbunyi saat kamu menulisnya, dan <kbd>A</kbd> pada not memainkannya. Menulis not pada langkah tanpa instrumen memasang instrumen terakhir yang dipakai. Di bawah C-0 ada OFF, yang melepas not. Rantai, frasa, instrumen, dan tabel dibuat saat pertama kali kamu mengeditnya.</p>
+<p>Menu <kbd>Start</kbd> berisi:</p>
+<ul>
+<li><strong>Putar lagu</strong> dari awal.</li>
+<li><strong>Urungkan</strong>: setiap tekanan <kbd>A</kbd> adalah satu langkah mundur, hingga 64.</li>
+<li><strong>Salin</strong>, <strong>Tempel</strong>, <strong>Klon ke yang baru</strong>, dan <strong>Kosongkan</strong>, untuk yang sedang ditampilkan (rantai, frasa, instrumen, tabel, groove, atau gelombang). Mengklon menyalinnya ke nomor kosong pertama, dan sel lagu atau langkah rantai asalmu beralih ke salinannya.</li>
+<li>Di tampilan gelombang, delapan <strong>bentuk PICO-8</strong>, untuk disalin ke gelombang yang terbuka.</li>
+<li><strong>Lagu</strong>: lagu baru Game Boy atau Bebas, lagu yang tersimpan, dan contoh-contohnya.</li>
+<li><strong>Ekspor ke pustaka</strong>, <strong>Hapus lagu ini</strong>, dan <strong>Kembali ke game</strong>.</li>
+</ul>
+<p>Tahan <kbd>FN</kbd> untuk kontrol tampilan tempatmu berada.</p>
+
+<h2 id="piano-roll">Piano roll</h2>
+<p>Tekan <kbd>X</kbd> di tampilan frasa untuk melihat frasa seperti di PICO-8: langkah ke samping, nada ke atas dan ke bawah, dengan setiap not berbunyi sampai not berikutnya.</p>
+<table>
+<tr><th>Tombol</th><th>Fungsi</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Pilih langkah (kursor melompat ke not di langkah itu)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pilih nada</td></tr>
+<tr><td><kbd>A</kbd></td><td>Pasang not, atau hapus jika sudah ada</td></tr>
+<tr><td>Tahan <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Geser not di langkah itu naik atau turun</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Hapus not di langkah itu</td></tr>
+<tr><td><kbd>X</kbd></td><td>Kembali ke grid langkah</td></tr>
+</table>
+
+<h2 id="instruments">Instrumen</h2>
+<p>Hingga 64. Lagu baru dilengkapi instrumen pulsa, gelombang, dan noise (dan synth di mode Bebas). Isi tampilan INSTR tergantung jenis dan mode:</p>
+<table>
+<tr><th>Pengaturan</th><th>Fungsinya</th></tr>
+<tr><td>Nama</td><td><kbd>A</kbd> membuka keyboard</td></tr>
+<tr><td>Jenis</td><td>Pulsa, gelombang, noise, atau synth (hanya Bebas). Menggantinya mereset instrumen.</td></tr>
+<tr><td>Volume</td><td>0 sampai F; mengatur skala volume langkah</td></tr>
+<tr><td>Envelope, Arah, Kecepatan</td><td>Game Boy, kecuali gelombang: level awal (0–F), TURUN / DATAR / NAIK, dan kecepatan (1–7: satu level setiap kecepatan/64 dtk; 0 menahan level)</td></tr>
+<tr><td>Attack, Decay, Sustain, Release</td><td>Bebas: envelope ADSR, dalam tick (sustain adalah level, 0–F)</td></tr>
+<tr><td>Durasi</td><td>Tick sampai not dipotong (<code>--</code>: tidak dipotong)</td></tr>
+<tr><td>Tabel</td><td>Tabel yang berjalan pada setiap not (<code>--</code>: tidak ada)</td></tr>
+<tr><td>Pan</td><td>L, LR, atau R</td></tr>
+<tr><td>Transpos</td><td>Apakah transpos rantai memengaruhinya (matikan untuk drum)</td></tr>
+<tr><td>Vibrato</td><td>Kecepatan dan kedalaman (digit heksa tinggi dan rendah)</td></tr>
+<tr><td>Duty</td><td>Pulsa dan square synth: 12,5, 25, 50, atau 75 %</td></tr>
+<tr><td>Sweep</td><td>Pulsa, Game Boy: sweep frekuensi PU1, seperti register NR10 konsol (waktu, arah, geser)</td></tr>
+<tr><td>Gelombang</td><td>Instrumen gelombang: gelombang yang mana (00–FF)</td></tr>
+<tr><td>Volume gelombang</td><td>Gelombang, Game Boy: 100, 50, atau 25 %. Kanal gelombang Game Boy tidak punya envelope; volumenya hanya empat tingkat.</td></tr>
+<tr><td>Noise pendek</td><td>Noise: register 7-bit, lebih bernada dan metalik</td></tr>
+<tr><td>Bentuk</td><td>Synth: triangle, sine, saw, square, organ, phantom, atau noise</td></tr>
+</table>
+<p>Not pada instrumen noise menentukan seberapa cepat noise berjalan: not rendah bergemuruh, not tinggi mendesis. <kbd>A</kbd> pada pengaturan memainkan not terakhir dengan instrumen itu.</p>
+
+<h2 id="tables">Tabel</h2>
+<p>Tabel adalah 16 baris yang berjalan satu per tick selama not berbunyi, dimulai pada setiap not dari instrumen yang memakainya (atau dari perintah <code>A</code>). Tiap baris punya <strong>volume</strong> (atau kosong), <strong>transpos</strong> dalam semitone dari notnya, dan dua perintah. <code>H</code> di tabel melompat ke baris lain, begitulah tabel berulang: tiga baris dengan transpos 0, +4, dan +7 dengan <code>H00</code> di baris terakhir menghasilkan arpeggio mayor, dan transpos yang turun cepat dengan noise pendek menghasilkan kick drum.</p>
+
+<h2 id="grooves">Groove</h2>
+<p>Groove adalah daftar hingga 16 angka: berapa tick setiap langkah berlangsung, bergiliran. Bawaannya, 6/6, lurus; 7/5 atau 8/4 memberi swing. Di tampilan GROOVE, <kbd>A</kbd> pada slot kosong setelah angka terakhir menambah satu, dan <kbd>B</kbd>+<kbd>A</kbd> menghapus satu; judulnya menampilkan swing. Ada 32 groove; PROJ mengatur groove awal lagu, dan perintah <code>G</code> mengganti satu kanal ke groove lain yang ada.</p>
+
+<h2 id="waves">Gelombang</h2>
+<p>256 gelombang berisi 32 sampel dari 0 sampai F, dimainkan oleh instrumen gelombang. Delapan yang pertama milik PICO-8: triangle, tilted saw, saw, square, pulse, organ, noise, dan phantom. Di tampilan WAVE, <kbd>←</kbd>/<kbd>→</kbd> memilih sampel, tahan <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> untuk mengubahnya, dan tahan <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd> untuk menggambar (sampel berikutnya mengambil nilai sampel ini). <kbd>Start</kbd> berisi bentuk PICO-8 sebagai titik awal.</p>
+
+<h2 id="effects-reference">Referensi perintah</h2>
+<p>Setiap langkah dan baris tabel punya dua perintah. Not baru mereset yang sedang berjalan (C, F, K, P, V, R, fade, dan drop).</p>
+<table>
+<tr><th>Perintah</th><th>Fungsi</th></tr>
+<tr><td><code>Axx</code></td><td>Mulai tabel xx (<code>AFF</code> menghentikannya)</td></tr>
+<tr><td><code>Cxy</code></td><td>Akor: memutar not, +x dan +y semitone setiap tick (<code>C47</code> mayor, <code>C37</code> minor)</td></tr>
+<tr><td><code>Dxx</code></td><td>Delay: langkah dimainkan terlambat xx tick (hilang jika lebih lama dari langkahnya)</td></tr>
+<tr><td><code>Exy</code></td><td>Envelope: x adalah level awal; bit atas y berarti naik, 3 bit bawahnya kecepatan (0: menahan)</td></tr>
+<tr><td><code>Fxx</code></td><td>Finetune, dalam seperseratus semitone (bertanda: 01–7F naik, 80–FF turun)</td></tr>
+<tr><td><code>Gxx</code></td><td>Ganti kanal ini ke groove xx</td></tr>
+<tr><td><code>Hxx</code></td><td>Hop. Di frasa: akhiri setelah langkah ini, dan mulai frasa berikutnya di langkah xx. Di tabel: lompat ke baris xx.</td></tr>
+<tr><td><code>Ixx</code></td><td>Fade in selama xx tick</td></tr>
+<tr><td><code>Kxx</code></td><td>Kill: lepas not setelah xx tick</td></tr>
+<tr><td><code>Lxx</code></td><td>Slide: pada langkah yang punya not, meluncur ke not itu selama xx tick alih-alih memainkannya lagi</td></tr>
+<tr><td><code>M0x</code></td><td>Volume master, 0 sampai F</td></tr>
+<tr><td><code>Oxx</code></td><td>Output: 0 mati, 1 kiri, 2 kanan, 3 keduanya</td></tr>
+<tr><td><code>Pxx</code></td><td>Pitch bend: seperseratus semitone per tick (bertanda)</td></tr>
+<tr><td><code>Rxy</code></td><td>Ulangi not setiap y tick; x (bertanda, 0–7 naik, 8–F turun) mengubah volume tiap pengulangan</td></tr>
+<tr><td><code>Sxx</code></td><td>Pada noise: <code>S01</code> noise pendek (7-bit), <code>S00</code> panjang. Pada pulsa: register sweep PU1.</td></tr>
+<tr><td><code>Txx</code></td><td>Tempo, dalam BPM (28 sampai FF, yaitu 40 sampai 255)</td></tr>
+<tr><td><code>Uxx</code></td><td>Fade out selama xx tick</td></tr>
+<tr><td><code>Vxy</code></td><td>Vibrato: kecepatan x, kedalaman y</td></tr>
+<tr><td><code>Wxx</code></td><td>Pada instrumen gelombang: ganti ke gelombang xx. Selain itu: duty pulsa, 0 sampai 3.</td></tr>
+<tr><td><code>Xxx</code></td><td>Drop: nada turun dan not memudar selama xx tick</td></tr>
+<tr><td><code>Zxx</code></td><td>Acak: menambahkan 0 sampai xx ke nilai perintah lainnya</td></tr>
+</table>
+
+<h2 id="examples">Contoh</h2>
+<p><kbd>Start</kbd> → <strong>Lagu</strong> berisi empat contoh, masing-masing menunjukkan sesuatu. Membukanya tidak menyimpan apa pun sampai kamu mengeditnya.</p>
+<ul>
+<li><strong>Pocket Pop</strong> (Game Boy, 120 BPM): bagian-bagian sebagai rantai yang dipakai ulang di sepanjang lagu, dan akor dengan <code>C</code>.</li>
+<li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM): tabel untuk arpeggio dan kick, not yang meluncur dengan <code>L</code> dan turun dengan <code>P</code>, dan bass dengan tilted saw dari PICO-8.</li>
+<li><strong>Night Drive</strong> (Bebas, 100 BPM): delapan kanal dengan synth, groove swing 7/5, panning, gema yang dibuat dengan <code>D</code>, dan fade out dengan <code>U</code>.</li>
+<li><strong>Amen Chip</strong> (Game Boy, 170 BPM): drum roll dengan <code>R</code>, pukulan terlambat dengan <code>D</code>, setengah frasa yang melompat ke frasa berikutnya dengan <code>H</code>, garis bass yang ditranspos oleh rantainya, dan lebar pulsa yang diubah dengan <code>W</code>.</li>
+</ul>
+
+<h2 id="import-export">Impor dan ekspor</h2>
+<p><kbd>Start</kbd> → <strong>Ekspor ke pustaka</strong> merender lagu sekali ke WAV di folder <code>audiofilus tracker</code> di dalam folder musikmu. Pustaka mengambilnya, jadi lagu itu bisa diputar di latar belakang seperti lagu lain.</p>
+<p>Lagu yang dibuat dengan tracker versi lama terbuka dalam bentuk yang sudah dikonversi: setiap pattern menjadi satu frasa dan satu rantai per kanal, dan efeknya menjadi perintah (arpeggio → <code>C</code>, duty → <code>W</code>, bend → <code>P</code>).</p>
+<p>Direncanakan: impor dan ekspor MOD/XM, impor lagu LSDJ, dan sinkronisasi MIDI.</p>
+
+    <nav class="pager" aria-label="Halaman"><a href="visualizers-games.html">← Visualisasi &amp; game</a><a href="settings.html">Pengaturan →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Beranda</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Rilis terbaru</a></span>
+    <span>Menemukan kesalahan di dokumentasi? <a href="https://github.com/juanvillacortac/audiofilus/issues">Buka issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

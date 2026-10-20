@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>휴대용 게임기 시스템 · audiofilus 문서</title>
+<meta name="description" content="Knulli, muOS, ROCKNIX, ArkOS, dArkOS에서 audiofilus가 다르게 하는 일.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/handhelds.html">
+<link rel="alternate" hreflang="pt-BR" href="https://juanvillacortac.github.io/audiofilus/pt/docs/handhelds.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/handhelds.html">
+<link rel="alternate" hreflang="it" href="https://juanvillacortac.github.io/audiofilus/it/docs/handhelds.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/handhelds.html">
+<link rel="alternate" hreflang="pl" href="https://juanvillacortac.github.io/audiofilus/pl/docs/handhelds.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/handhelds.html">
+<link rel="alternate" hreflang="ru" href="https://juanvillacortac.github.io/audiofilus/ru/docs/handhelds.html">
+<link rel="alternate" hreflang="id" href="https://juanvillacortac.github.io/audiofilus/id/docs/handhelds.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/handhelds.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/handhelds.html">
+<link rel="alternate" hreflang="ko" href="https://juanvillacortac.github.io/audiofilus/ko/docs/handhelds.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+<!-- ko-fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","Galmuri11","Noto Sans KR",sans-serif;--pixel:"Tiny5","Galmuri9","Noto Sans KR",monospace;--body:"Atkinson Hyperlegible","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans KR","Apple SD Gothic Neo",ui-monospace,monospace}body{word-break:keep-all;overflow-wrap:anywhere}h1,h2,h3{line-height:1.3}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="사이트">
+      <a href="../index.html">홈</a>
+      <a href="index.html" aria-current="page">문서</a>
+      <a class="wide" href="faq.html">자주 묻는 질문</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">다운로드</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="언어: 한국어"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>KO</summary><div class="menu"><a href="../../docs/handhelds.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/handhelds.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../pt/docs/handhelds.html" hreflang="pt-BR" lang="pt-BR">Português<span>PT</span></a><a href="../../fr/docs/handhelds.html" hreflang="fr" lang="fr">Français<span>FR</span></a><a href="../../it/docs/handhelds.html" hreflang="it" lang="it">Italiano<span>IT</span></a><a href="../../de/docs/handhelds.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../pl/docs/handhelds.html" hreflang="pl" lang="pl">Polski<span>PL</span></a><a href="../../tr/docs/handhelds.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ru/docs/handhelds.html" hreflang="ru" lang="ru">Русский<span>RU</span></a><a href="../../id/docs/handhelds.html" hreflang="id" lang="id">Indonesia<span>ID</span></a><a href="../../ja/docs/handhelds.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/handhelds.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../ko/docs/handhelds.html" hreflang="ko" lang="ko" aria-current="true">한국어<span>KO</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="문서">
+      <details open id="toc">
+        <summary>문서: 전체 페이지</summary>
+        <div class="label">문서</div>
+        <ol>
+          <li><a href="index.html">개요</a></li>
+          <li><a href="getting-started.html">시작하기</a></li>
+          <li><a href="library.html">보관함</a></li>
+          <li><a href="playback.html">재생</a></li>
+          <li><a href="sound.html">사운드</a></li>
+          <li><a href="lyrics.html">가사</a></li>
+          <li><a href="radio-podcasts.html">라디오와 팟캐스트</a></li>
+          <li><a href="servers.html">서버</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">스크로블</a></li>
+          <li><a href="controls.html">조작</a></li>
+          <li><a href="visualizers-games.html">비주얼라이저와 게임</a></li>
+          <li><a href="tracker.html">트래커</a></li>
+          <li><a href="settings.html">설정</a></li>
+          <li><a href="handhelds.html" aria-current="page">휴대용 게임기 시스템</a></li>
+          <li><a href="faq.html">자주 묻는 질문</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>휴대용 게임기 시스템</h1>
+    <p class="lede">Knulli, muOS, ROCKNIX, ArkOS, dArkOS에서 audiofilus가 다르게 하는 일.</p>
+
+<p>audiofilus는 시작할 때 시스템을 감지해서, 덮개, 전원 버튼, 볼륨, 배터리에 그 시스템의 도구를 써요. Knulli를 설치한 Anbernic RG34XX-SP에서 테스트했어요.</p>
+
+<h2 id="files">파일이 있는 곳</h2>
+<p>설정(<code>audiofilus.json</code>)과 데이터(<code>data/</code>: 보관함 캐시, 재생목록, 기록, 가사, 팟캐스트, 로그 <code>audiofilus.log</code>)는 프로그램 옆, 포트 폴더에 있어요.</p>
+<table>
+<tr><th>시스템</th><th>폴더</th></tr>
+<tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
+<tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, 게임이 두 번째 SD 카드에 있으면 <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>muOS (앱)</td><td><code>MUOS/application</code> 아래의 앱 폴더</td></tr>
+</table>
+
+<h2 id="power">전원 버튼</h2>
+<ul>
+<li><strong>플레이어가 열려 있을 때</strong> 전원 버튼을 짧게 누르면 게임기를 절전시키는 대신 audiofilus가 슬립에 들어가요(화면은 끄고 음악은 켜고). 길게 누르면 여전히 전원이 꺼져요.</li>
+<li><strong>백그라운드로 나간 뒤에는</strong> 누르면 게임기가 평소처럼 절전에 들어가요.</li>
+</ul>
+<p>플레이어가 열려 있는 동안에는 시스템의 자동 절전과 화면 어두워짐도 막아요.</p>
+
+<h2 id="knulli">Knulli</h2>
+<ul>
+<li>플레이어가 열려 있는 동안 볼륨 버튼은 audiofilus를 거치므로 100 %를 넘길 수 있어요.</li>
+<li>덮개를 닫으면 audiofilus가 슬립에 들어가요. 덮개를 열어도 깨어나지 않고, <kbd>START</kbd>로 깨워요.</li>
+</ul>
+<h2 id="muos">muOS</h2>
+<ul>
+<li>PortMaster로 설치하거나 네이티브 앱(<code>audiofilus.muxapp</code>, <a href="getting-started.html#muos">시작하기</a> 참고)으로 설치하세요.</li>
+<li>100 %를 넘는 볼륨은 앱에서 올리고, 시스템 볼륨은 muOS 자체 버튼이 맡아요.</li>
+</ul>
+<h2 id="rocknix">ROCKNIX</h2>
+<ul>
+<li>ROCKNIX의 “가짜 절전”(설정에서 절전 모드 끔)에서는 전원 버튼을 누르면 모든 게 음소거되고 멈추며, audiofilus는 이를 막을 수 없어요. 보통 절전(기본값)에서는 버튼을 누르면 audiofilus가 슬립에 들어가요.</li>
+</ul>
+<h2 id="arkos">ArkOS와 dArkOS</h2>
+<ul>
+<li>배터리 게이지가 항상 0 %로 나오는 게임기(dArkOS를 설치한 RG353V 등)에서는 충전량이나 전압으로 배터리 잔량을 추정하거나 숨겨요.</li>
+</ul>
+
+<h2 id="power-use">배터리 사용량</h2>
+<p>RG34XX-SP에서 측정한 결과: 슬립 중 audiofilus는 약 260&nbsp;mA를 써서, 3300&nbsp;mAh 배터리로 음악을 11~12시간 정도 들을 수 있어요.</p>
+
+    <nav class="pager" aria-label="페이지"><a href="settings.html">← 설정</a><a href="faq.html">자주 묻는 질문 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>
