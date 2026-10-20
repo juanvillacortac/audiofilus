@@ -122,6 +122,8 @@ func (a *App) tkHints() []hint {
 			return []hint{{"A", T("tk_h_note")}, {"A+^v", T("tk_h_move")}, {"X", T("tk_h_grid")}, {"Y", T("tk_h_play")}}
 		}
 		return []hint{{"A+<>^v", T("tk_h_edit")}, {"X", T("tk_h_roll")}, {"L1/R1", T("tk_h_views")}, {"Y", T("tk_h_play")}}
+	case tvProject:
+		return []hint{{"A+<>^v", T("tk_h_edit")}, {"L1/R1", T("tk_h_views")}, {"Y", T("tk_h_play")}}
 	case tvWave:
 		return []hint{{"A+^v", T("tk_h_edit")}, {"A+<>", T("tk_h_draw")}, {"B+<>", T("tk_h_other")}, {"Y", T("tk_h_play")}}
 	}

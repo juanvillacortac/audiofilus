@@ -42,6 +42,11 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"<>^v", "g_cr_move"}, {"<>^v", "g_cr_attack"}, {"START", "h_pause"}}
 	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvPhrase && a.tracker.roll:
 		own = []hint{{"<>", "tk_g_step"}, {"^v", "tk_g_pitch"}, {"A", "tk_g_toggle"}, {"A+^v", "tk_g_move"}, {"B+A", "tk_g_delete"}, {"X", "tk_g_grid"}, {"Y", "tk_g_play"}}
+	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvSong:
+		own = []hint{{"<>^v", "g_dock_move"}, {"A", "tk_g_open"}, {"A A", "tk_g_new"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_big"}, {"B+A", "tk_g_delete"},
+			{"B+^v", "tk_g_page"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_g_play"}, {"B+Y", "tk_g_mute"}, {"START", "tk_g_menu"}}
+	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvProject:
+		own = []hint{{"^v", "g_dock_move"}, {"A+<>^v", "tk_g_small"}, {"A", "tk_g_name"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_g_play"}, {"START", "tk_g_menu"}}
 	case a.screen == Tracker && a.tracker != nil && a.tracker.view == tvWave:
 		own = []hint{{"<>", "g_dock_move"}, {"A+^v", "tk_g_small"}, {"A+<>", "tk_g_draw"}, {"B+<>", "tk_g_item"}, {"L1/R1", "tk_g_views"}, {"Y", "tk_g_play"}, {"START", "tk_g_menu"}}
 	case a.screen == Tracker:
