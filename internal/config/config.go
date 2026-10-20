@@ -216,6 +216,9 @@ type State struct {
 	Shuffle  bool     `json:"shuffle"`
 	Repeat   string   `json:"repeat"`
 	Volume   float64  `json:"volume"`
+	// DSP es la configuración del sonido (engine.DSP: ReplayGain,
+	// ecualizador, fundido), tal cual.
+	DSP json.RawMessage `json:"dsp,omitempty"`
 }
 
 // LoadState lee data/state.json; si no existe, el estado está vacío.

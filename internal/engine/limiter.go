@@ -29,11 +29,14 @@ func newLimiter(rate int) limiter {
 }
 
 // process multiplica buf (estéreo intercalado) por boost y limita los picos.
-func (l *limiter) process(buf []float32, boost float32) {
-	if boost <= 1 {
+// Sin refuerzo no hace nada, salvo con always: el ecualizador o ReplayGain
+// pueden subir la señal por encima del máximo.
+func (l *limiter) process(buf []float32, boost float32, always bool) {
+	if boost <= 1 && !always {
 		l.gain = 1
 		return
 	}
+	boost = max(boost, 1)
 	for i := 0; i+1 < len(buf); i += 2 {
 		left, right := buf[i]*boost, buf[i+1]*boost
 		peak := max(abs32(left), abs32(right))

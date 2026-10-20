@@ -41,6 +41,14 @@ func Expand(paths []string) ([]string, error) {
 				return nil, err
 			}
 			out = append(out, files...)
+		case IsCue(p):
+			c, err := ReadCue(p)
+			if err != nil {
+				return nil, err
+			}
+			for _, t := range c.Tracks {
+				out = append(out, t.Path())
+			}
 		case decode.IsAudioFile(p):
 			out = append(out, p)
 		}
@@ -50,7 +58,7 @@ func Expand(paths []string) ([]string, error) {
 
 // scanDir lista los archivos de audio bajo root, saltando las carpetas ocultas.
 func scanDir(root string) ([]string, error) {
-	var files []string
+	var files, cues []string
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return nil // lo que no se puede leer se salta
@@ -58,13 +66,46 @@ func scanDir(root string) ([]string, error) {
 		if d.IsDir() && strings.HasPrefix(d.Name(), ".") && path != root {
 			return filepath.SkipDir
 		}
-		if !d.IsDir() && decode.IsAudioFile(path) {
+		switch {
+		case d.IsDir():
+		case decode.IsAudioFile(path):
 			files = append(files, path)
+		case IsCue(path):
+			cues = append(cues, path)
 		}
 		return nil
 	})
+	files = withCues(files, cues)
 	sort.Strings(files)
 	return files, err
+}
+
+// withCues cambia, en files, cada archivo que tenga una hoja CUE (un disco
+// entero en un archivo) por sus pistas (ver decode.CuePath). Si la hoja no
+// se puede leer o no encuentra su archivo, queda el archivo tal cual.
+func withCues(files, cues []string) []string {
+	if len(cues) == 0 {
+		return files
+	}
+	skip := map[string]bool{}
+	var tracks []string
+	for _, c := range cues {
+		cue, err := ReadCue(c)
+		if err != nil || len(cue.Tracks) == 0 {
+			continue
+		}
+		for _, t := range cue.Tracks {
+			tracks = append(tracks, t.Path())
+			skip[t.File] = true
+		}
+	}
+	out := tracks
+	for _, f := range files {
+		if !skip[f] {
+			out = append(out, f)
+		}
+	}
+	return out
 }
 
 // isPlaylist dice si p es una lista M3U.
@@ -114,7 +155,7 @@ func readM3U(path string) ([]string, error) {
 		if !filepath.IsAbs(line) {
 			line = filepath.Join(dir, line)
 		}
-		if decode.IsAudioFile(line) {
+		if decode.IsAudioFile(line) || decode.IsCuePath(line) {
 			files = append(files, line)
 		}
 	}
@@ -145,6 +186,9 @@ func ReadTrack(path string) Track {
 		}
 		t.Title = path[strings.LastIndex(path, "/")+1:]
 		return t
+	}
+	if c, ok := ReadCueTrack(path); ok {
+		return c
 	}
 	if f, err := os.Open(path); err == nil {
 		if m, err := tag.ReadFrom(f); err == nil {

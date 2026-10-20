@@ -23,6 +23,7 @@ import (
 	"github.com/godbus/dbus/v5/introspect"
 	"github.com/godbus/dbus/v5/prop"
 
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/queue"
 )
@@ -233,6 +234,9 @@ func (s *Server) art(path string) string {
 	if s.artPath != "" {
 		_ = os.Remove(s.artPath)
 		s.artPath = ""
+	}
+	if file, _, _, ok := decode.SplitCuePath(path); ok {
+		path = file // una pista de un CUE: la portada es la de su archivo
 	}
 	f, err := os.Open(path)
 	if err != nil {

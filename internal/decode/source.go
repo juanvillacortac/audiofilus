@@ -35,7 +35,7 @@ var ErrUnsupported = errors.New("unsupported audio format")
 // Extensions son las extensiones de archivo que entiende Open.
 // Los que dependen de una biblioteca en C (Opus, AAC, módulos) se listan
 // igual: si falta la biblioteca, Open falla con ErrUnsupported y se salta.
-var Extensions = append([]string{".mp3", ".ogg", ".oga", ".opus", ".flac", ".wav", ".aif", ".aiff", ".aifc", ".m4a", ".m4b", ".mp4", ".aac"}, ModuleExtensions...)
+var Extensions = append([]string{".mp3", ".ogg", ".oga", ".opus", ".flac", ".wav", ".aif", ".aiff", ".aifc", ".m4a", ".m4b", ".mp4", ".aac", ".dsf", ".dff"}, ModuleExtensions...)
 
 // IsAudioFile dice si path tiene una extensión soportada.
 func IsAudioFile(path string) bool {
@@ -51,6 +51,10 @@ func IsAudioFile(path string) bool {
 // Open decodifica el archivo path, eligiendo el decodificador por su contenido
 // (los primeros bytes), no por la extensión.
 func Open(path string) (Source, error) {
+	// Una pista de un CUE: un trozo de su archivo (segment.go).
+	if IsCuePath(path) {
+		return OpenSegment(path)
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -74,6 +78,10 @@ func Open(path string) (Source, error) {
 		src, err = newWAV(f)
 	case n >= 12 && string(magic[:4]) == "FORM" && (string(magic[8:12]) == "AIFF" || string(magic[8:12]) == "AIFC"):
 		src, err = newAIFF(f)
+	case n >= 4 && string(magic[:4]) == "DSD ":
+		src, err = newDSF(f)
+	case n >= 16 && string(magic[:4]) == "FRM8" && string(magic[12:16]) == "DSD ":
+		src, err = newDFF(f)
 	case isMP4(magic[:n]):
 		src, err = newM4A(f)
 	case isModule(path):

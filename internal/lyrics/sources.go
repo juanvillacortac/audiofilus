@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/dhowden/tag"
+
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 )
 
 // Option es una letra posible para una canción, de donde sea.
@@ -38,9 +40,10 @@ func (o Option) Synced() bool { return o.Lyrics.Synced }
 const maxFile = 512 << 10
 
 // IsLocal dice si path es un archivo (no una radio, un servidor o YouTube
-// Music, que no tienen archivos de letra ni etiquetas a mano).
+// Music, que no tienen archivos de letra ni etiquetas a mano, ni una pista
+// de un CUE, cuyo archivo y etiquetas son los del disco entero).
 func IsLocal(path string) bool {
-	return path != "" && !strings.Contains(path, "://") && filepath.IsAbs(path)
+	return path != "" && !strings.Contains(path, "://") && filepath.IsAbs(path) && !decode.IsCuePath(path)
 }
 
 // Local son las letras que hay a mano para la canción en path: los archivos

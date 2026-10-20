@@ -11,6 +11,7 @@ import (
 	"github.com/dhowden/tag"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/library"
 )
 
@@ -89,7 +90,12 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 	s.Total.Store(int64(len(files)))
 	entries := make([]entry, 0, len(files))
 	for _, p := range files {
-		info, err := os.Stat(p)
+		// Una pista de un CUE: la fecha y el tamaño son los de su archivo.
+		file := p
+		if f, _, _, ok := decode.SplitCuePath(p); ok {
+			file = f
+		}
+		info, err := os.Stat(file)
 		if err != nil {
 			s.Done.Add(1)
 			continue
@@ -118,9 +124,23 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 }
 
 // readEntry lee las etiquetas de un archivo.
-func readEntry(p string, info os.FileInfo) entry {
-	e := entry{Path: p, Size: info.Size(), ModTime: info.ModTime().Unix()}
-	f, err := os.Open(p)
+func readEntry(p string, info os.FileInfo) (e entry) {
+	e = entry{Path: p, Size: info.Size(), ModTime: info.ModTime().Unix()}
+	// Una pista de un CUE: el título y el número de la hoja, el resto (y la
+	// portada) de las etiquetas de su archivo, si tiene.
+	file, _, _, cue := decode.SplitCuePath(p)
+	if cue {
+		defer func() {
+			if t, n, ok := library.ReadCueEntry(p); ok {
+				e.Title, e.Track = t.Title, n
+				e.Artist = orDefault(t.Artist, e.Artist)
+				e.Album = orDefault(t.Album, e.Album)
+			}
+		}()
+	} else {
+		file = p
+	}
+	f, err := os.Open(file)
 	if err != nil {
 		return e
 	}

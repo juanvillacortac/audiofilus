@@ -28,7 +28,7 @@ func peak(buf []float32) float32 {
 func TestLimiterKeepsPeaks(t *testing.T) {
 	l := newLimiter(48000)
 	buf := sine(1)
-	l.process(buf, 2)
+	l.process(buf, 2, false)
 	if p := peak(buf); p > limitCeiling+1e-6 {
 		t.Errorf("peak %v over the ceiling %v", p, limitCeiling)
 	}
@@ -39,7 +39,7 @@ func TestLimiterKeepsPeaks(t *testing.T) {
 func TestLimiterQuietIsLinear(t *testing.T) {
 	l := newLimiter(48000)
 	buf := sine(0.3)
-	l.process(buf, 2)
+	l.process(buf, 2, false)
 	if p := peak(buf); math.Abs(float64(p)-0.6) > 0.001 {
 		t.Errorf("peak %v, want 0.6 (quiet signal x2)", p)
 	}
@@ -50,7 +50,7 @@ func TestLimiterNoBoost(t *testing.T) {
 	l := newLimiter(48000)
 	buf := sine(1)
 	want := sine(1)
-	l.process(buf, 1)
+	l.process(buf, 1, false)
 	for i := range buf {
 		if buf[i] != want[i] {
 			t.Fatalf("sample %d changed without boost", i)

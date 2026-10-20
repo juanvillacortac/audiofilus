@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"bytes"
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
 	"image"
 	"image/color"
@@ -132,8 +133,9 @@ func buildLibrary(entries []entry) *Library {
 	byKey := map[string]*Album{}
 	for _, e := range entries {
 		s := Song{Path: e.Path, Title: e.Title, Artist: firstArtist(e.Artist), Album: e.Album, Track: e.Track}
+		file := audioFile(e.Path)
 		if s.Title == "" {
-			s.Title = strings.TrimSuffix(filepath.Base(e.Path), filepath.Ext(e.Path))
+			s.Title = strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
 		}
 		if s.Album == "" {
 			s.Album = "Sin álbum"
@@ -152,7 +154,7 @@ func buildLibrary(entries []entry) *Library {
 		if e.Cover != "" && a.coverPath == "" {
 			a.coverPath = e.Cover
 		} else if e.Pic && a.coverPath == "" {
-			a.coverPath = e.Path
+			a.coverPath = file
 		}
 		a.Songs = append(a.Songs, s)
 		lib.Songs = append(lib.Songs, s)
@@ -365,4 +367,13 @@ func (a *Album) decodeRemoteCover() image.Image {
 		return nil
 	}
 	return img
+}
+
+// audioFile es el archivo de una canción: el mismo path, o el del disco
+// entero si es una pista de un CUE (ver decode.CuePath).
+func audioFile(path string) string {
+	if f, _, _, ok := decode.SplitCuePath(path); ok {
+		return f
+	}
+	return path
 }

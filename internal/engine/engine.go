@@ -41,6 +41,12 @@ type Status struct {
 	Volume   float64       `json:"volume"`
 	// Loading: la canción es remota y aún se está bajando (suena silencio).
 	Loading bool `json:"loading,omitempty"`
+	// DSP es la configuración del sonido; Gain, la ganancia de ReplayGain
+	// que lleva la canción (dB; 0 sin etiquetas o apagado).
+	DSP  DSP     `json:"dsp"`
+	Gain float64 `json:"gain_db,omitempty"`
+	// StopAfter: se parará al acabar esta canción.
+	StopAfter bool `json:"stop_after,omitempty"`
 }
 
 // Engine es seguro para uso concurrente. El hilo de audio de oto llama a Read;
@@ -61,7 +67,25 @@ type Engine struct {
 	fbuf    []float32
 	boost   float32 // el refuerzo por encima del 100 % (1 = ninguno), con limitador
 	limit   limiter
-	meter   meter // nivel y graves de lo que suena (meter.go)
+	// El sonido (dsp.go): la configuración, el ecualizador, la ganancia de
+	// ReplayGain de lo que suena y sus etiquetas (para recalcularla).
+	dsp      DSP
+	eq       eqFilter
+	gain     float32
+	gainTags library.Gain
+	gainOK   bool
+	// El fundido entre canciones (crossfade.go): tail es la que se va
+	// apagando mientras empieza la siguiente; xfLen y xfPos, cuánto dura el
+	// fundido y cuánto lleva (en cuadros de salida).
+	tail   *voice
+	xfLen  int
+	xfPos  int
+	tbuf   []float32
+	xfSkip string // la siguiente que se vio que no se funde (mismo disco)
+	// stopAfter: al acabar la canción que suena, parar (el temporizador
+	// "al terminar esta canción").
+	stopAfter bool
+	meter     meter // nivel y graves de lo que suena (meter.go)
 	// waiting es la canción remota que se está esperando (sin src); waitAt,
 	// cuándo se preguntó por última vez si ya llegó.
 	waiting string
@@ -93,8 +117,10 @@ type Engine struct {
 	OnPlayingChanged func(playing bool)
 	// OnTrackChanged se llama (fuera del lock) al empezar una canción.
 	OnTrackChanged func(library.Track)
-	events         chan func()
-	closed         bool
+	// OnStopAfter se llama cuando se paró al acabar la canción (StopAfter).
+	OnStopAfter func()
+	events      chan func()
+	closed      bool
 }
 
 // New abre la salida de audio.
@@ -114,7 +140,8 @@ func New(sampleRate int, buffer time.Duration) (*Engine, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	e := &Engine{ctx: ctx, rate: sampleRate, q: queue.New(), events: make(chan func(), 16), boost: 1, vol: 1, latency: buffer, limit: newLimiter(sampleRate), meter: newMeter(sampleRate, 2*buffer)}
+	e := &Engine{ctx: ctx, rate: sampleRate, q: queue.New(), events: make(chan func(), 16), boost: 1, vol: 1, gain: 1, latency: buffer, limit: newLimiter(sampleRate), meter: newMeter(sampleRate, 2*buffer)}
+	e.dsp = DSP{}.Normalize()
 	e.player = ctx.NewPlayer(e)
 	e.player.SetBufferSize(int(buffer.Seconds() * float64(sampleRate) * bytesPerFrame))
 	go e.dispatch()
@@ -187,7 +214,7 @@ func (e *Engine) Read(p []byte) (int, error) {
 					e.setPlayingLocked(false)
 				}
 			case ready:
-				e.setSourceLocked(e.waiting, src)
+				e.setSourceLocked(e.waiting, "", src)
 			}
 		}
 		if e.waiting != "" {
@@ -208,7 +235,15 @@ func (e *Engine) Read(p []byte) (int, error) {
 		n = e.scratchRead(buf)
 	}
 	for n < len(buf) {
-		got, err := e.rs.Read(buf[n:])
+		// A trozos de como mucho xfChunk, para empezar el fundido a tiempo.
+		end := len(buf)
+		if e.dsp.Crossfade > 0 {
+			e.maybeCrossfadeLocked()
+			end = min(end, n+xfChunk*2)
+		}
+		got, err := e.rs.Read(buf[n:end])
+		gainBuf(buf[n:n+got], e.gain)
+		e.mixTailLocked(buf[n : n+got])
 		n += got
 		e.histWrite(buf[n-got : n])
 		if err == nil {
@@ -224,7 +259,8 @@ func (e *Engine) Read(p []byte) (int, error) {
 			break
 		}
 	}
-	e.limit.process(buf[:n], e.boost)
+	e.eq.process(buf[:n])
+	e.limit.process(buf[:n], e.boost, len(e.eq.bands) > 0 || e.gain > 1)
 	e.meter.add(buf[:n], time.Now().Add(e.meter.latency), e.rate)
 	for i := 0; i < n; i++ {
 		binary.LittleEndian.PutUint32(p[i*4:], math.Float32bits(buf[i]))
@@ -292,7 +328,7 @@ func (e *Engine) openLocked() bool {
 				}
 				continue
 			}
-			e.setSourceLocked(path, src)
+			e.setSourceLocked(path, "", src)
 			return true
 		}
 		if e.openFileLocked(path, path) {
@@ -314,17 +350,26 @@ func (e *Engine) openFileLocked(path, local string) bool {
 		e.waiting = ""
 		return false
 	}
-	e.setSourceLocked(path, src)
+	e.setSourceLocked(path, local, src)
 	return true
 }
 
-// setSourceLocked pone src (ya abierta) como la canción path y avisa.
-func (e *Engine) setSourceLocked(path string, src decode.Source) {
+// setSourceLocked pone src (ya abierta) como la canción path y avisa. local
+// es su archivo, si lo hay (de él sale su ReplayGain).
+func (e *Engine) setSourceLocked(path, local string, src decode.Source) {
 	e.closeSourceLocked()
 	e.src = src
 	e.rs = resample.New(src, e.rate)
 	e.ended, e.waiting = false, ""
 	e.track = library.ReadTrack(path)
+	e.gainTags, e.gainOK = library.Gain{}, false
+	if f, _, _, ok := decode.SplitCuePath(local); ok {
+		local = f // una pista de un CUE: la ganancia es la de su archivo
+	}
+	if local != "" {
+		e.gainTags, e.gainOK = library.ReadGain(local)
+	}
+	e.gain = replayGain(e.dsp, e.gainTags, e.gainOK, e.q.Shuffled())
 	e.announceLocked()
 }
 
@@ -343,16 +388,27 @@ func (e *Engine) announceLocked() {
 	})
 }
 
-// closeSourceLocked cierra el archivo actual.
+// closeSourceLocked cierra el archivo actual (y el que se estaba
+// apagando en un fundido: un cambio a mano corta en seco).
 func (e *Engine) closeSourceLocked() {
 	if e.src != nil {
 		e.src.Close()
 	}
 	e.src, e.rs = nil, nil
+	e.stopCrossfadeLocked()
 }
 
 // advanceLocked pasa a la siguiente canción (ver queue.Next).
 func (e *Engine) advanceLocked(auto bool) bool {
+	if auto && e.stopAfter {
+		e.stopAfter = false
+		e.emit(func() {
+			if e.OnStopAfter != nil {
+				e.OnStopAfter()
+			}
+		})
+		return false
+	}
 	if !e.q.Next(auto) {
 		return false
 	}
@@ -365,6 +421,7 @@ func (e *Engine) advanceLocked(auto bool) bool {
 
 // seekLocked salta a seconds en la canción actual.
 func (e *Engine) seekLocked(seconds float64) {
+	e.stopCrossfadeLocked()
 	if e.src == nil {
 		return
 	}
@@ -588,6 +645,8 @@ func (e *Engine) SetShuffle(on bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.q.SetShuffle(on)
+	// En "auto", ReplayGain va por canción en aleatorio y por disco en orden.
+	e.gain = replayGain(e.dsp, e.gainTags, e.gainOK, on)
 }
 
 // SetRepeat cambia el modo de repetición.
@@ -613,6 +672,33 @@ func (e *Engine) SetVolume(v float64) {
 	}
 }
 
+// SetDSP cambia la configuración del sonido (se oye tras el búfer).
+func (e *Engine) SetDSP(d DSP) {
+	d = d.Normalize()
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.dsp = d
+	e.eq.set(d.EQ, e.rate)
+	e.gain = replayGain(d, e.gainTags, e.gainOK, e.q.Shuffled())
+	if d.Crossfade == 0 {
+		e.stopCrossfadeLocked()
+	}
+}
+
+// SetStopAfter pide (o deja de pedir) parar al acabar la canción que suena.
+func (e *Engine) SetStopAfter(on bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.stopAfter = on
+}
+
+// DSPConfig es la configuración del sonido.
+func (e *Engine) DSPConfig() DSP {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.dsp
+}
+
 // Queue devuelve las canciones en orden de reproducción.
 func (e *Engine) Queue() []string {
 	e.mu.Lock()
@@ -625,12 +711,17 @@ func (e *Engine) Status() Status {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	s := Status{
-		Index:   e.q.Index(),
-		Count:   e.q.Len(),
-		Shuffle: e.q.Shuffled(),
-		Repeat:  e.q.Repeat.String(),
-		Volume:  e.vol * float64(e.boost),
-		Track:   e.track,
+		Index:     e.q.Index(),
+		Count:     e.q.Len(),
+		Shuffle:   e.q.Shuffled(),
+		Repeat:    e.q.Repeat.String(),
+		Volume:    e.vol * float64(e.boost),
+		Track:     e.track,
+		DSP:       e.dsp,
+		StopAfter: e.stopAfter,
+	}
+	if e.gain != 1 {
+		s.Gain = math.Round(20*math.Log10(float64(e.gain))*10) / 10
 	}
 	s.Loading = e.waiting != ""
 	if b, ok := e.src.(interface{ Buffering() bool }); ok && b.Buffering() {

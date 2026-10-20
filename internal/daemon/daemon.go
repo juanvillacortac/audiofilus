@@ -10,9 +10,11 @@
 package daemon
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -48,9 +50,13 @@ type Daemon struct {
 	eng   *engine.Engine
 	plat  platform.Platform
 
-	mu           sync.Mutex
-	sleeping     bool
-	awakeUntil   time.Time  // hasta cuándo la app pidió mantener despierta la consola
+	mu         sync.Mutex
+	sleeping   bool
+	awakeUntil time.Time // hasta cuándo la app pidió mantener despierta la consola
+	// El temporizador para parar la música (timer.go): cuándo, y el que lo
+	// hace.
+	timerAt      time.Time
+	timer        *time.Timer
 	awakeApplied bool       // si la plataforma está impidiendo la suspensión ahora
 	pad          string     // descripción del mando en uso
 	appOpen      bool       // el permiso de la app está vigente (la interfaz está abierta)
@@ -189,6 +195,10 @@ func Run(paths config.Paths) error {
 		m, ok := store.Track(path)
 		return library.Track{Path: path, Title: m.Title, Artist: m.Artist, Album: m.Album}, ok
 	}
+	eng.OnStopAfter = func() {
+		log.Print("timer: stopped at the end of the song")
+		control.Notify()
+	}
 	eng.OnTrackChanged = func(t library.Track) {
 		log.Printf("now playing: %s - %s", t.Artist, t.Title)
 		if mp != nil {
@@ -276,6 +286,11 @@ func (d *Daemon) restore() {
 	if r, ok := queue.ParseRepeat(st.Repeat); ok {
 		d.eng.SetRepeat(r)
 	}
+	var dsp engine.DSP
+	if len(st.DSP) > 0 {
+		_ = json.Unmarshal(st.DSP, &dsp)
+	}
+	d.eng.SetDSP(dsp)
 	if len(st.Queue) > 0 {
 		d.eng.Load(st.Queue, st.Index, st.Position, false)
 	}
@@ -294,6 +309,7 @@ func (d *Daemon) saveState() {
 		Repeat:   s.Repeat,
 		Volume:   s.Volume,
 	}
+	st.DSP, _ = json.Marshal(d.eng.DSPConfig())
 	if err := config.SaveState(d.paths, st); err != nil {
 		log.Printf("saving state: %v", err)
 	}
@@ -577,6 +593,17 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 			return nil, err
 		}
 		e.SetShuffle(on)
+	case "timer":
+		if err := d.setTimer(req.Args); err != nil {
+			return nil, err
+		}
+	case "replaygain", "preamp", "eq", "crossfade":
+		dsp, err := dspCommand(e.DSPConfig(), req.Cmd, req.Args)
+		if err != nil {
+			return nil, err
+		}
+		e.SetDSP(dsp)
+		go d.saveState()
 	case "repeat":
 		if len(req.Args) != 1 {
 			return nil, errors.New("usage: repeat off|all|one")
@@ -719,6 +746,9 @@ type FullStatus struct {
 	// Meter son el nivel y los graves de lo último que se oye y lo que se va a
 	// oír (engine/meter.go): para el visualizador y el tetris.
 	Meter []engine.MeterPoint `json:"meter,omitempty"`
+	// TimerLeft son los segundos que le quedan al temporizador (0: no hay;
+	// el de "al acabar la canción" es StopAfter).
+	TimerLeft float64 `json:"timer_left,omitempty"`
 }
 
 // status devuelve el estado completo.
@@ -726,6 +756,9 @@ func (d *Daemon) status() FullStatus {
 	s := FullStatus{Status: d.eng.Status(), Platform: d.plat.Name(), VolumeTotal: d.totalVolume()}
 	d.mu.Lock()
 	s.Sleep, s.Awake, s.Pad, s.VolumeSeq, s.PowerSeq = d.sleeping, d.awakeApplied, d.pad, d.volumeSeq, d.powerSeq
+	if !d.timerAt.IsZero() {
+		s.TimerLeft = math.Max(0, time.Until(d.timerAt).Seconds())
+	}
 	d.mu.Unlock()
 	s.Lid = d.plat.LidClosed()
 	if !s.Sleep {
