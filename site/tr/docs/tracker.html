@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker · audiofilus belgeleri</title>
+<meta name="description" content="Yön tuşlarıyla, LSDJ usulü chiptune yapın: Game Boy ya da Serbest modda şarkı, zincirler, ifadeler, enstrümanlar, tablolar, groove&#x27;lar ve dalgalar.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus ana sayfa"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Ana sayfa</a>
+      <a href="index.html" aria-current="page">Belgeler</a>
+      <a class="wide" href="faq.html">SSS</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">İndir</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Dil: Türkçe"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>TR</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr" aria-current="true">Türkçe<span>TR</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Belgeler">
+      <details open id="toc">
+        <summary>Belgeler: tüm sayfalar</summary>
+        <div class="label">Belgeler</div>
+        <ol>
+          <li><a href="index.html">Genel bakış</a></li>
+          <li><a href="getting-started.html">Başlarken</a></li>
+          <li><a href="library.html">Kitaplık</a></li>
+          <li><a href="playback.html">Çalma</a></li>
+          <li><a href="sound.html">Ses</a></li>
+          <li><a href="lyrics.html">Şarkı sözleri</a></li>
+          <li><a href="radio-podcasts.html">Radyo ve podcast'ler</a></li>
+          <li><a href="servers.html">Sunucular</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Kontroller</a></li>
+          <li><a href="visualizers-games.html">Görselleştiriciler ve oyunlar</a></li>
+          <li><a href="tracker.html" aria-current="page">Tracker</a></li>
+          <li><a href="settings.html">Ayarlar</a></li>
+          <li><a href="handhelds.html">El konsolu sistemleri</a></li>
+          <li><a href="faq.html">SSS</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Tracker</h1>
+    <p class="lede">Yön tuşlarıyla, LSDJ usulü chiptune yapın; PICO-8'den ödünç alınmış birkaç şeyle.</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="Bir şarkı çalan tracker: canlı osiloskoplu kanallar, notaları çaldıkça yanan hücreler" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">Genel bakış</h2>
+<p><strong>Oyunlar → Tracker</strong>'ı açın. Bir şarkı LSDJ'deki gibi kurulur: <strong>şarkı</strong> bir satır listesidir, her satır her kanalın hangi <strong>zinciri</strong> çaldığını söyler, bir zincir <strong>ifadelerden</strong> oluşan bir listedir ve bir ifade 16 adımlık notalardır. Sesler, her notayla bir <strong>tablo</strong> çalıştırabilen <strong>enstrümanlardan</strong> gelir; <strong>groove</strong> swing'i belirler ve <strong>dalgalar</strong> elle çizilir. PICO-8'den sekiz dalga biçimi, her adımda bir enstrüman ve bir piyano rulosu gelir.</p>
+<p>Şarkılar her değişiklikten bir saniye sonra kendiliğinden kaydedilir. Tracker çalarken müziğiniz duraklar ve görselleştiriciler ile oyunlar onun yerine tracker'a tepki verir.</p>
+
+<h2 id="song-modes">Şarkı modları: Game Boy ve Serbest</h2>
+<p>Her şarkının <strong>PROJ</strong> görünümünde ayarlanan bir modu vardır:</p>
+<ul>
+<li><strong>Game Boy</strong>: dört kanal, <strong>PU1</strong>, <strong>PU2</strong> (pulse), <strong>WAV</strong> (dalga) ve <strong>NOI</strong> (gürültü), konsolun sınırlarıyla: %12,5, 25, 50 ve 75 pulse genişlikleri, 64 Hz'de adım atan bir ses zarfı, PU1'in frekans taraması, %100, 50 ya da 25 seste çalan 32 örnekli 4 bitlik dalgalar, 15 ya da 7 bitlik bir yazmaçtan gürültü ve donanımın 11 bitlik periyotlarına yuvarlanan perdeler. Enstrümanlar pulse, dalga ya da gürültüdür.</li>
+<li><strong>Serbest</strong>: sekiz kanal, <strong>CH1</strong>'den <strong>CH8</strong>'e, bu sınırlar olmadan. Her enstrümanın bir ADSR zarfı vardır ve dördüncü bir tür bulunur: sinüs, üçgen, testere, kare, org, phantom ve gürültü biçimleriyle <strong>synth</strong>.</li>
+</ul>
+<p>Her enstrüman her kanala konabilir. Bir şarkıyı Game Boy'a geçirmek 5-8. kanallardakileri korur, yalnızca çalmaz.</p>
+
+<h2 id="structure">Şarkı, zincirler ve ifadeler</h2>
+<ul>
+<li><strong>Şarkı</strong>: en fazla 256 satır; her satırda kanal başına bir zincir numarası (ya da hiçbir şey) var.</li>
+<li><strong>Zincir</strong> (256 tane): sırayla en fazla 16 ifade, her biri yarım ton cinsinden bir <strong>transpoze</strong> ile. Zincir ilk boş yuvasında biter.</li>
+<li><strong>İfade</strong> (256 tane): 16 adım. Her adımda bir <strong>nota</strong> (C-0'dan B-9'a ya da OFF), bir <strong>enstrüman</strong>, bir <strong>ses</strong> (0'dan F'ye) ve <strong>iki komut</strong> (bir harf ve onaltılık bir değer) var.</li>
+</ul>
+<p>Her kanal kendi zincirini çalar ve bittiğinde sonraki satıra geçer. Bir satırda zinciri olmayan kanal, zinciri olan kanallar ilerleyene kadar dinlenir; böylece satırlar hizalı kalır. Hiç zinciri olmayan bir satır bir ifade boyunca dinlenir.</p>
+<p>Zaman <strong>tick</strong>'lerle akar, vuruş başına 24. Varsayılan groove ile her adım 6 tick sürer, bir on altılık nota; yani bir ifade bir ölçüdür.</p>
+
+<h2 id="views">Sekiz görünüm</h2>
+<p>Üstteki sekmeler soldan sağa bir haritadır: <strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>. <kbd>L1</kbd> ve <kbd>R1</kbd> yandaki görünüme geçer. <kbd>R1</kbd> ile sağa gitmek imlecin altındakini açar:</p>
+<table>
+<tr><th>Nereden</th><th><kbd>R1</kbd> açar</th></tr>
+<tr><td>SONG</td><td>Hücredeki zincir</td></tr>
+<tr><td>CHAIN</td><td>Adımdaki ifade</td></tr>
+<tr><td>PHRASE</td><td>Adımın enstrümanı (ya da üstündeki sonuncusu)</td></tr>
+<tr><td>INSTR</td><td>Enstrümanın tablosu</td></tr>
+<tr><td>GROOVE</td><td>Dalga enstrümanıysa enstrümanın dalgası</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>: şarkının adı (<kbd>A</kbd> klavyeyi açar), modu, temposu (40-300 BPM) ve başlangıç groove'u.</li>
+<li><strong>SONG</strong>: her kanalın osiloskopuyla, satırlar × kanallar şeklinde zincir numaraları. Burada seçtiğiniz kanal, zincirlerin ve ifadelerin çaldığı kanaldır.</li>
+<li><strong>CHAIN</strong>, <strong>PHRASE</strong>, <strong>TABLE</strong>: 16 satırlık ızgaralar.</li>
+<li><strong>INSTR</strong>: enstrümanın ayarlarından bir liste.</li>
+<li><strong>GROOVE</strong>, <strong>WAVE</strong>: aşağıya bakın.</li>
+</ul>
+<p>Dar ekranlarda sekmeler PRJ, SNG, CHN, PHR, INS, TBL, GRV ve WAV olarak kısalır.</p>
+
+<h2 id="editing">Düzenleme</h2>
+<p>Her görünüm aynı şekilde düzenlenir:</p>
+<table>
+<tr><th>Tuş</th><th>İşlev</th></tr>
+<tr><td>Yön tuşları</td><td>İmleci taşı</td></tr>
+<tr><td><kbd>A</kbd> basılı + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Değeri bir değiştir</td></tr>
+<tr><td><kbd>A</kbd> basılı + <kbd>←</kbd>/<kbd>→</kbd></td><td>Çok değiştir: notalarda bir oktav, sayılarda 16, seslerde 4</td></tr>
+<tr><td>Boş bir hücrede <kbd>A</kbd></td><td>Son kullanılan değeri koy</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd> (hızlıca iki kez)</td><td>Yeni, kullanılmamış bir zincir, ifade, enstrüman ya da tablo koy</td></tr>
+<tr><td>Bir zincir ya da ifade numarasında <kbd>A</kbd></td><td>Onu aç (şarkı ve zincir görünümleri)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Sil</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>Önceki / sonraki zincir, ifade, enstrüman, tablo, groove ya da dalga</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>16 satır atla (şarkı görünümü)</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Çal ya da durdur: imlecin satırından şarkıyı (PROJ, SONG), döngüde zinciri (CHAIN) ya da döngüde açık ifadeyi (diğer görünümler)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Üzerinde çalıştığınız kanalı sustur</td></tr>
+<tr><td><kbd>X</kbd></td><td>İfade görünümü: piyano rulosuna geç ve geri dön</td></tr>
+<tr><td><kbd>Start</kbd></td><td>Tracker menüsü</td></tr>
+</table>
+<p>Bir nota yazdıkça çalar ve bir notada <kbd>A</kbd> onu çalar. Enstrümanı olmayan bir adıma nota yazmak son kullanılan enstrümanı koyar. C-0'ın altında OFF gelir, notayı bırakır. Zincirler, ifadeler, enstrümanlar ve tablolar onları ilk düzenlediğinizde oluşturulur.</p>
+<p><kbd>Start</kbd> menüsünde şunlar var:</p>
+<ul>
+<li>Baştan <strong>Şarkıyı çal</strong>.</li>
+<li><strong>Geri al</strong>: <kbd>A</kbd>'nın her basışı bir adım geri, en fazla 64.</li>
+<li>Görünümün gösterdiği şey (bir zincir, ifade, enstrüman, tablo, groove ya da dalga) için <strong>Kopyala</strong>, <strong>Yapıştır</strong>, <strong>Yeniye kopyala</strong> ve <strong>Temizle</strong>. Kopyalamak onu ilk boş numaraya kopyalar ve geldiğiniz şarkı hücresi ya da zincir adımı kopyaya geçer.</li>
+<li>Dalga görünümünde, açık dalgaya kopyalamak için sekiz <strong>PICO-8 şekli</strong>.</li>
+<li><strong>Şarkılar</strong>: yeni bir Game Boy ya da Serbest şarkı, kaydettiğiniz şarkılar ve örnekler.</li>
+<li><strong>Kitaplığa aktar</strong>, <strong>Bu şarkıyı sil</strong> ve <strong>Oyunlara dön</strong>.</li>
+</ul>
+<p>Bulunduğunuz görünümün kontrolleri için <kbd>FN</kbd>'ye basılı tutun.</p>
+
+<h2 id="piano-roll">Piyano rulosu</h2>
+<p>İfadeyi PICO-8 gibi görmek için ifade görünümünde <kbd>X</kbd>'e basın: adımlar yatayda, perdeler dikeyde; her nota bir sonrakine kadar sürer.</p>
+<table>
+<tr><th>Tuş</th><th>İşlev</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Adımı seç (imleç o adımın notasına atlar)</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Perdeyi seç</td></tr>
+<tr><td><kbd>A</kbd></td><td>Notayı koy, zaten oradaysa kaldır</td></tr>
+<tr><td><kbd>A</kbd> basılı + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Adımın notasını yukarı ya da aşağı taşı</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Adımın notasını sil</td></tr>
+<tr><td><kbd>X</kbd></td><td>Adım ızgarasına dön</td></tr>
+</table>
+
+<h2 id="instruments">Enstrümanlar</h2>
+<p>En fazla 64. Yeni bir şarkı bir pulse, bir dalga ve bir gürültü enstrümanıyla gelir (Serbest modda bir de synth). INSTR görünümünün gösterdiği, türe ve moda bağlıdır:</p>
+<table>
+<tr><th>Ayar</th><th>Ne yapar</th></tr>
+<tr><td>Ad</td><td><kbd>A</kbd> klavyeyi açar</td></tr>
+<tr><td>Tür</td><td>Pulse, dalga, gürültü ya da synth (yalnızca Serbest). Değiştirmek enstrümanı sıfırlar.</td></tr>
+<tr><td>Ses</td><td>0'dan F'ye; adımın sesini ölçekler</td></tr>
+<tr><td>Zarf, Yön, Hız</td><td>Game Boy, dalga hariç: başlangıç seviyesi (0–F), aşağı / sabit / yukarı ve hız (1–7: her hız/64 saniyede bir seviye; 0 seviyeyi tutar)</td></tr>
+<tr><td>Atak, Düşüş, Sürdürme, Bırakma</td><td>Serbest: tick cinsinden ADSR zarfı (sürdürme bir seviyedir, 0–F)</td></tr>
+<tr><td>Uzunluk</td><td>Nota kesilene kadarki tick'ler (<code>--</code>: kesilmez)</td></tr>
+<tr><td>Tablo</td><td>Her notayla çalışan tablo (<code>--</code>: yok)</td></tr>
+<tr><td>Pan</td><td>L, LR ya da R</td></tr>
+<tr><td>Transpoze</td><td>Zincirin transpozesinin onu etkileyip etkilemediği (davullar için kapatın)</td></tr>
+<tr><td>Vibrato</td><td>Hız ve derinlik (yüksek ve düşük onaltılık basamak)</td></tr>
+<tr><td>Genişlik</td><td>Pulse ve synth kare: %12,5, 25, 50 ya da 75</td></tr>
+<tr><td>Tarama</td><td>Pulse, Game Boy: PU1'in frekans taraması, konsolun NR10 yazmacı olarak (süre, yön, kaydırma)</td></tr>
+<tr><td>Dalga</td><td>Dalga enstrümanları: hangi dalga (00–FF)</td></tr>
+<tr><td>Dalga sesi</td><td>Dalga, Game Boy: %100, 50 ya da 25. Game Boy dalga kanalının zarfı yoktur; sesi dört adımda gelir.</td></tr>
+<tr><td>Kısa gürültü</td><td>Gürültü: 7 bitlik yazmaç, daha tonal ve metalik</td></tr>
+<tr><td>Şekil</td><td>Synth: üçgen, sinüs, testere, kare, org, phantom ya da gürültü</td></tr>
+</table>
+<p>Bir gürültü enstrümanının notası gürültünün ne kadar hızlı aktığını belirler: pes notalar gürler, tiz olanlar tıslar. Bir ayarda <kbd>A</kbd> son notayı enstrümanla çalar.</p>
+
+<h2 id="tables">Tablolar</h2>
+<p>Tablo, nota çalarken tick başına bir tane çalışan 16 satırdır; onu kullanan bir enstrümanın her notasıyla (ya da <code>A</code> komutuyla) başlar. Her satırda bir <strong>ses</strong> (ya da hiçbir şey), notadan yarım ton cinsinden bir <strong>transpoze</strong> ve iki komut var. Tablodaki <code>H</code> başka bir satıra atlar; tablolar böyle döngüye girer: 0, +4 ve +7 transpoze eden ve sonuncusunda <code>H00</code> olan üç satır majör bir arpej yapar, kısa bir gürültüyle hızla düşen transpozeler de bir bas davul (kick) yapar.</p>
+
+<h2 id="grooves">Groove'lar</h2>
+<p>Groove en fazla 16 sayıdan oluşan bir listedir: her adımın sırayla kaç tick sürdüğü. Varsayılan 6/6 düzdür; 7/5 ya da 8/4 swing yapar. GROOVE görünümünde son sayıdan sonraki boş yuvada <kbd>A</kbd> bir tane ekler, <kbd>B</kbd>+<kbd>A</kbd> bir tane kaldırır; başlık swing'i gösterir. 32 groove var; PROJ şarkının hangisiyle başlayacağını belirler ve <code>G</code> komutu bir kanalı var olan başka bir groove'a geçirir.</p>
+
+<h2 id="waves">Dalgalar</h2>
+<p>Dalga enstrümanlarının çaldığı, 0'dan F'ye 32 örnekli 256 dalga. İlk sekizi PICO-8'inkiler: üçgen, eğik testere, testere, kare, pulse, org, gürültü ve phantom. WAVE görünümünde <kbd>←</kbd>/<kbd>→</kbd> bir örnek seçer, değiştirmek için <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> basılı tutun, çizmek için <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd> basılı tutun (sonraki örnek bunun değerini alır). <kbd>Start</kbd>'ta başlangıç için PICO-8 şekilleri var.</p>
+
+<h2 id="effects-reference">Komut başvurusu</h2>
+<p>Her adımda ve tablo satırında iki komut var. Yeni bir nota süren komutları (C, F, K, P, V, R, kısılmalar ve düşüş) sıfırlar.</p>
+<table>
+<tr><th>Komut</th><th>İşlev</th></tr>
+<tr><td><code>Axx</code></td><td>xx tablosunu başlat (<code>AFF</code> durdurur)</td></tr>
+<tr><td><code>Cxy</code></td><td>Akor: notayı, +x ve +y yarım tonu her tick'te döndürür (<code>C47</code> majör, <code>C37</code> minör)</td></tr>
+<tr><td><code>Dxx</code></td><td>Gecikme: adım xx tick geç çalar (adımdan uzunsa kaybolur)</td></tr>
+<tr><td><code>Exy</code></td><td>Zarf: x başlangıç seviyesi; y'nin üst biti yukarı demek, alt 3 biti hız (0: tutar)</td></tr>
+<tr><td><code>Fxx</code></td><td>İnce ayar, yarım tonun yüzde biri cinsinden (işaretli: 01–7F yukarı, 80–FF aşağı)</td></tr>
+<tr><td><code>Gxx</code></td><td>Bu kanalı xx groove'una geçir</td></tr>
+<tr><td><code>Hxx</code></td><td>Atlama. Bir ifadede: bu adımdan sonra bitir ve sonrakini xx adımında başlat. Bir tabloda: xx satırına atla.</td></tr>
+<tr><td><code>Ixx</code></td><td>xx tick boyunca sesi açarak gir</td></tr>
+<tr><td><code>Kxx</code></td><td>Kes: notayı xx tick sonra bırak</td></tr>
+<tr><td><code>Lxx</code></td><td>Kaydırma: notalı bir adımda, onu yeniden çalmak yerine xx tick boyunca ona kay</td></tr>
+<tr><td><code>M0x</code></td><td>Ana ses, 0'dan F'ye</td></tr>
+<tr><td><code>Oxx</code></td><td>Çıkış: 0 kapalı, 1 sol, 2 sağ, 3 ikisi</td></tr>
+<tr><td><code>Pxx</code></td><td>Perde bükme: tick başına yarım tonun yüzde biri (işaretli)</td></tr>
+<tr><td><code>Rxy</code></td><td>Notayı her y tick'te yeniden tetikle; x (işaretli, 0–7 yukarı, 8–F aşağı) her birinde sesi değiştirir</td></tr>
+<tr><td><code>Sxx</code></td><td>Gürültüde: <code>S01</code> kısa (7 bit) gürültü, <code>S00</code> uzun. Pulse'ta: PU1 tarama yazmacı.</td></tr>
+<tr><td><code>Txx</code></td><td>Tempo, BPM cinsinden (28'den FF'ye, yani 40'tan 255'e)</td></tr>
+<tr><td><code>Uxx</code></td><td>xx tick boyunca sesi kısarak çık</td></tr>
+<tr><td><code>Vxy</code></td><td>Vibrato: hız x, derinlik y</td></tr>
+<tr><td><code>Wxx</code></td><td>Bir dalga enstrümanında: xx dalgasına geç. Diğerlerinde: pulse genişliği, 0'dan 3'e.</td></tr>
+<tr><td><code>Xxx</code></td><td>Düşüş: perde düşer ve nota xx tick boyunca kısılır</td></tr>
+<tr><td><code>Zxx</code></td><td>Rastgele: diğer komutun değerine 0 ile xx arası ekler</td></tr>
+</table>
+
+<h2 id="examples">Örnekler</h2>
+<p><kbd>Start</kbd> → <strong>Şarkılar</strong>'da her biri bir şey gösteren dört örnek var. Birini açmak, onu düzenleyene kadar hiçbir şey kaydetmez.</p>
+<ul>
+<li><strong>Pocket Pop</strong> (Game Boy, 120 BPM): şarkı boyunca yeniden kullanılan zincirler olarak bölümler ve <code>C</code> ile akorlar.</li>
+<li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM): arpejler ve kick için tablolar, <code>L</code> ile kayan ve <code>P</code> ile düşen notalar ve PICO-8'in eğik testeresinde bir bas.</li>
+<li><strong>Night Drive</strong> (Serbest, 100 BPM): synth'li sekiz kanal, 7/5 swing groove'u, pan, <code>D</code> ile yapılmış bir yankı ve <code>U</code> ile bir kısılarak bitiş.</li>
+<li><strong>Amen Chip</strong> (Game Boy, 170 BPM): <code>R</code> ile davul trampetleri, <code>D</code> ile geç gelen vuruşlar, <code>H</code> ile sonrakine atlayan yarım bir ifade, zinciri tarafından transpoze edilen bir bas hattı ve <code>W</code> ile değişen pulse genişlikleri.</li>
+</ul>
+
+<h2 id="import-export">İçe ve dışa aktarma</h2>
+<p><kbd>Start</kbd> → <strong>Kitaplığa aktar</strong> şarkıyı bir kez, müzik klasörünüzün içindeki bir <code>audiofilus tracker</code> klasörüne WAV olarak işler. Kitaplık onu alır, böylece her şey gibi arka planda çalar.</p>
+<p>Önceki tracker ile yapılmış şarkılar dönüştürülerek açılır: her desen kanal başına bir ifade ve bir zincir olur, efektleri de komutlara dönüşür (arpej → <code>C</code>, genişlik → <code>W</code>, bükme → <code>P</code>).</p>
+<p>Planlanan: MOD/XM içe ve dışa aktarma, LSDJ şarkısı içe aktarma ve MIDI senkronu.</p>
+
+    <nav class="pager" aria-label="Sayfalar"><a href="visualizers-games.html">← Görselleştiriciler ve oyunlar</a><a href="settings.html">Ayarlar →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Ana sayfa</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Son sürüm</a></span>
+    <span>Belgelerde bir hata mı buldunuz? <a href="https://github.com/juanvillacortac/audiofilus/issues">Bir issue açın</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

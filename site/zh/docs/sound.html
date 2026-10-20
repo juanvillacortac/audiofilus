@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>音质 · audiofilus 文档</title>
+<meta name="description" content="ReplayGain、均衡器、交叉淡化和输出采样率。它们由服务应用，所以播放器关闭时也有效。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html" aria-current="page">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>音质</h1>
+    <p class="lede">ReplayGain、均衡器、交叉淡化和输出采样率。它们由服务应用，所以播放器关闭时也有效。</p>
+
+<p>它们都在 <strong>设置</strong> 中：交叉淡化在“播放”下，其余在“音质”下。</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>使用文件中的 ReplayGain 标签（以及 Opus 的 R128 增益），让每首歌（或每张专辑）以相同响度播放。<strong>设置 → ReplayGain</strong>：</p>
+<ul>
+<li><strong>自动</strong>：按顺序播放时按专辑，随机播放时按单曲。</li>
+<li><strong>按单曲</strong> 或 <strong>按专辑</strong>。</li>
+<li><strong>关闭</strong>。</li>
+</ul>
+<p>它绝不会把歌曲推过峰值，所以不会削波。没有 ReplayGain 标签的歌曲（以及远程歌曲）按原样播放。</p>
+
+<h2 id="eq">均衡器</h2>
+<p><strong>设置 → 均衡器</strong> 打开从 31&nbsp;Hz 到 16&nbsp;kHz 的十个频段，每个范围为 −12 到 +12&nbsp;dB。</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="均衡器：使用摇滚预设的十个垂直滑块" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>按键</th><th>作用</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>选择频段</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>调整 1 dB</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>切换预设：平直、低音、高音、人声、摇滚、金属、流行、电子、爵士、古典、响度</td></tr>
+<tr><td><kbd>Y</kbd></td><td>恢复平直</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>关闭（调整即时生效）</td></tr>
+</table>
+<p>自己调整频段后，预设会变为 <strong>自定义</strong>。在触摸屏上，点按某一列即可设置其高度。开启均衡器时，十个频段在掌机最低频率下约占 5&nbsp;% 的 CPU；保持平直时完全不占用。</p>
+
+<h2 id="crossfade">交叉淡化</h2>
+<p><strong>设置 → 交叉淡化</strong>：关闭，或歌曲之间重叠 2 到 12 秒。按顺序播放同一专辑的相邻歌曲时不会淡化，因此专辑保持无缝。很短的歌曲和尚未下载完成的服务器歌曲也会跳过淡化。</p>
+
+<h2 id="output-rate">输出采样率</h2>
+<p><strong>设置 → 输出采样率</strong>：44.1、48、96 或 192&nbsp;kHz。更改后会重启音频服务，并从原来的位置继续。当文件采样率相同且没有任何处理（音量 100&nbsp;%、没有 ReplayGain 或均衡器）时，采样会原样输出，不过 PipeWire 或 PulseAudio 仍可能重新采样。iPhone 上不可用。</p>
+
+<h2 id="volume">音量和增益</h2>
+<p>音量范围为 0 到 200&nbsp;%。100&nbsp;% 以内是系统音量；超过后，audiofilus 会借助限幅器提升信号，让响亮的母带不失真。</p>
+
+<h2 id="dsd">DSD</h2>
+<p>可以播放 DSF 和 DFF 文件，会转换为 PCM。DSD64 对掌机来说足够轻量；DSD256 在掌机上可能跟不上。</p>
+
+    <nav class="pager" aria-label="页面"><a href="playback.html">← 播放</a><a href="lyrics.html">歌词 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

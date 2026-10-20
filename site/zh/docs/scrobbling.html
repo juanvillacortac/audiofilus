@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scrobble 记录 · audiofilus 文档</title>
+<meta name="description" content="在 Last.fm 和 ListenBrainz 上记录你听过的歌。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/scrobbling.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/scrobbling.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/scrobbling.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/scrobbling.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/scrobbling.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/scrobbling.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/scrobbling.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/scrobbling.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/scrobbling.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/scrobbling.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/scrobbling.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/scrobbling.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/scrobbling.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html" aria-current="page">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Scrobble 记录</h1>
+    <p class="lede">在 Last.fm 和 ListenBrainz 上记录你听过的歌。</p>
+
+<p><strong>设置 → Scrobble 记录</strong> 中包含两个账号。时长至少 30 秒的歌曲播放过半（或满四分钟）即算一次；开始播放几秒后会发送“正在播放”。由服务负责发送，所以播放器关闭时也有效。电台和播客单集不会被记录。</p>
+<h2 id="lastfm">Last.fm</h2>
+<ol>
+<li>选择 <strong>Last.fm</strong>。会出现一个指向 Last.fm 授权页面的二维码。</li>
+<li>用手机扫码，并用你的 Last.fm 账号授权 audiofilus。</li>
+<li>几秒钟内 audiofilus 就会显示已以你的用户身份连接。</li>
+</ol>
+<p>再次选择即可断开连接。如果提示 <strong>API key missing</strong>，说明你的构建版本不包含 audiofilus 的 Last.fm 应用密钥；官方发布版包含该密钥。</p>
+
+<h2 id="listenbrainz">ListenBrainz</h2>
+<p>选择 <strong>ListenBrainz</strong> 并输入你的用户令牌（在 ListenBrainz 设置页面中获取）。audiofilus 会验证它并显示你的用户名。</p>
+
+<h2 id="offline">没有网络时</h2>
+<p>无法发送的收听记录会排队等待，联网后再发送（每隔几分钟重试一次）。令牌错误或会话被撤销时，记录会被丢弃而不是重试。</p>
+
+<h2 id="servers">在你的服务器上</h2>
+<p>来自 Subsonic 或 Jellyfin 服务器的歌曲也会计入该服务器，除非你关闭 <strong>计入服务器</strong>。</p>
+
+    <nav class="pager" aria-label="页面"><a href="youtube-music.html">← YouTube Music</a><a href="controls.html">操作 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

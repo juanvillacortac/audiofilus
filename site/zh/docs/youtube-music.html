@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YouTube Music · audiofilus 文档</title>
+<meta name="description" content="搜索 YouTube Music，无需下载即可收听，或把歌曲保存到曲库。需要自备 yt-dlp。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/youtube-music.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/youtube-music.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/youtube-music.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/youtube-music.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/youtube-music.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/youtube-music.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/youtube-music.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/youtube-music.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/youtube-music.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/youtube-music.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/youtube-music.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/youtube-music.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/youtube-music.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/youtube-music.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/youtube-music.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html" aria-current="page">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>YouTube Music</h1>
+    <p class="lede">搜索 YouTube Music，无需下载即可收听，或把歌曲保存到曲库。需要自备 yt-dlp。</p>
+
+<figure><img class="px shot" src="../../img/search-youtube.png" alt="搜索，带“全部”、“曲库”和 YouTube 筛选" width="360" height="240" loading="lazy"></figure>
+<h2 id="setup">设置</h2>
+<p>只有当 audiofilus 旁边有 <code>yt-dlp</code> 程序时，YouTube Music 才会出现。audiofilus 不附带也不会下载它。</p>
+<ul>
+<li><strong>掌机</strong>：从 <a href="https://github.com/yt-dlp/yt-dlp/releases">yt-dlp 发布页</a> 获取 <code>yt-dlp_linux_aarch64</code> 版本，并放进应用的 <code>yt-dlp</code> 文件夹。</li>
+<li><strong>Windows</strong>：把 <code>yt-dlp.exe</code> 放在 <code>audiofilus.exe</code> 旁边的 <code>yt-dlp</code> 文件夹中，并把 <code>ffmpeg.exe</code> 加入 PATH，以便把下载转换为 MP3。</li>
+<li><strong>Linux</strong>：放在 <code>yt-dlp</code> 文件夹中，或 PATH 中的任意位置。</li>
+</ul>
+
+<h2 id="use">使用</h2>
+<ul>
+<li>搜索会在曲库结果旁边显示 YouTube Music 的结果；可用“全部”、“曲库”或 YouTube 筛选。已拥有的歌曲会打勾。</li>
+<li><strong>收听</strong> 播放但不保存（播放器上显示“STREAMING”标记）；流媒体播放时在播放器上按 <kbd>A</kbd> 即可保存。<strong>下载到曲库</strong> 会连同封面和标签一起保存。</li>
+<li>下载通过队列进行；<strong>下载</strong> 界面显示它们的进度。</li>
+</ul>
+
+<h2 id="cookies">机器人验证和需要登录的歌曲</h2>
+<p>有年龄限制的歌曲会在有其他上传版本时播放那个版本。如果 YouTube 要求你的网络确认不是机器人，通常几个小时后就会恢复；也可以把从浏览器导出的 <code>cookies.txt</code> 放进 <code>yt-dlp</code> 文件夹（<a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">导出方法</a>）。</p>
+
+    <nav class="pager" aria-label="页面"><a href="servers.html">← 服务器</a><a href="scrobbling.html">Scrobble 记录 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

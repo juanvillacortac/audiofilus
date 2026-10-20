@@ -91,7 +91,7 @@ p { margin: 0; }
   border-bottom: 1px solid var(--line);
 }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
-.top img { height: 56px; width: auto; }
+.top img { height: 56px; width: auto; object-fit: contain; flex-shrink: 0; min-width: 0; }
 .top nav { display: flex; align-items: center; gap: 1.5rem; font: 600 var(--step--1)/1 var(--mono); }
 .top nav a { color: var(--muted); text-decoration: none; }
 .top nav a:hover { color: var(--fg); }
@@ -99,10 +99,23 @@ p { margin: 0; }
 .top nav .get { color: #fff; background: var(--red); padding: 0.55rem 0.9rem; border-radius: 4px; box-shadow: 3px 3px 0 var(--pink); }
 .top nav .get:hover { color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--pink); }
 @media (max-width: 720px) {
-  .top nav { gap: 1rem; }
+  .top nav { gap: 0.8rem; }
+  .top img { height: 40px; }
   .top nav .sec { display: none; }
   .top nav .icon { padding-left: 0; border-left: 0; }
 }
+
+/* Language switcher: a globe with the current language; the others drop down */
+.lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }
+.lang summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.5rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { color: var(--fg); }
+.lang .menu { position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 10; display: grid; min-width: 10rem; padding: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+.lang .menu a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.6rem; color: var(--muted); text-decoration: none; border-radius: 3px; }
+.lang .menu a span { color: var(--line); }
+.lang .menu a:hover { background: var(--panel-2); color: var(--fg); }
+.lang .menu a[aria-current] { color: var(--fg); }
+.lang .menu a[aria-current] span { color: var(--red); }
 
 /* Hero */
 .hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
@@ -265,6 +278,14 @@ footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--
 footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
 footer img { height: 56px; width: auto; }
 </style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/">
 </head>
 <body>
 
@@ -319,6 +340,7 @@ footer img { height: 56px; width: auto; }
       <a href="docs/index.html">Docs</a>
       <a class="icon" href="https://github.com/juanvillacortac/audiofilus" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
       <a class="get" href="#install">Download</a>
+      <details class="lang"><summary aria-label="Language: English"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>EN</summary><div class="menu"><a href="index.html" hreflang="en" lang="en" aria-current="true">English<span>EN</span></a><a href="es/index.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="tr/index.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="ja/index.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="zh/index.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="de/index.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="fr/index.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
     </nav>
   </div>
 </header>
@@ -731,5 +753,6 @@ document.querySelectorAll(".copy-btn").forEach(function (b) {
     <p>Made by <a href="https://github.com/juanvillacortac">@juanvillacortac</a>. Built with Go and Ebitengine. <a href="https://github.com/juanvillacortac/audiofilus/blob/main/LICENSE">MIT license</a>. <a href="docs/index.html">Read the docs</a>. <a href="#support">Support the project</a>.</p>
   </div>
 </footer>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
 </body>
 </html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YouTube Music · documentation audiofilus</title>
+<meta name="description" content="Cherche dans YouTube Music, écoute sans télécharger, ou enregistre des chansons dans ta bibliothèque. Tu apportes ton propre yt-dlp.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/youtube-music.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/youtube-music.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/youtube-music.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/youtube-music.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/youtube-music.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/youtube-music.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/youtube-music.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/youtube-music.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Accueil audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Accueil</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Télécharger</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Langue&nbsp;: Français"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>FR</summary><div class="menu"><a href="../../docs/youtube-music.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/youtube-music.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/youtube-music.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/youtube-music.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/youtube-music.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/youtube-music.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/youtube-music.html" hreflang="fr" lang="fr" aria-current="true">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs&nbsp;: toutes les pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Vue d’ensemble</a></li>
+          <li><a href="getting-started.html">Bien démarrer</a></li>
+          <li><a href="library.html">Bibliothèque</a></li>
+          <li><a href="playback.html">Lecture</a></li>
+          <li><a href="sound.html">Son</a></li>
+          <li><a href="lyrics.html">Paroles</a></li>
+          <li><a href="radio-podcasts.html">Radio et podcasts</a></li>
+          <li><a href="servers.html">Serveurs</a></li>
+          <li><a href="youtube-music.html" aria-current="page">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Commandes</a></li>
+          <li><a href="visualizers-games.html">Visualiseurs et jeux</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Réglages</a></li>
+          <li><a href="handhelds.html">Systèmes portables</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>YouTube Music</h1>
+    <p class="lede">Cherche dans YouTube Music, écoute sans télécharger, ou enregistre des chansons dans ta bibliothèque. Tu apportes ton propre yt-dlp.</p>
+
+<figure><img class="px shot" src="../../img/search-youtube.png" alt="La recherche avec les filtres All, Library et YouTube" width="360" height="240" loading="lazy"></figure>
+<h2 id="setup">La configuration</h2>
+<p>YouTube Music n’apparaît que s’il y a un programme <code>yt-dlp</code> à côté d’audiofilus. audiofilus ne le fournit ni ne le télécharge.</p>
+<ul>
+<li><strong>Consoles portables</strong>&nbsp;: récupère la version <code>yt-dlp_linux_aarch64</code> sur la <a href="https://github.com/yt-dlp/yt-dlp/releases">page des versions de yt-dlp</a> et mets-la dans le dossier <code>yt-dlp</code> de l’appli.</li>
+<li><strong>Windows</strong>&nbsp;: <code>yt-dlp.exe</code> dans un dossier <code>yt-dlp</code> à côté d’<code>audiofilus.exe</code>, et <code>ffmpeg.exe</code> dans ton PATH pour convertir les téléchargements en MP3.</li>
+<li><strong>Linux</strong>&nbsp;: dans le dossier <code>yt-dlp</code>, ou n’importe où dans ton PATH.</li>
+</ul>
+
+<h2 id="use">L’utiliser</h2>
+<ul>
+<li>La recherche affiche les résultats de YouTube Music à côté de ceux de ta bibliothèque&#8239;; filtre avec All, Library ou YouTube. Les chansons que tu as déjà sont cochées.</li>
+<li><strong>Listen</strong> lit sans enregistrer (un badge «&nbsp;STREAMING&nbsp;» s’affiche sur le lecteur)&#8239;; <kbd>A</kbd> sur le lecteur pendant le streaming l’enregistre. <strong>Download to library</strong> l’enregistre avec sa pochette et ses tags.</li>
+<li>Les téléchargements passent par une file&#8239;; l’écran <strong>Downloads</strong> montre leur progression.</li>
+</ul>
+
+<h2 id="cookies">Vérifications anti-robot et chansons avec connexion</h2>
+<p>Les chansons soumises à une limite d’âge sont lues depuis une autre mise en ligne de la même chanson quand il y en a une. Si YouTube demande à ton réseau de confirmer que ce n’est pas un robot, ça passe en général en quelques heures&#8239;; sinon, mets un <code>cookies.txt</code> exporté depuis ton navigateur dans le dossier <code>yt-dlp</code> (<a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">comment l’exporter</a>).</p>
+
+    <nav class="pager" aria-label="Pages"><a href="servers.html">← Serveurs</a><a href="scrobbling.html">Scrobbling →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
+    <span>Une erreur dans la doc&#8239;? <a href="https://github.com/juanvillacortac/audiofilus/issues">Ouvre une issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

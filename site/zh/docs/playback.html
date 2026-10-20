@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>播放 · audiofilus 文档</title>
+<meta name="description" content="正在播放、队列、睡眠定时，以及音乐如何在后台继续播放。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/playback.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/playback.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/playback.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/playback.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/playback.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/playback.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/playback.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/playback.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/playback.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/playback.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/playback.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/playback.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/playback.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/playback.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/playback.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html" aria-current="page">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>播放音乐</h1>
+    <p class="lede">正在播放、队列、睡眠定时，以及音乐如何在后台继续播放。</p>
+
+<h2 id="now-playing">正在播放</h2>
+<figure><img class="px shot" src="../../img/player.png" alt="正在播放界面：封面、旋转的黑胶唱片、控制按钮和频谱" width="360" height="240" loading="lazy"></figure>
+<ul>
+<li><kbd>A</kbd> 或 <kbd>Y</kbd> 暂停和继续。</li>
+<li>轻按 <kbd>←</kbd>/<kbd>→</kbd> 切换上一首或下一首；按住则快退或快进。<kbd>L1</kbd>/<kbd>R1</kbd> 也能切歌，<kbd>L2</kbd>/<kbd>R2</kbd> 快退/快进 10 秒。</li>
+<li><kbd>X</kbd> 开关随机播放；按两下 <kbd>X</kbd> 随机播放一首。</li>
+<li><kbd>↑</kbd>/<kbd>↓</kbd> 搓碟。</li>
+<li><kbd>B</kbd> 进入曲库，<kbd>START</kbd> 打开“更多”菜单。</li>
+</ul>
+<p>“更多”菜单包含专辑和艺人、<a href="lyrics.html">歌词</a>、喜欢、评分、睡眠定时、添加到播放列表、将队列保存为播放列表、队列、随机播放、循环（关、全部、单曲）、关闭屏幕、转到后台和退出。</p>
+
+<h2 id="queue">播放队列</h2>
+<p><strong>队列</strong> 界面显示接下来要播放的内容。<strong>下一首播放</strong> 把歌曲放在当前歌曲之后；<strong>加入队列</strong> 把它放到末尾。播放无缝衔接，暂停时淡出，队列和播放位置在重启后依然保留。</p>
+
+<h2 id="timer">睡眠定时</h2>
+<p>正在播放 → 更多 → <strong>睡眠定时</strong>。每按一次 <kbd>A</kbd> 切换到下一个选项：15、30、45、60 或 90 分钟、<strong>本曲结束</strong>，或关闭。封面上会显示一个月亮和剩余分钟数。定时由服务负责，所以播放器关闭时也有效。</p>
+<figure><img class="px shot" src="../../img/player-timer.png" alt="正在播放界面，喜欢的歌上有红心，月亮显示还剩 26 分钟" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="background">后台播放</h2>
+<p>音乐运行在独立的服务中；播放器只是一个遥控器。关闭方式决定了音乐会怎样：</p>
+<ul>
+<li><strong>转到后台</strong>（“更多”菜单，或 设置 → 退出）：播放器关闭，音乐继续播放，在游戏中也一样。掌机会像平常一样休眠。</li>
+<li><strong>退出</strong>：停止一切。</li>
+<li>用其他方式关闭（关闭窗口、PortMaster 的 <kbd>SELECT</kbd>+<kbd>START</kbd>，或程序崩溃）时，取决于 <strong>设置 → 关闭时继续播放</strong>：桌面上默认开启，掌机上默认关闭。</li>
+</ul>
+
+<h3 id="fn-shortcut">在游戏中控制</h3>
+<p>连按三下 <kbd>FN</kbd>，然后在 1.5 秒内：</p>
+<table>
+<tr><th>然后</th><th>作用</th></tr>
+<tr><td><kbd>L1</kbd> / <kbd>R1</kbd></td><td>上一首 / 下一首</td></tr>
+<tr><td><kbd>L2</kbd> / <kbd>R2</kbd></td><td>后退 / 前进 10 秒</td></tr>
+<tr><td><kbd>SELECT</kbd></td><td>暂停 / 继续</td></tr>
+</table>
+<p>无论播放器打开还是关闭，它始终有效，而且不会与系统或模拟器冲突。</p>
+
+<h2 id="sleep">睡眠：关屏，音乐继续</h2>
+<p>睡眠会在音乐播放时关闭屏幕并降低 CPU 频率，让掌机可以放进口袋。进入方式：按两下 <kbd>START</kbd>、按电源键、合上翻盖、正在播放 → 更多 → <strong>关闭屏幕</strong>，或者一段时间不操作后自动进入（<strong>设置 → 自动睡眠</strong>）。睡眠时，肩键变成手势：</p>
+<table>
+<tr><th>手势</th><th>作用</th></tr>
+<tr><td><kbd>L1</kbd>/<kbd>R1</kbd> 按两下</td><td>上一首 / 下一首</td></tr>
+<tr><td><kbd>L2</kbd>/<kbd>R2</kbd> 按两下</td><td>后退 / 前进 10 秒</td></tr>
+<tr><td><kbd>L1</kbd>+<kbd>L2</kbd> 同时按两下</td><td>暂停 / 继续</td></tr>
+<tr><td><kbd>R1</kbd>+<kbd>R2</kbd> 同时按两下</td><td>随机一首</td></tr>
+<tr><td><kbd>START</kbd> 或电源键</td><td>唤醒（合上翻盖时电源键无效）</td></tr>
+</table>
+<p>单按一次不会有反应，所以口袋里的误触不算数。在带振动马达的设备上，每个手势都会有短促的振动反馈。在 RG34XX-SP 上，睡眠时约 260&nbsp;mA：大约能放 11 到 12 小时音乐。</p>
+<p>在桌面上，睡眠及其设置不适用，因此会被隐藏。</p>
+
+<h2 id="headphones">耳机按键</h2>
+<p>蓝牙和有线耳机的按键在播放器打开或关闭时都能控制音乐。单键耳机遵循常见约定：按一下暂停，按两下下一首，按三下上一首。</p>
+
+<h2 id="open-with">从文件管理器打开文件</h2>
+<p>用 audiofilus 打开的文件和文件夹会作为<strong>临时队列</strong>播放：文件夹会展开其中的所有内容，不会保存为播放列表（使用 <strong>将队列保存为播放列表</strong> 即可保留）。如果播放器已经打开，它会直接切换到新队列。</p>
+<ul>
+<li><strong>Linux</strong>：右键 → 打开方式 → Audiofilus，适用于音频文件、M3U/PLS 列表、CUE 文件、游戏音乐和文件夹（由安装脚本或 <code>audiofilus desktop install</code> 设置）。</li>
+<li><strong>Windows</strong>：audiofilus 首次打开时会自动注册：所有支持的文件都有 <strong>打开方式</strong>，文件夹上有 <strong>用 Audiofilus 播放</strong>。选中多个文件会把它们全部加入队列。</li>
+<li><strong>iPhone 和 iPad</strong>：从“文件”和其他应用中使用“在…中打开”或“共享”。</li>
+</ul>
+
+<h2 id="desktop">在桌面上</h2>
+<ul>
+<li><strong>媒体键和状态栏</strong>：在 Linux 上 audiofilus 支持 MPRIS，因此媒体键和桌面的媒体小部件都能控制它。</li>
+<li><strong>系统托盘</strong>（Linux 和 Windows）：单击打开播放器，中键单击暂停，菜单中有正在播放的内容、播放/暂停、下一首、上一首、随机播放和退出。</li>
+</ul>
+
+    <nav class="pager" aria-label="页面"><a href="library.html">← 曲库</a><a href="sound.html">音质 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

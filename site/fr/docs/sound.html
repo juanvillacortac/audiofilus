@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Son · documentation audiofilus</title>
+<meta name="description" content="ReplayGain, l’égaliseur, le fondu enchaîné et la fréquence de sortie. C’est le service qui les applique, donc ils marchent lecteur fermé.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="Accueil audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Accueil</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Télécharger</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Langue&nbsp;: Français"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>FR</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr" aria-current="true">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs&nbsp;: toutes les pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Vue d’ensemble</a></li>
+          <li><a href="getting-started.html">Bien démarrer</a></li>
+          <li><a href="library.html">Bibliothèque</a></li>
+          <li><a href="playback.html">Lecture</a></li>
+          <li><a href="sound.html" aria-current="page">Son</a></li>
+          <li><a href="lyrics.html">Paroles</a></li>
+          <li><a href="radio-podcasts.html">Radio et podcasts</a></li>
+          <li><a href="servers.html">Serveurs</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Commandes</a></li>
+          <li><a href="visualizers-games.html">Visualiseurs et jeux</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Réglages</a></li>
+          <li><a href="handhelds.html">Systèmes portables</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Son</h1>
+    <p class="lede">ReplayGain, l’égaliseur, le fondu enchaîné et la fréquence de sortie. C’est le service qui les applique, donc ils marchent lecteur fermé.</p>
+
+<p>Tout est dans <strong>Settings</strong>&nbsp;: Crossfade dans Playback, le reste dans Sound.</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>Joue chaque chanson (ou chaque album) au même volume perçu, grâce aux tags ReplayGain de tes fichiers (et aux gains R128 d’Opus). <strong>Settings → ReplayGain</strong>&nbsp;:</p>
+<ul>
+<li><strong>Auto</strong>&nbsp;: par album en lecture dans l’ordre, par chanson en aléatoire.</li>
+<li><strong>Per song</strong> (par chanson) ou <strong>Per album</strong> (par album).</li>
+<li><strong>Off</strong>.</li>
+</ul>
+<p>Il ne pousse jamais une chanson au-delà de son pic, donc rien ne sature. Les chansons sans tags ReplayGain (et les chansons distantes) sont jouées telles quelles.</p>
+
+<h2 id="eq">Égaliseur</h2>
+<p><strong>Settings → Equalizer</strong> ouvre dix bandes de 31&nbsp;Hz à 16&nbsp;kHz, chacune de −12 à +12&nbsp;dB.</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="L’égaliseur&nbsp;: dix curseurs verticaux avec le préréglage Rock" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>Bouton</th><th>Effet</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Choisir une bande</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>La déplacer de 1 dB</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Passer d’un préréglage à l’autre&nbsp;: Flat, Bass, Treble, Vocal, Rock, Metal, Pop, Electronic, Jazz, Classical, Loudness</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Revenir à Flat</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Fermer (les changements s’appliquent au fur et à mesure)</td></tr>
+</table>
+<p>Déplacer une bande toi-même transforme le préréglage en <strong>Custom</strong>. Sur écran tactile, touche une colonne pour régler sa hauteur. Égaliseur actif, les dix bandes coûtent environ 5&nbsp;% du processeur d’une console portable à sa fréquence la plus basse&#8239;; à plat, elles ne coûtent rien.</p>
+
+<h2 id="crossfade">Fondu enchaîné</h2>
+<p><strong>Settings → Crossfade</strong>&nbsp;: Off, ou de 2 à 12 secondes de chevauchement entre les chansons. Il ne fait pas de fondu entre deux chansons consécutives du même album jouées dans l’ordre, pour que les albums restent sans blanc. Il ignore aussi les chansons très courtes et celles des serveurs qui ne sont pas encore téléchargées.</p>
+
+<h2 id="output-rate">Fréquence de sortie</h2>
+<p><strong>Settings → Output rate</strong>&nbsp;: 44,1, 48, 96 ou 192&nbsp;kHz. La changer redémarre le service audio, qui reprend là où il en était. Si le fichier est à la même fréquence et que rien n’est appliqué (volume à 100&nbsp;%, ni ReplayGain ni égaliseur), les échantillons sortent intacts, même si PipeWire ou PulseAudio peuvent encore rééchantillonner. Pas disponible sur iPhone.</p>
+
+<h2 id="volume">Volume et amplification</h2>
+<p>Le volume va de 0 à 200&nbsp;%. Jusqu’à 100&nbsp;%, c’est le volume du système&#8239;; au-delà, audiofilus amplifie le signal avec un limiteur pour que les masters forts ne saturent pas.</p>
+
+<h2 id="dsd">DSD</h2>
+<p>Les fichiers DSF et DFF sont lus, convertis en PCM. Le DSD64 est assez léger pour une console portable&#8239;; le DSD256 peut ne pas suivre.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="playback.html">← Lecture</a><a href="lyrics.html">Paroles →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
+    <span>Une erreur dans la doc&#8239;? <a href="https://github.com/juanvillacortac/audiofilus/issues">Ouvre une issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

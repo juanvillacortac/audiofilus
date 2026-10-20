@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Server · audiofilus-Doku</title>
+<meta name="description" content="Nutze einen Musikserver als weitere Bibliothek, mit Streaming, Cache, Favoriten und Wiedergabezählern.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/servers.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/servers.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/servers.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/servers.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/servers.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/servers.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Website">
+      <a href="../index.html">Startseite</a>
+      <a href="index.html" aria-current="page">Doku</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Sprache: Deutsch"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>DE</summary><div class="menu"><a href="../../docs/servers.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/servers.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/servers.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/servers.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/servers.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/servers.html" hreflang="de" lang="de" aria-current="true">Deutsch<span>DE</span></a><a href="../../fr/docs/servers.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Doku">
+      <details open id="toc">
+        <summary>Doku: alle Seiten</summary>
+        <div class="label">Doku</div>
+        <ol>
+          <li><a href="index.html">Überblick</a></li>
+          <li><a href="getting-started.html">Erste Schritte</a></li>
+          <li><a href="library.html">Bibliothek</a></li>
+          <li><a href="playback.html">Wiedergabe</a></li>
+          <li><a href="sound.html">Klang</a></li>
+          <li><a href="lyrics.html">Songtexte</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; Podcasts</a></li>
+          <li><a href="servers.html" aria-current="page">Server</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Steuerung</a></li>
+          <li><a href="visualizers-games.html">Visualisierungen &amp; Spiele</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Einstellungen</a></li>
+          <li><a href="handhelds.html">Handheld-Systeme</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Subsonic, Navidrome und Jellyfin</h1>
+    <p class="lede">Nutze einen Musikserver als weitere Bibliothek, mit Streaming, Cache, Favoriten und Wiedergabezählern.</p>
+
+<h2 id="add">Einen Server hinzufügen</h2>
+<p><strong>Settings → Servers → Add server</strong>. Wähl die Art (Subsonic/OpenSubsonic, was Navidrome, gonic, Airsonic und andere abdeckt, oder Jellyfin/Emby) und gib dann einen Namen, die Adresse (<code>http://ip:port</code>), deinen Benutzer und dein Passwort ein. Die Verbindung wird vor dem Speichern getestet; antwortet er nicht, kannst du es erneut versuchen, die Angaben korrigieren oder trotzdem speichern.</p>
+<p>Jeder Server wird zu einer weiteren Bibliothek in der Bildschirmleiste, mit Alben, Interpreten, Songs, Playlists und Suche. Sein Katalog wird gespeichert, er erscheint also sofort, auch ohne Netzwerk.</p>
+
+<h2 id="options">Optionen pro Server</h2>
+<ul>
+<li><strong>Listening quality</strong>: standardmäßig MP3 mit 192&nbsp;kbps (wenig zu laden, günstig zu dekodieren), 320, 128, 96 oder Original (ohne Umwandlung).</li>
+<li><strong>Test connection</strong>, <strong>Refresh catalog</strong>, <strong>Change details</strong>, <strong>Remove server</strong>.</li>
+</ul>
+
+<h2 id="cache">Streaming und Cache</h2>
+<p>Songs werden beim Abspielen auf der SD-Karte zwischengespeichert (standardmäßig 400&nbsp;MB; die am längsten ungenutzten fliegen zuerst raus), und der nächste Song wird vorab geholt. Zwischengespeicherte Songs laufen ohne Netzwerk. Mit <strong>Download to library</strong> kannst du Songs eines Servers auch mit Tags und Cover in deinen Musikordner laden.</p>
+
+<h2 id="favorites">Favoriten, Bewertungen und Wiedergabezähler</h2>
+<ul>
+<li>Einen Song eines Servers zu liken oder zu bewerten, markiert oder bewertet ihn auch auf dem Server. Jellyfin hat Favoriten, aber keine Bewertungen von 1 bis 5.</li>
+<li>Wenn der Katalog eines Servers lädt, werden seine markierten und bewerteten Songs zu deiner Liked-Liste hinzugefügt.</li>
+<li>Songs, die du hörst, zählen auch auf dem Server (Navidrome kann sie an Last.fm und ListenBrainz weiterleiten, wenn du das dort einrichtest). Ausschalten kannst du das unter <strong>Settings → Scrobbling → Count on the server</strong>.</li>
+</ul>
+<p>Server-Playlists lassen sich in audiofilus abspielen, aber nicht bearbeiten.</p>
+
+    <nav class="pager" aria-label="Seiten"><a href="radio-podcasts.html">← Radio &amp; Podcasts</a><a href="youtube-music.html">YouTube Music →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Startseite</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Neuestes Release</a></span>
+    <span>Einen Fehler in der Doku gefunden? <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue öffnen</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ses · audiofilus belgeleri</title>
+<meta name="description" content="ReplayGain, ekolayzer, crossfade ve çıkış frekansı. Servis uygular, böylece çalar kapalıyken de çalışırlar.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/sound.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/sound.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/sound.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/sound.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/sound.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/sound.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/sound.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus ana sayfa"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Ana sayfa</a>
+      <a href="index.html" aria-current="page">Belgeler</a>
+      <a class="wide" href="faq.html">SSS</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">İndir</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Dil: Türkçe"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>TR</summary><div class="menu"><a href="../../docs/sound.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/sound.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/sound.html" hreflang="tr" lang="tr" aria-current="true">Türkçe<span>TR</span></a><a href="../../ja/docs/sound.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/sound.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/sound.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/sound.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Belgeler">
+      <details open id="toc">
+        <summary>Belgeler: tüm sayfalar</summary>
+        <div class="label">Belgeler</div>
+        <ol>
+          <li><a href="index.html">Genel bakış</a></li>
+          <li><a href="getting-started.html">Başlarken</a></li>
+          <li><a href="library.html">Kitaplık</a></li>
+          <li><a href="playback.html">Çalma</a></li>
+          <li><a href="sound.html" aria-current="page">Ses</a></li>
+          <li><a href="lyrics.html">Şarkı sözleri</a></li>
+          <li><a href="radio-podcasts.html">Radyo ve podcast'ler</a></li>
+          <li><a href="servers.html">Sunucular</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Kontroller</a></li>
+          <li><a href="visualizers-games.html">Görselleştiriciler ve oyunlar</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Ayarlar</a></li>
+          <li><a href="handhelds.html">El konsolu sistemleri</a></li>
+          <li><a href="faq.html">SSS</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Ses</h1>
+    <p class="lede">ReplayGain, ekolayzer, crossfade ve çıkış frekansı. Servis uygular, böylece çalar kapalıyken de çalışırlar.</p>
+
+<p>Hepsi <strong>Ayarlar</strong>'da: Crossfade Çalma altında, geri kalanı Ses altında.</p>
+<h2 id="replaygain">ReplayGain</h2>
+<p>Dosyalarınızdaki ReplayGain etiketlerini (ayrıca Opus R128 kazançlarını) kullanarak her şarkıyı (ya da her albümü) aynı yükseklikte çalar. <strong>Ayarlar → ReplayGain</strong>:</p>
+<ul>
+<li><strong>Otomatik</strong>: sırayla çalarken albüm başına, karışıkta şarkı başına.</li>
+<li><strong>Şarkı başına</strong> ya da <strong>Albüm başına</strong>.</li>
+<li><strong>Kapalı</strong>.</li>
+</ul>
+<p>Bir şarkıyı asla tepe seviyesinin ötesine itmez, böylece hiçbir şey kırpılmaz. ReplayGain etiketi olmayan şarkılar (ve uzak şarkılar) değişmeden çalar.</p>
+
+<h2 id="eq">Ekolayzer</h2>
+<p><strong>Ayarlar → Ekolayzer</strong> 31&nbsp;Hz'den 16&nbsp;kHz'e, her biri −12 ile +12&nbsp;dB arasında on bant açar.</p>
+<figure><img class="px shot" src="../../img/eq.png" alt="Ekolayzer: Rock hazır ayarıyla on dikey kaydırıcı" width="360" height="240" loading="lazy"></figure>
+<table>
+<tr><th>Tuş</th><th>İşlev</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Bir bant seç</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>1 dB oynat</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Hazır ayarlar arasında dolaş: Düz, Bas, Tiz, Vokal, Rock, Metal, Pop, Elektronik, Caz, Klasik, Loudness</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Düz'e dön</td></tr>
+<tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Kapat (değişiklikler yaptıkça uygulanır)</td></tr>
+</table>
+<p>Bir bandı kendiniz oynatmak hazır ayarı <strong>Özel</strong>'e çevirir. Dokunmatik ekranlarda yüksekliğini ayarlamak için bir sütuna dokunun. Ekolayzer açıkken on bant, bir el konsolunun en düşük hızında işlemcisinin yaklaşık %5'ini harcar; düzken hiçbir şey harcamaz.</p>
+
+<h2 id="crossfade">Crossfade</h2>
+<p><strong>Ayarlar → Crossfade</strong>: Kapalı ya da şarkılar arasında 2 ile 12 saniye örtüşme. Sırayla çalınan aynı albümün ardışık şarkıları arasında geçiş yapmaz, böylece albümler boşluksuz kalır. Çok kısa şarkıları ve henüz inmemiş sunucu şarkılarını da atlar.</p>
+
+<h2 id="output-rate">Çıkış frekansı</h2>
+<p><strong>Ayarlar → Çıkış frekansı</strong>: 44,1, 48, 96 ya da 192&nbsp;kHz. Değiştirmek ses servisini yeniden başlatır, servis kaldığı yerden sürer. Dosya aynı frekanstaysa ve hiçbir şey uygulanmıyorsa (ses %100, ReplayGain ya da ekolayzer yok), örnekler olduğu gibi çıkar; yine de PipeWire ya da PulseAudio yeniden örnekleyebilir. iPhone'da yok.</p>
+
+<h2 id="volume">Ses ve güçlendirme</h2>
+<p>Ses %0 ile %200 arasında. %100'e kadar sistem sesidir; onun üstünde audiofilus, yüksek sesli masterlar bozulmasın diye sinyali bir limiter'la güçlendirir.</p>
+
+<h2 id="dsd">DSD</h2>
+<p>DSF ve DFF dosyaları PCM'e dönüştürülerek çalar. DSD64 bir el konsolu için yeterince hafiftir; DSD256 yetişemeyebilir.</p>
+
+    <nav class="pager" aria-label="Sayfalar"><a href="playback.html">← Çalma</a><a href="lyrics.html">Şarkı sözleri →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Ana sayfa</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Son sürüm</a></span>
+    <span>Belgelerde bir hata mı buldunuz? <a href="https://github.com/juanvillacortac/audiofilus/issues">Bir issue açın</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

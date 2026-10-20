@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker · audiofilus 文档</title>
+<meta name="description" content="用十字键以 LSDJ 的方式制作芯片音乐：歌曲、链、乐句、乐器、表、律动和波形，支持 Game Boy 和自由模式。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/tracker.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/tracker.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/tracker.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/tracker.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/tracker.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/tracker.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/tracker.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/tracker.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/tracker.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/tracker.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/tracker.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/tracker.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/tracker.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/tracker.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html" aria-current="page">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Tracker</h1>
+    <p class="lede">用十字键以 LSDJ 的方式制作芯片音乐，并借鉴了 PICO-8 的一些特色。</p>
+
+<figure><img class="px shot" src="../../img/tracker.webp" alt="正在播放歌曲的 tracker：各声道带实时示波器，单元格随音符播放而点亮" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">概览</h2>
+<p>打开 <strong>游戏 → Tracker</strong>。歌曲的结构和 LSDJ 一样：<strong>歌曲</strong> 是一系列行，每一行指定每个声道播放哪条 <strong>链</strong>（chain），一条链是一串 <strong>乐句</strong>（phrase），一个乐句是 16 步音符。声音来自 <strong>乐器</strong>，乐器可以在每个音符上运行一张 <strong>表</strong>（table）；<strong>律动</strong>（groove）决定摇摆感，<strong>波形</strong> 可以手绘。来自 PICO-8 的有它的八种波形、每一步都能指定乐器，以及钢琴卷帘。</p>
+<p>每次修改一秒后歌曲会自动保存。tracker 播放时，你的音乐会暂停，可视化效果和游戏改为跟随 tracker。</p>
+
+<h2 id="song-modes">歌曲模式：Game Boy 和自由</h2>
+<p>每首歌都有一个模式，在 <strong>PROJ</strong> 视图中设置：</p>
+<ul>
+<li><strong>Game Boy</strong>：四个声道，<strong>PU1</strong>、<strong>PU2</strong>（脉冲波）、<strong>WAV</strong>（波形）和 <strong>NOI</strong>（噪声），并遵循这台主机的限制：脉冲宽度为 12.5、25、50 和 75 %，音量包络以 64 Hz 步进，PU1 的频率扫描，32 个采样点的 4 位波形以 100、50 或 25 % 音量播放，噪声来自 15 位或 7 位寄存器，音高四舍五入到硬件的 11 位周期。乐器类型为脉冲、波形或噪声。</li>
+<li><strong>自由</strong>：八个声道，<strong>CH1</strong> 到 <strong>CH8</strong>，没有上述限制。每个乐器都有 ADSR 包络，还有第四种类型 <strong>synth</strong>（合成器），可选正弦、三角、锯齿、方波、风琴、幻影和噪声形状。</li>
+</ul>
+<p>任何乐器都可以放在任何声道上。把歌曲切换为 Game Boy 时，第 5 到 8 声道的内容会保留，只是不会播放。</p>
+
+<h2 id="structure">歌曲、链和乐句</h2>
+<ul>
+<li><strong>歌曲</strong>：最多 256 行；每一行为每个声道指定一个链编号（或留空）。</li>
+<li><strong>链</strong>（共 256 条）：按顺序最多 16 个乐句，每个都带有以半音为单位的 <strong>移调</strong>。链在第一个空位处结束。</li>
+<li><strong>乐句</strong>（共 256 个）：16 步。每一步有一个 <strong>音符</strong>（C-0 到 B-9，或 OFF）、一个 <strong>乐器</strong>、一个 <strong>音量</strong>（0 到 F）和 <strong>两条指令</strong>（一个字母加一个十六进制值）。</li>
+</ul>
+<p>每个声道播放自己的链，结束后进入下一行。某行中没有链的声道会休止，直到有链的声道进入下一行，因此各行保持对齐。完全没有链的行会休止一个乐句的时长。</p>
+<p>时间以 <strong>tick</strong> 为单位，每拍 24 个。在默认律动下每步持续 6 个 tick，即一个十六分音符，因此一个乐句就是一小节。</p>
+
+<h2 id="views">八个视图</h2>
+<p>顶部的标签页是一张从左到右的地图：<strong>PROJ · SONG · CHAIN · PHRASE · INSTR · TABLE · GROOVE · WAVE</strong>。<kbd>L1</kbd> 和 <kbd>R1</kbd> 移动到相邻的视图。用 <kbd>R1</kbd> 向右移动时会打开光标下的内容：</p>
+<table>
+<tr><th>从</th><th><kbd>R1</kbd> 打开</th></tr>
+<tr><td>SONG</td><td>单元格中的链</td></tr>
+<tr><td>CHAIN</td><td>该步中的乐句</td></tr>
+<tr><td>PHRASE</td><td>该步的乐器（或上方最近的一个）</td></tr>
+<tr><td>INSTR</td><td>乐器的表</td></tr>
+<tr><td>GROOVE</td><td>乐器的波形（如果是波形乐器）</td></tr>
+</table>
+<ul>
+<li><strong>PROJ</strong>：歌曲名称（<kbd>A</kbd> 打开键盘）、模式、速度（40 到 300 BPM）和起始律动。</li>
+<li><strong>SONG</strong>：行 × 声道的链编号网格，每个声道都有示波器。你在这里选中的声道就是链和乐句播放所在的声道。</li>
+<li><strong>CHAIN</strong>、<strong>PHRASE</strong>、<strong>TABLE</strong>：16 行的网格。</li>
+<li><strong>INSTR</strong>：乐器设置的列表。</li>
+<li><strong>GROOVE</strong>、<strong>WAVE</strong>：见下文。</li>
+</ul>
+<p>在窄屏上，标签页会缩写为 PRJ、SNG、CHN、PHR、INS、TBL、GRV 和 WAV。</p>
+
+<h2 id="editing">编辑</h2>
+<p>所有视图的编辑方式相同：</p>
+<table>
+<tr><th>按键</th><th>作用</th></tr>
+<tr><td>十字键</td><td>移动光标</td></tr>
+<tr><td>按住 <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>数值加减一</td></tr>
+<tr><td>按住 <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>大幅调整：音符为一个八度，数字为 16，音量为 4</td></tr>
+<tr><td>在空单元格上按 <kbd>A</kbd></td><td>填入上次使用的值</td></tr>
+<tr><td><kbd>A</kbd> <kbd>A</kbd>（快速按两下）</td><td>填入一个新的、未使用的链、乐句、乐器或表</td></tr>
+<tr><td>在链或乐句编号上按 <kbd>A</kbd></td><td>打开它（歌曲和链视图）</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>删除</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>上一个 / 下一个链、乐句、乐器、表、律动或波形</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>跳过 16 行（歌曲视图）</td></tr>
+<tr><td><kbd>Y</kbd></td><td>播放或停止：从光标所在行播放歌曲（PROJ、SONG）、循环播放链（CHAIN），或循环播放打开的乐句（其他视图）</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>将当前声道静音</td></tr>
+<tr><td><kbd>X</kbd></td><td>乐句视图：切换到钢琴卷帘或切回</td></tr>
+<tr><td><kbd>Start</kbd></td><td>tracker 菜单</td></tr>
+</table>
+<p>写下音符时会发声，在音符上按 <kbd>A</kbd> 会播放它。在没有乐器的步上写音符时，会使用上次用过的乐器。C-0 之下是 OFF，用于释放音符。链、乐句、乐器和表在第一次编辑时创建。</p>
+<p><kbd>Start</kbd> 菜单包括：</p>
+<ul>
+<li><strong>从头播放歌曲</strong>。</li>
+<li><strong>撤销</strong>：每次按 <kbd>A</kbd> 算一步，最多可撤销 64 步。</li>
+<li>对当前视图显示的内容（链、乐句、乐器、表、律动或波形）执行 <strong>复制</strong>、<strong>粘贴</strong>、<strong>克隆为新的</strong> 和 <strong>清空</strong>。克隆会复制到第一个空闲编号，你来时所在的歌曲单元格或链步骤会改为指向副本。</li>
+<li>在波形视图中，有八种 <strong>PICO-8 形状</strong>，可复制到当前波形。</li>
+<li><strong>歌曲</strong>：新建 Game Boy 或自由模式歌曲、你保存的歌曲和示例。</li>
+<li><strong>导出到曲库</strong>、<strong>删除这首歌</strong> 和 <strong>返回游戏</strong>。</li>
+</ul>
+<p>按住 <kbd>FN</kbd> 查看当前视图的操作。</p>
+
+<h2 id="piano-roll">钢琴卷帘</h2>
+<p>在乐句视图中按 <kbd>X</kbd>，像 PICO-8 那样查看乐句：横向是步，纵向是音高，每个音符一直持续到下一个音符。</p>
+<table>
+<tr><th>按键</th><th>作用</th></tr>
+<tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>选择步（光标会跳到该步的音符）</td></tr>
+<tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>选择音高</td></tr>
+<tr><td><kbd>A</kbd></td><td>放置音符，如果已经存在则移除</td></tr>
+<tr><td>按住 <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>上下移动该步的音符</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>删除该步的音符</td></tr>
+<tr><td><kbd>X</kbd></td><td>返回步网格</td></tr>
+</table>
+
+<h2 id="instruments">乐器</h2>
+<p>最多 64 个。新歌曲自带一个脉冲、一个波形和一个噪声乐器（自由模式下还有一个合成器）。INSTR 视图显示的内容取决于类型和模式：</p>
+<table>
+<tr><th>设置</th><th>作用</th></tr>
+<tr><td>名称</td><td><kbd>A</kbd> 打开键盘</td></tr>
+<tr><td>类型</td><td>脉冲、波形、噪声，或合成器（仅自由模式）。更改类型会重置乐器。</td></tr>
+<tr><td>音量</td><td>0 到 F；缩放该步的音量</td></tr>
+<tr><td>包络、方向、速度</td><td>Game Boy（波形除外）：起始电平（0–F）、下降 / 不变 / 上升，以及速度（1–7：每 速度/64 秒变化一级；0 保持电平）</td></tr>
+<tr><td>起音、衰减、延音、释音</td><td>自由模式：ADSR 包络，以 tick 为单位（延音是电平，0–F）</td></tr>
+<tr><td>长度</td><td>音符被截断前的 tick 数（<code>--</code>：不截断）</td></tr>
+<tr><td>表</td><td>每个音符上运行的表（<code>--</code>：无）</td></tr>
+<tr><td>声像</td><td>L、LR 或 R</td></tr>
+<tr><td>移调</td><td>是否受链的移调影响（鼓类乐器建议关闭）</td></tr>
+<tr><td>颤音</td><td>速度和深度（十六进制的高位和低位）</td></tr>
+<tr><td>占空比</td><td>脉冲和合成器方波：12.5、25、50 或 75 %</td></tr>
+<tr><td>扫频</td><td>脉冲，Game Boy：PU1 的频率扫描，对应主机的 NR10 寄存器（时间、方向、位移）</td></tr>
+<tr><td>波形</td><td>波形乐器：使用哪个波形（00–FF）</td></tr>
+<tr><td>波形音量</td><td>波形，Game Boy：100、50 或 25 %。Game Boy 的波形声道没有包络，音量只有四档。</td></tr>
+<tr><td>短噪声</td><td>噪声：7 位寄存器，音色更有音调感、更金属</td></tr>
+<tr><td>形状</td><td>合成器：三角、正弦、锯齿、方波、风琴、幻影或噪声</td></tr>
+</table>
+<p>噪声乐器的音符决定噪声的速度：低音轰鸣，高音嘶嘶作响。在某项设置上按 <kbd>A</kbd> 会用该乐器播放上次的音符。</p>
+
+<h2 id="tables">表</h2>
+<p>表由 16 行组成，音符发声时每个 tick 运行一行，从使用它的乐器的每个音符开始（或由 <code>A</code> 指令启动）。每一行有一个 <strong>音量</strong>（或留空）、一个相对音符的 <strong>移调</strong>（以半音为单位），以及两条指令。表中的 <code>H</code> 跳转到另一行，表就是这样循环的：三行分别移调 0、+4 和 +7，并在最后一行放 <code>H00</code>，就构成大三和弦琶音；而配合短促噪声快速下降的移调，可以做出底鼓。</p>
+
+<h2 id="grooves">律动</h2>
+<p>律动是最多 16 个数字组成的列表：每一步依次持续多少个 tick。默认的 6/6 是平直节奏；7/5 或 8/4 带有摇摆感。在 GROOVE 视图中，在最后一个数字之后的空位上按 <kbd>A</kbd> 可添加一个，<kbd>B</kbd>+<kbd>A</kbd> 删除一个；标题会显示摇摆比例。共有 32 个律动；PROJ 设置歌曲开始时使用的律动，<code>G</code> 指令把某个声道切换到另一个已存在的律动。</p>
+
+<h2 id="waves">波形</h2>
+<p>256 个波形，每个 32 个采样点，取值 0 到 F，由波形乐器播放。前八个来自 PICO-8：三角、斜锯齿、锯齿、方波、脉冲、风琴、噪声和幻影。在 WAVE 视图中，<kbd>←</kbd>/<kbd>→</kbd> 选择采样点，按住 <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> 修改它，按住 <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd> 进行绘制（下一个采样点取当前值）。<kbd>Start</kbd> 中有 PICO-8 形状可作为起点。</p>
+
+<h2 id="effects-reference">指令参考</h2>
+<p>每一步和每个表行都有两条指令。新音符会重置正在进行的指令（C、F、K、P、V、R、淡入淡出和下坠）。</p>
+<table>
+<tr><th>指令</th><th>作用</th></tr>
+<tr><td><code>Axx</code></td><td>启动表 xx（<code>AFF</code> 停止）</td></tr>
+<tr><td><code>Cxy</code></td><td>和弦：每个 tick 在原音、+x 和 +y 半音之间循环（<code>C47</code> 大三和弦，<code>C37</code> 小三和弦）</td></tr>
+<tr><td><code>Dxx</code></td><td>延迟：该步晚 xx 个 tick 播放（如果超过该步的长度则不会播放）</td></tr>
+<tr><td><code>Exy</code></td><td>包络：x 是起始电平；y 的最高位表示上升，低 3 位表示速度（0：保持）</td></tr>
+<tr><td><code>Fxx</code></td><td>微调，单位为百分之一半音（有符号：01–7F 升高，80–FF 降低）</td></tr>
+<tr><td><code>Gxx</code></td><td>把此声道切换到律动 xx</td></tr>
+<tr><td><code>Hxx</code></td><td>跳转。在乐句中：在此步之后结束乐句，下一个乐句从第 xx 步开始。在表中：跳到第 xx 行。</td></tr>
+<tr><td><code>Ixx</code></td><td>在 xx 个 tick 内淡入</td></tr>
+<tr><td><code>Kxx</code></td><td>截断：xx 个 tick 后释放音符</td></tr>
+<tr><td><code>Lxx</code></td><td>滑音：在有音符的步上，用 xx 个 tick 滑到该音，而不是重新触发</td></tr>
+<tr><td><code>M0x</code></td><td>主音量，0 到 F</td></tr>
+<tr><td><code>Oxx</code></td><td>输出：0 关闭，1 左，2 右，3 双声道</td></tr>
+<tr><td><code>Pxx</code></td><td>弯音：每个 tick 变化百分之几个半音（有符号）</td></tr>
+<tr><td><code>Rxy</code></td><td>每 y 个 tick 重新触发音符；x（有符号，0–7 增大，8–F 减小）在每次触发时改变音量</td></tr>
+<tr><td><code>Sxx</code></td><td>噪声上：<code>S01</code> 短（7 位）噪声，<code>S00</code> 长噪声。脉冲上：PU1 的扫频寄存器。</td></tr>
+<tr><td><code>Txx</code></td><td>速度，单位 BPM（28 到 FF，即 40 到 255）</td></tr>
+<tr><td><code>Uxx</code></td><td>在 xx 个 tick 内淡出</td></tr>
+<tr><td><code>Vxy</code></td><td>颤音：速度 x，深度 y</td></tr>
+<tr><td><code>Wxx</code></td><td>在波形乐器上：切换到波形 xx。否则：脉冲占空比，0 到 3。</td></tr>
+<tr><td><code>Xxx</code></td><td>下坠：音高下降，音符在 xx 个 tick 内淡出</td></tr>
+<tr><td><code>Zxx</code></td><td>随机：给另一条指令的值加上 0 到 xx 之间的随机数</td></tr>
+</table>
+
+<h2 id="examples">示例</h2>
+<p><kbd>Start</kbd> → <strong>歌曲</strong> 中有四个示例，每个都展示一些东西。打开示例不会保存任何内容，直到你编辑它。</p>
+<ul>
+<li><strong>Pocket Pop</strong>（Game Boy，120 BPM）：把段落做成链并在整首歌中重复使用，以及用 <code>C</code> 写和弦。</li>
+<li><strong>Crypt Crawl</strong>（Game Boy，140 BPM）：用表做琶音和底鼓，用 <code>L</code> 滑音、用 <code>P</code> 下坠的音符，以及使用 PICO-8 斜锯齿波的贝斯。</li>
+<li><strong>Night Drive</strong>（自由，100 BPM）：八个合成器声道、7/5 摇摆律动、声像、用 <code>D</code> 做的回声，以及用 <code>U</code> 做的淡出。</li>
+<li><strong>Amen Chip</strong>（Game Boy，170 BPM）：用 <code>R</code> 做的鼓滚奏、用 <code>D</code> 做的延后击打、用 <code>H</code> 跳入下一个乐句的半个乐句、由链移调的贝斯线，以及用 <code>W</code> 改变的脉冲宽度。</li>
+</ul>
+
+<h2 id="import-export">导入和导出</h2>
+<p><kbd>Start</kbd> → <strong>导出到曲库</strong> 会把歌曲完整渲染一遍，生成 WAV 并保存到音乐文件夹内的 <code>audiofilus tracker</code> 文件夹中。曲库会收录它，所以它能像其他歌曲一样在后台播放。</p>
+<p>用旧版 tracker 制作的歌曲打开时会自动转换：每个 pattern 变成每个声道一个乐句和一条链，其效果变成指令（琶音 → <code>C</code>，占空比 → <code>W</code>，弯音 → <code>P</code>）。</p>
+<p>计划中：MOD/XM 导入和导出、LSDJ 歌曲导入，以及 MIDI 同步。</p>
+
+    <nav class="pager" aria-label="页面"><a href="visualizers-games.html">← 可视化与游戏</a><a href="settings.html">设置 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

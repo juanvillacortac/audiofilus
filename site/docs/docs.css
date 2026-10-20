@@ -51,7 +51,7 @@ h1, h2, h3 { text-wrap: balance; margin: 0; -webkit-font-smoothing: none; font-s
 }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
 .top img { height: 56px; width: auto; }
-.top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; font: 600 var(--step--1)/1 var(--mono); }
+.top nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; font: 600 var(--step--1)/1 var(--mono); }
 .top nav a { color: var(--muted); text-decoration: none; }
 .top nav a:hover, .top nav a[aria-current] { color: var(--fg); }
 @media (max-width: 560px) {
@@ -60,6 +60,18 @@ h1, h2, h3 { text-wrap: balance; margin: 0; -webkit-font-smoothing: none; font-s
   .top nav .wide { display: none; }
 }
 @media (max-width: 400px) { .top img { height: 30px; } .top nav { flex-wrap: nowrap; } }
+
+/* Language switcher: a globe with the current language; the others drop down */
+.lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }
+.lang summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.5rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { color: var(--fg); }
+.lang .menu { position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 10; display: grid; min-width: 10rem; padding: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+.lang .menu a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.6rem; color: var(--muted); text-decoration: none; border-radius: 3px; }
+.lang .menu a span { color: var(--line); }
+.lang .menu a:hover { background: var(--panel-2); color: var(--fg); }
+.lang .menu a[aria-current] { color: var(--fg); }
+.lang .menu a[aria-current] span { color: var(--red); }
 
 /* Sidebar + article */
 .layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); padding-block: 2.5rem 4rem; }

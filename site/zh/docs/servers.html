@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>服务器 · audiofilus 文档</title>
+<meta name="description" content="把音乐服务器当作另一个曲库，支持流媒体、缓存、收藏和播放次数。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/servers.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/servers.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/servers.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/servers.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/servers.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/servers.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/servers.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/servers.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/servers.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/servers.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/servers.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/servers.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/servers.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/servers.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html">电台和播客</a></li>
+          <li><a href="servers.html" aria-current="page">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Subsonic、Navidrome 和 Jellyfin</h1>
+    <p class="lede">把音乐服务器当作另一个曲库，支持流媒体、缓存、收藏和播放次数。</p>
+
+<h2 id="add">添加服务器</h2>
+<p><strong>设置 → 服务器 → 添加服务器</strong>。选择类型（Subsonic/OpenSubsonic，涵盖 Navidrome、gonic、Airsonic 等；或 Jellyfin/Emby），然后输入名称、地址（<code>http://ip:port</code>）、用户名和密码。保存前会测试连接；如果没有响应，你可以重试、修改信息或仍然保存。</p>
+<p>每个服务器都会成为屏幕栏中的又一个曲库，包含专辑、艺人、歌曲、播放列表和搜索。它的目录会被保存，所以即使没有网络也能立即显示。</p>
+
+<h2 id="options">单个服务器的选项</h2>
+<ul>
+<li><strong>收听音质</strong>：默认 192&nbsp;kbps 的 MP3（下载量小，解码开销低），也可选 320、128、96 或原始（不转码）。</li>
+<li><strong>测试连接</strong>、<strong>刷新目录</strong>、<strong>修改信息</strong>、<strong>移除服务器</strong>。</li>
+</ul>
+
+<h2 id="cache">流媒体和缓存</h2>
+<p>歌曲在播放时缓存到 SD 卡（默认 400&nbsp;MB；最久未使用的先被清除），下一首会提前获取。已缓存的歌曲无需网络即可播放。你也可以把服务器上的歌曲 <strong>下载到曲库</strong>，连同标签和封面保存到你的音乐文件夹。</p>
+
+<h2 id="favorites">收藏、评分和播放次数</h2>
+<ul>
+<li>喜欢或评价服务器上的歌曲，也会在服务器上加星或评分。Jellyfin 有收藏，但没有 1 到 5 的评分。</li>
+<li>服务器目录加载时，其中加星和评分过的歌曲会被添加到你的“喜欢”列表。</li>
+<li>你收听的歌曲也会计入服务器（如果你在 Navidrome 中设置了，它还能转发到 Last.fm 和 ListenBrainz）。在 <strong>设置 → Scrobble 记录 → 计入服务器</strong> 中关闭。</li>
+</ul>
+<p>服务器上的播放列表可以播放，但不能在 audiofilus 中编辑。</p>
+
+    <nav class="pager" aria-label="页面"><a href="radio-podcasts.html">← 电台和播客</a><a href="youtube-music.html">YouTube Music →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

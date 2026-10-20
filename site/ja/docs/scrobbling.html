@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>スクロブル · audiofilus ドキュメント</title>
+<meta name="description" content="聴いた曲を Last.fm と ListenBrainz に記録します。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/scrobbling.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/scrobbling.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/scrobbling.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/scrobbling.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/scrobbling.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/scrobbling.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/scrobbling.html">
+<!-- ja-fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&amp;family=Noto+Sans+JP:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","DotGothic16","Noto Sans JP",sans-serif;--pixel:"Tiny5","DotGothic16","Noto Sans JP",monospace;--body:"Atkinson Hyperlegible","Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans JP","Hiragino Sans",ui-monospace,monospace}body{line-break:strict}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="サイト">
+      <a href="../index.html">ホーム</a>
+      <a href="index.html" aria-current="page">ドキュメント</a>
+      <a class="wide" href="faq.html">よくある質問</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">ダウンロード</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="言語: 日本語"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>JA</summary><div class="menu"><a href="../../docs/scrobbling.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/scrobbling.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/scrobbling.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/scrobbling.html" hreflang="ja" lang="ja" aria-current="true">日本語<span>JA</span></a><a href="../../zh/docs/scrobbling.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/scrobbling.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/scrobbling.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="ドキュメント">
+      <details open id="toc">
+        <summary>ドキュメント：全ページ</summary>
+        <div class="label">ドキュメント</div>
+        <ol>
+          <li><a href="index.html">概要</a></li>
+          <li><a href="getting-started.html">はじめに</a></li>
+          <li><a href="library.html">ライブラリ</a></li>
+          <li><a href="playback.html">再生</a></li>
+          <li><a href="sound.html">サウンド</a></li>
+          <li><a href="lyrics.html">歌詞</a></li>
+          <li><a href="radio-podcasts.html">ラジオとポッドキャスト</a></li>
+          <li><a href="servers.html">サーバー</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html" aria-current="page">スクロブル</a></li>
+          <li><a href="controls.html">操作方法</a></li>
+          <li><a href="visualizers-games.html">ビジュアライザーとゲーム</a></li>
+          <li><a href="tracker.html">トラッカー</a></li>
+          <li><a href="settings.html">設定</a></li>
+          <li><a href="handhelds.html">携帯ゲーム機</a></li>
+          <li><a href="faq.html">よくある質問</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>スクロブル</h1>
+    <p class="lede">聴いた曲を Last.fm と ListenBrainz に記録します。</p>
+
+<p><strong>Settings → Scrobbling</strong> に両方のアカウントがあります。30 秒以上の曲で、半分（または 4 分）が再生されると 1 回とカウントされます。「再生中」は再生開始の数秒後に送られます。送信はサービスが行うので、プレイヤーを閉じても動作します。ラジオとポッドキャストのエピソードはスクロブルされません。</p>
+<h2 id="lastfm">Last.fm</h2>
+<ol>
+<li><strong>Last.fm</strong> を選びます。Last.fm の認証ページの QR コードが表示されます。</li>
+<li>スマートフォンで読み取り、Last.fm アカウントで audiofilus を承認します。</li>
+<li>数秒で、audiofilus にあなたのユーザー名で接続されたと表示されます。</li>
+</ol>
+<p>もう一度選ぶと接続を解除します。<strong>API key missing</strong> と表示される場合、お使いのビルドには audiofilus の Last.fm アプリケーションキーが含まれていません。公式リリースには含まれています。</p>
+
+<h2 id="listenbrainz">ListenBrainz</h2>
+<p><strong>ListenBrainz</strong> を選び、ユーザートークン（ListenBrainz の設定ページにあります）を入力します。audiofilus がそれを確認し、ユーザー名を表示します。</p>
+
+<h2 id="offline">接続がないとき</h2>
+<p>送信できなかった再生記録は待機し、接続が戻ると送信されます（数分ごとに再試行します）。間違ったトークンや取り消されたセッションの場合は、再試行せずに破棄します。</p>
+
+<h2 id="servers">サーバー側で</h2>
+<p>Subsonic や Jellyfin のサーバーの曲は、<strong>Count on the server</strong> をオフにしない限り、そのサーバーでもカウントされます。</p>
+
+    <nav class="pager" aria-label="ページ"><a href="youtube-music.html">← YouTube Music</a><a href="controls.html">操作方法 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
+    <span>ドキュメントに誤りを見つけましたか？ <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue を開いてください</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

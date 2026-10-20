@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Handheld-Systeme · audiofilus-Doku</title>
+<meta name="description" content="Was audiofilus auf Knulli, muOS, ROCKNIX, ArkOS und dArkOS anders macht.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/handhelds.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/handhelds.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/handhelds.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/handhelds.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/handhelds.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/handhelds.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/handhelds.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Website">
+      <a href="../index.html">Startseite</a>
+      <a href="index.html" aria-current="page">Doku</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="Sprache: Deutsch"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>DE</summary><div class="menu"><a href="../../docs/handhelds.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/handhelds.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/handhelds.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/handhelds.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/handhelds.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../../de/docs/handhelds.html" hreflang="de" lang="de" aria-current="true">Deutsch<span>DE</span></a><a href="../../fr/docs/handhelds.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Doku">
+      <details open id="toc">
+        <summary>Doku: alle Seiten</summary>
+        <div class="label">Doku</div>
+        <ol>
+          <li><a href="index.html">Überblick</a></li>
+          <li><a href="getting-started.html">Erste Schritte</a></li>
+          <li><a href="library.html">Bibliothek</a></li>
+          <li><a href="playback.html">Wiedergabe</a></li>
+          <li><a href="sound.html">Klang</a></li>
+          <li><a href="lyrics.html">Songtexte</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; Podcasts</a></li>
+          <li><a href="servers.html">Server</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Steuerung</a></li>
+          <li><a href="visualizers-games.html">Visualisierungen &amp; Spiele</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Einstellungen</a></li>
+          <li><a href="handhelds.html" aria-current="page">Handheld-Systeme</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Handheld-Systeme</h1>
+    <p class="lede">Was audiofilus auf Knulli, muOS, ROCKNIX, ArkOS und dArkOS anders macht.</p>
+
+<p>audiofilus erkennt das System beim Start und nutzt dessen eigene Werkzeuge für Deckel, Power-Taste, Lautstärke und Akku. Getestet auf einem Anbernic RG34XX-SP mit Knulli.</p>
+
+<h2 id="files">Wo deine Dateien liegen</h2>
+<p>Einstellungen (<code>audiofilus.json</code>) und Daten (<code>data/</code>: Bibliotheks-Cache, Playlists, Verlauf, Songtexte, Podcasts, das Log <code>audiofilus.log</code>) liegen neben dem Programm im Ordner des Ports:</p>
+<table>
+<tr><th>System</th><th>Ordner</th></tr>
+<tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
+<tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, oder <code>/roms2/ports/audiofilus</code>, wenn deine Spiele auf der zweiten SD-Karte liegen</td></tr>
+<tr><td>muOS (App)</td><td>der Ordner der App unter <code>MUOS/application</code></td></tr>
+</table>
+
+<h2 id="power">Die Power-Taste</h2>
+<ul>
+<li><strong>Bei offenem Player</strong> schickt ein kurzer Druck auf die Power-Taste audiofilus in den Schlafmodus (Bildschirm aus, Musik an), statt die Konsole in den Standby zu versetzen. Gedrückt halten schaltet weiterhin aus.</li>
+<li><strong>Nach Go to background</strong> geht die Konsole beim Drücken wie gewohnt in den Standby.</li>
+</ul>
+<p>Bei offenem Player werden auch der automatische Standby und das Abdunkeln des Bildschirms durch das System zurückgehalten.</p>
+
+<h2 id="knulli">Knulli</h2>
+<ul>
+<li>Die Lautstärketasten laufen bei offenem Player über audiofilus, sodass du über 100 % gehen kannst.</li>
+<li>Das Zuklappen des Deckels schickt audiofilus in den Schlafmodus; das Aufklappen weckt ihn nicht: Das macht <kbd>START</kbd>.</li>
+</ul>
+<h2 id="muos">muOS</h2>
+<ul>
+<li>Installier es über PortMaster oder als native App (<code>audiofilus.muxapp</code>, siehe <a href="getting-started.html#muos">Erste Schritte</a>).</li>
+<li>Über 100 % wird die Lautstärke von der App angehoben; die eigenen Tasten von muOS regeln die Systemlautstärke.</li>
+</ul>
+<h2 id="rocknix">ROCKNIX</h2>
+<ul>
+<li>Mit dem „fake suspend“ von ROCKNIX (Suspend-Modus in dessen Einstellungen aus) schaltet die Power-Taste alles stumm und friert es ein, und audiofilus kann das nicht verhindern. Mit dem normalen Standby (Standard) schickt die Taste audiofilus in den Schlafmodus.</li>
+</ul>
+<h2 id="arkos">ArkOS und dArkOS</h2>
+<ul>
+<li>Bei Konsolen, deren Akkuanzeige immer 0 % meldet (etwa das RG353V mit dArkOS), wird der Akkustand aus Ladung oder Spannung geschätzt oder ausgeblendet.</li>
+</ul>
+
+<h2 id="power-use">Akkuverbrauch</h2>
+<p>Gemessen auf einem RG34XX-SP: Im Schlafmodus braucht audiofilus etwa 260&nbsp;mA, rund 11 bis 12 Stunden Musik mit dem 3300-mAh-Akku.</p>
+
+    <nav class="pager" aria-label="Seiten"><a href="settings.html">← Einstellungen</a><a href="faq.html">FAQ →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Startseite</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Neuestes Release</a></span>
+    <span>Einen Fehler in der Doku gefunden? <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue öffnen</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

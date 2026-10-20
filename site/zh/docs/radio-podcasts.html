@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>电台和播客 · audiofilus 文档</title>
+<meta name="description" content="来自数千个电台或你自己的列表的网络电台，以及支持下载和续播的播客。">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
+<link rel="apple-touch-icon" href="../../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="../../docs/docs.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap">
+<style>
+/* 中文：像素和等宽字体没有汉字，汉字回退到 Noto Sans SC 和系统字体。 */
+:root {
+  --cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --display: "Jersey 10", var(--cjk);
+  --pixel: "Tiny5", var(--cjk);
+  --body: "Atkinson Hyperlegible", var(--cjk);
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, var(--cjk);
+}
+body { line-break: strict; }
+.top nav a, .top nav summary { white-space: nowrap; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/docs/radio-podcasts.html">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/docs/radio-podcasts.html">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="站点">
+      <a href="../index.html">首页</a>
+      <a href="index.html" aria-current="page">文档</a>
+      <a class="wide" href="faq.html">常见问题</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">下载</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+      <details class="lang"><summary aria-label="语言: 中文"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>ZH</summary><div class="menu"><a href="../../docs/radio-podcasts.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../../es/docs/radio-podcasts.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../../tr/docs/radio-podcasts.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../../ja/docs/radio-podcasts.html" hreflang="ja" lang="ja">日本語<span>JA</span></a><a href="../../zh/docs/radio-podcasts.html" hreflang="zh-Hans" lang="zh-Hans" aria-current="true">中文<span>ZH</span></a><a href="../../de/docs/radio-podcasts.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../../fr/docs/radio-podcasts.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="文档">
+      <details open id="toc">
+        <summary>文档：所有页面</summary>
+        <div class="label">文档</div>
+        <ol>
+          <li><a href="index.html">概览</a></li>
+          <li><a href="getting-started.html">入门</a></li>
+          <li><a href="library.html">曲库</a></li>
+          <li><a href="playback.html">播放</a></li>
+          <li><a href="sound.html">音质</a></li>
+          <li><a href="lyrics.html">歌词</a></li>
+          <li><a href="radio-podcasts.html" aria-current="page">电台和播客</a></li>
+          <li><a href="servers.html">服务器</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="controls.html">操作</a></li>
+          <li><a href="visualizers-games.html">可视化与游戏</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">设置</a></li>
+          <li><a href="handhelds.html">掌机系统</a></li>
+          <li><a href="faq.html">常见问题</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>电台和播客</h1>
+    <p class="lede">来自数千个电台或你自己的列表的网络电台，以及支持下载和续播的播客。</p>
+
+<h2 id="radio">电台</h2>
+<figure><img class="px shot" src="../../img/radio.png" alt="播放器显示一个直播电台及其当前歌曲" width="360" height="240" loading="lazy"></figure>
+<p>从屏幕栏（<kbd>SELECT</kbd>）打开 <strong>电台</strong>。它的标签页：</p>
+<ul>
+<li><strong>收藏</strong>：你保存的电台（在电台上按 <kbd>START</kbd> → <strong>添加到收藏</strong>）。</li>
+<li><strong>我的列表</strong>：你自己的电台列表（见下文）。</li>
+<li><strong>热门</strong>：你所在国家播放最多的电台；<kbd>X</kbd> 切换到全球。用菜单中的 <strong>国家</strong> 更改国家。</li>
+<li><strong>搜索</strong>：按电台名称搜索（<kbd>X</kbd> 或 <kbd>START</kbd> 开始搜索）。</li>
+<li><strong>流派</strong>。</li>
+</ul>
+<p>电台来自 <a href="https://www.radio-browser.info">radio-browser.info</a>。<kbd>A</kbd> 收听；电台播放时，<kbd>L1</kbd>/<kbd>R1</kbd> 切换到列表中的上一个或下一个电台，电台发送歌名时会实时显示。支持 MP3 和 AAC 电台，不支持 HLS 流。</p>
+
+<h3 id="my-lists">你自己的电台列表</h3>
+<ul>
+<li>把 <code>.m3u</code>、<code>.m3u8</code> 或 <code>.pls</code> 电台列表放进应用旁边的 <code>radio</code> 文件夹（在掌机上，位于 port 的文件夹中）。它们会出现在 <strong>我的列表</strong> 下，并带有文件中的名称和图标。</li>
+<li><strong>通过地址添加</strong>：在“收藏”或“我的列表”上按 <kbd>START</kbd>，输入电台地址和名称，即可保存到收藏。</li>
+<li>如果电台地址本身是一个播放列表（比如 <code>listen.pls</code>），audiofilus 会跟随它找到实际的流。</li>
+</ul>
+
+<h2 id="podcasts">播客</h2>
+<p>从屏幕栏打开 <strong>播客</strong>。标签页：<strong>已订阅</strong>、<strong>热门</strong>（你所在国家的热门节目）和 <strong>搜索</strong>。在“已订阅”上按 <kbd>START</kbd> 可以通过 RSS 地址添加播客。</p>
+<ul>
+<li>在播客上按 <kbd>A</kbd> 打开其单集，最新的在前，显示日期、时长，以及你是否已播放、停在哪里或是否已下载。</li>
+<li>单集在播放前会先下载（通过“下载”队列），然后从 SD 卡播放。</li>
+<li>播放位置会被记住，续播时会提前三秒开始，方便你回到状态。接近结尾时，单集会被标记为已播放。</li>
+<li>在单集上按 <kbd>START</kbd>：收听、下载或删除下载、标记为已播放或未播放。在播客上：订阅或移除、刷新，以及 <strong>下载新单集</strong>。</li>
+</ul>
+
+    <nav class="pager" aria-label="页面"><a href="lyrics.html">← 歌词</a><a href="servers.html">服务器 →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>

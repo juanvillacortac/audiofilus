@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>audiofilus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Linux 携帯ゲーム機向けのピクセルアートの音楽プレイヤー。ゲーム中も音楽は鳴り続け、スリープモードで画面を消してポケットの中から操作できます。">
+<meta property="og:title" content="audiofilus">
+<meta property="og:description" content="Linux 携帯ゲーム機向けのピクセルアートの音楽プレイヤー。ゲーム中も音楽を流し続けよう。">
+<meta property="og:image" content="https://juanvillacortac.github.io/audiofilus/img/og.png">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="../img/icon-64.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preload" as="fetch" href="../img/splash-bg.webp" type="image/webp" crossorigin>
+<link rel="preload" as="fetch" href="../img/splash-fg.webp" type="image/webp" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Tiny5&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night-mode handheld. Each section is a band; screenshots sit in
+   bezels like the console's own screen, pixels never smoothed. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0b15;         /* the app's splash background */
+  --panel: #17121f;
+  --panel-2: #211829;
+  --line: #352a3d;
+  --fg: #eee6ec;
+  --muted: #a898a8;
+  --red: #f04a35;         /* the UI accent on a red cover */
+  --teal: #6fe3c4;        /* the logo's chrome */
+  --pink: #ee8cc2;
+  --display: "Jersey 10", "Arial Narrow", sans-serif;  /* pixel = 1/18.667 em: sizes are multiples of 18.667px */
+  --pixel: "Tiny5", "Courier New", monospace;          /* pixel = 1/8 em: sizes are multiples of 8px */
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --wrap: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+/* Pixel art is published at 4× with hard pixels; the browser only scales it
+   down, smoothly, so it stays sharp and even at any size and screen scaling. */
+.px { image-rendering: auto; }
+a { color: var(--teal); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h2 { font: 400 56px/56px var(--display); }
+@media (max-width: 560px) { h2 { font-size: 37.3333px; line-height: 40px; } }
+h3 { font: 400 37.3333px/38px var(--display); }
+/* Pixel fonts: no smoothing where the platform allows it. */
+h1, h2, h3, .btn, .chip { -webkit-font-smoothing: none; font-smooth: never; }
+p { margin: 0; }
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+.band + .band { border-top: 1px solid var(--line); }
+.eyebrow {
+  font: 600 var(--step--1)/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.lede { color: var(--muted); max-width: 38rem; font-size: var(--step-1); line-height: 1.5; }
+.head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+/* Top bar */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.4rem; }
+.top img { height: 56px; width: auto; object-fit: contain; flex-shrink: 0; min-width: 0; }
+.top nav { display: flex; align-items: center; gap: 1.5rem; font: 600 var(--step--1)/1 var(--mono); }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--fg); }
+.top nav .icon { display: inline-flex; padding-left: 1.5rem; border-left: 1px solid var(--line); }
+.top nav .get { color: #fff; background: var(--red); padding: 0.55rem 0.9rem; border-radius: 4px; box-shadow: 3px 3px 0 var(--pink); }
+.top nav .get:hover { color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--pink); }
+@media (max-width: 720px) {
+  .top nav { gap: 0.8rem; }
+  .top img { height: 40px; }
+  .top nav .sec { display: none; }
+  .top nav .icon { padding-left: 0; border-left: 0; }
+}
+
+/* Language switcher: a globe with the current language; the others drop down */
+.lang { position: relative; font: 600 var(--step--1)/1 var(--mono); }
+.lang summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.5rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { color: var(--fg); }
+.lang .menu { position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 10; display: grid; min-width: 10rem; padding: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+.lang .menu a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.6rem; color: var(--muted); text-decoration: none; border-radius: 3px; }
+.lang .menu a span { color: var(--line); }
+.lang .menu a:hover { background: var(--panel-2); color: var(--fg); }
+.lang .menu a[aria-current] { color: var(--fg); }
+.lang .menu a[aria-current] span { color: var(--red); }
+
+/* Hero */
+.hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 5.5rem); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; } }
+.hero h1 { font: 400 74.6667px/70px var(--display); }
+@media (max-width: 560px) { .hero h1 { font-size: 56px; line-height: 52px; } }
+.hero h1 em { font-style: normal; color: var(--teal); }
+.hero .copy { display: grid; gap: 1.5rem; min-width: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.8rem 1.15rem;
+  font: 400 24px/24px var(--pixel);
+  text-decoration: none; border-radius: 4px;
+  border: 2px solid var(--fg); color: var(--fg);
+}
+.btn.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 4px 4px 0 var(--pink); }
+.btn.primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+.btn:hover { background: var(--panel-2); }
+.btn.primary:hover { background: var(--red); }
+.note { font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted); }
+
+/* The console: a bezel around a 3:2 screen */
+.device {
+  background: linear-gradient(160deg, #2a2230, #17121c);
+  border-radius: 22px;
+  padding: clamp(14px, 3vw, 26px);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 30px 60px -20px #000c, 0 0 0 1px #ffffff0d;
+  position: relative;
+}
+.device .screen { border-radius: 6px; overflow: hidden; background: #000; }
+.device .screen img { display: block; width: 100%; }
+.device .led { position: absolute; top: 10px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+.device .label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 600 10px/1 var(--mono); letter-spacing: 0.2em; color: #ffffff40; }
+
+/* Format strip */
+.formats { border-block: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+.formats ul {
+  list-style: none; margin: 0; padding-block: 0.9rem;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.6rem;
+  font: 600 var(--step--1)/1.4 var(--mono); color: var(--muted);
+}
+.formats li::before { content: "▸ "; color: var(--red); }
+
+/* Background play */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+.points { display: grid; gap: 1.6rem; }
+.point { display: grid; gap: 0.4rem; min-width: 0; }
+.point p { color: var(--muted); }
+kbd {
+  font: 700 0.78em/1 var(--mono);
+  background: var(--red); color: #fff;
+  padding: 0.2em 0.45em; border-radius: 3px;
+  white-space: nowrap;
+}
+.figure { display: grid; gap: 0.6rem; min-width: 0; }
+.figure figcaption, .caption { font: 400 var(--step--1)/1.4 var(--mono); color: var(--muted); }
+.shot { border-radius: 6px; border: 1px solid var(--line); background: #000; width: 100%; }
+figure { margin: 0; }
+
+/* Visualizers */
+.vis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.vis-grid figure { display: grid; gap: 0.5rem; }
+.vis-grid figcaption { display: flex; justify-content: space-between; gap: 0.5rem; font: 600 var(--step--1)/1.3 var(--mono); }
+.vis-grid figcaption span { color: var(--muted); font-weight: 400; }
+.games { margin-top: 3rem; }
+
+/* Sources */
+.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+@media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
+.source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.source .tag { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.source p { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.trio.phones { max-width: 760px; margin-inline: auto; gap: 1.5rem; }
+.trio.phones img { border-radius: 18px; }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr; } .trio.phones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; } .trio.phones img { border-radius: 10px; } }
+
+/* Screens gallery */
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } }
+
+/* Any width */
+/* The five shapes side by side at the same height: each takes width in
+   proportion to its aspect (240, 320, 360, 427 and 560 px wide at 240 tall). */
+.widths { display: flex; align-items: flex-end; gap: 0.75rem; }
+.widths figure { display: grid; gap: 0.4rem; min-width: 0; }
+.widths figure:nth-child(1) { flex: 240 1 0; }
+.widths figure:nth-child(2) { flex: 320 1 0; }
+.widths figure:nth-child(3) { flex: 360 1 0; }
+.widths figure:nth-child(4) { flex: 427 1 0; }
+.widths figure:nth-child(5) { flex: 560 1 0; }
+.widths img { width: 100%; }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+
+/* Systems */
+.systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip { font: 400 24px/24px var(--pixel); padding: 0.6rem 0.9rem; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; color: var(--muted); }
+ol.steps strong { color: var(--fg); }
+pre {
+  margin: 0; padding: 1rem 1.2rem; overflow-x: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  font: 400 0.88rem/1.6 var(--mono); color: var(--fg);
+}
+pre .c { color: var(--muted); }
+
+/* Copyable command */
+.copy-block { display: flex; gap: 0.5rem; align-items: stretch; min-width: 0; }
+.copy-block pre { flex: 1; min-width: 0; }
+.copy-btn {
+  flex: none;
+  font: 400 16px/16px var(--pixel); -webkit-font-smoothing: none;
+  padding: 0 0.8rem; border-radius: 6px; cursor: pointer;
+  background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+}
+.copy-btn:hover { border-color: var(--teal); }
+.steps code.inline { font: 400 0.85em/1.4 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.35em; word-break: break-word; }
+.note code { font: 400 0.8rem/1.5 var(--mono); color: var(--fg); word-break: break-word; }
+
+/* Roadmap */
+.road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
+.stop { border: 1px solid var(--line); border-radius: 6px; padding: 1.3rem; display: grid; gap: 0.6rem; align-content: start; background: var(--panel); }
+.stop p { color: var(--muted); font-size: var(--step--1); }
+.state { justify-self: start; font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.5rem; border-radius: 3px; }
+.state.now { background: var(--teal); color: var(--ink); }
+.state.next { border: 1px solid var(--pink); color: var(--pink); }
+
+/* Support */
+.support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; }
+.support .head { margin: 0; max-width: 40rem; }
+.btn.coffee { background: var(--teal); border-color: var(--teal); color: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
+.btn.coffee:hover { background: var(--teal); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--pink); }
+
+/* Splash, like the app's: the logo intro on the dark screen, then a fade. */
+.splash {
+  position: fixed; inset: 0; z-index: 50;
+  background: #0b0a13; /* the edge of the app's splash background */
+  cursor: pointer;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+/* The app's splash in two layers: its pulsing background, stretched to cover
+   any screen shape, and the logo on top, whole and centered. */
+.splash img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+.splash .bg { object-fit: cover; image-rendering: pixelated; }
+/* The logo layer is cropped to its content (234×161 of the app's 240-tall
+   screen): as tall as the app would draw it, but never wider than the screen. */
+.splash .fg { inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92vw, 97.5vh); height: auto; }
+.splash.ready img { visibility: visible; }
+.splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash.out img { visibility: hidden; }
+.splash[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .splash { display: none; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 2.5rem; color: var(--muted); font-size: var(--step--1); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
+footer img { height: 56px; width: auto; }
+</style>
+<link rel="alternate" hreflang="en" href="https://juanvillacortac.github.io/audiofilus/">
+<link rel="alternate" hreflang="es" href="https://juanvillacortac.github.io/audiofilus/es/">
+<link rel="alternate" hreflang="tr" href="https://juanvillacortac.github.io/audiofilus/tr/">
+<link rel="alternate" hreflang="ja" href="https://juanvillacortac.github.io/audiofilus/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://juanvillacortac.github.io/audiofilus/zh/">
+<link rel="alternate" hreflang="de" href="https://juanvillacortac.github.io/audiofilus/de/">
+<link rel="alternate" hreflang="fr" href="https://juanvillacortac.github.io/audiofilus/fr/">
+<link rel="alternate" hreflang="x-default" href="https://juanvillacortac.github.io/audiofilus/">
+<!-- ja-fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&amp;family=Noto+Sans+JP:wght@400;700&amp;display=swap">
+<style>:root{--display:"Jersey 10","DotGothic16","Noto Sans JP",sans-serif;--pixel:"Tiny5","DotGothic16","Noto Sans JP",monospace;--body:"Atkinson Hyperlegible","Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;--mono:"JetBrains Mono","Noto Sans JP","Hiragino Sans",ui-monospace,monospace}body{line-break:strict}.top nav a{white-space:nowrap}@media (max-width:420px){.top .wrap{gap:.5rem}.top img{height:34px}.top nav{gap:.6rem;font-size:.75rem}.lang summary{font-size:0;gap:0}.lang summary svg{width:16px;height:16px}}</style>
+<style>.hero h1,.btn{word-break:keep-all;line-break:strict}@media (max-width:560px){.hero h1{font-size:46px;line-height:50px}}@media (max-width:420px){.top nav .icon{display:none}.top nav .get{padding:.5rem .6rem}}</style>
+</head>
+<body>
+
+<div class="splash" id="splash" hidden aria-hidden="true">
+  <img class="px bg" id="splash-bg" alt="" width="427" height="240">
+  <img class="px fg" id="splash-fg" alt="" width="234" height="161">
+</div>
+<script>
+// The splash plays on every load, as in the app; any click or key skips it.
+(function () {
+  var el = document.getElementById("splash");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var started = false;
+  el.hidden = false;
+  function done() {
+    el.classList.add("out");
+    removeEventListener("keydown", done);
+    setTimeout(function () { el.hidden = true; }, 500);
+  }
+  // Both layers start together once both have arrived; if that takes too
+  // long, go straight to the page. Blob URLs make each load a new image, so
+  // the animation (which plays once) starts over even from the cache.
+  function blob(u) {
+    return fetch(u).then(function (r) { if (!r.ok) throw r.status; return r.blob(); });
+  }
+  Promise.all([blob("../img/splash-bg.webp"), blob("../img/splash-fg.webp")]).then(function (bs) {
+    var imgs = [document.getElementById("splash-bg"), document.getElementById("splash-fg")];
+    var left = 2;
+    imgs.forEach(function (img, i) {
+      img.onload = function () {
+        if (--left || started) return;
+        started = true;
+        el.classList.add("ready");
+        setTimeout(done, 2480); // splashLen - splashOut in internal/ui/splash.go
+      };
+      img.src = URL.createObjectURL(bs[i]);
+    });
+  }).catch(done);
+  setTimeout(function () { if (!started) { started = true; done(); } }, 4000);
+  el.addEventListener("click", done);
+  addEventListener("keydown", done);
+})();
+</script>
+
+<header class="top">
+  <div class="wrap">
+    <a href="#top" aria-label="audiofilus"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="セクション">
+      <a class="sec" href="#background">機能</a>
+      <a class="sec" href="#sources">ソース</a>
+      <a class="sec" href="#install">対応環境</a>
+      <a href="docs/index.html">ドキュメント</a>
+      <a class="icon" href="https://github.com/juanvillacortac/audiofilus" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <a class="get" href="#install">ダウンロード</a>
+      <details class="lang"><summary aria-label="言語: 日本語"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.3" d="M8 1.2a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 8 1.2Zm-6.8 6.8h13.6M8 1.2c1.9 1.8 2.9 4.1 2.9 6.8S9.9 13 8 14.8C6.1 13 5.1 10.7 5.1 8S6.1 3 8 1.2Z"/></svg>JA</summary><div class="menu"><a href="../index.html" hreflang="en" lang="en">English<span>EN</span></a><a href="../es/index.html" hreflang="es" lang="es">Español<span>ES</span></a><a href="../tr/index.html" hreflang="tr" lang="tr">Türkçe<span>TR</span></a><a href="../ja/index.html" hreflang="ja" lang="ja" aria-current="true">日本語<span>JA</span></a><a href="../zh/index.html" hreflang="zh-Hans" lang="zh-Hans">中文<span>ZH</span></a><a href="../de/index.html" hreflang="de" lang="de">Deutsch<span>DE</span></a><a href="../fr/index.html" hreflang="fr" lang="fr">Français<span>FR</span></a></div></details>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <span class="eyebrow">Linux 携帯ゲーム機向け音楽プレイヤー</span>
+        <h1>ゲーム中も、<wbr><em>音楽は<wbr>止まらない。</em></h1>
+        <p class="lede">audiofilus は、アルバムジャケット、ビジュアライザー、8 つのアーケードゲーム、チップチューンのトラッカーを備えたピクセルアートの音楽プレイヤーです。閉じてエミュレーターを開いても、音楽は続きます。画面を消して、ポケットの中から操作できます。</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/juanvillacortac/audiofilus/releases/latest">PortMaster 版を<wbr>ダウンロード</a>
+          <a class="btn" href="https://github.com/juanvillacortac/audiofilus">GitHub でソースを見る</a>
+        </div>
+        <p class="note">Knulli · muOS · ROCKNIX · ArkOS · dArkOS — Linux と Windows のデスクトップ、iPhone にも対応。</p>
+      </div>
+      <div class="device">
+        <span class="led" aria-hidden="true"></span>
+        <div class="screen"><img class="px" src="../img/player.webp" alt="Now Playing 画面：アルバムジャケット、曲の情報、曲に合わせて脈打つスペクトラムビジュアライザー" width="360" height="240"></div>
+        <span class="label" aria-hidden="true">AUDIOFILUS</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="formats">
+    <div class="wrap">
+      <ul aria-label="対応フォーマット">
+        <li>MP3</li><li>AAC / M4A</li><li>ALAC</li><li>FLAC</li><li>Ogg Vorbis</li><li>Opus</li><li>WAV</li><li>AIFF</li><li>DSD（DSF · DFF）</li><li>NSF · SPC · GBS · VGM · HES · KSS · AY · SAP</li><li>MOD · XM · IT · S3M</li><li>CUE シート</li><li>M3U プレイリスト</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="band" id="background">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">バックグラウンド再生</span>
+          <h2>邪魔をしないプレイヤー</h2>
+        </div>
+        <div class="point">
+          <h3>オーディオは専用のサービスで動く</h3>
+          <p>インターフェースはただのリモコンです。閉じても音楽は続き、ゲームを起動しても鳴り続けます。曲間はギャップレスで、一時停止すると素早くフェードします。</p>
+        </div>
+        <div class="point">
+          <h3>どのゲームの中からでも操作</h3>
+          <p><kbd>FN</kbd> を押しながらボタンを押すと、一時停止、スキップ、前の曲、シークができます。ヘッドホンの再生ボタンも、Bluetooth でも有線でも使えます：1 回で一時停止、2 回でスキップ、3 回で前の曲。</p>
+        </div>
+        <div class="point">
+          <h3>ポケットのためのスリープモード</h3>
+          <p><kbd>START</kbd> を 2 回か電源ボタンを押すと、画面が消え、CPU が遅くなり、トリガーボタンがジェスチャーになります。ふたを閉じてもスリープのままです。RG34XX-SP ではこのモードの消費電流は約 260&nbsp;mA で、3300&nbsp;mAh のバッテリーで音楽を 11〜12 時間ほど再生できます。</p>
+        </div>
+        <div class="point">
+          <h3>ヘルプはボタン 1 つで</h3>
+          <p>どの画面でも <kbd>FN</kbd> を押し続けると、そこで各ボタンが何をするかが表示されます。</p>
+        </div>
+      </div>
+      <div class="figure">
+        <img class="shot px" src="../img/guide.png" alt="プレイヤーの上に表示された操作ガイド。画面内、どこでも、スリープ、バックグラウンドのボタンを一覧表示" width="360" height="240" loading="lazy">
+        <p class="caption">FN を押している間に表示される操作ガイド。</p>
+        <img class="shot px" src="../img/menu.png" alt="More メニュー：Album、Artist、Add to a playlist、Queue、Shuffle、Repeat、Screen off、Background、Quit" width="360" height="240" loading="lazy">
+        <p class="caption">START で More メニューが開きます。「Background」でアプリを離れても聴き続けられます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="visuals">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">ビジュアライザーとゲーム</span>
+        <h2>見て楽しむものも</h2>
+        <p class="lede">ビートに合わせて動く 8 つのビジュアライザー。すべて低解像度で描画し、CPU への負荷を軽く保っています。色はアルバムジャケットから取ります。</p>
+      </div>
+      <div class="vis-grid">
+        <figure><img class="shot px" src="../img/vis-lake.webp" alt="Lake ビジュアライザー：音楽に合わせてスイレンの葉が波打つ夜の湖" width="320" height="240" loading="lazy"><figcaption>Lake <span>ビートで波紋</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-drift.webp" alt="Drift ビジュアライザー：夜の明かりに照らされた道を走る車" width="320" height="240" loading="lazy"><figcaption>Drift <span>3 つのカメラ</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-trench.webp" alt="Trench ビジュアライザー：都市の谷間を飛んでいく" width="320" height="240" loading="lazy"><figcaption>Trench <span>都市の谷間</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-plasma.webp" alt="Plasma ビジュアライザー：ディザリングされた光るプラズマ" width="320" height="240" loading="lazy"><figcaption>Plasma <span>ディザリング</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-tunnel.webp" alt="Tunnel ビジュアライザー：脈打つリングのトンネル" width="320" height="240" loading="lazy"><figcaption>Tunnel <span>低音で脈打つ</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-waves.webp" alt="Waves ビジュアライザー：オシロスコープの波形" width="320" height="240" loading="lazy"><figcaption>Waves <span>オシロスコープ</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-bars.webp" alt="Bars ビジュアライザー：ピークが落ちていくスペクトラムバー" width="320" height="240" loading="lazy"><figcaption>Bars <span>スペクトラム</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/vis-ridges.webp" alt="Ridges ビジュアライザー：Unknown Pleasures のジャケットのように重なって立ち上がるスペクトラムの線" width="320" height="240" loading="lazy"><figcaption>Ridges <span>重なるスペクトラム</span></figcaption></figure>
+      </div>
+      <div class="vis-grid games">
+        <figure><img class="shot px" src="../img/crypt.webp" alt="Crypt：フードをかぶった主人公が、ビートごとに床が光るダンジョンを進む。スライム、コイン、リズムバー付き" width="360" height="240" loading="lazy"><figcaption>Crypt <span>リズムローグライク</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/blocks.webp" alt="Blocks：ミニプレイヤーの隣で遊ぶ落ちものパズル" width="360" height="240" loading="lazy"><figcaption>Blocks <span>落ちものパズル</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/rhythm.webp" alt="Rhythm：曲のドラムから作られたレーンをノーツが落ちてくる。PERFECT の表示付き" width="360" height="240" loading="lazy"><figcaption>Rhythm <span>ドラムのレーン</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/runner.webp" alt="Runner：ヘッドホンを付けたピクセルのランナーが、曲のドラムに合わせてやって来るスピーカーを跳び越え、飛んでくるレコードの下にしゃがむ。背景は薄暗いプラズマの空" width="360" height="240" loading="lazy"><figcaption>Runner <span>キックでジャンプ</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/snake.webp" alt="Snake：曲のビートの細かい刻みに合わせて、一緒に脈打つドットのグリッドの上をヘビが進む" width="360" height="240" loading="lazy"><figcaption>Snake <span>ビートで進む</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/ships.webp" alt="Ships：星空の上で、ピクセルのエイリアンに向かって上に撃つ宇宙船" width="360" height="240" loading="lazy"><figcaption>Ships <span>8 分音符で撃つ</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/duel.webp" alt="Duel：1 ビットのレコードのモンスターがノーツを撃ち、ハートが箱の中でかわす" width="360" height="240" loading="lazy"><figcaption>Duel <span>ビートでバトル</span></figcaption></figure>
+        <figure><img class="shot px" src="../img/quiz.png" alt="Name that song：1 曲が流れる間に、ライブラリの 4 曲から選ぶ" width="360" height="240" loading="lazy"><figcaption>Name that song <span>全 10 ラウンド</span></figcaption></figure>
+      </div>
+      <div class="split" style="margin-top: 3rem">
+        <div class="points">
+          <div class="head">
+            <span class="eyebrow">トラッカー</span>
+            <h3>自分だけのチップチューンを作ろう</h3>
+          </div>
+          <p class="lede">十字キーで使える LSDJ スタイルのトラッカーに、PICO-8 の要素を少し加えました：チェインとフレーズ、エンベロープとテーブル付きのインストゥルメント、スウィングするグルーヴ、編集できるウェーブ、21 のエフェクトコマンド、ピアノロール。ゲームボーイの 4 チャンネルで作るもよし、シンセ 8 チャンネルのフリーモードで作るもよし。曲を WAV で書き出せばライブラリに入り、ほかの曲と同じようにバックグラウンドで再生できます。<a href="docs/tracker.html">トラッカーガイド</a>。</p>
+        </div>
+        <figure class="figure"><img class="shot px" src="../img/tracker.webp" alt="Pocket Pop を再生中のトラッカー：ノート、インストゥルメント、音量が鳴るたびに光るフレーズと、各チャンネルのリアルタイムのオシロスコープが並ぶソングビュー" width="360" height="240" loading="lazy"></figure>
+      </div>
+      <p class="note">ゲームとトラッカーは画面ドックの <strong>Games</strong> にまとまっていて、ゲームごとに記録が残ります。アプリのあちこちには、ちょっとした隠し要素もあります。</p>
+    </div>
+  </section>
+
+  <section class="band" id="colors">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">カラー</span>
+          <h2>アルバムごとに色が変わる</h2>
+          <p class="lede">インターフェースは再生中のジャケットから色を取ります。アルバムを変えると、プレイヤー全体もビジュアライザーもゲームも一緒に変わります。</p>
+        </div>
+        <p class="note">実際のライブラリにある 4 枚のアルバムでの表示例：各ジャケットから 2 つのアクセントカラーと背景の色合いが決まります。</p>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/colors.webp" alt="4 枚のアルバムを切り替えるプレイヤー。ジャケットごとにアクセントがオレンジ、青、緑、ピンクに変わる" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="lyrics">
+    <div class="wrap split">
+      <figure class="figure"><img class="shot px" src="../img/lyrics.webp" alt="Now Playing の同期歌詞：イントロ中は 3 つのドットが満ちていき、その後は歌われる行がアルバムの色に染まり、周りの行は端に向かってフェードする" width="360" height="240" loading="lazy"></figure>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">歌詞</span>
+          <h2>一緒に歌おう</h2>
+          <p class="lede">同期歌詞は歌に合わせて単語ごとに色が付き、間奏ではドットでカウントダウンします。歌詞は曲の隣の .lrc、タグ、またはオンラインの LRCLIB から取得します。</p>
+        </div>
+        <p class="note">リストから別のバージョンを選んだり、タイミングを 0.5 秒ずつ調整したり、オフラインのままにしたりできます。このアニメーションの歌詞は架空のものです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sound">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">サウンド</span>
+          <h2>好みの音に調整</h2>
+        </div>
+        <div class="point">
+          <h3>ReplayGain</h3>
+          <p>すべての曲を、またはすべてのアルバムを同じ音量に。自動なら、順番に再生するときはアルバム単位、シャッフル時は曲単位。曲のピークを超えることはありません。</p>
+        </div>
+        <div class="point">
+          <h3>10 バンドイコライザー</h3>
+          <p>ロック、メタル、ボーカル、低音などのプリセット。自分でバンドを動かすこともできます。負荷は携帯ゲーム機の CPU の約 5&nbsp;% で、フラットなら負荷はありません。</p>
+        </div>
+        <div class="point">
+          <h3>クロスフェード、DSD、CUE シート</h3>
+          <p>最大 12 秒のクロスフェードでも、アルバムはギャップレスのまま。DSD ファイルを再生でき、CUE シート付きで 1 ファイルにリッピングしたアルバムはトラックごとに表示されます。出力は 44.1、48、96、192&nbsp;kHz。</p>
+        </div>
+      </div>
+      <figure class="figure"><img class="shot px" src="../img/eq.png" alt="イコライザー：Rock プリセットを選んだ、31 Hz から 16 kHz までの 10 本の縦スライダー" width="360" height="240" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="band" id="listening">
+    <div class="wrap split">
+      <div class="figure">
+        <img class="shot px" src="../img/stats.png" alt="統計：総再生回数と時間、直近 1 か月、よく聴くアーティスト" width="360" height="240" loading="lazy">
+        <p class="caption">再生したすべての曲の統計。プレイヤーを閉じていてもサービスがカウントします。</p>
+        <img class="shot px" src="../img/player-timer.png" alt="お気に入りの曲にハート、スリープタイマーの残り 26 分を示す月が表示された Now Playing" width="360" height="240" loading="lazy">
+        <p class="caption">お気に入りの曲にはハート、スリープタイマーの残り時間には月。</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">リスニング</span>
+          <h2>聴いたものを覚えている</h2>
+        </div>
+        <div class="point">
+          <h3>お気に入りと評価</h3>
+          <p>曲に Like を付けたり、1〜5 で評価したりできます。Subsonic、Navidrome、Jellyfin のサーバーでは、ハートとスターが双方向で同期します。</p>
+        </div>
+        <div class="point">
+          <h3>最近、よく聴く曲、統計</h3>
+          <p>自動で作られるリストと、再生時間、よく聴くアーティスト・アルバム・曲のランキング。</p>
+        </div>
+        <div class="point">
+          <h3>スクロブル</h3>
+          <p>QR コードで Last.fm にサインインするか、ListenBrainz のトークンを貼り付けます。オフラインの間は再生記録が待機し、接続が戻ると送信されます。自分のサーバーでも再生回数がカウントされます。</p>
+        </div>
+        <div class="point">
+          <h3>スリープタイマー</h3>
+          <p>15〜90 分後、または曲の終わりで音楽を止めます。プレイヤーを閉じていても動作します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sources">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">ソース</span>
+        <h2>自分のファイル、自分のサーバー、ラジオ</h2>
+        <p class="lede">すべてが同じライブラリ、同じプレイヤーに表示されます。リモートの曲は SD カードにキャッシュされるので、次からは通信なしで聴けます。</p>
+      </div>
+      <div class="sources">
+        <div class="source"><span class="tag">ローカル</span><h3>あなたのライブラリ</h3><p>フォルダー、タグ、埋め込みとフォルダーのジャケット、M3U プレイリスト、自分のプレイリスト。スキャンは一度だけで、以降は新しいファイルだけを読み込みます。同期歌詞は .lrc、タグ、LRCLIB から取得し、1 行ずつ光ります。ゲームのサウンドトラックも：NES、SNES、ゲームボーイ、メガドライブなど、曲ごとに 1 トラック。</p></div>
+        <div class="source"><span class="tag">サーバー</span><h3>Subsonic</h3><p>Navidrome などの Subsonic / OpenSubsonic サーバー。曲はストリーミングされ、次回のためにキャッシュされ、ダウンロードもできます。</p></div>
+        <div class="source"><span class="tag">サーバー</span><h3>Jellyfin</h3><p>Jellyfin のユーザーでサインインし、その音楽ライブラリとプレイリストを自分のファイルのように閲覧できます。</p></div>
+        <div class="source"><span class="tag">ライブ</span><h3>インターネットラジオ</h3><p>radio-browser.info の何千もの局を、国やジャンルから。ストリームから今流れている曲名も表示します。自分の .m3u や .pls の局リストを持ち込んだり、アドレスで局を追加したりできます。</p></div>
+        <div class="source"><span class="tag">エピソード</span><h3>ポッドキャスト</h3><p>あなたの国の人気番組、検索、またはアドレスで任意の RSS フィード。エピソードはオフラインで聴けるようにダウンロードされ、止めた場所を覚えています。</p></div>
+        <div class="source"><span class="tag">持ち込み</span><h3>YouTube Music</h3><p>自分の yt-dlp をアプリの隣にコピーすると検索が使えるようになります：ダウンロードせずに聴くことも、ジャケットとタグ付きでライブラリに保存することもできます。</p></div>
+      </div>
+      <div class="trio">
+        <figure class="figure"><img class="shot px" src="../img/search-youtube.png" alt="All、Library、YouTube のフィルター付き検索。すでに持っている曲にはチェックが付く" width="360" height="240" loading="lazy"><figcaption>ライブラリと YouTube をまとめて検索。すでに持っている曲にはチェックが付きます。</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/streaming.png" alt="曲の読み込み中に STREAMING バッジが表示されたプレイヤー" width="360" height="240" loading="lazy"><figcaption>ストリーミング中の曲にはバッジが付き、そのまま保存することもできます。</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/radio.png" alt="ライブのラジオ局と今流れている曲を表示しているプレイヤー" width="360" height="240" loading="lazy"><figcaption>ラジオはライブで再生され、局から送られる曲名が表示されます。</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="screens">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">画面</span>
+        <h2>十字キーのために作られた</h2>
+        <p class="lede"><kbd>SELECT</kbd> ですべての画面が並ぶドックが開き、2 回押すと直前の画面に戻ります。検索やプレイリスト名の入力には QWERTY の画面キーボードを使います。インターフェースの効果音はオプションで、メニュー用と音楽操作用の 2 つのスイッチに分かれています。</p>
+      </div>
+      <div class="gallery">
+        <figure class="figure"><img class="shot px" src="../img/albums.png" alt="ジャケットが並ぶアルバムのグリッド" width="360" height="240" loading="lazy"><figcaption>アルバム、そしてアーティスト、曲、プレイリスト、フォルダー。</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/dock.png" alt="画面下部に並ぶ画面ドック" width="360" height="240" loading="lazy"><figcaption>画面ドック。</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/queue.png" alt="再生キュー" width="360" height="240" loading="lazy"><figcaption>シャッフル、リピート、「次に再生」付きのキュー。</figcaption></figure>
+        <figure class="figure"><img class="shot px" src="../img/playlist-add.png" alt="プレイリストに追加するダイアログ" width="360" height="240" loading="lazy"><figcaption>自分のプレイリストは、アプリの隣に M3U8 ファイルとして保存されます。</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="widths">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">どんな画面でも</span>
+        <h2>正方形からウルトラワイドまで</h2>
+        <p class="lede">いくつかの決まった形から選ぶのではなく、画面の実際の幅に合わせてレイアウトが変わるので、1:1 の RGB30 にも、3:2 の折りたたみ機にも、21:9 のモニターにもぴったり収まります。</p>
+      </div>
+      <div class="widths">
+        <figure><img class="shot px" src="../img/width-1x1.png" alt="1:1 の画面のプレイヤー" width="240" height="240" loading="lazy"><figcaption class="caption">1:1</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-4x3.png" alt="4:3 の画面のプレイヤー" width="320" height="240" loading="lazy"><figcaption class="caption">4:3</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-3x2.png" alt="3:2 の画面のプレイヤー" width="360" height="240" loading="lazy"><figcaption class="caption">3:2</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-16x9.png" alt="16:9 の画面のプレイヤー" width="427" height="240" loading="lazy"><figcaption class="caption">16:9</figcaption></figure>
+        <figure><img class="shot px" src="../img/width-21x9.png" alt="21:9 の画面のプレイヤー" width="560" height="240" loading="lazy"><figcaption class="caption">21:9</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="install">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">インストール</span>
+          <h2>PortMaster から</h2>
+        </div>
+        <div class="systems" aria-label="対応システム">
+          <span class="chip">Knulli</span><span class="chip">muOS</span><span class="chip">ROCKNIX</span><span class="chip">ArkOS</span><span class="chip">dArkOS</span>
+        </div>
+        <ol class="steps">
+          <li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a>から <strong>audiofilus-portmaster.zip</strong> をダウンロードします。</li>
+          <li>PortMaster でインストールするか、<strong>ports</strong> フォルダーに展開します。</li>
+          <li>Ports から <strong>audiofilus</strong> を開き、音楽フォルダーを選びます。</li>
+          <li>オプション：アプリの <strong>yt-dlp/</strong> フォルダーに <strong>yt-dlp</strong> のバイナリを置くと、YouTube Music が使えるようになります。</li>
+        </ol>
+        <p class="note">muOS では PortMaster は不要です：<strong>audiofilus.muxapp</strong> を SD カードの <strong>ARCHIVE</strong> フォルダーにコピーし、Archive Manager からインストールすると、Applications に表示されます。</p>
+        <p class="note">Linux や Windows の PC については、<a href="#desktop">デスクトップ</a>を参照してください。</p>
+        <p class="note">起動時にシステムを検出します。ふた、電源ボタン、省電力、音量にはそのシステム自身の仕組みを使い、デスクトップではそれらをすべて省きます。</p>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">ソースからビルド</span>
+          <h2>コマンド 1 つで</h2>
+        </div>
+        <p class="lede">携帯ゲーム機向けには cgo なしの Go で書かれています。コーデックのライブラリは、システムにあれば実行時に読み込みます。</p>
+<pre><span class="c"># with Docker, nothing else to install</span>
+git clone https://github.com/juanvillacortac/audiofilus
+cd audiofilus
+docker build --target dist --output dist .
+
+<span class="c"># or with Go installed</span>
+./build.sh</pre>
+        <p class="note">どちらも、デスクトップ版と arm64 版のバイナリ、PortMaster の zip を dist/ に出力します。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="desktop">
+    <div class="wrap split">
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">デスクトップ</span>
+          <h2>PC でもくつろいで</h2>
+          <p class="lede">同じプレイヤーが Linux と Windows で、小さなバイナリ 1 つで動きます。Linux では GNOME、KDE、Hyprland、Omarchy にネイティブアプリのようになじみます。</p>
+        </div>
+        <div class="point">
+          <h3>アプリランチャーに</h3>
+          <p>Audiofilus がアイコン付きで表示され、右クリックで再生 / 一時停止、次、前を選べます。ウィンドウルールやドックもウィンドウを認識します。Linux でも Windows でも、ファイルマネージャーからファイルやフォルダーを開けます。</p>
+        </div>
+        <div class="point">
+          <h3>メディアキーとバー</h3>
+          <p>MPRIS に対応しているので、キーボードのメディアキー、ヘッドホン、デスクトップのメディアウィジェットから、ジャケットと曲名付きで操作できます。Omarchy では設定なしで使えます。</p>
+        </div>
+        <div class="point">
+          <h3>バックグラウンドでも再生</h3>
+          <p>ウィンドウを閉じても音楽は続きます（設定で変更可能。デスクトップではデフォルトでオン）。もう一度開くと、スプラッシュなしでその場から再開します。Quit ですべて停止します。</p>
+        </div>
+        <div class="point">
+          <h3>システムトレイに</h3>
+          <p>Linux でも Windows でも、audiofilus の CD がトレイに入ります：クリックでプレイヤーを開き、中クリックで一時停止。メニューには再生中の曲、再生 / 一時停止、次、前、シャッフル、終了があります。</p>
+        </div>
+        <div class="point">
+          <h3>どんなウィンドウの形でも</h3>
+          <p>横に広げても、縦長に細くしても大丈夫：縦向きでは大きなジャケットのスマートフォン風プレイヤーに切り替わり、ピクセルもくっきりしたままです。</p>
+        </div>
+      </div>
+      <div class="points">
+        <div class="head">
+          <span class="eyebrow">Linux</span>
+          <h2>1 行でインストール</h2>
+        </div>
+        <div class="copy-block">
+<pre id="curl-cmd">curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</pre>
+          <button class="copy-btn" type="button" id="copy-curl" data-target="curl-cmd">コピー</button>
+        </div>
+        <ol class="steps">
+          <li><strong>x86_64</strong> または <strong>aarch64</strong> 用の最新リリースを <strong>~/.local/share/audiofilus</strong> にダウンロードします。</li>
+          <li><strong>audiofilus</strong> を <strong>~/.local/bin</strong> にリンクします。</li>
+          <li>アプリランチャーに Audiofilus を追加します。いつでももう一度実行すれば更新でき、設定はそのまま残ります。</li>
+        </ol>
+        <h3>手動でセットアップする場合</h3>
+        <ol class="steps">
+          <li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a>から <strong>audiofilus-linux-amd64.tar.gz</strong>（または <strong>-arm64</strong>）をダウンロードし、好きな場所に展開します。</li>
+          <li>そのフォルダーで <code class="inline">./audiofilus desktop install</code> を実行します。ランチャーのエントリーとアイコンが <strong>~/.local/share</strong> に追加されます。</li>
+          <li>アプリランチャーから Audiofilus を開きます。フォルダーを移動したら、手順 2 をもう一度実行してください。</li>
+        </ol>
+        <p class="note">アンインストール：<code>audiofilus quit; audiofilus desktop uninstall; rm -rf ~/.local/share/audiofilus ~/.local/bin/audiofilus*</code></p>
+        <p class="note">Windows 10 以降：<a href="https://github.com/juanvillacortac/audiofilus/releases/latest">audiofilus-windows-amd64.zip</a> をダウンロードし、好きな場所に展開して <strong>audiofilus.exe</strong> を実行します。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="mobile">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">iPhone と iPad</span>
+        <h2>本当にポケットの中で</h2>
+        <p class="lede">同じピクセルのプレイヤーを、指で操作できるように iOS で：すべてタップでき、リストは親指の動きに合わせて慣性スクロールし、画面をロックしても音楽は鳴り続けます。</p>
+      </div>
+      <div class="trio phones">
+        <figure class="figure"><img class="shot px" src="../img/phone-player.png" alt="iPhone の Now Playing：レコードがのぞく大きなアルバムジャケット、曲、操作ボタン、スペクトラム、下部の大きなタッチボタン" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-library.png" alt="iPhone のライブラリ：上部のタブボタン、曲のリスト、前、10 秒戻る、一時停止、10 秒進む、次のボタンが並ぶミニプレイヤー" width="240" height="520" loading="lazy"></figure>
+        <figure class="figure"><img class="shot px" src="../img/phone-tabs.webp" alt="タップすると上部のバーからライブラリのタブが下りてきて、Albums を選ぶとメニューが上に戻る" width="240" height="520" loading="lazy"></figure>
+      </div>
+      <div class="trio">
+        <div class="point"><h3>タッチファースト</h3><p>行、ジャケット、タブ、ボタンをタップし、リストは親指でドラッグ。ボタンバーには本物のボタンがあり、ゲームには専用のタッチ操作があります。縦向きでは、タブはボタンから開きます。</p></div>
+        <div class="point"><h3>ロック画面とコントロールセンター</h3><p>ジャケット、曲、操作ボタンが、ロック画面、コントロールセンター、ヘッドホン、CarPlay に表示されます。iTunes の AAC や AAC のラジオは Apple 自身のデコーダーで再生します。</p></div>
+        <div class="point"><h3>あなたの音楽を、あなたの方法で</h3><p>ファイルアプリの <em>このiPhone内 → Audiofilus</em> に曲をコピーするか、iCloud Drive の任意のフォルダーを選ぶか、ローカルの音楽はなしで Subsonic、Navidrome、Jellyfin、ラジオ、ポッドキャスト、YouTube Music からストリーミングできます。ファイルアプリや他のアプリから曲を Audiofilus で開くこともできます。</p></div>
+      </div>
+      <p class="note">署名なしの <strong>audiofilus-ios-unsigned.ipa</strong> がすべての<a href="https://github.com/juanvillacortac/audiofilus/releases/latest">リリース</a>に付いています：<a href="https://sideloadly.io">Sideloadly</a> か <a href="https://altstore.io">AltStore</a> でインストールすると、ご自身の Apple ID で署名されます。または、AltStore、SideStore、LiveContainer にソース <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> を追加すると、新しいリリースがアップデートとして表示されます。</p>
+    </div>
+  </section>
+
+  <section class="band" id="roadmap">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">ロードマップ</span>
+        <h2>携帯ゲーム機の先へ</h2>
+        <p class="lede">持っているすべての画面で、同じプレイヤーを。</p>
+      </div>
+      <div class="road">
+        <div class="stop"><span class="state now">現在動作中</span><h3>デスクトップ</h3><p>Linux と Windows。ランチャー、トレイ、メディアキー、マウスとタッチ、どんなウィンドウの形でもくっきりしたピクセル拡大。次は：大きなウィンドウ向けのレイアウト。</p></div>
+        <div class="stop"><span class="state now">現在動作中</span><h3>iOS</h3><p>署名なしアプリとしての iPhone と iPad：タッチファーストのインターフェース、バックグラウンド再生、ロック画面とコントロールセンター。次は：署名付きビルド。</p></div>
+        <div class="stop"><span class="state next">予定</span><h3>Android</h3><p>同じモバイルアプリを Android でも。システムのメディアセッションによるバックグラウンド再生付き。</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="band" id="support">
+    <div class="wrap support">
+      <div class="head">
+        <span class="eyebrow">サポート</span>
+        <h2>音楽を鳴らし続けるために</h2>
+        <p class="lede">audiofilus は無料で、空いた時間に作っています。毎日携帯ゲーム機で使ってくれているなら、コーヒー 1 杯がデスクトップやスマートフォンへの展開を続ける力になります。</p>
+      </div>
+      <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Ko-fi でコーヒーをおごる</a>
+    </div>
+  </section>
+</main>
+<script>
+// Copy buttons: the clipboard when allowed, otherwise select the text.
+document.querySelectorAll(".copy-btn").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.dataset.target);
+    var text = pre.textContent.trim();
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "Selected";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { b.textContent = "Copied"; }, selectIt);
+    } catch (e) { selectIt(); }
+    setTimeout(function () { b.textContent = "Copy"; }, 1800);
+  });
+});
+</script>
+
+<footer>
+  <div class="wrap">
+    <img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56">
+    <p>作者：<a href="https://github.com/juanvillacortac">@juanvillacortac</a>。Go と Ebitengine で作られています。<a href="https://github.com/juanvillacortac/audiofilus/blob/main/LICENSE">MIT ライセンス</a>。<a href="docs/index.html">ドキュメントを読む</a>。<a href="#support">プロジェクトを支援する</a>。</p>
+  </div>
+</footer>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})});</script>
+</body>
+</html>
