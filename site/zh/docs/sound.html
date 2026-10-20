@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>音质 · audiofilus 文档</title>
-<meta name="description" content="ReplayGain、均衡器、交叉淡化和输出采样率。它们由服务应用，所以播放器关闭时也有效。">
+<meta name="description" content="ReplayGain、均衡器、淡入淡出和输出采样率。它们由服务应用，所以播放器关闭时也有效。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html" aria-current="page">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -77,15 +77,15 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>音质</h1>
-    <p class="lede">ReplayGain、均衡器、交叉淡化和输出采样率。它们由服务应用，所以播放器关闭时也有效。</p>
+    <p class="lede">ReplayGain、均衡器、淡入淡出和输出采样率。它们由服务应用，所以播放器关闭时也有效。</p>
 
-<p>它们都在 <strong>设置</strong> 中：交叉淡化在“播放”下，其余在“音质”下。</p>
+<p>它们都在 <strong>设置</strong> 中：淡入淡出在“播放”下，其余在“音质”下。</p>
 <h2 id="replaygain">ReplayGain</h2>
 <p>使用文件中的 ReplayGain 标签（以及 Opus 的 R128 增益），让每首歌（或每张专辑）以相同响度播放。<strong>设置 → ReplayGain</strong>：</p>
 <ul>
-<li><strong>自动</strong>：按顺序播放时按专辑，随机播放时按单曲。</li>
-<li><strong>按单曲</strong> 或 <strong>按专辑</strong>。</li>
-<li><strong>关闭</strong>。</li>
+<li><strong>自动</strong>：按顺序播放时按专辑，随机播放时按歌曲。</li>
+<li><strong>按歌曲</strong> 或 <strong>按专辑</strong>。</li>
+<li><strong>关</strong>。</li>
 </ul>
 <p>它绝不会把歌曲推过峰值，所以不会削波。没有 ReplayGain 标签的歌曲（以及远程歌曲）按原样播放。</p>
 
@@ -102,8 +102,8 @@ body { line-break: strict; }
 </table>
 <p>自己调整频段后，预设会变为 <strong>自定义</strong>。在触摸屏上，点按某一列即可设置其高度。开启均衡器时，十个频段在掌机最低频率下约占 5&nbsp;% 的 CPU；保持平直时完全不占用。</p>
 
-<h2 id="crossfade">交叉淡化</h2>
-<p><strong>设置 → 交叉淡化</strong>：关闭，或歌曲之间重叠 2 到 12 秒。按顺序播放同一专辑的相邻歌曲时不会淡化，因此专辑保持无缝。很短的歌曲和尚未下载完成的服务器歌曲也会跳过淡化。</p>
+<h2 id="crossfade">淡入淡出</h2>
+<p><strong>设置 → 淡入淡出</strong>：关闭，或歌曲之间重叠 2 到 12 秒。按顺序播放同一专辑的相邻歌曲时不会淡化，因此专辑保持无缝。很短的歌曲和尚未下载完成的服务器歌曲也会跳过淡化。</p>
 
 <h2 id="output-rate">输出采样率</h2>
 <p><strong>设置 → 输出采样率</strong>：44.1、48、96 或 192&nbsp;kHz。更改后会重启音频服务，并从原来的位置继续。当文件采样率相同且没有任何处理（音量 100&nbsp;%、没有 ReplayGain 或均衡器）时，采样会原样输出，不过 PipeWire 或 PulseAudio 仍可能重新采样。iPhone 上不可用。</p>

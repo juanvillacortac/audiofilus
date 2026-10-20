@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>服务器 · audiofilus 文档</title>
-<meta name="description" content="把音乐服务器当作另一个曲库，支持流媒体、缓存、收藏和播放次数。">
+<meta name="description" content="把音乐服务器当作另一个音乐库，支持流媒体、缓存、收藏和播放次数。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html" aria-current="page">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -77,28 +77,28 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>Subsonic、Navidrome 和 Jellyfin</h1>
-    <p class="lede">把音乐服务器当作另一个曲库，支持流媒体、缓存、收藏和播放次数。</p>
+    <p class="lede">把音乐服务器当作另一个音乐库，支持流媒体、缓存、收藏和播放次数。</p>
 
 <h2 id="add">添加服务器</h2>
 <p><strong>设置 → 服务器 → 添加服务器</strong>。选择类型（Subsonic/OpenSubsonic，涵盖 Navidrome、gonic、Airsonic 等；或 Jellyfin/Emby），然后输入名称、地址（<code>http://ip:port</code>）、用户名和密码。保存前会测试连接；如果没有响应，你可以重试、修改信息或仍然保存。</p>
-<p>每个服务器都会成为屏幕栏中的又一个曲库，包含专辑、艺人、歌曲、播放列表和搜索。它的目录会被保存，所以即使没有网络也能立即显示。</p>
+<p>每个服务器都会成为屏幕栏中的又一个音乐库，包含专辑、艺人、歌曲、歌单和搜索。它的目录会被保存，所以即使没有网络也能立即显示。</p>
 
 <h2 id="options">单个服务器的选项</h2>
 <ul>
 <li><strong>收听音质</strong>：默认 192&nbsp;kbps 的 MP3（下载量小，解码开销低），也可选 320、128、96 或原始（不转码）。</li>
-<li><strong>测试连接</strong>、<strong>刷新目录</strong>、<strong>修改信息</strong>、<strong>移除服务器</strong>。</li>
+<li><strong>测试连接</strong>、<strong>刷新曲库</strong>、<strong>修改信息</strong>、<strong>移除服务器</strong>。</li>
 </ul>
 
 <h2 id="cache">流媒体和缓存</h2>
-<p>歌曲在播放时缓存到 SD 卡（默认 400&nbsp;MB；最久未使用的先被清除），下一首会提前获取。已缓存的歌曲无需网络即可播放。你也可以把服务器上的歌曲 <strong>下载到曲库</strong>，连同标签和封面保存到你的音乐文件夹。</p>
+<p>歌曲在播放时缓存到 SD 卡（默认 400&nbsp;MB；最久未使用的先被清除），下一首会提前获取。已缓存的歌曲无需网络即可播放。你也可以把服务器上的歌曲 <strong>下载到音乐库</strong>，连同标签和封面保存到你的音乐文件夹。</p>
 
 <h2 id="favorites">收藏、评分和播放次数</h2>
 <ul>
 <li>喜欢或评价服务器上的歌曲，也会在服务器上加星或评分。Jellyfin 有收藏，但没有 1 到 5 的评分。</li>
 <li>服务器目录加载时，其中加星和评分过的歌曲会被添加到你的“喜欢”列表。</li>
-<li>你收听的歌曲也会计入服务器（如果你在 Navidrome 中设置了，它还能转发到 Last.fm 和 ListenBrainz）。在 <strong>设置 → Scrobble 记录 → 计入服务器</strong> 中关闭。</li>
+<li>你收听的歌曲也会在服务器上计数（如果你在 Navidrome 中设置了，它还能转发到 Last.fm 和 ListenBrainz）。在 <strong>设置 → 播放记录 → 在服务器上计数</strong> 中关闭。</li>
 </ul>
-<p>服务器上的播放列表可以播放，但不能在 audiofilus 中编辑。</p>
+<p>服务器上的歌单可以播放，但不能在 audiofilus 中编辑。</p>
 
     <nav class="pager" aria-label="页面"><a href="radio-podcasts.html">← 电台和播客</a><a href="youtube-music.html">YouTube Music →</a></nav>
   </article>

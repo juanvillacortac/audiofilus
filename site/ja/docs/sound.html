@@ -69,34 +69,34 @@
     <h1>サウンド</h1>
     <p class="lede">ReplayGain、イコライザー、クロスフェード、出力サンプルレート。サービスが適用するので、プレイヤーを閉じても効きます。</p>
 
-<p>すべて <strong>Settings</strong> にあります。Crossfade は Playback に、それ以外は Sound にあります。</p>
+<p>すべて<strong>設定</strong>にあります。クロスフェードは再生に、それ以外はサウンドにあります。</p>
 <h2 id="replaygain">ReplayGain</h2>
-<p>ファイルの ReplayGain タグ（Opus の R128 ゲインにも対応）を使って、すべての曲（またはアルバム）を同じ音量で再生します。<strong>Settings → ReplayGain</strong>：</p>
+<p>ファイルの ReplayGain タグ（Opus の R128 ゲインにも対応）を使って、すべての曲（またはアルバム）を同じ音量で再生します。<strong>設定 → ReplayGain</strong>：</p>
 <ul>
-<li><strong>Auto</strong>：順番に再生するときはアルバム単位、シャッフル時は曲単位。</li>
-<li><strong>Per song</strong>（曲単位）または <strong>Per album</strong>（アルバム単位）。</li>
-<li><strong>Off</strong>（オフ）。</li>
+<li><strong>自動</strong>：順番に再生するときはアルバム単位、シャッフル時は曲単位。</li>
+<li><strong>曲ごと</strong>（曲単位）または<strong>アルバムごと</strong>（アルバム単位）。</li>
+<li><strong>オフ</strong>（オフ）。</li>
 </ul>
 <p>曲のピークを超えることはないので、音割れしません。ReplayGain タグのない曲（とリモートの曲）はそのまま再生されます。</p>
 
 <h2 id="eq">イコライザー</h2>
-<p><strong>Settings → Equalizer</strong> で 31&nbsp;Hz から 16&nbsp;kHz までの 10 バンドが開きます。各バンドは −12 から +12&nbsp;dB です。</p>
+<p><strong>設定 → イコライザー</strong>で 31&nbsp;Hz から 16&nbsp;kHz までの 10 バンドが開きます。各バンドは −12 から +12&nbsp;dB です。</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="イコライザー：Rock プリセットを選んだ 10 本の縦スライダー" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>ボタン</th><th>動作</th></tr>
 <tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>バンドを選ぶ</td></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>1 dB 動かす</td></tr>
-<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>プリセットを切り替える：Flat、Bass、Treble、Vocal、Rock、Metal、Pop、Electronic、Jazz、Classical、Loudness</td></tr>
-<tr><td><kbd>Y</kbd></td><td>Flat に戻す</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>プリセットを切り替える：フラット、低音、高音、ボーカル、ロック、メタル、ポップ、エレクトロ、ジャズ、クラシック、ラウドネス</td></tr>
+<tr><td><kbd>Y</kbd></td><td>フラットに戻す</td></tr>
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>閉じる（変更はその場で反映されます）</td></tr>
 </table>
-<p>自分でバンドを動かすと、プリセットは <strong>Custom</strong> になります。タッチスクリーンでは、列をタップするとその高さに設定されます。イコライザーがオンのとき、10 バンドの負荷は最低クロックの携帯ゲーム機で CPU の約 5&nbsp;% です。フラットなら負荷はありません。</p>
+<p>自分でバンドを動かすと、プリセットは<strong>カスタム</strong>になります。タッチスクリーンでは、列をタップするとその高さに設定されます。イコライザーがオンのとき、10 バンドの負荷は最低クロックの携帯ゲーム機で CPU の約 5&nbsp;% です。フラットなら負荷はありません。</p>
 
 <h2 id="crossfade">クロスフェード</h2>
-<p><strong>Settings → Crossfade</strong>：オフ、または曲と曲を 2〜12 秒重ねます。同じアルバムの連続する曲を順番に再生するときはフェードしないので、アルバムはギャップレスのままです。とても短い曲や、まだダウンロードが終わっていないサーバーの曲もスキップします。</p>
+<p><strong>設定 → クロスフェード</strong>：オフ、または曲と曲を 2〜12 秒重ねます。同じアルバムの連続する曲を順番に再生するときはフェードしないので、アルバムはギャップレスのままです。とても短い曲や、まだダウンロードが終わっていないサーバーの曲もスキップします。</p>
 
 <h2 id="output-rate">出力サンプルレート</h2>
-<p><strong>Settings → Output rate</strong>：44.1、48、96、192&nbsp;kHz。変更するとオーディオサービスが再起動し、元の位置から再開します。ファイルが同じレートで何も適用していないとき（音量 100&nbsp;%、ReplayGain やイコライザーなし）は、サンプルは手を加えずに出力されます。ただし PipeWire や PulseAudio がリサンプリングすることはあります。iPhone では使えません。</p>
+<p><strong>設定 → 出力レート</strong>：44.1、48、96、192&nbsp;kHz。変更するとオーディオサービスが再起動し、元の位置から再開します。ファイルが同じレートで何も適用していないとき（音量 100&nbsp;%、ReplayGain やイコライザーなし）は、サンプルは手を加えずに出力されます。ただし PipeWire や PulseAudio がリサンプリングすることはあります。iPhone では使えません。</p>
 
 <h2 id="volume">音量とブースト</h2>
 <p>音量は 0 から 200&nbsp;% まで。100&nbsp;% まではシステムの音量で、それを超えると audiofilus がリミッター付きで信号を増幅するので、音圧の高いマスターでも歪みません。</p>

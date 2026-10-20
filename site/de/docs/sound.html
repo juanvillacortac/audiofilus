@@ -66,18 +66,18 @@
     <h1>Klang</h1>
     <p class="lede">ReplayGain, der Equalizer, Crossfade und die Ausgaberate. Der Dienst wendet sie an, sie wirken also auch bei geschlossenem Player.</p>
 
-<p>Alles steht unter <strong>Settings</strong>: Crossfade unter Playback, der Rest unter Sound.</p>
+<p>Alles steht unter <strong>Einstellungen</strong>: Crossfade unter Playback, der Rest unter Sound.</p>
 <h2 id="replaygain">ReplayGain</h2>
-<p>Spielt jeden Song (oder jedes Album) gleich laut ab, mithilfe der ReplayGain-Tags in deinen Dateien (auch der R128-Gains von Opus). <strong>Settings → ReplayGain</strong>:</p>
+<p>Spielt jeden Song (oder jedes Album) gleich laut ab, mithilfe der ReplayGain-Tags in deinen Dateien (auch der R128-Gains von Opus). <strong>Einstellungen → ReplayGain</strong>:</p>
 <ul>
 <li><strong>Auto</strong>: pro Album bei Wiedergabe in Reihenfolge, pro Song bei Zufall.</li>
-<li><strong>Per song</strong> oder <strong>Per album</strong>.</li>
-<li><strong>Off</strong>.</li>
+<li><strong>Pro Song</strong> oder <strong>Pro Album</strong>.</li>
+<li><strong>Aus</strong>.</li>
 </ul>
 <p>Kein Song wird über seinen Spitzenpegel angehoben, es übersteuert also nichts. Songs ohne ReplayGain-Tags (und entfernte Songs) laufen unverändert.</p>
 
 <h2 id="eq">Equalizer</h2>
-<p><strong>Settings → Equalizer</strong> öffnet zehn Bänder von 31&nbsp;Hz bis 16&nbsp;kHz, jedes von −12 bis +12&nbsp;dB.</p>
+<p><strong>Einstellungen → Equalizer</strong> öffnet zehn Bänder von 31&nbsp;Hz bis 16&nbsp;kHz, jedes von −12 bis +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="Der Equalizer: zehn senkrechte Regler mit dem Rock-Preset" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Taste</th><th>Funktion</th></tr>
@@ -87,13 +87,13 @@
 <tr><td><kbd>Y</kbd></td><td>Zurück auf Flat</td></tr>
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Schließen (Änderungen gelten sofort)</td></tr>
 </table>
-<p>Wenn du ein Band selbst verschiebst, wird das Preset zu <strong>Custom</strong>. Auf Touchscreens tippst du auf eine Säule, um ihre Höhe festzulegen. Mit eingeschaltetem Equalizer kosten zehn Bänder etwa 5&nbsp;% der CPU eines Handhelds bei niedrigstem Takt; flach kosten sie nichts.</p>
+<p>Wenn du ein Band selbst verschiebst, wird das Preset zu <strong>Eigene</strong>. Auf Touchscreens tippst du auf eine Säule, um ihre Höhe festzulegen. Mit eingeschaltetem Equalizer kosten zehn Bänder etwa 5&nbsp;% der CPU eines Handhelds bei niedrigstem Takt; flach kosten sie nichts.</p>
 
 <h2 id="crossfade">Crossfade</h2>
-<p><strong>Settings → Crossfade</strong>: Off oder 2 bis 12 Sekunden Überblendung zwischen Songs. Zwischen aufeinanderfolgenden Songs desselben Albums in Reihenfolge wird nicht überblendet, Alben bleiben also lückenlos. Sehr kurze Songs und Server-Songs, die noch nicht geladen sind, werden ebenfalls ausgelassen.</p>
+<p><strong>Einstellungen → Überblenden</strong>: Off oder 2 bis 12 Sekunden Überblendung zwischen Songs. Zwischen aufeinanderfolgenden Songs desselben Albums in Reihenfolge wird nicht überblendet, Alben bleiben also lückenlos. Sehr kurze Songs und Server-Songs, die noch nicht geladen sind, werden ebenfalls ausgelassen.</p>
 
 <h2 id="output-rate">Ausgaberate</h2>
-<p><strong>Settings → Output rate</strong>: 44,1, 48, 96 oder 192&nbsp;kHz. Eine Änderung startet den Audiodienst neu, der dort weitermacht, wo er war. Hat die Datei dieselbe Rate und ist nichts aktiv (Lautstärke 100&nbsp;%, kein ReplayGain oder Equalizer), gehen die Samples unverändert raus, auch wenn PipeWire oder PulseAudio trotzdem neu sampeln können. Auf dem iPhone nicht verfügbar.</p>
+<p><strong>Einstellungen → Ausgaberate</strong>: 44,1, 48, 96 oder 192&nbsp;kHz. Eine Änderung startet den Audiodienst neu, der dort weitermacht, wo er war. Hat die Datei dieselbe Rate und ist nichts aktiv (Lautstärke 100&nbsp;%, kein ReplayGain oder Equalizer), gehen die Samples unverändert raus, auch wenn PipeWire oder PulseAudio trotzdem neu sampeln können. Auf dem iPhone nicht verfügbar.</p>
 
 <h2 id="volume">Lautstärke und Verstärkung</h2>
 <p>Die Lautstärke reicht von 0 bis 200&nbsp;%. Bis 100&nbsp;% ist es die Systemlautstärke; darüber verstärkt audiofilus das Signal mit einem Limiter, damit laute Master nicht verzerren.</p>

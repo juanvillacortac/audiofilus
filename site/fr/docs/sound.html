@@ -66,34 +66,34 @@
     <h1>Son</h1>
     <p class="lede">ReplayGain, l’égaliseur, le fondu enchaîné et la fréquence de sortie. C’est le service qui les applique, donc ils marchent lecteur fermé.</p>
 
-<p>Tout est dans <strong>Settings</strong>&nbsp;: Crossfade dans Playback, le reste dans Sound.</p>
+<p>Tout est dans <strong>Réglages</strong>&nbsp;: Fondu enchaîné dans Lecture, le reste dans Son.</p>
 <h2 id="replaygain">ReplayGain</h2>
-<p>Joue chaque chanson (ou chaque album) au même volume perçu, grâce aux tags ReplayGain de tes fichiers (et aux gains R128 d’Opus). <strong>Settings → ReplayGain</strong>&nbsp;:</p>
+<p>Joue chaque chanson (ou chaque album) au même volume perçu, grâce aux tags ReplayGain de tes fichiers (et aux gains R128 d’Opus). <strong>Réglages → ReplayGain</strong>&nbsp;:</p>
 <ul>
 <li><strong>Auto</strong>&nbsp;: par album en lecture dans l’ordre, par chanson en aléatoire.</li>
-<li><strong>Per song</strong> (par chanson) ou <strong>Per album</strong> (par album).</li>
-<li><strong>Off</strong>.</li>
+<li><strong>Par titre</strong> (par chanson) ou <strong>Par album</strong>.</li>
+<li><strong>Non</strong>.</li>
 </ul>
 <p>Il ne pousse jamais une chanson au-delà de son pic, donc rien ne sature. Les chansons sans tags ReplayGain (et les chansons distantes) sont jouées telles quelles.</p>
 
 <h2 id="eq">Égaliseur</h2>
-<p><strong>Settings → Equalizer</strong> ouvre dix bandes de 31&nbsp;Hz à 16&nbsp;kHz, chacune de −12 à +12&nbsp;dB.</p>
+<p><strong>Réglages → Égaliseur</strong> ouvre dix bandes de 31&nbsp;Hz à 16&nbsp;kHz, chacune de −12 à +12&nbsp;dB.</p>
 <figure><img class="px shot" src="../../img/eq.png" alt="L’égaliseur&nbsp;: dix curseurs verticaux avec le préréglage Rock" width="360" height="240" loading="lazy"></figure>
 <table>
 <tr><th>Bouton</th><th>Effet</th></tr>
 <tr><td><kbd>←</kbd>/<kbd>→</kbd></td><td>Choisir une bande</td></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>La déplacer de 1 dB</td></tr>
-<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Passer d’un préréglage à l’autre&nbsp;: Flat, Bass, Treble, Vocal, Rock, Metal, Pop, Electronic, Jazz, Classical, Loudness</td></tr>
-<tr><td><kbd>Y</kbd></td><td>Revenir à Flat</td></tr>
+<tr><td><kbd>X</kbd>, <kbd>L1</kbd>/<kbd>R1</kbd></td><td>Passer d’un préréglage à l’autre&nbsp;: Plat, Basses, Aigus, Voix, Rock, Metal, Pop, Électro, Jazz, Classique, Loudness</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Revenir à Plat</td></tr>
 <tr><td><kbd>A</kbd> / <kbd>B</kbd></td><td>Fermer (les changements s’appliquent au fur et à mesure)</td></tr>
 </table>
-<p>Déplacer une bande toi-même transforme le préréglage en <strong>Custom</strong>. Sur écran tactile, touche une colonne pour régler sa hauteur. Égaliseur actif, les dix bandes coûtent environ 5&nbsp;% du processeur d’une console portable à sa fréquence la plus basse&#8239;; à plat, elles ne coûtent rien.</p>
+<p>Déplacer une bande toi-même transforme le préréglage en <strong>Perso</strong>. Sur écran tactile, touche une colonne pour régler sa hauteur. Égaliseur actif, les dix bandes coûtent environ 5&nbsp;% du processeur d’une console portable à sa fréquence la plus basse&#8239;; à plat, elles ne coûtent rien.</p>
 
 <h2 id="crossfade">Fondu enchaîné</h2>
-<p><strong>Settings → Crossfade</strong>&nbsp;: Off, ou de 2 à 12 secondes de chevauchement entre les chansons. Il ne fait pas de fondu entre deux chansons consécutives du même album jouées dans l’ordre, pour que les albums restent sans blanc. Il ignore aussi les chansons très courtes et celles des serveurs qui ne sont pas encore téléchargées.</p>
+<p><strong>Réglages → Fondu enchaîné</strong>&nbsp;: Off, ou de 2 à 12 secondes de chevauchement entre les chansons. Il ne fait pas de fondu entre deux chansons consécutives du même album jouées dans l’ordre, pour que les albums restent sans blanc. Il ignore aussi les chansons très courtes et celles des serveurs qui ne sont pas encore téléchargées.</p>
 
 <h2 id="output-rate">Fréquence de sortie</h2>
-<p><strong>Settings → Output rate</strong>&nbsp;: 44,1, 48, 96 ou 192&nbsp;kHz. La changer redémarre le service audio, qui reprend là où il en était. Si le fichier est à la même fréquence et que rien n’est appliqué (volume à 100&nbsp;%, ni ReplayGain ni égaliseur), les échantillons sortent intacts, même si PipeWire ou PulseAudio peuvent encore rééchantillonner. Pas disponible sur iPhone.</p>
+<p><strong>Réglages → Fréq. de sortie</strong>&nbsp;: 44,1, 48, 96 ou 192&nbsp;kHz. La changer redémarre le service audio, qui reprend là où il en était. Si le fichier est à la même fréquence et que rien n’est appliqué (volume à 100&nbsp;%, ni ReplayGain ni égaliseur), les échantillons sortent intacts, même si PipeWire ou PulseAudio peuvent encore rééchantillonner. Pas disponible sur iPhone.</p>
 
 <h2 id="volume">Volume et amplification</h2>
 <p>Le volume va de 0 à 200&nbsp;%. Jusqu’à 100&nbsp;%, c’est le volume du système&#8239;; au-delà, audiofilus amplifie le signal avec un limiteur pour que les masters forts ne saturent pas.</p>

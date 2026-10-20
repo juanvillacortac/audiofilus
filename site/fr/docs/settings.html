@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Réglages · documentation audiofilus</title>
-<meta name="description" content="Chaque tuile de Settings, section par section.">
+<meta name="description" content="Chaque tuile de Réglages, section par section.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -64,38 +64,38 @@
   </aside>
   <article>
     <h1>Réglages</h1>
-    <p class="lede">Chaque tuile de Settings, section par section.</p>
+    <p class="lede">Chaque tuile de Réglages, section par section.</p>
 
 <p>Les réglages sont des tuiles&nbsp;: un interrupteur change avec <kbd>A</kbd>&#8239;; un choix s’ouvre avec <kbd>A</kbd>, puis <kbd>←</kbd>/<kbd>→</kbd> choisissent (ça s’applique tout de suite) et <kbd>A</kbd> ou <kbd>B</kbd> le ferment. Ils sont enregistrés dans <code>audiofilus.json</code>.</p>
-<h2 id="library">Library</h2>
-<ul><li><strong>Folder</strong>&nbsp;: ton dossier de musique. <strong>Rescan</strong>&nbsp;: trouver les nouvelles chansons. <strong>Servers</strong>&nbsp;: <a href="servers.html">Subsonic, Navidrome, Jellyfin</a>.</li></ul>
-<h2 id="playback">Playback</h2>
-<ul><li><strong>Shuffle</strong> (aléatoire), <strong>Repeat</strong> (Off, All, One), <strong>Volume</strong> (de 0 à 200&nbsp;%), <strong>Crossfade</strong> (de Off à 12 s).</li></ul>
-<h2 id="sound">Sound</h2>
-<ul><li><strong>ReplayGain</strong>, <strong>Equalizer</strong>, <strong>Output rate</strong>&nbsp;: vois <a href="sound.html">Son</a>.</li></ul>
-<h2 id="online">Online</h2>
-<ul><li><strong>Scrobbling</strong>&nbsp;: <a href="scrobbling.html">Last.fm et ListenBrainz</a>. <strong>Lyrics from the web</strong>&nbsp;: chercher les paroles sur LRCLIB.</li></ul>
-<h2 id="screen">Screen</h2>
+<h2 id="library">Bibliothèque</h2>
+<ul><li><strong>Dossier</strong>&nbsp;: ton dossier de musique. <strong>Réanalyser</strong>&nbsp;: trouver les nouvelles chansons. <strong>Serveurs</strong>&nbsp;: <a href="servers.html">Subsonic, Navidrome, Jellyfin</a>.</li></ul>
+<h2 id="playback">Lecture</h2>
+<ul><li><strong>Aléatoire</strong>, <strong>Répéter</strong> (Off, All, One), <strong>Volume</strong> (de 0 à 200&nbsp;%), <strong>Fondu enchaîné</strong> (de Off à 12 s).</li></ul>
+<h2 id="sound">Son</h2>
+<ul><li><strong>ReplayGain</strong>, <strong>Égaliseur</strong>, <strong>Fréq. de sortie</strong>&nbsp;: vois <a href="sound.html">Son</a>.</li></ul>
+<h2 id="online">En ligne</h2>
+<ul><li><strong>Scrobbling</strong>&nbsp;: <a href="scrobbling.html">Last.fm et ListenBrainz</a>. <strong>Paroles du web</strong>&nbsp;: chercher les paroles sur LRCLIB.</li></ul>
+<h2 id="screen">Écran</h2>
 <ul>
-<li><strong>Sleep after</strong>&nbsp;: Never, 15 s, 30 s, 1, 2 ou 5 minutes sans rien toucher. Pendant la lecture, ça ne compte que sur Now Playing.</li>
-<li><strong>Sleep mode</strong>&nbsp;: <strong>Backlight</strong> éteint le rétroéclairage&#8239;; <strong>OLED (black)</strong> peint simplement l’écran en noir, ce qui sur un écran OLED revient à éteindre les pixels.</li>
-<li><strong>24 h clock</strong> (horloge 24 h).</li>
+<li><strong>Veille après</strong>&nbsp;: Jamais, 15 s, 30 s, 1, 2 ou 5 minutes sans rien toucher. Pendant la lecture, ça ne compte que sur En lecture.</li>
+<li><strong>Mode veille</strong>&nbsp;: <strong>Rétroéclairage</strong> éteint le rétroéclairage&#8239;; <strong>OLED (noir)</strong> peint simplement l’écran en noir, ce qui sur un écran OLED revient à éteindre les pixels.</li>
+<li><strong>Heure sur 24 h</strong> (horloge 24 h).</li>
 </ul>
 <p>Les réglages de veille n’apparaissent que sur les consoles portables.</p>
-<h2 id="system">System</h2>
+<h2 id="system">Système</h2>
 <ul>
-<li><strong>Language</strong>&nbsp;: English, Español, Türkçe (l’application n’existe pas encore en français).</li>
-<li><strong>Music sounds</strong> et <strong>Interface sounds</strong>&nbsp;: Off, Low, Medium ou High, pour les sons chiptune des actions musicales et des menus.</li>
-<li><strong>Swap A/B</strong>.</li>
+<li><strong>Langue</strong>&nbsp;: English, Español, Türkçe, Deutsch, Français, 日本語, 中文.</li>
+<li><strong>Sons de la musique</strong> et <strong>Sons de l’interface</strong>&nbsp;: Off, Low, Moyens ou Forts, pour les sons chiptune des actions musicales et des menus.</li>
+<li><strong>Inverser A/B</strong>.</li>
 </ul>
-<h2 id="about">About</h2>
-<ul><li><strong>GitHub</strong> et <strong>Buy me a coffee</strong> affichent un QR code.</li></ul>
-<h2 id="exit">Exit</h2>
+<h2 id="about">À propos</h2>
+<ul><li><strong>GitHub</strong> et <strong>Offre-moi un café</strong> affichent un QR code.</li></ul>
+<h2 id="exit">Quitter</h2>
 <ul>
-<li><strong>Keep playing on close</strong>&nbsp;: si la musique continue quand le lecteur se ferme sans Quit. Activé par défaut sur ordinateur, désactivé sur les consoles portables.</li>
-<li><strong>Go to background</strong>&nbsp;: fermer le lecteur, garder la musique. <strong>Quit</strong>&nbsp;: tout arrêter.</li>
+<li><strong>Continuer à la fermeture</strong>&nbsp;: si la musique continue quand le lecteur se ferme sans Quitter. Activé par défaut sur ordinateur, désactivé sur les consoles portables.</li>
+<li><strong>Passer en arrière-plan</strong>&nbsp;: fermer le lecteur, garder la musique. <strong>Quitter</strong>&nbsp;: tout arrêter.</li>
 </ul>
-<p>Sur iPhone, Output rate, Keep playing on close et Go to background n’apparaissent pas&nbsp;: la musique continue déjà quand tu quittes l’app.</p>
+<p>Sur iPhone, Fréq. de sortie, Continuer à la fermeture et Passer en arrière-plan n’apparaissent pas&nbsp;: la musique continue déjà quand tu quittes l’app.</p>
 
     <nav class="pager" aria-label="Pages"><a href="tracker.html">← Tracker</a><a href="handhelds.html">Systèmes portables →</a></nav>
   </article>

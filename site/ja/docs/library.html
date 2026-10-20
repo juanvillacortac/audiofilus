@@ -70,28 +70,28 @@
     <p class="lede">音楽の閲覧、検索、整理と、これまでに聴いたものの確認。</p>
 
 <h2 id="browse">閲覧</h2>
-<p><strong>Library</strong> の左側にはタブがあります：<strong>Search</strong>、<strong>Songs</strong>、<strong>Albums</strong>（ジャケットのグリッド）、<strong>Artists</strong>、<strong>Playlists</strong>、<strong>Folders</strong>。<kbd>A</kbd> で開くか再生、<kbd>X</kbd> でシャッフル再生、<kbd>X</kbd> を 2 回押すとライブラリ全体からランダムに 1 曲再生します。<kbd>L1</kbd>/<kbd>R1</kbd> で頭文字ごとにジャンプします。どの項目でも <kbd>START</kbd> でメニューが開きます：Play、Shuffle play、Play next、Add to queue、Go to album、Go to artist、Add to a playlist、Like、Rating。</p>
+<p><strong>ライブラリ</strong>の左側にはタブがあります：<strong>検索</strong>、<strong>曲</strong>、<strong>アルバム</strong>（ジャケットのグリッド）、<strong>アーティスト</strong>、<strong>リスト</strong>、<strong>フォルダ</strong>。<kbd>A</kbd> で開くか再生、<kbd>X</kbd> でシャッフル再生、<kbd>X</kbd> を 2 回押すとライブラリ全体からランダムに1 曲再生します。<kbd>L1</kbd>/<kbd>R1</kbd> で頭文字ごとにジャンプします。どの項目でも <kbd>START</kbd> でメニューが開きます：再生、シャッフル再生、次に再生、キューに追加、アルバムへ、アーティストへ、リストに追加、いいね、評価。</p>
 <figure><img class="px shot" src="../../img/albums.png" alt="ジャケットが並ぶアルバムのグリッド" width="360" height="240" loading="lazy"></figure>
 
 <h2 id="search">検索</h2>
-<p>曲名、アーティスト、アルバムから検索します。画面キーボード（<kbd>A</kbd> で入力、<kbd>B</kbd> で削除、<kbd>X</kbd> でスペース、<kbd>Y</kbd> でクリア）か、実際のキーボードで入力します。YouTube Music を設定していればその結果も表示され、All、Library、YouTube で絞り込めます。</p>
+<p>曲名、アーティスト、アルバムから検索します。画面キーボード（<kbd>A</kbd> で入力、<kbd>B</kbd> で削除、<kbd>X</kbd> でスペース、<kbd>Y</kbd> でクリア）か、実際のキーボードで入力します。YouTube Music を設定していればその結果も表示され、すべて、ライブラリ、YouTube で絞り込めます。</p>
 
 <h2 id="playlists">プレイリスト</h2>
 <ul>
-<li>音楽フォルダー内の <code>.m3u</code> プレイリストは <strong>Playlists</strong> に表示されます。</li>
-<li>自分で作ったプレイリストは <code>data/playlists</code> に <code>.m3u8</code> ファイルとして保存されます。Playlists タブで <kbd>START</kbd> を押すか、曲・アルバム・アーティストの <strong>Add to a playlist</strong> で作成できます。<strong>Save queue as playlist</strong>（Now Playing の More メニュー）でキューの内容を保存できます。</li>
+<li>音楽フォルダー内の <code>.m3u</code> プレイリストは<strong>リスト</strong>に表示されます。</li>
+<li>自分で作ったプレイリストは <code>data/playlists</code> に <code>.m3u8</code> ファイルとして保存されます。リストタブで <kbd>START</kbd> を押すか、曲・アルバム・アーティストの<strong>リストに追加</strong>で作成できます。<strong>キューを保存</strong>（再生中のその他メニュー）でキューの内容を保存できます。</li>
 <li>自分のプレイリストの中では、曲のメニューで上下に移動したり削除したりできます。プレイリストのメニューでは名前の変更や削除ができます。</li>
 </ul>
 
 <h2 id="liked">お気に入り、最近、よく聴く曲、統計</h2>
-<p>Playlists タブの先頭には、自動で作られるリストがあります：</p>
+<p>リストタブの先頭には、自動で作られるリストがあります：</p>
 <ul>
-<li><strong>Liked</strong>：<strong>Like</strong> を付けた曲（新しい順）。お気に入りの曲は Now Playing でジャケットにハートが表示されます。</li>
-<li><strong>Recent</strong>：最近聴いた異なる 100 曲。</li>
-<li><strong>Most played</strong>：よく聴く曲トップ 100。</li>
-<li><strong>Stats</strong>：総再生回数と時間、直近 1 か月、曲とアーティストの数、よく聴くアーティスト・アルバム・曲のランキング。ランキングの曲で <kbd>A</kbd> を押すと再生します。</li>
+<li><strong>いいね</strong>：<strong>いいね</strong>を付けた曲（新しい順）。お気に入りの曲は再生中でジャケットにハートが表示されます。</li>
+<li><strong>最近</strong>：最近聴いた異なる 100 曲。</li>
+<li><strong>よく聴く曲</strong>：よく聴く曲トップ 100。</li>
+<li><strong>統計</strong>：総再生回数と時間、直近 1 か月、曲とアーティストの数、よく聴くアーティスト・アルバム・曲のランキング。ランキングの曲で <kbd>A</kbd> を押すと再生します。</li>
 </ul>
-<p>曲の半分（または 4 分）が再生されると、プレイヤーが開いていたかどうかに関係なく「聴いた」とカウントされます。<strong>Rating</strong> は 1 から 5 まで（<kbd>A</kbd> を押すたびに次の値へ）。Subsonic や Jellyfin のサーバーの曲のお気に入りと評価はサーバーにも送られます。<a href="servers.html">サーバー</a>を参照してください。</p>
+<p>曲の半分（または 4 分）が再生されると、プレイヤーが開いていたかどうかに関係なく「聴いた」とカウントされます。<strong>評価</strong>は 1 から 5 まで（<kbd>A</kbd> を押すたびに次の値へ）。Subsonic や Jellyfin のサーバーの曲のお気に入りと評価はサーバーにも送られます。<a href="servers.html">サーバー</a>を参照してください。</p>
 <figure><img class="px shot" src="../../img/stats.png" alt="統計：再生回数、時間、直近 1 か月、よく聴くアーティスト" width="360" height="240" loading="lazy"></figure>
 
 <h2 id="formats">対応フォーマット</h2>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>スクロブル · audiofilus ドキュメント</title>
-<meta name="description" content="聴いた曲を Last.fm と ListenBrainz に記録します。">
+<meta name="description" content="聴いた曲をLast.fm と ListenBrainzに記録します。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -67,16 +67,16 @@
   </aside>
   <article>
     <h1>スクロブル</h1>
-    <p class="lede">聴いた曲を Last.fm と ListenBrainz に記録します。</p>
+    <p class="lede">聴いた曲をLast.fm と ListenBrainzに記録します。</p>
 
-<p><strong>Settings → Scrobbling</strong> に両方のアカウントがあります。30 秒以上の曲で、半分（または 4 分）が再生されると 1 回とカウントされます。「再生中」は再生開始の数秒後に送られます。送信はサービスが行うので、プレイヤーを閉じても動作します。ラジオとポッドキャストのエピソードはスクロブルされません。</p>
+<p><strong>設定 → 再生の記録</strong>に両方のアカウントがあります。30 秒以上の曲で、半分（または 4 分）が再生されると 1 回とカウントされます。「再生中」は再生開始の数秒後に送られます。送信はサービスが行うので、プレイヤーを閉じても動作します。ラジオとポッドキャストのエピソードはスクロブルされません。</p>
 <h2 id="lastfm">Last.fm</h2>
 <ol>
 <li><strong>Last.fm</strong> を選びます。Last.fm の認証ページの QR コードが表示されます。</li>
 <li>スマートフォンで読み取り、Last.fm アカウントで audiofilus を承認します。</li>
 <li>数秒で、audiofilus にあなたのユーザー名で接続されたと表示されます。</li>
 </ol>
-<p>もう一度選ぶと接続を解除します。<strong>API key missing</strong> と表示される場合、お使いのビルドには audiofilus の Last.fm アプリケーションキーが含まれていません。公式リリースには含まれています。</p>
+<p>もう一度選ぶと接続を解除します。<strong>API キーなし</strong>と表示される場合、お使いのビルドには audiofilus の Last.fm アプリケーションキーが含まれていません。公式リリースには含まれています。</p>
 
 <h2 id="listenbrainz">ListenBrainz</h2>
 <p><strong>ListenBrainz</strong> を選び、ユーザートークン（ListenBrainz の設定ページにあります）を入力します。audiofilus がそれを確認し、ユーザー名を表示します。</p>
@@ -85,7 +85,7 @@
 <p>送信できなかった再生記録は待機し、接続が戻ると送信されます（数分ごとに再試行します）。間違ったトークンや取り消されたセッションの場合は、再試行せずに破棄します。</p>
 
 <h2 id="servers">サーバー側で</h2>
-<p>Subsonic や Jellyfin のサーバーの曲は、<strong>Count on the server</strong> をオフにしない限り、そのサーバーでもカウントされます。</p>
+<p>Subsonic や Jellyfin のサーバーの曲は、<strong>サーバーで記録</strong>をオフにしない限り、そのサーバーでもカウントされます。</p>
 
     <nav class="pager" aria-label="ページ"><a href="youtube-music.html">← YouTube Music</a><a href="controls.html">操作方法 →</a></nav>
   </article>

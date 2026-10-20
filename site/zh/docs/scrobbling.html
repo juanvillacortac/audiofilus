@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Scrobble 记录 · audiofilus 文档</title>
+<title>播放记录 · audiofilus 文档</title>
 <meta name="description" content="在 Last.fm 和 ListenBrainz 上记录你听过的歌。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html" aria-current="page">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html" aria-current="page">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -76,17 +76,17 @@ body { line-break: strict; }
     </nav>
   </aside>
   <article>
-    <h1>Scrobble 记录</h1>
+    <h1>播放记录</h1>
     <p class="lede">在 Last.fm 和 ListenBrainz 上记录你听过的歌。</p>
 
-<p><strong>设置 → Scrobble 记录</strong> 中包含两个账号。时长至少 30 秒的歌曲播放过半（或满四分钟）即算一次；开始播放几秒后会发送“正在播放”。由服务负责发送，所以播放器关闭时也有效。电台和播客单集不会被记录。</p>
+<p><strong>设置 → 播放记录</strong> 中包含两个账号。时长至少 30 秒的歌曲播放过半（或满四分钟）即算一次；开始播放几秒后会发送“正在播放”。由服务负责发送，所以播放器关闭时也有效。电台和播客单集不会被记录。</p>
 <h2 id="lastfm">Last.fm</h2>
 <ol>
 <li>选择 <strong>Last.fm</strong>。会出现一个指向 Last.fm 授权页面的二维码。</li>
 <li>用手机扫码，并用你的 Last.fm 账号授权 audiofilus。</li>
 <li>几秒钟内 audiofilus 就会显示已以你的用户身份连接。</li>
 </ol>
-<p>再次选择即可断开连接。如果提示 <strong>API key missing</strong>，说明你的构建版本不包含 audiofilus 的 Last.fm 应用密钥；官方发布版包含该密钥。</p>
+<p>再次选择即可断开连接。如果提示 <strong>缺少 API 密钥</strong>，说明你的构建版本不包含 audiofilus 的 Last.fm 应用密钥；官方发布版包含该密钥。</p>
 
 <h2 id="listenbrainz">ListenBrainz</h2>
 <p>选择 <strong>ListenBrainz</strong> 并输入你的用户令牌（在 ListenBrainz 设置页面中获取）。audiofilus 会验证它并显示你的用户名。</p>
@@ -95,7 +95,7 @@ body { line-break: strict; }
 <p>无法发送的收听记录会排队等待，联网后再发送（每隔几分钟重试一次）。令牌错误或会话被撤销时，记录会被丢弃而不是重试。</p>
 
 <h2 id="servers">在你的服务器上</h2>
-<p>来自 Subsonic 或 Jellyfin 服务器的歌曲也会计入该服务器，除非你关闭 <strong>计入服务器</strong>。</p>
+<p>来自 Subsonic 或 Jellyfin 服务器的歌曲也会计入该服务器，除非你关闭 <strong>在服务器上计数</strong>。</p>
 
     <nav class="pager" aria-label="页面"><a href="youtube-music.html">← YouTube Music</a><a href="controls.html">操作 →</a></nav>
   </article>

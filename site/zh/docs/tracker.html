@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html" aria-current="page">Tracker</a></li>
@@ -142,12 +142,12 @@ body { line-break: strict; }
 <p>写下音符时会发声，在音符上按 <kbd>A</kbd> 会播放它。在没有乐器的步上写音符时，会使用上次用过的乐器。C-0 之下是 OFF，用于释放音符。链、乐句、乐器和表在第一次编辑时创建。</p>
 <p><kbd>Start</kbd> 菜单包括：</p>
 <ul>
-<li><strong>从头播放歌曲</strong>。</li>
+<li><strong>播放整首歌</strong>。</li>
 <li><strong>撤销</strong>：每次按 <kbd>A</kbd> 算一步，最多可撤销 64 步。</li>
 <li>对当前视图显示的内容（链、乐句、乐器、表、律动或波形）执行 <strong>复制</strong>、<strong>粘贴</strong>、<strong>克隆为新的</strong> 和 <strong>清空</strong>。克隆会复制到第一个空闲编号，你来时所在的歌曲单元格或链步骤会改为指向副本。</li>
 <li>在波形视图中，有八种 <strong>PICO-8 形状</strong>，可复制到当前波形。</li>
 <li><strong>歌曲</strong>：新建 Game Boy 或自由模式歌曲、你保存的歌曲和示例。</li>
-<li><strong>导出到曲库</strong>、<strong>删除这首歌</strong> 和 <strong>返回游戏</strong>。</li>
+<li><strong>导出到音乐库</strong>、<strong>删除这首歌</strong> 和 <strong>回到游戏</strong>。</li>
 </ul>
 <p>按住 <kbd>FN</kbd> 查看当前视图的操作。</p>
 
@@ -232,7 +232,7 @@ body { line-break: strict; }
 </ul>
 
 <h2 id="import-export">导入和导出</h2>
-<p><kbd>Start</kbd> → <strong>导出到曲库</strong> 会把歌曲完整渲染一遍，生成 WAV 并保存到音乐文件夹内的 <code>audiofilus tracker</code> 文件夹中。曲库会收录它，所以它能像其他歌曲一样在后台播放。</p>
+<p><kbd>Start</kbd> → <strong>导出到音乐库</strong> 会把歌曲完整渲染一遍，生成 WAV 并保存到音乐文件夹内的 <code>audiofilus tracker</code> 文件夹中。音乐库会收录它，所以它能像其他歌曲一样在后台播放。</p>
 <p>用旧版 tracker 制作的歌曲打开时会自动转换：每个 pattern 变成每个声道一个乐句和一条链，其效果变成指令（琶音 → <code>C</code>，占空比 → <code>W</code>，弯音 → <code>P</code>）。</p>
 <p>计划中：MOD/XM 导入和导出、LSDJ 歌曲导入，以及 MIDI 同步。</p>
 

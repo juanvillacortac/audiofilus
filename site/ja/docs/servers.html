@@ -70,23 +70,23 @@
     <p class="lede">音楽サーバーをもう一つのライブラリとして使えます。ストリーミング、キャッシュ、お気に入り、再生回数に対応。</p>
 
 <h2 id="add">サーバーを追加する</h2>
-<p><strong>Settings → Servers → Add server</strong>。種類（Navidrome、gonic、Airsonic などを含む Subsonic/OpenSubsonic、または Jellyfin/Emby）を選び、名前、アドレス（<code>http://ip:port</code>）、ユーザー名とパスワードを入力します。保存前に接続をテストします。応答がない場合は、もう一度試す、情報を修正する、そのまま保存する、のいずれかを選べます。</p>
+<p><strong>設定 → サーバー → サーバーを追加</strong>。種類（Navidrome、gonic、Airsonic などを含む Subsonic/OpenSubsonic、または Jellyfin/Emby）を選び、名前、アドレス（<code>http://ip:port</code>）、ユーザー名とパスワードを入力します。保存前に接続をテストします。応答がない場合は、もう一度試す、情報を修正する、そのまま保存する、のいずれかを選べます。</p>
 <p>各サーバーは画面バーのもう一つのライブラリになり、アルバム、アーティスト、曲、プレイリスト、検索が使えます。カタログは保存されるので、ネットワークがなくてもすぐに表示されます。</p>
 
 <h2 id="options">サーバーごとのオプション</h2>
 <ul>
-<li><strong>Listening quality</strong>（音質）：デフォルトは MP3 192&nbsp;kbps（ダウンロード量が少なく、デコードも軽い）。320、128、96、または Original（変換なし）。</li>
-<li><strong>Test connection</strong>（接続テスト）、<strong>Refresh catalog</strong>（カタログ更新）、<strong>Change details</strong>（情報の変更）、<strong>Remove server</strong>（サーバーの削除）。</li>
+<li><strong>再生の品質</strong>（音質）：デフォルトは MP3 192&nbsp;kbps（ダウンロード量が少なく、デコードも軽い）。320、128、96、または Original（変換なし）。</li>
+<li><strong>接続をテスト</strong>（接続テスト）、<strong>カタログを更新</strong>（カタログ更新）、<strong>設定を変更</strong>（情報の変更）、<strong>サーバーを削除</strong>（サーバーの削除）。</li>
 </ul>
 
 <h2 id="cache">ストリーミングとキャッシュ</h2>
-<p>曲は再生しながら SD カードにキャッシュされ（デフォルトで 400&nbsp;MB、古いものから削除）、次の曲は先に取得されます。キャッシュ済みの曲はネットワークなしで再生できます。サーバーの曲を <strong>Download to library</strong> で、タグとジャケット付きで音楽フォルダーに保存することもできます。</p>
+<p>曲は再生しながら SD カードにキャッシュされ（デフォルトで 400&nbsp;MB、古いものから削除）、次の曲は先に取得されます。キャッシュ済みの曲はネットワークなしで再生できます。サーバーの曲を<strong>ライブラリにダウンロード</strong>で、タグとジャケット付きで音楽フォルダーに保存することもできます。</p>
 
 <h2 id="favorites">お気に入り、評価、再生回数</h2>
 <ul>
-<li>サーバーの曲に Like や評価を付けると、サーバー側でもスターや評価が付きます。Jellyfin にはお気に入りはありますが、1〜5 の評価はありません。</li>
-<li>サーバーのカタログを読み込むと、スターや評価の付いた曲が Liked リストに追加されます。</li>
-<li>聴いた曲はサーバーでもカウントされます（Navidrome 側で設定すれば、Last.fm や ListenBrainz に転送できます）。<strong>Settings → Scrobbling → Count on the server</strong> でオフにできます。</li>
+<li>サーバーの曲にいいねや評価を付けると、サーバー側でもスターや評価が付きます。Jellyfin にはお気に入りはありますが、1〜5 の評価はありません。</li>
+<li>サーバーのカタログを読み込むと、スターや評価の付いた曲がいいねリストに追加されます。</li>
+<li>聴いた曲はサーバーでもカウントされます（Navidrome 側で設定すれば、Last.fm や ListenBrainz に転送できます）。<strong>設定 → 再生の記録 → サーバーで記録</strong>でオフにできます。</li>
 </ul>
 <p>サーバーのプレイリストは audiofilus から再生できますが、編集はできません。</p>
 

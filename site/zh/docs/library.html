@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>曲库 · audiofilus 文档</title>
+<title>音乐库 · audiofilus 文档</title>
 <meta name="description" content="浏览、搜索和整理你的音乐，查看你最近在听什么。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html" aria-current="page">曲库</a></li>
+          <li><a href="library.html" aria-current="page">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -76,28 +76,28 @@ body { line-break: strict; }
     </nav>
   </aside>
   <article>
-    <h1>你的曲库</h1>
+    <h1>你的音乐库</h1>
     <p class="lede">浏览、搜索和整理你的音乐，查看你最近在听什么。</p>
 
 <h2 id="browse">浏览</h2>
-<p><strong>曲库</strong> 左侧有标签页：<strong>搜索</strong>、<strong>歌曲</strong>、<strong>专辑</strong>（封面网格）、<strong>艺人</strong>、<strong>播放列表</strong> 和 <strong>文件夹</strong>。<kbd>A</kbd> 打开或播放，<kbd>X</kbd> 随机播放，按两下 <kbd>X</kbd> 从整个曲库中随机播放一首。<kbd>L1</kbd>/<kbd>R1</kbd> 按首字母跳转。在任意项目上按 <kbd>START</kbd> 打开其菜单：播放、随机播放、下一首播放、加入队列、转到专辑、转到艺人、添加到播放列表、喜欢和评分。</p>
+<p><strong>音乐库</strong> 左侧有标签页：<strong>搜索</strong>、<strong>歌曲</strong>、<strong>专辑</strong>（封面网格）、<strong>艺人</strong>、<strong>歌单</strong> 和 <strong>文件夹</strong>。<kbd>A</kbd> 打开或播放，<kbd>X</kbd> 随机播放，按两下 <kbd>X</kbd> 从整个音乐库中随机播放一首。<kbd>L1</kbd>/<kbd>R1</kbd> 按首字母跳转。在任意项目上按 <kbd>START</kbd> 打开其菜单：播放、随机播放、下一首播放、加入队列、转到专辑、转到艺人、加入歌单、喜欢和评分。</p>
 <figure><img class="px shot" src="../../img/albums.png" alt="带封面的专辑网格" width="360" height="240" loading="lazy"></figure>
 
 <h2 id="search">搜索</h2>
-<p>搜索会查找歌曲标题、艺人和专辑。用屏幕键盘输入（<kbd>A</kbd> 输入，<kbd>B</kbd> 删除，<kbd>X</kbd> 空格，<kbd>Y</kbd> 清空），也可以用实体键盘。如果设置了 YouTube Music，它的结果也会出现，可用“全部”、“曲库”或 YouTube 筛选。</p>
+<p>搜索会查找歌曲标题、艺人和专辑。用屏幕键盘输入（<kbd>A</kbd> 输入，<kbd>B</kbd> 删除，<kbd>X</kbd> 空格，<kbd>Y</kbd> 清空），也可以用实体键盘。如果设置了 YouTube Music，它的结果也会出现，可用“全部”、“音乐库”或 YouTube 筛选。</p>
 
-<h2 id="playlists">播放列表</h2>
+<h2 id="playlists">歌单</h2>
 <ul>
-<li>音乐文件夹中的 <code>.m3u</code> 播放列表会出现在 <strong>播放列表</strong> 中。</li>
-<li>你自己的播放列表以 <code>.m3u8</code> 文件保存在 <code>data/playlists</code> 中。在“播放列表”标签页按 <kbd>START</kbd>，或在任意歌曲、专辑或艺人上使用 <strong>添加到播放列表</strong> 即可创建。<strong>将队列保存为播放列表</strong>（正在播放界面的“更多”菜单）会保留队列中的内容。</li>
-<li>在你自己的播放列表中，歌曲菜单可以上移、下移或移除它；播放列表菜单可以重命名或删除它。</li>
+<li>音乐文件夹中的 <code>.m3u</code> 播放列表会出现在 <strong>歌单</strong> 中。</li>
+<li>你自己的歌单以 <code>.m3u8</code> 文件保存在 <code>data/playlists</code> 中。在“歌单”标签页按 <kbd>START</kbd>，或在任意歌曲、专辑或艺人上使用 <strong>加入歌单</strong> 即可创建。<strong>把队列存为歌单</strong>（正在播放界面的“更多”菜单）会保留队列中的内容。</li>
+<li>在你自己的歌单中，歌曲菜单可以上移、下移或移除它；歌单菜单可以重命名或删除它。</li>
 </ul>
 
 <h2 id="liked">喜欢、最近播放、最常播放和统计</h2>
-<p>“播放列表”标签页开头是自动生成的列表：</p>
+<p>“歌单”标签页开头是自动生成的列表：</p>
 <ul>
 <li><strong>喜欢</strong>：你用 <strong>喜欢</strong> 标记的歌曲（最新的在前）。喜欢的歌曲在正在播放界面的封面上显示红心。</li>
-<li><strong>最近播放</strong>：你最近听过的 100 首不同歌曲。</li>
+<li><strong>最近</strong>：你最近听过的 100 首不同歌曲。</li>
 <li><strong>最常播放</strong>：你的前 100 首。</li>
 <li><strong>统计</strong>：总播放次数和时长、上个月的数据、歌曲和艺人数量，以及你最常听的艺人、专辑和歌曲。在热门歌曲上按 <kbd>A</kbd> 即可播放。</li>
 </ul>

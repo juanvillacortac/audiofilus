@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>YouTube Music · audiofilus 文档</title>
-<meta name="description" content="搜索 YouTube Music，无需下载即可收听，或把歌曲保存到曲库。需要自备 yt-dlp。">
+<meta name="description" content="搜索 YouTube Music，无需下载即可收听，或把歌曲保存到音乐库。需要自备 yt-dlp。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html" aria-current="page">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -77,9 +77,9 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>YouTube Music</h1>
-    <p class="lede">搜索 YouTube Music，无需下载即可收听，或把歌曲保存到曲库。需要自备 yt-dlp。</p>
+    <p class="lede">搜索 YouTube Music，无需下载即可收听，或把歌曲保存到音乐库。需要自备 yt-dlp。</p>
 
-<figure><img class="px shot" src="../../img/search-youtube.png" alt="搜索，带“全部”、“曲库”和 YouTube 筛选" width="360" height="240" loading="lazy"></figure>
+<figure><img class="px shot" src="../../img/search-youtube.png" alt="搜索，带“全部”、“音乐库”和 YouTube 筛选" width="360" height="240" loading="lazy"></figure>
 <h2 id="setup">设置</h2>
 <p>只有当 audiofilus 旁边有 <code>yt-dlp</code> 程序时，YouTube Music 才会出现。audiofilus 不附带也不会下载它。</p>
 <ul>
@@ -90,15 +90,15 @@ body { line-break: strict; }
 
 <h2 id="use">使用</h2>
 <ul>
-<li>搜索会在曲库结果旁边显示 YouTube Music 的结果；可用“全部”、“曲库”或 YouTube 筛选。已拥有的歌曲会打勾。</li>
-<li><strong>收听</strong> 播放但不保存（播放器上显示“STREAMING”标记）；流媒体播放时在播放器上按 <kbd>A</kbd> 即可保存。<strong>下载到曲库</strong> 会连同封面和标签一起保存。</li>
+<li>搜索会在音乐库结果旁边显示 YouTube Music 的结果；可用“全部”、“音乐库”或 YouTube 筛选。已拥有的歌曲会打勾。</li>
+<li><strong>收听</strong> 播放但不保存（播放器上显示“STREAMING”标记）；流媒体播放时在播放器上按 <kbd>A</kbd> 即可保存。<strong>下载到音乐库</strong> 会连同封面和标签一起保存。</li>
 <li>下载通过队列进行；<strong>下载</strong> 界面显示它们的进度。</li>
 </ul>
 
 <h2 id="cookies">机器人验证和需要登录的歌曲</h2>
 <p>有年龄限制的歌曲会在有其他上传版本时播放那个版本。如果 YouTube 要求你的网络确认不是机器人，通常几个小时后就会恢复；也可以把从浏览器导出的 <code>cookies.txt</code> 放进 <code>yt-dlp</code> 文件夹（<a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">导出方法</a>）。</p>
 
-    <nav class="pager" aria-label="页面"><a href="servers.html">← 服务器</a><a href="scrobbling.html">Scrobble 记录 →</a></nav>
+    <nav class="pager" aria-label="页面"><a href="servers.html">← 服务器</a><a href="scrobbling.html">播放记录 →</a></nav>
   </article>
 </div>
 <footer>

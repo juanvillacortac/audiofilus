@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tracker · documentation audiofilus</title>
-<meta name="description" content="Compose de la chiptune à la croix directionnelle, façon LSDJ&nbsp;: morceau, chaînes, phrases, instruments, tables, grooves et ondes, en mode Game Boy ou Free.">
+<meta name="description" content="Compose de la chiptune à la croix directionnelle, façon LSDJ&nbsp;: morceau, chaînes, phrases, instruments, tables, grooves et ondes, en mode Game Boy ou Libre.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -69,21 +69,21 @@
 <figure><img class="px shot" src="../../img/tracker.webp" alt="Le tracker joue un morceau&nbsp;: les canaux avec leurs oscilloscopes en direct, les cases qui s’allument quand leurs notes jouent" width="360" height="240" loading="lazy"></figure>
 
 <h2 id="overview">Vue d’ensemble</h2>
-<p>Ouvre <strong>Games → Tracker</strong>. Un morceau se construit comme dans LSDJ&nbsp;: le <strong>song</strong> (morceau) est une liste de lignes, chaque ligne dit quelle <strong>chain</strong> (chaîne) joue chaque canal, une chaîne est une liste de <strong>phrases</strong>, et une phrase compte 16 pas de notes. Les sons viennent des <strong>instruments</strong>, qui peuvent faire tourner une <strong>table</strong> à chaque note&#8239;; le <strong>groove</strong> règle le swing, et les <strong>waves</strong> (ondes) se dessinent à la main. De PICO-8 viennent ses huit formes d’onde, un instrument sur chaque pas et un piano roll.</p>
+<p>Ouvre <strong>Jeux → Tracker</strong>. Un morceau se construit comme dans LSDJ&nbsp;: le <strong>song</strong> (morceau) est une liste de lignes, chaque ligne dit quelle <strong>chain</strong> (chaîne) joue chaque canal, une chaîne est une liste de <strong>phrases</strong>, et une phrase compte 16 pas de notes. Les sons viennent des <strong>instruments</strong>, qui peuvent faire tourner une <strong>table</strong> à chaque note&#8239;; le <strong>groove</strong> règle le swing, et les <strong>waves</strong> (ondes) se dessinent à la main. De PICO-8 viennent ses huit formes d’onde, un instrument sur chaque pas et un piano roll.</p>
 <p>Les morceaux s’enregistrent tout seuls une seconde après chaque changement. Pendant que le tracker joue, ta musique se met en pause, et les visualiseurs et les jeux réagissent au tracker à la place.</p>
 
-<h2 id="song-modes">Modes du morceau&nbsp;: Game Boy et Free</h2>
+<h2 id="song-modes">Modes du morceau&nbsp;: Game Boy et Libre</h2>
 <p>Chaque morceau a un mode, réglé dans la vue <strong>PROJ</strong>&nbsp;:</p>
 <ul>
 <li><strong>Game Boy</strong>&nbsp;: quatre canaux, <strong>PU1</strong>, <strong>PU2</strong> (pulse), <strong>WAV</strong> (onde) et <strong>NOI</strong> (bruit), avec les limites de la console&nbsp;: largeurs d’impulsion de 12,5, 25, 50 et 75&nbsp;%, une enveloppe de volume qui avance par pas à 64 Hz, le balayage de fréquence de PU1, des ondes de 32 échantillons sur 4 bits jouées à 100, 50 ou 25&nbsp;% du volume, un bruit tiré d’un registre de 15 ou 7 bits, et des hauteurs arrondies aux périodes 11 bits du matériel. Les instruments sont pulse, wave ou noise.</li>
-<li><strong>Free</strong> (libre)&nbsp;: huit canaux, <strong>CH1</strong> à <strong>CH8</strong>, sans ces limites. Chaque instrument a une enveloppe ADSR, et il y a un quatrième type, <strong>synth</strong>, avec les formes sine, triangle, saw, square, organ, phantom et noise.</li>
+<li><strong>Libre</strong>&nbsp;: huit canaux, <strong>CH1</strong> à <strong>CH8</strong>, sans ces limites. Chaque instrument a une enveloppe ADSR, et il y a un quatrième type, <strong>synth</strong>, avec les formes sine, triangle, saw, square, organ, phantom et noise.</li>
 </ul>
 <p>N’importe quel instrument peut aller sur n’importe quel canal. Passer un morceau en Game Boy garde ce qu’il y a sur les canaux 5 à 8, mais ne le joue pas.</p>
 
 <h2 id="structure">Morceau, chaînes et phrases</h2>
 <ul>
 <li><strong>Song</strong>&nbsp;: jusqu’à 256 lignes&#8239;; chaque ligne a un numéro de chaîne (ou rien) par canal.</li>
-<li><strong>Chain</strong> (256 au total)&nbsp;: jusqu’à 16 phrases dans l’ordre, chacune avec une <strong>transposition</strong> en demi-tons. La chaîne s’arrête à sa première case vide.</li>
+<li><strong>Chaîne</strong> (256 au total)&nbsp;: jusqu’à 16 phrases dans l’ordre, chacune avec une <strong>transposition</strong> en demi-tons. La chaîne s’arrête à sa première case vide.</li>
 <li><strong>Phrase</strong> (256 au total)&nbsp;: 16 pas. Chaque pas a une <strong>note</strong> (de C-0 à B-9, ou OFF), un <strong>instrument</strong>, un <strong>volume</strong> (de 0 à F) et <strong>deux commandes</strong> (une lettre et une valeur hexadécimale).</li>
 </ul>
 <p>Chaque canal joue sa propre chaîne et passe à la ligne suivante quand elle se termine. Un canal sans chaîne sur une ligne se repose jusqu’à ce que les canaux qui en ont une passent à la suite, pour que les lignes restent alignées. Une ligne sans aucune chaîne se repose le temps d’une phrase.</p>
@@ -129,12 +129,12 @@
 <p>Une note sonne quand tu l’écris, et <kbd>A</kbd> sur une note la joue. Écrire une note sur un pas sans instrument y met le dernier instrument utilisé. Sous C-0 vient OFF, qui relâche la note. Les chaînes, phrases, instruments et tables sont créés la première fois que tu les édites.</p>
 <p>Le menu <kbd>Start</kbd> contient&nbsp;:</p>
 <ul>
-<li><strong>Play the song</strong>&nbsp;: jouer le morceau depuis le début.</li>
-<li><strong>Undo</strong> (annuler)&nbsp;: chaque appui sur <kbd>A</kbd> compte pour un pas en arrière, jusqu’à 64.</li>
-<li><strong>Copy</strong>, <strong>Paste</strong>, <strong>Clone into a new one</strong> et <strong>Clear</strong> (copier, coller, cloner, vider), pour ce que montre la vue (une chaîne, phrase, instrument, table, groove ou onde). Cloner le copie au premier numéro libre, et la case du morceau ou le pas de chaîne d’où tu viens passe à la copie.</li>
+<li><strong>Lire le morceau</strong>&nbsp;: jouer le morceau depuis le début.</li>
+<li><strong>Annuler</strong>&nbsp;: chaque appui sur <kbd>A</kbd> compte pour un pas en arrière, jusqu’à 64.</li>
+<li><strong>Copier</strong>, <strong>Coller</strong>, <strong>Cloner dans un nouveau</strong> et <strong>Vider</strong>, pour ce que montre la vue (une chaîne, phrase, instrument, table, groove ou onde). Cloner le copie au premier numéro libre, et la case du morceau ou le pas de chaîne d’où tu viens passe à la copie.</li>
 <li>Dans la vue wave, les huit <strong>formes de PICO-8</strong>, à copier dans l’onde ouverte.</li>
-<li><strong>Songs</strong>&nbsp;: un nouveau morceau Game Boy ou Free, tes morceaux enregistrés et les exemples.</li>
-<li><strong>Export to the library</strong>, <strong>Delete this song</strong> et <strong>Back to games</strong> (exporter vers la bibliothèque, supprimer ce morceau, revenir aux jeux).</li>
+<li><strong>Morceaux</strong>&nbsp;: un nouveau morceau Game Boy ou Libre, tes morceaux enregistrés et les exemples.</li>
+<li><strong>Exporter vers la bibliothèque</strong>, <strong>Supprimer ce morceau</strong> et <strong>Retour aux jeux</strong>.</li>
 </ul>
 <p>Maintiens <kbd>FN</kbd> pour voir les commandes de la vue où tu es.</p>
 
@@ -151,25 +151,25 @@
 </table>
 
 <h2 id="instruments">Instruments</h2>
-<p>Jusqu’à 64. Un nouveau morceau vient avec un instrument pulse, un wave et un noise (et un synth en mode Free). Ce que montre la vue INSTR dépend du type et du mode&nbsp;:</p>
+<p>Jusqu’à 64. Un nouveau morceau vient avec un instrument pulse, un wave et un noise (et un synth en mode Libre). Ce que montre la vue INSTR dépend du type et du mode&nbsp;:</p>
 <table>
 <tr><th>Réglage</th><th>Ce qu’il fait</th></tr>
-<tr><td>Name</td><td><kbd>A</kbd> ouvre le clavier</td></tr>
-<tr><td>Type</td><td>Pulse, wave, noise, ou synth (Free seulement). Le changer réinitialise l’instrument.</td></tr>
+<tr><td>Nom</td><td><kbd>A</kbd> ouvre le clavier</td></tr>
+<tr><td>Type</td><td>Pulse, wave, noise, ou synth (Libre seulement). Le changer réinitialise l’instrument.</td></tr>
 <tr><td>Volume</td><td>De 0 à F&#8239;; module le volume du pas</td></tr>
-<tr><td>Envelope, Direction, Speed</td><td>Game Boy, sauf wave&nbsp;: niveau de départ (0–F), descendante / fixe / montante, et la vitesse (1–7&nbsp;: un niveau toutes les vitesse/64 s&#8239;; 0 garde le niveau)</td></tr>
-<tr><td>Attack, Decay, Sustain, Release</td><td>Free&nbsp;: l’enveloppe ADSR, en ticks (le sustain est un niveau, 0–F)</td></tr>
-<tr><td>Length</td><td>Ticks avant que la note soit coupée (<code>--</code>&nbsp;: pas de coupure)</td></tr>
+<tr><td>Enveloppe, Direction, Vitesse</td><td>Game Boy, sauf wave&nbsp;: niveau de départ (0–F), descendante / fixe / montante, et la vitesse (1–7&nbsp;: un niveau toutes les vitesse/64 s&#8239;; 0 garde le niveau)</td></tr>
+<tr><td>Attaque, Déclin, Maintien, Relâche</td><td>Libre&nbsp;: l’enveloppe ADSR, en ticks (le sustain est un niveau, 0–F)</td></tr>
+<tr><td>Durée</td><td>Ticks avant que la note soit coupée (<code>--</code>&nbsp;: pas de coupure)</td></tr>
 <tr><td>Table</td><td>La table qui tourne à chaque note (<code>--</code>&nbsp;: aucune)</td></tr>
 <tr><td>Pan</td><td>L, LR ou R</td></tr>
-<tr><td>Transpose</td><td>Si la transposition de la chaîne l’affecte (désactive-la pour la batterie)</td></tr>
+<tr><td>Transposer</td><td>Si la transposition de la chaîne l’affecte (désactive-la pour la batterie)</td></tr>
 <tr><td>Vibrato</td><td>Vitesse et profondeur (chiffre hexadécimal haut et bas)</td></tr>
-<tr><td>Duty</td><td>Pulse et synth square&nbsp;: 12,5, 25, 50 ou 75&nbsp;%</td></tr>
-<tr><td>Sweep</td><td>Pulse, Game Boy&nbsp;: le balayage de fréquence de PU1, comme le registre NR10 de la console (durée, sens, décalage)</td></tr>
-<tr><td>Wave</td><td>Instruments wave&nbsp;: quelle onde (00–FF)</td></tr>
-<tr><td>Wave volume</td><td>Wave, Game Boy&nbsp;: 100, 50 ou 25&nbsp;%. Le canal d’onde de la Game Boy n’a pas d’enveloppe&#8239;; son volume va par quatre paliers.</td></tr>
-<tr><td>Short noise</td><td>Noise&nbsp;: le registre de 7 bits, plus tonal et métallique</td></tr>
-<tr><td>Shape</td><td>Synth&nbsp;: triangle, sine, saw, square, organ, phantom ou noise</td></tr>
+<tr><td>Rapport</td><td>Pulse et synth square&nbsp;: 12,5, 25, 50 ou 75&nbsp;%</td></tr>
+<tr><td>Balayage</td><td>Pulse, Game Boy&nbsp;: le balayage de fréquence de PU1, comme le registre NR10 de la console (durée, sens, décalage)</td></tr>
+<tr><td>Onde</td><td>Instruments wave&nbsp;: quelle onde (00–FF)</td></tr>
+<tr><td>Volume d’onde</td><td>Onde, Game Boy&nbsp;: 100, 50 ou 25&nbsp;%. Le canal d’onde de la Game Boy n’a pas d’enveloppe&#8239;; son volume va par quatre paliers.</td></tr>
+<tr><td>Bruit court</td><td>Noise&nbsp;: le registre de 7 bits, plus tonal et métallique</td></tr>
+<tr><td>Forme</td><td>Synth&nbsp;: triangle, sine, saw, square, organ, phantom ou noise</td></tr>
 </table>
 <p>La note d’un instrument noise règle la vitesse du bruit&nbsp;: les notes graves grondent, les aiguës sifflent. <kbd>A</kbd> sur un réglage joue la dernière note avec l’instrument.</p>
 
@@ -198,7 +198,7 @@
 <tr><td><code>Lxx</code></td><td>Glissé&nbsp;: sur un pas avec une note, glisser jusqu’à elle en xx ticks au lieu de la rejouer</td></tr>
 <tr><td><code>M0x</code></td><td>Volume général, de 0 à F</td></tr>
 <tr><td><code>Oxx</code></td><td>Sortie&nbsp;: 0 coupée, 1 gauche, 2 droite, 3 les deux</td></tr>
-<tr><td><code>Pxx</code></td><td>Pitch bend&nbsp;: centièmes de demi-ton par tick (signé)</td></tr>
+<tr><td><code>Pxx</code></td><td>Hauteur bend&nbsp;: centièmes de demi-ton par tick (signé)</td></tr>
 <tr><td><code>Rxy</code></td><td>Redéclencher la note tous les y ticks&#8239;; x (signé, 0–7 vers le haut, 8–F vers le bas) change le volume à chaque fois</td></tr>
 <tr><td><code>Sxx</code></td><td>Sur un bruit&nbsp;: <code>S01</code> bruit court (7 bits), <code>S00</code> long. Sur un pulse&nbsp;: le registre de balayage de PU1.</td></tr>
 <tr><td><code>Txx</code></td><td>Tempo, en BPM (de 28 à FF, soit de 40 à 255)</td></tr>
@@ -210,16 +210,16 @@
 </table>
 
 <h2 id="examples">Exemples</h2>
-<p><kbd>Start</kbd> → <strong>Songs</strong> propose quatre exemples, chacun montrant quelque chose. En ouvrir un n’enregistre rien tant que tu ne le modifies pas.</p>
+<p><kbd>Start</kbd> → <strong>Titres</strong> propose quatre exemples, chacun montrant quelque chose. En ouvrir un n’enregistre rien tant que tu ne le modifies pas.</p>
 <ul>
 <li><strong>Pocket Pop</strong> (Game Boy, 120 BPM)&nbsp;: des parties en chaînes réutilisées dans tout le morceau, et des accords avec <code>C</code>.</li>
 <li><strong>Crypt Crawl</strong> (Game Boy, 140 BPM)&nbsp;: des tables pour les arpèges et la grosse caisse, des notes qui glissent avec <code>L</code> et tombent avec <code>P</code>, et une basse sur la tilted saw de PICO-8.</li>
-<li><strong>Night Drive</strong> (Free, 100 BPM)&nbsp;: huit canaux avec des synthés, un groove swing 7/5, du panoramique, un écho fait avec <code>D</code>, et une fin en fondu avec <code>U</code>.</li>
+<li><strong>Night Drive</strong> (Libre, 100 BPM)&nbsp;: huit canaux avec des synthés, un groove swing 7/5, du panoramique, un écho fait avec <code>D</code>, et une fin en fondu avec <code>U</code>.</li>
 <li><strong>Amen Chip</strong> (Game Boy, 170 BPM)&nbsp;: des roulements de batterie avec <code>R</code>, des coups en retard avec <code>D</code>, une demi-phrase qui saute dans la suivante avec <code>H</code>, une ligne de basse transposée par sa chaîne, et des largeurs d’impulsion changées avec <code>W</code>.</li>
 </ul>
 
 <h2 id="import-export">Import et export</h2>
-<p><kbd>Start</kbd> → <strong>Export to the library</strong> rend le morceau une fois dans un WAV, dans un dossier <code>audiofilus tracker</code> de ton dossier de musique. La bibliothèque le récupère, donc il joue en arrière-plan comme le reste.</p>
+<p><kbd>Start</kbd> → <strong>Exporter vers la bibliothèque</strong> rend le morceau une fois dans un WAV, dans un dossier <code>audiofilus tracker</code> de ton dossier de musique. La bibliothèque le récupère, donc il joue en arrière-plan comme le reste.</p>
 <p>Les morceaux faits avec l’ancien tracker s’ouvrent convertis&nbsp;: chaque pattern devient une phrase et une chaîne par canal, et ses effets deviennent des commandes (arpège → <code>C</code>, largeur d’impulsion → <code>W</code>, bend → <code>P</code>).</p>
 <p>Prévu&nbsp;: import et export MOD/XM, import de morceaux LSDJ, et synchro MIDI.</p>
 

@@ -57,14 +57,14 @@ body { line-break: strict; }
         <ol>
           <li><a href="index.html">概览</a></li>
           <li><a href="getting-started.html">入门</a></li>
-          <li><a href="library.html">曲库</a></li>
+          <li><a href="library.html">音乐库</a></li>
           <li><a href="playback.html">播放</a></li>
           <li><a href="sound.html">音质</a></li>
           <li><a href="lyrics.html">歌词</a></li>
           <li><a href="radio-podcasts.html">电台和播客</a></li>
           <li><a href="servers.html">服务器</a></li>
           <li><a href="youtube-music.html">YouTube Music</a></li>
-          <li><a href="scrobbling.html">Scrobble 记录</a></li>
+          <li><a href="scrobbling.html">播放记录</a></li>
           <li><a href="controls.html">操作</a></li>
           <li><a href="visualizers-games.html">可视化与游戏</a></li>
           <li><a href="tracker.html">Tracker</a></li>
@@ -80,24 +80,24 @@ body { line-break: strict; }
     <p class="lede">设置中的每个方块，逐节说明。</p>
 
 <p>设置以方块形式呈现：开关用 <kbd>A</kbd> 切换；选项用 <kbd>A</kbd> 打开，然后用 <kbd>←</kbd>/<kbd>→</kbd> 选择（立即生效），按 <kbd>A</kbd> 或 <kbd>B</kbd> 关闭。设置保存在 <code>audiofilus.json</code> 中。</p>
-<h2 id="library">曲库</h2>
+<h2 id="library">音乐库</h2>
 <ul><li><strong>文件夹</strong>：你的音乐文件夹。<strong>重新扫描</strong>：查找新歌曲。<strong>服务器</strong>：<a href="servers.html">Subsonic、Navidrome、Jellyfin</a>。</li></ul>
 <h2 id="playback">播放</h2>
-<ul><li><strong>随机播放</strong>、<strong>循环</strong>（关、全部、单曲）、<strong>音量</strong>（0 到 200 %）、<strong>交叉淡化</strong>（关闭到 12 秒）。</li></ul>
+<ul><li><strong>随机</strong>、<strong>重复</strong>（关、全部、单曲）、<strong>音量</strong>（0 到 200 %）、<strong>淡入淡出</strong>（关闭到 12 秒）。</li></ul>
 <h2 id="sound">音质</h2>
 <ul><li><strong>ReplayGain</strong>、<strong>均衡器</strong>、<strong>输出采样率</strong>：参见<a href="sound.html">音质</a>。</li></ul>
 <h2 id="online">在线</h2>
-<ul><li><strong>Scrobble 记录</strong>：<a href="scrobbling.html">Last.fm 和 ListenBrainz</a>。<strong>网络歌词</strong>：在 LRCLIB 上查找歌词。</li></ul>
+<ul><li><strong>播放记录</strong>：<a href="scrobbling.html">Last.fm 和 ListenBrainz</a>。<strong>网上歌词</strong>：在 LRCLIB 上查找歌词。</li></ul>
 <h2 id="screen">屏幕</h2>
 <ul>
-<li><strong>自动睡眠</strong>：从不，或不操作 15 秒、30 秒、1、2 或 5 分钟后。音乐播放时只在正在播放界面计时。</li>
-<li><strong>睡眠模式</strong>：<strong>背光</strong> 关闭背光；<strong>OLED（黑屏）</strong> 只是把屏幕涂黑，在 OLED 屏幕上这意味着像素熄灭。</li>
+<li><strong>自动熄屏</strong>：从不，或不操作 15 秒、30 秒、1、2 或 5 分钟后。音乐播放时只在正在播放界面计时。</li>
+<li><strong>熄屏方式</strong>：<strong>背光</strong> 关闭背光；<strong>OLED（黑屏）</strong> 只是把屏幕涂黑，在 OLED 屏幕上这意味着像素熄灭。</li>
 <li><strong>24 小时制</strong>。</li>
 </ul>
 <p>睡眠设置只在掌机上显示。</p>
 <h2 id="system">系统</h2>
 <ul>
-<li><strong>语言</strong>：English、Español、Türkçe。</li>
+<li><strong>语言</strong>：English、Español、Türkçe、Deutsch、Français、日本語、中文。</li>
 <li><strong>音乐音效</strong> 和 <strong>界面音效</strong>：关、低、中或高，用于音乐操作和菜单的芯片音效。</li>
 <li><strong>交换 A/B</strong>。</li>
 </ul>
@@ -105,10 +105,10 @@ body { line-break: strict; }
 <ul><li><strong>GitHub</strong> 和 <strong>请我喝咖啡</strong> 会显示二维码。</li></ul>
 <h2 id="exit">退出</h2>
 <ul>
-<li><strong>关闭时继续播放</strong>：不通过“退出”关闭播放器时，音乐是否继续。桌面上默认开启，掌机上默认关闭。</li>
+<li><strong>关闭后继续播放</strong>：不通过“退出”关闭播放器时，音乐是否继续。桌面上默认开启，掌机上默认关闭。</li>
 <li><strong>转到后台</strong>：关闭播放器，保留音乐。<strong>退出</strong>：停止一切。</li>
 </ul>
-<p>在 iPhone 上，不显示输出采样率、关闭时继续播放和转到后台：离开应用时音乐本来就会继续。</p>
+<p>在 iPhone 上，不显示输出采样率、关闭后继续播放和转到后台：离开应用时音乐本来就会继续。</p>
 
     <nav class="pager" aria-label="页面"><a href="tracker.html">← Tracker</a><a href="handhelds.html">掌机系统 →</a></nav>
   </article>
