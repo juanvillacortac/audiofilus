@@ -850,13 +850,8 @@ func signedHex(v int) string {
 	return "+" + hexStr(v, 2)
 }
 
-// onOff es "ON" u "OFF".
-func onOff(b bool) string {
-	if b {
-		return "ON"
-	}
-	return "OFF"
-}
+// onOff es sí o no, en mayúsculas como los demás valores del tracker.
+func onOff(b bool) string { return strings.ToUpper(onOffLabel(b)) }
 
 // instrTypes son los tipos que admite el modo de la canción.
 func instrTypes(m tracker.Mode) []tracker.InstrType {

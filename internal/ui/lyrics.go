@@ -239,11 +239,7 @@ func (a *App) shiftLyrics(d time.Duration) {
 
 // offsetLabel es un desfase legible: "+0,5 s".
 func offsetLabel(d time.Duration) string {
-	s := fmt.Sprintf("%+.1f s", d.Seconds())
-	if lang == "es" {
-		s = strings.Replace(s, ".", ",", 1)
-	}
-	return s
+	return decimal(fmt.Sprintf("%+.1f s", d.Seconds()))
 }
 
 // openLyricsMenu es el menú de START en la vista de letras.

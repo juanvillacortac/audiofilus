@@ -10,10 +10,10 @@ import (
 // (Jersey 10 y Tiny5 cubren el latín básico con tildes, ñ, ¿ y ¡): otro
 // alfabeto obligaría a cargar otra fuente. Para añadir uno, se copia el bloque
 // de "en" y se comprueba que todas sus letras salen en las capturas.
-var languages = []string{"es", "en", "tr"}
+var languages = []string{"es", "en", "tr", "de", "fr", "ja", "zh"}
 
 // langNames es el nombre de cada idioma en su propio idioma.
-var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe"}
+var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe", "de": "Deutsch", "fr": "Français", "ja": "日本語", "zh": "中文"}
 
 var strs = map[string]map[string]string{
 	"es": {
@@ -1776,17 +1776,15 @@ var strs = map[string]map[string]string{
 // lang es el idioma en uso.
 var lang = "es"
 
-// SetLanguage cambia el idioma; "" lo elige por $LANG (español si empieza por
-// "es", turco si empieza por "tr", inglés si no).
+// SetLanguage cambia el idioma; "" lo elige por $LANG (por sus dos primeras
+// letras, si es uno de los que hay; inglés si no).
 func SetLanguage(l string) {
 	if l == "" {
 		l = "en"
 		for _, v := range []string{os.Getenv("LC_ALL"), os.Getenv("LC_MESSAGES"), os.Getenv("LANG")} {
 			if v != "" {
-				if strings.HasPrefix(v, "es") {
-					l = "es"
-				} else if strings.HasPrefix(v, "tr") {
-					l = "tr"
+				if _, ok := strs[v[:min(2, len(v))]]; ok {
+					l = v[:2]
 				}
 				break
 			}
@@ -1797,6 +1795,16 @@ func SetLanguage(l string) {
 	}
 	lang = l
 	setFontOrder()
+}
+
+// decimal escribe un número con la coma decimal del idioma: "0,5" en los que
+// la usan.
+func decimal(s string) string {
+	switch lang {
+	case "es", "tr", "de", "fr":
+		return strings.Replace(s, ".", ",", 1)
+	}
+	return s
 }
 
 // N es T para cantidades: con 1 usa la forma en singular (key_one), si existe.

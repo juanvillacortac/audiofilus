@@ -6,7 +6,6 @@ import (
 	"math"
 	"slices"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -32,11 +31,7 @@ var rateChoices = []int{44100, 48000, 96000, 192000}
 
 // rateLabel es una frecuencia legible: "44,1 kHz".
 func rateLabel(r int) string {
-	s := strconv.FormatFloat(float64(r)/1000, 'f', -1, 64)
-	if lang == "es" {
-		s = strings.Replace(s, ".", ",", 1)
-	}
-	return s + " kHz"
+	return decimal(strconv.FormatFloat(float64(r)/1000, 'f', -1, 64)) + " kHz"
 }
 
 // xfChoices son los segundos de fundido que se pueden elegir (0: nada).
