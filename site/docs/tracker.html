@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker · audiofilus docs</title>
+<meta name="description" content="Make chiptune music with the D-pad, Game Boy style.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html" aria-current="page">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Tracker</h1>
+    <p class="lede">Make chiptune music with the D-pad, Game Boy style.</p>
+
+<div class="callout"><strong>The tracker is being expanded.</strong> The next version brings a deeper song structure, instruments, tables, grooves and more, inspired by LSDJ and PICO-8. This page describes the tracker as it is today; the sections marked “Coming in the next version” will be filled in when it ships.</div>
+<figure><img class="px shot" src="../img/tracker.webp" alt="The tracker playing a song: four channels with live oscilloscopes, cells lighting up as their notes play" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="overview">Overview</h2>
+<p>Open <strong>Games → Tracker</strong>. A song has four channels, like the Game Boy: two <strong>pulse</strong> channels (12.5, 25, 50 or 75 % duty), a <strong>triangle</strong> and <strong>noise</strong>. Music is written in <strong>patterns</strong> of 16 steps; the <strong>song</strong> is the order in which the patterns play, plus the tempo. Songs save themselves a second after each change.</p>
+<p>While the tracker plays, your music pauses, and the visualizers and games react to the tracker instead.</p>
+
+<h2 id="views">Pattern and Song views</h2>
+<p><kbd>X</kbd> switches between the two views.</p>
+<h3 id="pattern-view">Pattern</h3>
+<p>16 steps × 4 channels. Each step has a <strong>note</strong> (C-0 to B-7, or OFF), a <strong>volume</strong> (0 to F) and an <strong>effect</strong>.</p>
+<table>
+<tr><th>Button</th><th>Does</th></tr>
+<tr><td>D-pad</td><td>Move the cursor</td></tr>
+<tr><td><kbd>A</kbd></td><td>Put the last value used</td></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change by one</td></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>←</kbd>/<kbd>→</kbd></td><td>Change by a lot (an octave for notes)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Delete</td></tr>
+<tr><td><kbd>L1</kbd> / <kbd>R1</kbd></td><td>Previous / next pattern (<kbd>R1</kbd> on the last one creates a new one)</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>Y</kbd></td><td>Mute the channel under the cursor</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Play or stop the pattern, looping</td></tr>
+</table>
+<h3 id="song-view">Song</h3>
+<p>The tempo and the <strong>pattern order</strong>.</p>
+<table>
+<tr><th>Button</th><th>Does</th></tr>
+<tr><td>Hold <kbd>A</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Change which pattern plays at that position</td></tr>
+<tr><td><kbd>A</kbd></td><td>Open that position's pattern; on the empty slot at the end, add a position</td></tr>
+<tr><td><kbd>B</kbd>+<kbd>A</kbd></td><td>Delete the position</td></tr>
+<tr><td><kbd>Y</kbd></td><td>Play the song from the chosen position, following the order</td></tr>
+</table>
+<p>Each channel shows a live oscilloscope, cells light up as their notes play, and while the song plays the pattern view follows it.</p>
+
+<h2 id="effects">Effects</h2>
+<table>
+<tr><th>Effect</th><th>Does</th></tr>
+<tr><td><code>Axy</code></td><td>Arpeggio: the note, +x and +y semitones, cycled very fast</td></tr>
+<tr><td><code>Dn</code></td><td>Pulse duty: 0 = 12.5 %, 1 = 25 %, 2 = 50 %, 3 = 75 %</td></tr>
+<tr><td><code>Bxx</code></td><td>Pitch bend: 01–7F up, 81–FF down</td></tr>
+</table>
+
+<h2 id="menu">The menu and your songs</h2>
+<p><kbd>START</kbd> opens the tracker's menu:</p>
+<ul>
+<li><strong>Play the song</strong> from the beginning.</li>
+<li><strong>Export to the library</strong>: saves the song as a WAV in an <code>audiofilus tracker</code> folder inside your music folder, and the library picks it up.</li>
+<li><strong>Duplicate pattern</strong> and <strong>Clear pattern</strong>.</li>
+<li><strong>Songs</strong>: a new song, your saved songs, and four examples to start from (Pocket Pop, Crypt Crawl, Night Drive, Amen Chip). Opening an example saves nothing until you edit it.</li>
+<li><strong>Delete this song</strong>.</li>
+</ul>
+
+<h2 id="song-modes">Song modes: Game Boy and Free</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="structure">Song → Chains → Phrases</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="instruments">Instruments</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="tables">Tables</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="grooves">Grooves</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="waves">Waves</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="effects-reference">Effects reference</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="editing">Editing: copy, paste, undo and live mode</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="import-export">Import and export: WAV, MOD/XM, LSDJ</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+<h2 id="midi">MIDI sync</h2>
+<div class="callout soon"><span class="tag">Coming in the next version</span><p>This part of the tracker is being built.</p></div>
+
+    <nav class="pager" aria-label="Pages"><a href="visualizers-games.html">← Visualizers &amp; games</a><a href="settings.html">Settings →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

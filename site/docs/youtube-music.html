@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YouTube Music · audiofilus docs</title>
+<meta name="description" content="Search YouTube Music, listen without downloading, or save songs to your library. You bring your own yt-dlp.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html" aria-current="page">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>YouTube Music</h1>
+    <p class="lede">Search YouTube Music, listen without downloading, or save songs to your library. You bring your own yt-dlp.</p>
+
+<figure><img class="px shot" src="../img/search-youtube.png" alt="Search with All, Library and YouTube filters" width="360" height="240" loading="lazy"></figure>
+<h2 id="setup">Setting it up</h2>
+<p>YouTube Music appears only if there's a <code>yt-dlp</code> program next to audiofilus. audiofilus doesn't ship or download it.</p>
+<ul>
+<li><strong>Handhelds</strong>: get the <code>yt-dlp_linux_aarch64</code> build from the <a href="https://github.com/yt-dlp/yt-dlp/releases">yt-dlp releases</a> and put it in the app's <code>yt-dlp</code> folder.</li>
+<li><strong>Windows</strong>: <code>yt-dlp.exe</code> in a <code>yt-dlp</code> folder next to <code>audiofilus.exe</code>, and <code>ffmpeg.exe</code> on your PATH to convert downloads to MP3.</li>
+<li><strong>Linux</strong>: in the <code>yt-dlp</code> folder, or anywhere on your PATH.</li>
+</ul>
+
+<h2 id="use">Using it</h2>
+<ul>
+<li>Search shows YouTube Music results next to your library's; filter with All, Library or YouTube. Songs you already have are checked.</li>
+<li><strong>Listen</strong> plays without saving (a “STREAMING” badge shows on the player); <kbd>A</kbd> on the player while streaming saves it. <strong>Download to library</strong> saves it with its cover and tags.</li>
+<li>Downloads go through a queue; the <strong>Downloads</strong> screen shows their progress.</li>
+</ul>
+
+<h2 id="cookies">Bot checks and signed-in songs</h2>
+<p>Age-restricted songs play from another upload of the same song when there is one. If YouTube asks your network to confirm it isn't a bot, it usually passes in a few hours; or put a <code>cookies.txt</code> exported from your browser in the <code>yt-dlp</code> folder (<a href="https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies">how to export it</a>).</p>
+
+    <nav class="pager" aria-label="Pages"><a href="servers.html">← Servers</a><a href="scrobbling.html">Scrobbling →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

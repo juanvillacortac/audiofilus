@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Servers · audiofilus docs</title>
+<meta name="description" content="Use a music server as another library, with streaming, caching, favorites and play counts.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html" aria-current="page">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Subsonic, Navidrome and Jellyfin</h1>
+    <p class="lede">Use a music server as another library, with streaming, caching, favorites and play counts.</p>
+
+<h2 id="add">Adding a server</h2>
+<p><strong>Settings → Servers → Add server</strong>. Pick the kind (Subsonic/OpenSubsonic, which covers Navidrome, gonic, Airsonic and others; or Jellyfin/Emby), then enter a name, the address (<code>http://ip:port</code>), your user and password. The connection is tested before saving; if it doesn't answer you can try again, fix the details or save anyway.</p>
+<p>Each server becomes one more library in the screens bar, with albums, artists, songs, playlists and search. Its catalog is saved, so it shows instantly even without network.</p>
+
+<h2 id="options">Per-server options</h2>
+<ul>
+<li><strong>Listening quality</strong>: MP3 at 192&nbsp;kbps by default (little to download, cheap to decode), 320, 128, 96, or Original (no conversion).</li>
+<li><strong>Test connection</strong>, <strong>Refresh catalog</strong>, <strong>Change details</strong>, <strong>Remove server</strong>.</li>
+</ul>
+
+<h2 id="cache">Streaming and caching</h2>
+<p>Songs are cached on the SD card as they play (400&nbsp;MB by default; the least recently used go first), and the next song is fetched ahead of time. Cached songs play without network. You can also <strong>Download to library</strong> a server's songs, with their tags and cover, into your music folder.</p>
+
+<h2 id="favorites">Favorites, ratings and play counts</h2>
+<ul>
+<li>Liking or rating a server's song also stars or rates it on the server. Jellyfin has favorites but no 1 to 5 ratings.</li>
+<li>When a server's catalog loads, its starred and rated songs are added to your Liked list.</li>
+<li>Songs you listen to count on the server too (Navidrome can forward them to Last.fm and ListenBrainz if you set that up there). Turn it off in <strong>Settings → Scrobbling → Count on the server</strong>.</li>
+</ul>
+<p>Server playlists can be played but not edited from audiofilus.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="radio-podcasts.html">← Radio &amp; podcasts</a><a href="youtube-music.html">YouTube Music →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

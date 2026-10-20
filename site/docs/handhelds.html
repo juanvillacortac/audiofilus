@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Handheld systems · audiofilus docs</title>
+<meta name="description" content="What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS and dArkOS.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html" aria-current="page">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Handheld systems</h1>
+    <p class="lede">What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS and dArkOS.</p>
+
+<p>audiofilus detects the system when it starts and uses that system's own tools for the lid, the power button, the volume and the battery. Tested on an Anbernic RG34XX-SP with Knulli.</p>
+
+<h2 id="files">Where your files live</h2>
+<p>Settings (<code>audiofilus.json</code>) and data (<code>data/</code>: library cache, playlists, history, lyrics, podcasts, the log <code>audiofilus.log</code>) sit next to the program, in the port's folder:</p>
+<table>
+<tr><th>System</th><th>Folder</th></tr>
+<tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
+<tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, or <code>/roms2/ports/audiofilus</code> if your games are on the second SD card</td></tr>
+<tr><td>muOS (app)</td><td>the app's folder under <code>MUOS/application</code></td></tr>
+</table>
+
+<h2 id="power">The power button</h2>
+<ul>
+<li><strong>With the player open</strong>, a tap of the power button puts audiofilus to sleep (screen off, music on) instead of suspending the console. Holding it still powers off.</li>
+<li><strong>After Go to background</strong>, the console suspends as usual when you press it.</li>
+</ul>
+<p>With the player open, the system's idle suspend and screen dimming are also held off.</p>
+
+<h2 id="knulli">Knulli</h2>
+<ul>
+<li>The volume buttons go through audiofilus while the player is open, so you can go past 100 %.</li>
+<li>Closing the lid puts audiofilus to sleep; opening it doesn't wake it: <kbd>START</kbd> does.</li>
+</ul>
+<h2 id="muos">muOS</h2>
+<ul>
+<li>Install it through PortMaster or as a native app (<code>audiofilus.muxapp</code>, see <a href="getting-started.html#muos">Getting started</a>).</li>
+<li>Above 100 % the volume is raised from the app; muOS's own buttons handle the system volume.</li>
+</ul>
+<h2 id="rocknix">ROCKNIX</h2>
+<ul>
+<li>With ROCKNIX's “fake suspend” (suspend mode off in its settings), pressing the power button mutes and freezes everything, and audiofilus can't stop it. With normal suspend (the default), the button puts audiofilus to sleep.</li>
+</ul>
+<h2 id="arkos">ArkOS and dArkOS</h2>
+<ul>
+<li>On consoles whose battery gauge always reports 0 % (like the RG353V with dArkOS), the battery level is estimated from its charge or voltage, or hidden.</li>
+</ul>
+
+<h2 id="power-use">Battery use</h2>
+<p>Measured on an RG34XX-SP: in sleep audiofilus draws about 260&nbsp;mA, around 11 to 12 hours of music on its 3300&nbsp;mAh battery.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="settings.html">← Settings</a><a href="faq.html">FAQ →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

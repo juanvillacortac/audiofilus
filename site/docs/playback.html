@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Playback · audiofilus docs</title>
+<meta name="description" content="Now Playing, the queue, the sleep timer, and how the music keeps going in the background.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html" aria-current="page">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Playing music</h1>
+    <p class="lede">Now Playing, the queue, the sleep timer, and how the music keeps going in the background.</p>
+
+<h2 id="now-playing">Now Playing</h2>
+<figure><img class="px shot" src="../img/player.png" alt="Now Playing with the cover, the spinning vinyl, the controls and the spectrum" width="360" height="240" loading="lazy"></figure>
+<ul>
+<li><kbd>A</kbd> or <kbd>Y</kbd> pauses and resumes.</li>
+<li>Tap <kbd>←</kbd>/<kbd>→</kbd> for the previous or next song; hold them to rewind or fast-forward. <kbd>L1</kbd>/<kbd>R1</kbd> also change song and <kbd>L2</kbd>/<kbd>R2</kbd> seek 10 seconds.</li>
+<li><kbd>X</kbd> turns shuffle on or off; <kbd>X</kbd> twice plays a random song.</li>
+<li><kbd>↑</kbd>/<kbd>↓</kbd> scratch the vinyl.</li>
+<li><kbd>B</kbd> goes to the library, <kbd>START</kbd> opens the More menu.</li>
+</ul>
+<p>The More menu has the album and artist, <a href="lyrics.html">Lyrics</a>, Like, Rating, Sleep timer, Add to a playlist, Save queue as playlist, Queue, Shuffle, Repeat (Off, All, One), Turn the screen off, Go to background and Quit.</p>
+
+<h2 id="queue">The queue</h2>
+<p>The <strong>Queue</strong> screen shows what plays next. <strong>Play next</strong> puts a song right after the current one; <strong>Add to queue</strong> puts it at the end. Playback is gapless, pausing fades out, and the queue and position survive restarts.</p>
+
+<h2 id="timer">Sleep timer</h2>
+<p>Now Playing → More → <strong>Sleep timer</strong>. Each <kbd>A</kbd> moves to the next choice: 15, 30, 45, 60 or 90 minutes, <strong>End of song</strong>, or off. A moon with the minutes left shows on the cover. The service keeps the timer, so it works with the player closed.</p>
+<figure><img class="px shot" src="../img/player-timer.png" alt="Now Playing with a heart on a liked song and a moon with 26 minutes left" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="background">Background play</h2>
+<p>The music lives in its own service; the player is just a remote. How it closes decides what happens to the music:</p>
+<ul>
+<li><strong>Go to background</strong> (More menu, or Settings → Exit): the player closes and the music keeps playing, also inside games. The console suspends as usual.</li>
+<li><strong>Quit</strong>: stops everything.</li>
+<li>Closing it any other way (closing the window, PortMaster's <kbd>SELECT</kbd>+<kbd>START</kbd>, or a crash) depends on <strong>Settings → Keep playing on close</strong>: on by default on the desktop, off on handhelds.</li>
+</ul>
+
+<h3 id="fn-shortcut">Controls from inside a game</h3>
+<p>Press <kbd>FN</kbd> three times in a row, then within 1.5 seconds:</p>
+<table>
+<tr><th>Then</th><th>Does</th></tr>
+<tr><td><kbd>L1</kbd> / <kbd>R1</kbd></td><td>Previous / next song</td></tr>
+<tr><td><kbd>L2</kbd> / <kbd>R2</kbd></td><td>Rewind / forward 10 s</td></tr>
+<tr><td><kbd>SELECT</kbd></td><td>Pause / resume</td></tr>
+</table>
+<p>It works always, with the player open or closed, and doesn't clash with the system or the emulators.</p>
+
+<h2 id="sleep">Sleep: screen off, music on</h2>
+<p>Sleep turns the screen off and lowers the CPU clock while the music plays, so the console can ride in your pocket. Enter it with <kbd>START</kbd> twice, the power button, closing the lid, Now Playing → More → <strong>Turn the screen off</strong>, or after a while without touching anything (<strong>Settings → Sleep after</strong>). While asleep, the triggers become gestures:</p>
+<table>
+<tr><th>Gesture</th><th>Does</th></tr>
+<tr><td><kbd>L1</kbd>/<kbd>R1</kbd> twice</td><td>Previous / next song</td></tr>
+<tr><td><kbd>L2</kbd>/<kbd>R2</kbd> twice</td><td>Rewind / forward 10 s</td></tr>
+<tr><td><kbd>L1</kbd>+<kbd>L2</kbd> together, twice</td><td>Pause / resume</td></tr>
+<tr><td><kbd>R1</kbd>+<kbd>R2</kbd> together, twice</td><td>A random song</td></tr>
+<tr><td><kbd>START</kbd> or the power button</td><td>Wake up (the power button not with the lid closed)</td></tr>
+</table>
+<p>A single tap does nothing, so pocket presses don't count. On devices with a vibration motor, each gesture gives a short buzz. On an RG34XX-SP sleep draws about 260&nbsp;mA: around 11 to 12 hours of music.</p>
+<p>On desktops, sleep and its settings don't apply and are hidden.</p>
+
+<h2 id="headphones">Headphone buttons</h2>
+<p>Bluetooth and wired headphone buttons control the music with the player open or closed. A single-button headset follows the usual convention: one press pauses, two skip to the next song, three go back.</p>
+
+<h2 id="open-with">Opening files from your file manager</h2>
+<p>Files and folders you open with audiofilus play as a <strong>temporary queue</strong>: folders are expanded with everything inside, and nothing is saved as a playlist (use <strong>Save queue as playlist</strong> to keep it). If the player is already open, it just switches to the new queue.</p>
+<ul>
+<li><strong>Linux</strong>: right-click → Open with → Audiofilus, for audio files, M3U/PLS lists, CUE sheets, console music and folders (set up by the installer or <code>audiofilus desktop install</code>).</li>
+<li><strong>Windows</strong>: audiofilus registers itself the first time it opens: <strong>Open with</strong> on every supported file, and <strong>Play with Audiofilus</strong> on folders. Selecting several files queues them all.</li>
+<li><strong>iPhone and iPad</strong>: “Open in” or “Share” from Files and other apps.</li>
+</ul>
+
+<h2 id="desktop">On the desktop</h2>
+<ul>
+<li><strong>Media keys and bars</strong>: on Linux audiofilus speaks MPRIS, so media keys and your desktop's media widget control it.</li>
+<li><strong>System tray</strong> (Linux and Windows): click to open the player, middle-click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit.</li>
+</ul>
+
+    <nav class="pager" aria-label="Pages"><a href="library.html">← Library</a><a href="sound.html">Sound →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

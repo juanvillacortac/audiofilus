@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Library · audiofilus docs</title>
+<meta name="description" content="Browse, search and organize your music, and see what you&#x27;ve been listening to.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html" aria-current="page">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Your library</h1>
+    <p class="lede">Browse, search and organize your music, and see what you&#x27;ve been listening to.</p>
+
+<h2 id="browse">Browsing</h2>
+<p>The <strong>Library</strong> has tabs on the left: <strong>Search</strong>, <strong>Songs</strong>, <strong>Albums</strong> (a grid of covers), <strong>Artists</strong>, <strong>Playlists</strong> and <strong>Folders</strong>. <kbd>A</kbd> opens or plays, <kbd>X</kbd> plays shuffled, and pressing <kbd>X</kbd> twice plays a random song from the whole library. <kbd>L1</kbd>/<kbd>R1</kbd> jump by letter. <kbd>START</kbd> on any item opens its menu: Play, Shuffle play, Play next, Add to queue, Go to album, Go to artist, Add to a playlist, Like and Rating.</p>
+<figure><img class="px shot" src="../img/albums.png" alt="The album grid with covers" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="search">Search</h2>
+<p>Search looks through song titles, artists and albums. Type with the on-screen keyboard (<kbd>A</kbd> types, <kbd>B</kbd> deletes, <kbd>X</kbd> adds a space, <kbd>Y</kbd> clears) or a real keyboard. If YouTube Music is set up, its results appear too, filtered with All, Library or YouTube.</p>
+
+<h2 id="playlists">Playlists</h2>
+<ul>
+<li><code>.m3u</code> playlists in your music folder show up in <strong>Playlists</strong>.</li>
+<li>Your own playlists are saved as <code>.m3u8</code> files in <code>data/playlists</code>. Create one with <kbd>START</kbd> on the Playlists tab, or with <strong>Add to a playlist</strong> on any song, album or artist. <strong>Save queue as playlist</strong> (Now Playing's More menu) keeps what's in the queue.</li>
+<li>Inside your own playlist, a song's menu can move it up or down or remove it; the playlist's menu renames or deletes it.</li>
+</ul>
+
+<h2 id="liked">Liked, Recent, Most played and Stats</h2>
+<p>The Playlists tab starts with lists that build themselves:</p>
+<ul>
+<li><strong>Liked</strong>: songs you liked with <strong>Like</strong> (newest first). A liked song shows a heart on its cover in Now Playing.</li>
+<li><strong>Recent</strong>: the last 100 different songs you listened to.</li>
+<li><strong>Most played</strong>: your top 100.</li>
+<li><strong>Stats</strong>: total plays and hours, the last month, how many songs and artists, and your top artists, albums and songs. <kbd>A</kbd> on a top song plays it.</li>
+</ul>
+<p>A song counts as listened once half of it has played (or four minutes), whether the player was open or not. <strong>Rating</strong> goes from 1 to 5 (each <kbd>A</kbd> moves to the next value). Likes and ratings of songs from a Subsonic or Jellyfin server are also sent to the server; see <a href="servers.html">Servers</a>.</p>
+<figure><img class="px shot" src="../img/stats.png" alt="Stats: plays, hours, last month and top artists" width="360" height="240" loading="lazy"></figure>
+
+<h2 id="formats">Formats</h2>
+<table>
+<tr><th>Kind</th><th>Formats</th></tr>
+<tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)</td></tr>
+<tr><td>Tracker modules</td><td>MOD, XM, IT, S3M (and a few more)</td></tr>
+<tr><td>Console music</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>Lists</td><td>M3U/M3U8 playlists, CUE sheets</td></tr>
+</table>
+
+<h3 id="console-music">Console music</h3>
+<p>Console music files aren't recordings: they carry the game's music code, and audiofilus emulates the console's sound chip to play them. A file with a whole soundtrack (an NSF usually holds every song of a game) shows up as <strong>one track per song</strong>, with the game as the album and the composer as the artist. Songs that loop forever last what the file says (or 2.5 minutes) and fade out at the end.</p>
+
+<h3 id="cue">CUE sheets</h3>
+<p>An album ripped to a single file with a <code>.cue</code> sheet next to it shows up as its separate tracks, with their titles. The big file itself is hidden.</p>
+
+<h2 id="colors">Colors</h2>
+<p>The interface takes its colors from the cover of what's playing.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="getting-started.html">← Getting started</a><a href="playback.html">Playback →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

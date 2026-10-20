@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Settings · audiofilus docs</title>
+<meta name="description" content="Every tile in Settings, section by section.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html" aria-current="page">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Settings</h1>
+    <p class="lede">Every tile in Settings, section by section.</p>
+
+<p>Settings are tiles: a switch changes with <kbd>A</kbd>; a choice opens with <kbd>A</kbd>, then <kbd>←</kbd>/<kbd>→</kbd> pick (it applies at once) and <kbd>A</kbd> or <kbd>B</kbd> close it. They're saved in <code>audiofilus.json</code>.</p>
+<h2 id="library">Library</h2>
+<ul><li><strong>Folder</strong>: your music folder. <strong>Rescan</strong>: find new songs. <strong>Servers</strong>: <a href="servers.html">Subsonic, Navidrome, Jellyfin</a>.</li></ul>
+<h2 id="playback">Playback</h2>
+<ul><li><strong>Shuffle</strong>, <strong>Repeat</strong> (Off, All, One), <strong>Volume</strong> (0 to 200 %), <strong>Crossfade</strong> (Off to 12 s).</li></ul>
+<h2 id="sound">Sound</h2>
+<ul><li><strong>ReplayGain</strong>, <strong>Equalizer</strong>, <strong>Output rate</strong>: see <a href="sound.html">Sound</a>.</li></ul>
+<h2 id="online">Online</h2>
+<ul><li><strong>Scrobbling</strong>: <a href="scrobbling.html">Last.fm and ListenBrainz</a>. <strong>Lyrics from the web</strong>: look lyrics up on LRCLIB.</li></ul>
+<h2 id="screen">Screen</h2>
+<ul>
+<li><strong>Sleep after</strong>: Never, 15 s, 30 s, 1, 2 or 5 minutes without touching anything. While music plays it only counts on Now Playing.</li>
+<li><strong>Sleep mode</strong>: <strong>Backlight</strong> turns the backlight off; <strong>OLED (black)</strong> just paints the screen black, which on an OLED screen means the pixels are off.</li>
+<li><strong>24 h clock</strong>.</li>
+</ul>
+<p>Sleep settings only show on handhelds.</p>
+<h2 id="system">System</h2>
+<ul>
+<li><strong>Language</strong>: English, Español, Türkçe.</li>
+<li><strong>Music sounds</strong> and <strong>Interface sounds</strong>: Off, Low, Medium or High, for the chiptune sounds of music actions and of menus.</li>
+<li><strong>Swap A/B</strong>.</li>
+</ul>
+<h2 id="about">About</h2>
+<ul><li><strong>GitHub</strong> and <strong>Buy me a coffee</strong> show a QR code.</li></ul>
+<h2 id="exit">Exit</h2>
+<ul>
+<li><strong>Keep playing on close</strong>: whether the music keeps going when the player closes without Quit. On by default on the desktop, off on handhelds.</li>
+<li><strong>Go to background</strong>: close the player, keep the music. <strong>Quit</strong>: stop everything.</li>
+</ul>
+<p>On iPhone, Output rate, Keep playing on close and Go to background don't show: the music already keeps going when you leave the app.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="tracker.html">← Tracker</a><a href="handhelds.html">Handheld systems →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

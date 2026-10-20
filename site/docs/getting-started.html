@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Getting started · audiofilus docs</title>
+<meta name="description" content="Install audiofilus on your device, open it, and point it at your music.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html" aria-current="page">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Getting started</h1>
+    <p class="lede">Install audiofilus on your device, open it, and point it at your music.</p>
+
+<h2 id="handhelds">Handhelds with PortMaster</h2>
+<p>Works on Knulli, muOS, ROCKNIX, ArkOS and dArkOS.</p>
+<ol>
+<li>Download <code>audiofilus-portmaster.zip</code> from the <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">latest release</a>.</li>
+<li>Install it with PortMaster, or unzip it into your <code>ports</code> folder.</li>
+<li>Open <strong>audiofilus</strong> from Ports.</li>
+</ol>
+<p>The port brings everything it needs, including the library that plays console music (libgme).</p>
+
+<h2 id="muos">muOS, without PortMaster</h2>
+<ol>
+<li>Download <code>audiofilus.muxapp</code> from the <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">latest release</a>.</li>
+<li>Copy it to the <code>ARCHIVE</code> folder at the root of your SD card (or USB drive).</li>
+<li>Open muOS's <strong>Archive Manager</strong> and install it. audiofilus shows up under <strong>Applications</strong>.</li>
+</ol>
+
+<h2 id="linux">Linux desktop</h2>
+<pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
+<p>It installs audiofilus into <code>~/.local/share/audiofilus</code>, links <code>audiofilus</code> into <code>~/.local/bin</code> and adds it to your app launcher (with “Open with” for audio files and folders). Run it again to update; your settings stay.</p>
+<p>By hand: unzip <code>audiofilus-linux-amd64.tar.gz</code> (or <code>-arm64</code>) anywhere and run <code>./audiofilus desktop install</code> once.</p>
+
+<h2 id="windows">Windows</h2>
+<p>On Windows 10 or later, unzip <code>audiofilus-windows-amd64.zip</code> anywhere and run <code>audiofilus.exe</code>. MP3, FLAC, Ogg Vorbis, ALAC, WAV and AIFF play out of the box. For AAC/M4A, Opus and tracker modules, put the MSYS2 DLLs next to the <code>.exe</code>: <code>libfdk-aac-2.dll</code>, <code>libopusfile-0.dll</code> (with <code>libopus-0.dll</code> and <code>libogg-0.dll</code>), <code>libmpg123-0.dll</code> and <code>libxmp-4.dll</code>. Console music isn't available on Windows yet.</p>
+
+<h2 id="iphone">iPhone and iPad</h2>
+<p>Each release has an unsigned <code>audiofilus-ios-unsigned.ipa</code>. Install it with <a href="https://sideloadly.io">Sideloadly</a> or <a href="https://altstore.io">AltStore</a>, which sign it with your own Apple ID.</p>
+<p>Or add the source <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> to AltStore, SideStore or LiveContainer: new releases show up there as updates.</p>
+
+<h2 id="first-run">First run: your music folder</h2>
+<p>On a handheld or the desktop, the first time you open audiofilus it shows a folder browser. <kbd>A</kbd> opens a folder, <kbd>B</kbd> goes up and <kbd>X</kbd> uses the current folder. The library is scanned once, with a progress bar; later starts only read new or changed files. You can change the folder later in <strong>Settings → Folder</strong>, and rescan with <strong>Rescan</strong>.</p>
+<p>No music of your own? audiofilus opens anyway with an empty library, so servers, radio, podcasts and YouTube Music still work.</p>
+<p>On iPhone, copy songs into <em>On My iPhone → Audiofilus</em> in the Files app, or pick any folder (iCloud Drive or another app) in <strong>Settings → Folder</strong>.</p>
+
+<h2 id="find-your-way">Finding your way around</h2>
+<ul>
+<li><kbd>SELECT</kbd> opens the screens bar (Now playing, Library, Search, Queue, Radio, Podcasts, Games, Settings…). Press it twice to go back to the previous screen.</li>
+<li><kbd>START</kbd> opens the More menu of the screen you're on.</li>
+<li>Hold <kbd>FN</kbd> (<kbd>F1</kbd> on a keyboard) to see what every button does on that screen.</li>
+</ul>
+<figure><img class="px shot" src="../img/guide.png" alt="The controls guide over the player, shown while FN is held" width="360" height="240" loading="lazy"><figcaption>The controls guide, while FN is held.</figcaption></figure>
+
+<h2 id="update">Updating</h2>
+<p>Install the new release the same way. Your settings (<code>audiofilus.json</code>) and data (<code>data/</code>) live next to the program, so they stay.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="index.html">← Overview</a><a href="library.html">Library →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

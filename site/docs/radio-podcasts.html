@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radio &amp; podcasts · audiofilus docs</title>
+<meta name="description" content="Internet radio from thousands of stations or your own lists, and podcasts with downloads and resume.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html" aria-current="page">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Radio and podcasts</h1>
+    <p class="lede">Internet radio from thousands of stations or your own lists, and podcasts with downloads and resume.</p>
+
+<h2 id="radio">Radio</h2>
+<figure><img class="px shot" src="../img/radio.png" alt="The player showing a live radio station with its current song" width="360" height="240" loading="lazy"></figure>
+<p>Open <strong>Radio</strong> from the screens bar (<kbd>SELECT</kbd>). Its tabs:</p>
+<ul>
+<li><strong>Favorites</strong>: stations you saved (<kbd>START</kbd> on a station → <strong>Add to favorites</strong>).</li>
+<li><strong>My lists</strong>: your own station lists (see below).</li>
+<li><strong>Popular</strong>: the most played stations in your country; <kbd>X</kbd> switches to worldwide. Change the country with <strong>Country</strong> in the menu.</li>
+<li><strong>Search</strong>: by station name (<kbd>X</kbd> or <kbd>START</kbd> to search).</li>
+<li><strong>Genres</strong>.</li>
+</ul>
+<p>Stations come from <a href="https://www.radio-browser.info">radio-browser.info</a>. <kbd>A</kbd> listens; while a station plays, <kbd>L1</kbd>/<kbd>R1</kbd> switch to the previous or next one in the list, and the live song title shows when the station sends it. MP3 and AAC stations play; HLS streams don't.</p>
+
+<h3 id="my-lists">Your own station lists</h3>
+<ul>
+<li>Put <code>.m3u</code>, <code>.m3u8</code> or <code>.pls</code> station lists in a <code>radio</code> folder next to the app (on a handheld, inside the port's folder). They show up under <strong>My lists</strong>, with the names and logos from the file.</li>
+<li><strong>Add by address</strong>: <kbd>START</kbd> on Favorites or My lists asks for a station's address and a name, and saves it to Favorites.</li>
+<li>If a station's address is itself a playlist (like <code>listen.pls</code>), audiofilus follows it to the stream.</li>
+</ul>
+
+<h2 id="podcasts">Podcasts</h2>
+<p>Open <strong>Podcasts</strong> from the screens bar. Tabs: <strong>Subscribed</strong>, <strong>Popular</strong> (the top shows for your country) and <strong>Search</strong>. <kbd>START</kbd> on Subscribed adds a podcast by its RSS address.</p>
+<ul>
+<li><kbd>A</kbd> on a podcast opens its episodes, newest first, with date, duration and whether you played it, where you stopped, or downloaded it.</li>
+<li>Episodes are downloaded before they play (through the Downloads queue) and play from the SD card.</li>
+<li>Your position is remembered, and playback resumes three seconds earlier so you get your bearings. Near the end, an episode is marked as played.</li>
+<li><kbd>START</kbd> on an episode: listen, download or delete the download, mark as played or unplayed. On a podcast: subscribe or remove it, refresh, and <strong>Download new ones</strong>.</li>
+</ul>
+
+    <nav class="pager" aria-label="Pages"><a href="lyrics.html">← Lyrics</a><a href="servers.html">Servers →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

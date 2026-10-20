@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FAQ · audiofilus docs</title>
+<meta name="description" content="Quick answers to common questions.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html" aria-current="page">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Frequently asked questions</h1>
+    <p class="lede">Quick answers to common questions.</p>
+<details class="q" id="music-stops"><summary>The music stops when I close the app.</summary><p>Use <strong>Go to background</strong> (Now Playing's More menu, or Settings → Exit) to close the player and keep the music. Closing it another way (PortMaster's <kbd>SELECT</kbd>+<kbd>START</kbd>, closing the window) keeps the music only if <strong>Settings → Keep playing on close</strong> is on; it's off by default on handhelds and on by default on the desktop. <strong>Quit</strong> always stops everything.</p></details>
+<details class="q" id="control-in-game"><summary>How do I change songs while I&#x27;m playing a game?</summary><p>Press <kbd>FN</kbd> three times, then <kbd>L1</kbd>/<kbd>R1</kbd> (previous/next), <kbd>L2</kbd>/<kbd>R2</kbd> (seek 10 s) or <kbd>SELECT</kbd> (pause). Headphone buttons work too.</p></details>
+<details class="q" id="where-data"><summary>Where are my settings and data?</summary><p>Next to the program: <code>audiofilus.json</code> for settings and the <code>data/</code> folder for everything else (library cache, playlists, history, lyrics, podcasts, the log). See <a href="handhelds.html#files">Where your files live</a>.</p></details>
+<details class="q" id="update"><summary>How do I update?</summary><p>Install the new release the same way you installed the old one. Settings and data stay, because they live next to the program. On Linux, run the install command again.</p></details>
+<details class="q" id="portmaster-or-muxapp"><summary>On muOS, should I use the PortMaster port or the muOS app?</summary><p>Either works the same. The <code>.muxapp</code> installs from muOS's Archive Manager and shows up under Applications; the PortMaster port shows up under Ports. They keep separate settings and data.</p></details>
+<details class="q" id="formats"><summary>Which formats does it play?</summary><p>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD, tracker modules (MOD, XM, IT, S3M), console music (NSF, SPC, GBS, VGM…), M3U playlists and CUE sheets. See <a href="library.html#formats">Formats</a>.</p></details>
+<details class="q" id="console-music"><summary>My NSF/SPC/VGM files don&#x27;t play.</summary><p>Console music needs libgme, which the PortMaster port, the muOS app and the Linux downloads bring. If you installed by copying only the program, copy the <code>libs.aarch64</code> (or <code>libs.x86_64</code>) folder next to it too. On a Linux desktop you can also install your distribution's libgme package. It isn't available on Windows yet.</p></details>
+<details class="q" id="youtube"><summary>YouTube Music doesn&#x27;t show up.</summary><p>It needs your own <code>yt-dlp</code> in the app's <code>yt-dlp</code> folder. See <a href="youtube-music.html#setup">YouTube Music</a>.</p></details>
+<details class="q" id="lyrics-missing"><summary>Lyrics aren&#x27;t found.</summary><p>Check that <strong>Settings → Lyrics from the web</strong> is on and that the device is online. LRCLIB doesn't have every song; you can put a <code>.lrc</code> with the song's name next to it, or pick another version in Lyrics → <kbd>START</kbd> → Choose lyrics. A search that found nothing is retried after a week.</p></details>
+<details class="q" id="lyrics-timing"><summary>The lyrics are early or late.</summary><p>On the lyrics view, <kbd>↑</kbd>/<kbd>↓</kbd> move them half a second at a time; the offset is saved for that song.</p></details>
+<details class="q" id="lastfm-key"><summary>Last.fm says “API key missing”.</summary><p>Your build doesn't include audiofilus's Last.fm application key. The official releases do; download the latest one.</p></details>
+<details class="q" id="radio-wont-play"><summary>A radio station won&#x27;t play.</summary><p>audiofilus plays MP3 and AAC stations. HLS streams (addresses ending in <code>.m3u8</code> with segments) aren't supported. Stations whose address is a <code>.pls</code> or <code>.m3u</code> are followed to the stream.</p></details>
+<details class="q" id="my-stations"><summary>Can I add my own radio stations?</summary><p>Yes: put <code>.m3u</code>/<code>.pls</code> lists in the app's <code>radio</code> folder (they show under Radio → My lists), or use <kbd>START</kbd> → <strong>Add by address</strong> on Favorites or My lists.</p></details>
+<details class="q" id="battery"><summary>The battery level looks wrong.</summary><p>audiofilus reads the system's battery. Some consoles' battery gauge always reports 0 % (like the RG353V with dArkOS); there audiofilus estimates the level from the charge or the voltage, or hides it if it can't.</p></details>
+<details class="q" id="darkos-log"><summary>On dArkOS I can&#x27;t find the app&#x27;s folder.</summary><p>If your games are on the second SD card, ports live in <code>/roms2/ports</code> instead of <code>/roms/ports</code>, so the log is at <code>/roms2/ports/audiofilus/data/audiofilus.log</code>.</p></details>
+<details class="q" id="power-button"><summary>Pressing the power button doesn&#x27;t suspend the console.</summary><p>With the player open, the power button is meant to put audiofilus to sleep (screen off, music on), not to suspend. After Go to background it suspends as usual. On ROCKNIX with “fake suspend”, see <a href="handhelds.html#rocknix">ROCKNIX</a>.</p></details>
+<details class="q" id="battery-use"><summary>How much battery does it use?</summary><p>Little: on an RG34XX-SP, sleep mode draws about 260 mA, around 11 to 12 hours of music. The visualizers and the equalizer cost more; with the screen off, nothing is drawn.</p></details>
+<details class="q" id="iphone-install"><summary>How do I install it on an iPhone?</summary><p>Download <code>audiofilus-ios-unsigned.ipa</code> from the latest release and install it with Sideloadly or AltStore, which sign it with your own Apple ID. Or add the source <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> to AltStore, SideStore or LiveContainer: new releases show up there as updates.</p></details>
+<details class="q" id="iphone-music"><summary>How do I add music on iPhone?</summary><p>Copy songs into <em>On My iPhone → Audiofilus</em> in the Files app, pick any folder in Settings → Folder, or open songs in Audiofilus from Files or other apps. Servers, radio and podcasts work without local music.</p></details>
+<details class="q" id="open-with"><summary>How do I open files from the file manager?</summary><p>On Linux, right-click → Open with → Audiofilus (after installing with the installer or <code>audiofilus desktop install</code>). On Windows, audiofilus registers itself the first time it runs: use Open with, or Play with Audiofilus on folders. They play as a temporary queue.</p></details>
+<details class="q" id="server-offline"><summary>Do server songs work without network?</summary><p>The catalog is saved, so you can browse offline, and songs you already played are cached (400 MB by default). Songs that aren't cached need the server. Download songs to your library to keep them for good.</p></details>
+<details class="q" id="privacy"><summary>What does audiofilus send online?</summary><p>Only what you use: radio-browser (the radio screens), Apple's podcast directory and the RSS feeds (Podcasts), LRCLIB (lyrics, unless you turn Lyrics from the web off), your own servers, YouTube via your yt-dlp, and Last.fm or ListenBrainz only if you connect them.</p></details>
+<details class="q" id="tracker-visualizer"><summary>Do the visualizers react to the tracker?</summary><p>Yes. While the tracker plays, the visualizers, the beat-following games and the background follow its music.</p></details>
+    <nav class="pager" aria-label="Pages"><a href="handhelds.html">← Handheld systems</a><span></span></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>

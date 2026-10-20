@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lyrics · audiofilus docs</title>
+<meta name="description" content="Synced lyrics that tint as they&#x27;re sung, from your files or found online.">
+<meta name="theme-color" content="#0d0b15">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
+<link rel="apple-touch-icon" href="../img/icon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;family=Tiny5&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <nav aria-label="Site">
+      <a href="../index.html">Home</a>
+      <a href="index.html" aria-current="page">Docs</a>
+      <a class="wide" href="faq.html">FAQ</a>
+      <a class="wide" href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a>
+      <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap layout">
+  <aside class="side">
+    <nav aria-label="Docs">
+      <details open id="toc">
+        <summary>Docs: all pages</summary>
+        <div class="label">Docs</div>
+        <ol>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="getting-started.html">Getting started</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="playback.html">Playback</a></li>
+          <li><a href="sound.html">Sound</a></li>
+          <li><a href="lyrics.html" aria-current="page">Lyrics</a></li>
+          <li><a href="radio-podcasts.html">Radio &amp; podcasts</a></li>
+          <li><a href="servers.html">Servers</a></li>
+          <li><a href="youtube-music.html">YouTube Music</a></li>
+          <li><a href="scrobbling.html">Scrobbling</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="visualizers-games.html">Visualizers &amp; games</a></li>
+          <li><a href="tracker.html">Tracker</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="handhelds.html">Handheld systems</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ol>
+      </details>
+    </nav>
+  </aside>
+  <article>
+    <h1>Lyrics</h1>
+    <p class="lede">Synced lyrics that tint as they&#x27;re sung, from your files or found online.</p>
+
+<figure><img class="px shot" src="../img/lyrics.webp" alt="Synced lyrics on Now Playing tinting line by line, with dots during the instrumental intro" width="360" height="240" loading="lazy"></figure>
+<h2 id="open">Opening the lyrics</h2>
+<p>On Now Playing, open <strong>More → Lyrics</strong>, or tap the visualizer. <kbd>B</kbd> goes back. While the lyrics are on screen, the player doesn't go to sleep by itself.</p>
+<ul>
+<li><strong>Synced lyrics</strong>: the current line stays centered and fills with color as it's sung. Long instrumental parts show three dots that fill up until the voice returns.</li>
+<li><strong>Unsynced lyrics</strong>: they scroll along with the song; <kbd>↑</kbd>/<kbd>↓</kbd>, your finger or the wheel scroll them by hand.</li>
+</ul>
+
+<h2 id="where">Where lyrics come from</h2>
+<ol>
+<li>The version you picked by hand.</li>
+<li>A <code>.lrc</code> file with the song's name, next to it or in a <code>lyrics</code> folder.</li>
+<li>The file's tags: ID3 SYLT and USLT, <code>LYRICS</code> in FLAC and Ogg, <code>©lyr</code> in M4A.</li>
+<li><a href="https://lrclib.net">LRCLIB</a>, a free online lyrics database (looked up by title, artist and duration).</li>
+<li>Unsynced lyrics from a <code>.txt</code> or the tags.</li>
+</ol>
+<p>Lyrics found online are saved, so each song is looked up once. Songs LRCLIB marks as instrumental show <strong>INSTRUMENTAL</strong>.</p>
+
+<h2 id="choose">Choosing another version and the timing</h2>
+<ul>
+<li><kbd>START</kbd> → <strong>Choose lyrics</strong> lists every version: local files, the tags, every LRCLIB match (with album and duration) and <strong>No lyrics</strong>. Your choice is remembered for that song.</li>
+<li><kbd>↑</kbd>/<kbd>↓</kbd> move synced lyrics 0.5 seconds sooner or later; <strong>Offset</strong> in the menu resets it. The offset is saved per song.</li>
+</ul>
+
+<h2 id="radio">Lyrics on the radio</h2>
+<p>Stations that send their title as “Artist - Song” get lyrics too. Synced lyrics count from when the title changed; stations often send it a few seconds late, so nudge the timing with <kbd>↑</kbd>/<kbd>↓</kbd>.</p>
+
+<h2 id="offline">Staying offline</h2>
+<p><strong>Settings → Lyrics from the web</strong> off: only your files and tags are used.</p>
+
+    <nav class="pager" aria-label="Pages"><a href="sound.html">← Sound</a><a href="radio-podcasts.html">Radio &amp; podcasts →</a></nav>
+  </article>
+</div>
+<footer>
+  <div class="wrap">
+    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
+  </div>
+</footer>
+<script>
+// On phones the page list starts folded, so the content comes first.
+if (matchMedia("(max-width: 880px)").matches) document.getElementById("toc").removeAttribute("open");
+</script>
+</body>
+</html>
