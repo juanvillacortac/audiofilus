@@ -51,3 +51,39 @@ jobs:
           sleep 2
           ./bin/audiofilus.exe status
           ./bin/audiofilus.exe quit
+
+  # Las DLL que lleva el zip de Windows (tools/windows/dlls.sh), probadas en
+  # Windows: tienen que cargar y decodificar MP3, AAC y Opus.
+  windows-dlls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: zig, for fdk-aac
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            zig = "0.15.2"
+      - run: tools/windows/dlls.sh build/windows-dlls
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-dlls
+          path: build/windows-dlls/
+
+  windows-native:
+    needs: windows-dlls
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-dlls
+          path: dlls
+      - name: Decode with the bundled DLLs
+        shell: bash
+        run: |
+          export PATH="$PWD/dlls:$PATH" AUDIOFILUS_REQUIRE_NATIVE=1
+          go test -run 'RequireNative' -v ./internal/decode

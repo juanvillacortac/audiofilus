@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: zig, for libgme and libvgm
+      - name: zig, for libgme, libvgm and fdk-aac
         uses: jdx/mise-action@v2
         with:
           mise_toml: |
@@ -27,6 +27,8 @@ jobs:
         run: tools/libgme/build.sh build/libgme
       - name: libvgm for the handhelds and Linux (tools/libvgm/build.sh)
         run: tools/libvgm/build.sh build/libvgm
+      - name: The Windows DLLs (tools/windows/dlls.sh)
+        run: tools/windows/dlls.sh build/windows-dlls
       - name: Build in the container
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
@@ -55,6 +57,8 @@ jobs:
           mkdir -p "$d/licenses"
           cp dist/audiofilus-windows-amd64.exe "$d/audiofilus.exe"
           cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
+          cp build/windows-dlls/*.dll "$d/"
+          cp -r build/windows-dlls/licenses/. "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)
       - name: The iOS app
         uses: actions/download-artifact@v4
