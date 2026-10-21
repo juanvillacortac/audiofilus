@@ -22,6 +22,10 @@ Unless it is locked, the visualizer moves on to the next preset after 20 seconds
 
 On this screen, L1/R1 change the preset instead of the song. The song can still be changed from the dock, from Now Playing or with the system shortcuts.
 
+## Background in Now Playing
+
+With START → *Visualizer background* in Now Playing, MilkDrop (or whichever visualizer was last chosen) is drawn dimmed behind the player. There it always uses the album's colors, whatever the Colors button says, so it matches the cover and the rest of the screen.
+
 ## Colors: preset or album
 
 START → **Colors** is one button that switches between two modes, shown under its name. **Preset** (the default) shows each preset as its author made it. **Album** recolors the final image with the theme of the album that is playing, the same colors the rest of the interface takes from the cover. The preset's brightness and shapes stay, and only the color changes:

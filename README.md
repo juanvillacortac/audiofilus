@@ -96,7 +96,7 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 
 ### Visualizers and games
 
-Nine visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves, Bars, Ridges** (stacked spectrum lines, like the *Unknown Pleasures* cover) and **MilkDrop**, which plays classic MilkDrop 1 `.milk` presets: eight built in, plus your own in a `milkdrop` folder, in their own colors or the album's ([docs/milkdrop.md](docs/milkdrop.md)). Plus eight arcade games and a tracker, together under **Games** in the screens dock (and a few secrets hidden around the app):
+Nine visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Waves, Bars, Ridges** (stacked spectrum lines, like the *Unknown Pleasures* cover) and **MilkDrop**, which plays classic MilkDrop 1 `.milk` presets: eight built in, plus your own in a `milkdrop` folder, in their own colors or the album's ([docs/milkdrop.md](docs/milkdrop.md)). The Visualizer screen remembers the last one you watched, and any of them can also play dimmed **behind Now Playing** (START → *Visualizer background*, always in the album's colors; off by default to save battery). Plus eight arcade games and a tracker, together under **Games** in the screens dock (and a few secrets hidden around the app):
 
 - **Crypt**: a rhythm roguelike. Step, fight and dive deeper through random dungeons, but only on the beat of the song that's playing; enemies move to it too. On-beat streaks raise a multiplier up to FEVER ×4.
 - **Blocks**: falling blocks, with hard drops on the beat for combos.
