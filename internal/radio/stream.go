@@ -300,14 +300,11 @@ func (s *Stream) connect(ctx context.Context) error {
 	}
 	// Muchas emisoras dan una lista (listen.pls, .m3u) que apunta al flujo
 	// de verdad: se sigue (hasta tres saltos). Las de HLS (#EXT-X-, trozos
-	// sueltos) no se entienden.
+	// sueltos que se renuevan) van por hls.go.
 	if isPlaylist(resp.Header.Get("Content-Type"), s.url) && s.hops < 3 {
-		b, _ := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 		if bytes.Contains(b, []byte("#EXT-X-")) {
-			s.mu.Lock()
-			s.fatal = fmt.Errorf("%w (HLS radio streams)", decode.ErrUnsupported)
-			s.mu.Unlock()
-			return s.fatal
+			return s.hls(ctx, s.url, b)
 		}
 		if list := ParsePlaylist(bytes.NewReader(b)); len(list) > 0 {
 			s.url = list[0].URL

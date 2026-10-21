@@ -96,7 +96,7 @@ body { line-break: strict; }
 <details class="q" id="lyrics-missing"><summary>找不到歌词。</summary><p>检查 <strong>设置 → 网上歌词</strong> 是否开启，以及设备是否联网。LRCLIB 并没有收录所有歌曲；你可以在歌曲旁边放一个同名的 <code>.lrc</code> 文件，或在 歌词 → <kbd>START</kbd> → 选择歌词 中挑选其他版本。没有搜到结果的歌曲会在一周后重试。</p></details>
 <details class="q" id="lyrics-timing"><summary>歌词快了或慢了。</summary><p>在歌词视图中，<kbd>↑</kbd>/<kbd>↓</kbd> 每次调整半秒；偏移量会为这首歌保存。</p></details>
 <details class="q" id="lastfm-key"><summary>Last.fm 提示“API key missing”。</summary><p>你的构建版本不包含 audiofilus 的 Last.fm 应用密钥。官方发布版包含该密钥；请下载最新版本。</p></details>
-<details class="q" id="radio-wont-play"><summary>某个电台无法播放。</summary><p>audiofilus 支持 MP3 和 AAC 电台。不支持 HLS 流（以 <code>.m3u8</code> 结尾并分段的地址）。地址是 <code>.pls</code> 或 <code>.m3u</code> 的电台会被跟随到实际的流。</p></details>
+<details class="q" id="radio-wont-play"><summary>某个电台无法播放。</summary><p>audiofilus 支持 MP3 和 AAC 电台。也支持 HLS 流（以 <code>.m3u8</code> 结尾的地址），但少数使用罕见编码（AAC LATM，或 fMP4 中的 Opus/AC-3）的除外。地址是 <code>.pls</code> 或 <code>.m3u</code> 的电台会被跟随到实际的流。</p></details>
 <details class="q" id="my-stations"><summary>可以添加自己的电台吗？</summary><p>可以：把 <code>.m3u</code>/<code>.pls</code> 列表放进应用的 <code>radio</code> 文件夹（它们会出现在 电台 → 我的列表 中），或在“收藏”或“我的列表”中使用 <kbd>START</kbd> → <strong>通过地址添加</strong>。</p></details>
 <details class="q" id="battery"><summary>电量显示不对。</summary><p>audiofilus 读取系统的电池信息。有些掌机的电量计总是报告 0 %（比如运行 dArkOS 的 RG353V）；这时 audiofilus 会根据电荷量或电压估算电量，无法估算时则隐藏。</p></details>
 <details class="q" id="darkos-log"><summary>在 dArkOS 上找不到应用的文件夹。</summary><p>如果你的游戏在第二张 SD 卡上，ports 位于 <code>/roms2/ports</code> 而不是 <code>/roms/ports</code>，因此日志在 <code>/roms2/ports/audiofilus/data/audiofilus.log</code>。</p></details>

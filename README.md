@@ -49,7 +49,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster 
 
 ### Library
 
-- **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream.
+- **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream. **HLS** stations (`.m3u8` split into segments: MPEG-TS, packed AAC/MP3 or fMP4, AES-128 encrypted too) play as well (thanks to volkybaba for the report and ideas).
 - Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
@@ -82,7 +82,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster 
 |---|---|
 | **Subsonic / OpenSubsonic** (Navidrome and others) | Browse, stream, cache and download; edit their playlists |
 | **Jellyfin** | Same, with your Jellyfin user and its playlists |
-| **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY) |
+| **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY); Icecast/Shoutcast and HLS streams |
 | **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume |
 | **YouTube Music** | Search without signing in; listen without downloading, or save songs with cover and tags. Requires your own `yt-dlp` (see below) |
 | **Module archives** | The Mod Archive, Modland, VGMRips and AMP: browse what's popular, new or random, search (also from Search), listen, save to your library or open a MOD/XM in the tracker. No account needed |

@@ -24,10 +24,22 @@ type Station struct {
 	Codec   string `json:"codec"`
 	Bitrate int    `json:"bitrate"`
 	Votes   int    `json:"votes"`
+	HLS     int    `json:"hls,omitempty"` // 1 si es HLS (radio-browser lo dice así)
 }
 
-// Playable dice si audiofilus sabe decodificarla (MP3 y AAC: casi todas).
-func (s Station) Playable() bool { return codecOf(s.Codec, "") != "" }
+// Playable dice si audiofilus sabe decodificarla: MP3 y AAC (casi todas) y
+// las HLS, que radio-browser suele dar con el códec "UNKNOWN" (el de verdad
+// se sabe por los trozos; ver hls.go).
+func (s Station) Playable() bool {
+	if codecOf(s.Codec, "") != "" || s.HLS == 1 {
+		return true
+	}
+	u := strings.ToLower(s.URL)
+	if i := strings.IndexAny(u, "?#"); i >= 0 {
+		u = u[:i]
+	}
+	return strings.HasSuffix(u, ".m3u8")
+}
 
 // Path es la ruta de la emisora en la cola: "radio://<uuid>".
 func (s Station) Path() string { return Scheme + s.UUID }
