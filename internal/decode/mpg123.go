@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"sync"
 	"unsafe"
 )
@@ -26,7 +27,9 @@ const (
 )
 
 // mpg123 son las funciones de la biblioteca. Las de off_t (open_fd, seek, tell,
-// length) son de 64 bits en arm64 y amd64, los únicos destinos.
+// length) son de 64 bits en Linux arm64 y amd64; en Windows off_t es de 32
+// bits, así que allí se usan sus variantes *64, y el archivo se abre por su
+// ruta (mpg123_open64): f.Fd() es un HANDLE de Windows, no un descriptor de C.
 var mpg123 struct {
 	once   sync.Once
 	err    error
@@ -38,6 +41,7 @@ var mpg123 struct {
 	format func(mh uintptr, rate int64, channels, encodings int32) int32
 	getf   func(mh uintptr, rate *int64, channels, encoding *int32) int32
 	open   func(mh uintptr, fd int32) int32
+	open64 func(mh uintptr, path string) int32 // solo en Windows
 	close  func(mh uintptr) int32
 	read   func(mh uintptr, out unsafe.Pointer, size uintptr, done *uintptr) int32
 	seek   func(mh uintptr, off int64, whence int32) int64
@@ -55,14 +59,21 @@ func loadMPG123() error {
 		return errDisabled
 	}
 	mpg123.once.Do(func() {
-		mpg123.err = openLib([]string{"libmpg123.so.0", "libmpg123.so", "libmpg123-0.dll"}, []libFunc{
+		funcs := []libFunc{
 			{&mpg123.init, "mpg123_init"}, {&mpg123.new, "mpg123_new"}, {&mpg123.del, "mpg123_delete"},
 			{&mpg123.param, "mpg123_param"}, {&mpg123.none, "mpg123_format_none"}, {&mpg123.format, "mpg123_format"},
-			{&mpg123.getf, "mpg123_getformat"}, {&mpg123.open, "mpg123_open_fd"}, {&mpg123.close, "mpg123_close"},
-			{&mpg123.read, "mpg123_read"}, {&mpg123.seek, "mpg123_seek"}, {&mpg123.tell, "mpg123_tell"},
-			{&mpg123.length, "mpg123_length"}, {&mpg123.strerr, "mpg123_strerror"},
+			{&mpg123.getf, "mpg123_getformat"}, {&mpg123.close, "mpg123_close"},
+			{&mpg123.read, "mpg123_read"}, {&mpg123.strerr, "mpg123_strerror"},
 			{&mpg123.openFeed, "mpg123_open_feed"}, {&mpg123.feed, "mpg123_feed"},
-		})
+		}
+		if runtime.GOOS == "windows" {
+			funcs = append(funcs, libFunc{&mpg123.open64, "mpg123_open64"}, libFunc{&mpg123.seek, "mpg123_seek64"},
+				libFunc{&mpg123.tell, "mpg123_tell64"}, libFunc{&mpg123.length, "mpg123_length64"})
+		} else {
+			funcs = append(funcs, libFunc{&mpg123.open, "mpg123_open_fd"}, libFunc{&mpg123.seek, "mpg123_seek"},
+				libFunc{&mpg123.tell, "mpg123_tell"}, libFunc{&mpg123.length, "mpg123_length"})
+		}
+		mpg123.err = openLib([]string{"libmpg123.so.0", "libmpg123.so", "libmpg123-0.dll"}, funcs)
 		if mpg123.err == nil {
 			mpg123.init()
 		}
@@ -101,7 +112,11 @@ func newMPG123(f *os.File) (Source, error) {
 	for _, r := range mpg123Rates {
 		mpg123.format(mh, r, mpgStereo, mpgFloat32)
 	}
-	if mpg123.open(mh, int32(f.Fd())) != mpgOK {
+	if runtime.GOOS == "windows" {
+		if mpg123.open64(mh, f.Name()) != mpgOK {
+			return fail("mpg123_open64")
+		}
+	} else if mpg123.open(mh, int32(f.Fd())) != mpgOK {
 		return fail("mpg123_open_fd")
 	}
 	var rate int64

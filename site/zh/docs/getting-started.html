@@ -111,7 +111,7 @@ body { line-break: strict; }
 <p>手动安装：把 <code>audiofilus-linux-amd64.tar.gz</code>（或 <code>-arm64</code>）解压到任意位置，然后运行一次 <code>./audiofilus desktop install</code>。</p>
 
 <h2 id="windows">Windows</h2>
-<p>在 Windows 10 或更高版本上，把 <code>audiofilus-windows-amd64.zip</code> 解压到任意位置并运行 <code>audiofilus.exe</code>。MP3、FLAC、Ogg Vorbis、ALAC、WAV 和 AIFF 开箱即用。若要播放 AAC/M4A、Opus 和 tracker 模块，请把 MSYS2 的 DLL 放到 <code>.exe</code> 旁边：<code>libfdk-aac-2.dll</code>、<code>libopusfile-0.dll</code>（以及 <code>libopus-0.dll</code> 和 <code>libogg-0.dll</code>）、<code>libmpg123-0.dll</code> 和 <code>libxmp-4.dll</code>。Windows 上暂不支持游戏音乐。</p>
+<p>在 Windows 10 或更高版本上，把 <code>audiofilus-windows-amd64.zip</code> 解压到任意位置并运行 <code>audiofilus.exe</code>。所有格式都开箱即用：包括 AAC/M4A、Opus、tracker 模块、游戏音乐（NSF、SPC、GBS…）以及 AAC 或 HLS 电台。zip 里已在 <code>.exe</code> 旁边附带解码器 DLL（来自 MSYS2 的 mpg123、opusfile、libxmp 和 libgme，以及 fdk-aac）；它们的许可证在 <code>licenses</code> 文件夹中。</p>
 
 <h2 id="iphone">iPhone 和 iPad</h2>
 <p>每个版本都附带未签名的 <code>audiofilus-ios-unsigned.ipa</code>。用 <a href="https://sideloadly.io">Sideloadly</a> 或 <a href="https://altstore.io">AltStore</a> 安装，它们会用你自己的 Apple ID 签名。</p>

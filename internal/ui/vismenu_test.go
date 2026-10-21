@@ -45,8 +45,8 @@ func TestVisualMenuFollowsVisualizer(t *testing.T) {
 // siempre, y vuelve a Ajustes.
 func TestPickedDirs(t *testing.T) {
 	a := &App{offline: true}
-	a.paths.Base = "/base"
-	if a.radioDir() != "/base/radio" || a.milkDir() != "/base/milkdrop" {
+	a.paths.Base = filepath.Join("base")
+	if a.radioDir() != filepath.Join("base", "radio") || a.milkDir() != filepath.Join("base", "milkdrop") {
 		t.Fatalf("defaults: %q %q", a.radioDir(), a.milkDir())
 	}
 	a.pickFor, a.mode = pickRadio, modePicker

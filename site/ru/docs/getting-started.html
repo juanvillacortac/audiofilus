@@ -100,7 +100,7 @@
 <p>Вручную: распакуй <code>audiofilus-linux-amd64.tar.gz</code> (или <code>-arm64</code>) куда угодно и один раз выполни <code>./audiofilus desktop install</code>.</p>
 
 <h2 id="windows">Windows</h2>
-<p>В Windows 10 и новее распакуй <code>audiofilus-windows-amd64.zip</code> куда угодно и запусти <code>audiofilus.exe</code>. MP3, FLAC, Ogg Vorbis, ALAC, WAV и AIFF играют сразу. Для AAC/M4A, Opus и трекерных модулей положи рядом с <code>.exe</code> DLL из MSYS2: <code>libfdk-aac-2.dll</code>, <code>libopusfile-0.dll</code> (с <code>libopus-0.dll</code> и <code>libogg-0.dll</code>), <code>libmpg123-0.dll</code> и <code>libxmp-4.dll</code>. Музыки консолей в Windows пока нет.</p>
+<p>В Windows 10 и новее распакуй <code>audiofilus-windows-amd64.zip</code> куда угодно и запусти <code>audiofilus.exe</code>. Всё играет сразу: AAC/M4A, Opus, трекерные модули, музыка консолей (NSF, SPC, GBS…) и радиостанции AAC или HLS тоже. В zip рядом с <code>.exe</code> лежат DLL декодеров (mpg123, opusfile, libxmp и libgme из MSYS2, а также fdk-aac); их лицензии — в папке <code>licenses</code>.</p>
 
 <h2 id="iphone">iPhone и iPad</h2>
 <p>В каждом релизе есть неподписанный <code>audiofilus-ios-unsigned.ipa</code>. Установи его через <a href="https://sideloadly.io">Sideloadly</a> или <a href="https://altstore.io">AltStore</a>, они подпишут его твоим Apple ID.</p>

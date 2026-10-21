@@ -101,7 +101,7 @@
 <p>手動の場合：<code>audiofilus-linux-amd64.tar.gz</code>（または <code>-arm64</code>）を好きな場所に展開し、<code>./audiofilus desktop install</code> を一度実行します。</p>
 
 <h2 id="windows">Windows</h2>
-<p>Windows 10 以降では、<code>audiofilus-windows-amd64.zip</code> を好きな場所に展開して <code>audiofilus.exe</code> を実行します。MP3、FLAC、Ogg Vorbis、ALAC、WAV、AIFF はそのまま再生できます。AAC/M4A、Opus、トラッカーモジュールを使うには、MSYS2 の DLL を <code>.exe</code> の隣に置いてください：<code>libfdk-aac-2.dll</code>、<code>libopusfile-0.dll</code>（<code>libopus-0.dll</code> と <code>libogg-0.dll</code> も）、<code>libmpg123-0.dll</code>、<code>libxmp-4.dll</code>。ゲーム機の音楽はまだ Windows では使えません。</p>
+<p>Windows 10 以降では、<code>audiofilus-windows-amd64.zip</code> を好きな場所に展開して <code>audiofilus.exe</code> を実行します。すべてそのまま再生できます。AAC/M4A、Opus、トラッカーモジュール、ゲーム機の音楽（NSF、SPC、GBS…）、AAC や HLS のラジオ局も含みます。zip にはデコーダーの DLL が <code>.exe</code> の隣に入っています（MSYS2 の mpg123、opusfile、libxmp、libgme と fdk-aac）。ライセンスは <code>licenses</code> フォルダーにあります。</p>
 
 <h2 id="iphone">iPhone と iPad</h2>
 <p>各リリースには署名なしの <code>audiofilus-ios-unsigned.ipa</code> が含まれます。<a href="https://sideloadly.io">Sideloadly</a> か <a href="https://altstore.io">AltStore</a> でインストールすると、ご自身の Apple ID で署名されます。</p>

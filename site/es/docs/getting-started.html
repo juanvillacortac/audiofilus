@@ -98,7 +98,7 @@
 <p>A mano: descomprime <code>audiofilus-linux-amd64.tar.gz</code> (o <code>-arm64</code>) donde quieras y ejecuta <code>./audiofilus desktop install</code> una vez.</p>
 
 <h2 id="windows">Windows</h2>
-<p>En Windows 10 o posterior, descomprime <code>audiofilus-windows-amd64.zip</code> donde quieras y ejecuta <code>audiofilus.exe</code>. MP3, FLAC, Ogg Vorbis, ALAC, WAV y AIFF suenan sin nada más. Para AAC/M4A, Opus y módulos de tracker, pon las DLL de MSYS2 junto al <code>.exe</code>: <code>libfdk-aac-2.dll</code>, <code>libopusfile-0.dll</code> (con <code>libopus-0.dll</code> y <code>libogg-0.dll</code>), <code>libmpg123-0.dll</code> y <code>libxmp-4.dll</code>. La música de consola todavía no está disponible en Windows.</p>
+<p>En Windows 10 o posterior, descomprime <code>audiofilus-windows-amd64.zip</code> donde quieras y ejecuta <code>audiofilus.exe</code>. Todo suena sin nada más: AAC/M4A, Opus, módulos de tracker, música de consola (NSF, SPC, GBS…) y emisoras AAC o HLS incluidas. El zip trae las DLL de los decodificadores junto al <code>.exe</code> (mpg123, opusfile, libxmp y libgme de MSYS2, y fdk-aac); sus licencias están en la carpeta <code>licenses</code>.</p>
 
 <h2 id="iphone">iPhone y iPad</h2>
 <p>Cada versión trae un <code>audiofilus-ios-unsigned.ipa</code> sin firmar. Instálalo con <a href="https://sideloadly.io">Sideloadly</a> o <a href="https://altstore.io">AltStore</a>, que lo firman con tu propio Apple ID.</p>
