@@ -9,8 +9,8 @@ import (
 // internet) y no se puede buscar en él. Feed mete los bytes que van llegando
 // y Decode saca lo que se pueda sin esperar: si faltan bytes, devuelve 0 y
 // quien lo usa decide (la radio pone silencio). MP3 con el modo "feed" de
-// libmpg123 y AAC en ADTS con libfdk-aac, los dos que usan casi todas las
-// emisoras.
+// libmpg123 (o go-mp3 si no está: mp3stream.go) y AAC en ADTS con
+// libfdk-aac, los dos que usan casi todas las emisoras.
 
 // StreamDecoder decodifica un flujo que llega a trozos.
 type StreamDecoder interface {
@@ -27,7 +27,10 @@ type StreamDecoder interface {
 func NewStreamDecoder(codec string) (StreamDecoder, error) {
 	switch codec {
 	case "mp3":
-		return newMP3Stream()
+		if d, err := newMP3Stream(); err == nil {
+			return d, nil
+		}
+		return newGoMP3Stream(), nil // sin libmpg123 (Windows sin sus DLL)
 	case "aac":
 		return newAACStream()
 	}
