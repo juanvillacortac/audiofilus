@@ -346,3 +346,41 @@ func TestHLSByteRange(t *testing.T) {
 		t.Errorf("buffer: %d bytes, want the three ranges in order (%d bytes)", len(s.buf), len(want))
 	}
 }
+
+// Si la lista maestra da una cookie de sesión, se manda con la lista de
+// medios y los trozos (sin ella, algunos servidores dan 404).
+func TestHLSSessionCookie(t *testing.T) {
+	seg := tsPackets(tsAACADTS, adts(200, 0x55))
+	mux := http.NewServeMux()
+	need := func(w http.ResponseWriter, r *http.Request) bool {
+		if c, err := r.Cookie("session"); err != nil || c.Value != "abc" {
+			http.NotFound(w, r)
+			return false
+		}
+		return true
+	}
+	mux.HandleFunc("/master.m3u8", func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{Name: "session", Value: "abc", Path: "/"})
+		fmt.Fprint(w, "#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=64000\nmedia.m3u8\n")
+	})
+	mux.HandleFunc("/media.m3u8", func(w http.ResponseWriter, r *http.Request) {
+		if need(w, r) {
+			fmt.Fprint(w, "#EXTM3U\n#EXT-X-TARGETDURATION:1\n#EXTINF:1,\nseg.ts\n#EXT-X-ENDLIST\n")
+		}
+	})
+	mux.HandleFunc("/seg.ts", func(w http.ResponseWriter, r *http.Request) {
+		if need(w, r) {
+			w.Write(seg)
+		}
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+	s := &Stream{url: srv.URL + "/master.m3u8"}
+	s.space = sync.NewCond(&s.mu)
+	if err := s.connect(context.Background()); err == nil || !strings.Contains(err.Error(), "ended") {
+		t.Fatalf("connect: %v, want the list to play to its end", err)
+	}
+	if !bytes.Equal(s.buf, adts(200, 0x55)) {
+		t.Errorf("buffer: %d bytes, want the segment (the cookie was not sent?)", len(s.buf))
+	}
+}

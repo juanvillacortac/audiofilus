@@ -14,6 +14,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/cookiejar"
 	"strconv"
 	"strings"
 	"sync"
@@ -219,8 +220,11 @@ func (s *Stream) Close() error {
 }
 
 // client es el cliente HTTP de las emisoras: acepta la respuesta de los
-// servidores Shoutcast viejos ("ICY 200 OK" en vez de "HTTP/1.0 200 OK").
-var client = &http.Client{Transport: &http.Transport{
+// servidores Shoutcast viejos ("ICY 200 OK" en vez de "HTTP/1.0 200 OK") y
+// guarda las cookies, porque algunos servidores HLS (los de AIS, por ejemplo)
+// atan la sesión a una cookie de la lista maestra y sin ella la de medios y
+// los trozos dan 404.
+var client = &http.Client{Jar: cookies, Transport: &http.Transport{
 	DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 		c, err := (&net.Dialer{Timeout: 15 * time.Second}).DialContext(ctx, network, addr)
 		if err != nil {
@@ -230,6 +234,9 @@ var client = &http.Client{Transport: &http.Transport{
 	},
 	ResponseHeaderTimeout: 20 * time.Second,
 }}
+
+// cookies son las de las emisoras, mientras dure el servicio (no se guardan).
+var cookies, _ = cookiejar.New(nil)
 
 // icyConn cambia "ICY " por "HTTP/1.0 " al principio de la respuesta.
 type icyConn struct {
