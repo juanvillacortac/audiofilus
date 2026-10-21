@@ -58,7 +58,7 @@ type rhythmGame struct {
 	laneAvg    [rhLanes]float64 // la media reciente del espectro de cada carril
 }
 
-func (a *App) rhythmBestPath() string { return filepath.Join(a.paths.Data, "ritmo.json") }
+func (a *App) rhythmBestPath() string { return filepath.Join(a.paths.Data, "rhythm.json") }
 
 func (a *App) newRhythm() *rhythmGame {
 	g := &rhythmGame{lastLane: -1}

@@ -43,7 +43,7 @@ type quizGame struct {
 	overAt     float64
 }
 
-func (a *App) quizBestPath() string { return filepath.Join(a.paths.Data, "adivina.json") }
+func (a *App) quizBestPath() string { return filepath.Join(a.paths.Data, "quiz.json") }
 
 // newQuiz prepara una partida con las canciones de la tarjeta (la primera
 // ronda la pide quien la guarda en a.quiz, con quizRound).

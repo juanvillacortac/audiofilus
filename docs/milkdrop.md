@@ -16,7 +16,7 @@ MilkDrop is in audiofilus 0.12.0 and newer.
 | ← / → | Switch visualizer, as on the other visualizers |
 | L1 / R1 | Previous / next preset, with a 2-second blend |
 | A | Lock the current preset, so it stops changing on its own; press again to unlock |
-| START | Menu: preset colors / album colors, next, previous, random, lock, rescan presets, and the list of visualizers |
+| START | Menu: **Colors** (one button: A switches between *Preset* and *Album*), previous, next, random, lock, rescan presets, and the list of visualizers. Picking another visualizer there rebuilds the menu, so the MilkDrop options go away |
 
 Unless it is locked, the visualizer moves on to the next preset after 20 seconds, on the first beat after that (or 6 seconds later if no beat comes). The preset's name shows for a moment whenever it changes.
 
@@ -24,7 +24,7 @@ On this screen, L1/R1 change the preset instead of the song. The song can still 
 
 ## Colors: preset or album
 
-START → **Preset colors** (the default) shows each preset as its author made it. **Album colors** recolors the final image with the theme of the album that is playing, the same colors the rest of the interface takes from the cover. The preset's brightness and shapes stay, and only the color changes:
+START → **Colors** is one button that switches between two modes, shown under its name. **Preset** (the default) shows each preset as its author made it. **Album** recolors the final image with the theme of the album that is playing, the same colors the rest of the interface takes from the cover. The preset's brightness and shapes stay, and only the color changes:
 
 - Brightness is mapped onto a gradient from the theme background, to its accent, to its second accent, to its text color.
 - 15% of the preset's own color is kept, so the image doesn't look flat.
@@ -34,7 +34,7 @@ Switching modes fades over about half a second. When the album changes, the grad
 ## Presets
 
 - **Built-in:** eight original presets written for audiofilus, under the same MIT license as the rest of the project (`internal/milkdrop/presets/*.milk`): Aurora Curtain, Ember Tunnel, Kaleido Bloom, Liquid Chrome, Neon Grid, Ripple Pond, Spectrum Fountain and Starfield Pulse.
-- **Yours:** put `.milk` files in a `milkdrop` folder next to the binary, or in `$AUDIOFILUS_HOME/milkdrop` if that variable is set. Subfolders are fine, so a whole pack can be unzipped there as it is.
+- **Yours:** put `.milk` files in a `milkdrop` folder next to the binary, or in `$AUDIOFILUS_HOME/milkdrop` if that variable is set. Subfolders are fine, so a whole pack can be unzipped there as it is. Another folder can be picked in Settings → **MilkDrop presets** (the same folder browser as the music folder; saved as `ui.milkdrop_dir` in `audiofilus.json`, empty for the default; not on iPhone). Picking it while MilkDrop is open rescans at once.
 
 The folder is scanned the first time the visualizer opens, not at startup. After adding files, use START → *Rescan presets*.
 

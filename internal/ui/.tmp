@@ -1,0 +1,31 @@
+{
+  "music_dirs": null,
+  "sample_rate": 0,
+  "buffer_ms": 0,
+  "volume": 0,
+  "language": "",
+  "sleep": {
+    "double_tap_ms": 0,
+    "chord_ms": 0,
+    "governor": "",
+    "rumble_ms": 0,
+    "pause_rumble_ms": 0
+  },
+  "ui": {
+    "sleep_after_seconds": 0,
+    "clock_24h": false,
+    "swap_ab": false,
+    "sleep_mode": "",
+    "visualizer": "bars"
+  },
+  "input": {
+    "device": ""
+  },
+  "hotkeys": {
+    "enabled": false,
+    "taps": 0,
+    "tap_ms": 0,
+    "window_ms": 0,
+    "seek_seconds": 0
+  }
+}

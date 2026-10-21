@@ -225,12 +225,11 @@ func (a *App) openVisualMenu() {
 	v := &a.vis
 	m := &menu{title: T("vis_title"), subtitle: T(visNames[v.kind])}
 	for k := 0; k < visCount; k++ {
-		ic := "visual"
-		if k == visDrift {
-			ic = "car"
-		}
-		m.items = append(m.items, menuItem{label: T(visNames[k]), icon: ic,
-			do:     func() { v.kind, v.switchAt = k, a.t },
+		m.items = append(m.items, menuItem{label: T(visNames[k]), icon: visIcons[k],
+			do: func() {
+				a.setVisualizer(k)
+				a.reopenVisualMenu(k)
+			},
 			active: func() bool { return v.kind == k }})
 	}
 	if v.kind == visMilk {
@@ -238,4 +237,21 @@ func (a *App) openVisualMenu() {
 	}
 	m.items = append(m.items, menuItem{label: T("h_pause"), icon: "pause", do: func() { a.send("toggle") }})
 	a.menu = m
+}
+
+// reopenVisualMenu rehace el menú tras elegir el visualizador k desde él: las
+// opciones de MilkDrop salen o se van según el que quedó, y la selección
+// sigue en el elegido (sin volver a animar la apertura).
+func (a *App) reopenVisualMenu(k int) {
+	old := a.menu
+	a.openVisualMenu()
+	if old == nil {
+		return
+	}
+	a.menu.openedAt = old.openedAt
+	for i, it := range a.menu.items {
+		if it.label == T(visNames[k]) {
+			a.menu.sel = i
+		}
+	}
 }

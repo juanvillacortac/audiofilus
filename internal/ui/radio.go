@@ -38,9 +38,14 @@ const (
 
 var radioTabKeys = [rtCount]string{"rd_fav", "rd_lists", "rd_top", "rd_search", "rd_tags"}
 
-// radioDir es la carpeta de las listas de emisoras propias: radio/ junto a
-// la app (ver radio.LoadPlaylists).
-func (a *App) radioDir() string { return filepath.Join(a.paths.Base, "radio") }
+// radioDir es la carpeta de las listas de emisoras propias: la elegida en
+// Ajustes o radio/ junto a audiofilus (AUDIOFILUS_HOME).
+func (a *App) radioDir() string {
+	if a.cfg.UI.RadioDir != "" {
+		return a.cfg.UI.RadioDir
+	}
+	return filepath.Join(a.paths.Base, "radio")
+}
 
 // radioState es la pantalla de la radio.
 type radioState struct {

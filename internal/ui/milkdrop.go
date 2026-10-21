@@ -24,9 +24,9 @@ import (
 // subcarpetas), que se buscan la primera vez que se abre.
 //
 // L1/R1 cambian de preset (con dos segundos de mezcla), A fija el que se ve
-// (deja de cambiar solo) y START tiene siguiente, anterior, al azar y fijar.
-// Solo, cambia cada milkInterval segundos, en un golpe. En START también se
-// eligen los colores: los del preset (lo normal) o los del disco que suena
+// (deja de cambiar solo) y START tiene anterior, siguiente, al azar y fijar.
+// Solo, cambia cada milkInterval segundos, en un golpe. En START un botón
+// cambia los colores: los del preset (lo normal) o los del disco que suena
 // (el tema: la luminancia del preset pasa a un degradado fondo → acento →
 // acento 2 → texto), que se guarda en audiofilus.json.
 
@@ -58,7 +58,7 @@ func (a *App) milk() *milkState {
 	v := &a.vis
 	if v.milk == nil {
 		m := &milkState{
-			lib: milkdrop.NewLibrary(filepath.Join(a.paths.Base, "milkdrop")),
+			lib: milkdrop.NewLibrary(a.milkDir()),
 			r:   milkdrop.NewRenderer(milkdrop.Options{Width: 320, Height: 240}),
 			cyc: milkdrop.Cycler{Interval: milkInterval, OnBeat: true},
 		}
@@ -115,13 +115,10 @@ func (a *App) milkLock() {
 	m.nameAt = a.t
 }
 
-// updateMilk atiende los botones propios de MilkDrop y el cambio solo (en
-// cada paso de 1/60, para no perder golpes). Devuelve true si usó el botón.
+// updateMilk atiende los botones propios de MilkDrop (el cambio solo va en
+// stepVisual). Devuelve true si usó el botón.
 func (a *App) updateMilk() bool {
-	m, in := a.milk(), &a.input
-	if m.cyc.Tick(1.0/60, a.beatHit && a.hearing()) {
-		a.milkGo(m.idx+1, milkBlend)
-	}
+	in := &a.input
 	switch {
 	case in.Pressed(ActPrev):
 		a.milkStep(-1)
@@ -141,18 +138,27 @@ func (a *App) milkMenuItems() []menuItem {
 	if a.milk().cyc.Locked {
 		lock = T("milk_unlock")
 	}
-	album := func() bool { return a.cfg.UI.MilkDropColors == "album" }
-	setColors := func(v string) func() {
-		return func() {
-			a.cfg.UI.MilkDropColors = v
+	// Los colores: un solo botón que cambia entre los del preset y los del
+	// disco (debajo dice cuáles van).
+	colors := menuItem{label: T("milk_colors"), icon: "palette",
+		value: func() string {
+			if a.cfg.UI.MilkDropColors == "album" {
+				return T("milk_from_album")
+			}
+			return T("milk_from_preset")
+		},
+		do: func() {
+			if a.cfg.UI.MilkDropColors == "album" {
+				a.cfg.UI.MilkDropColors = ""
+			} else {
+				a.cfg.UI.MilkDropColors = "album"
+			}
 			a.saveConfig()
-		}
-	}
+		}}
 	return []menuItem{
-		{label: T("milk_col_preset"), icon: "visual", close: true, active: func() bool { return !album() }, do: setColors("")},
-		{label: T("milk_col_album"), icon: "disc", close: true, active: album, do: setColors("album")},
-		{label: T("milk_next"), icon: "next", close: true, do: func() { a.milkStep(1) }},
+		colors,
 		{label: T("milk_prev"), icon: "prev", close: true, do: func() { a.milkStep(-1) }},
+		{label: T("milk_next"), icon: "next", close: true, do: func() { a.milkStep(1) }},
 		{label: T("milk_random"), icon: "shuffle", close: true, do: a.milkRandom},
 		{label: lock, icon: "star", close: true, do: a.milkLock},
 		{label: T("milk_rescan"), icon: "folder", close: true, do: func() {
@@ -201,6 +207,9 @@ func (a *App) drawMilk(dst *ebiten.Image, top, bottom int) {
 		op.GeoM.Scale(float64(lw)/float64(sw), float64(lh)/float64(sh))
 		op.GeoM.Translate(0, float64(top))
 		dst.DrawImage(img, op)
+	}
+	if v.bg {
+		return // de fondo en el reproductor: sin nombre ni ayuda
 	}
 	th := a.theme
 	if m.err != nil {
@@ -282,8 +291,10 @@ var milkScale = func() int {
 // hacia el tema de ahora, y se los pasa al visualizador.
 func (a *App) milkPalette(dt float64) {
 	m := a.vis.milk
+	// De fondo en el reproductor, siempre los del disco: así va con la
+	// portada y el resto de la pantalla.
 	want := 0.0
-	if a.cfg.UI.MilkDropColors == "album" {
+	if a.cfg.UI.MilkDropColors == "album" || a.vis.bg {
 		want = 1
 	}
 	th := a.theme
@@ -307,6 +318,15 @@ func (a *App) milkPalette(dt float64) {
 		}
 	}
 	m.r.SetPalette(out, m.albumMix)
+}
+
+// milkDir es la carpeta de los presets del usuario: la elegida en Ajustes
+// o milkdrop/ junto a audiofilus.
+func (a *App) milkDir() string {
+	if a.cfg.UI.MilkDropDir != "" {
+		return a.cfg.UI.MilkDropDir
+	}
+	return filepath.Join(a.paths.Base, "milkdrop")
 }
 
 // hintUpper pasa un texto a mayúsculas para la barra de ayuda (en turco, con

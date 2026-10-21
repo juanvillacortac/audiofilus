@@ -680,7 +680,7 @@ func init() {
 		"set_volume":        "Volume",
 		"set_sleep":         "Tidur setelah",
 		"set_clock":         "Jam 24 jam",
-		"set_swap":          "Tukar A/B",
+		"set_swap":          "Tukar A/B dan X/Y",
 		"never":             "Tidak pernah",
 		"set_sleep_mode":    "Mode tidur",
 		"sleeping":          "Layar mati",

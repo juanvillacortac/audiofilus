@@ -47,6 +47,8 @@ const (
 	setResampler
 	setDLNAServer
 	setDLNARenderer
+	setMilkDir
+	setRadioDir
 	setCount
 )
 
@@ -94,6 +96,8 @@ var settingSections = []settingSection{
 		{setFolder, "folder", tileAction},
 		{setRescan, "search", tileAction},
 		{setServers, "server", tileAction},
+		{setRadioDir, "folder", tileAction},
+		{setMilkDir, "folder", tileAction},
 	}},
 	{"sec_playback", []settingTile{
 		{setShuffle, "shuffle", tileToggle},
@@ -160,7 +164,9 @@ func (a *App) sections() []settingSection {
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
 		setRate: a.mobile(), setUpdate: a.mobile(), setResampler: a.mobile(),
-		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile()}
+		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(),
+		// En el móvil no hay explorador de carpetas fuera de la app.
+		setMilkDir: a.mobile(), setRadioDir: a.mobile()}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -252,6 +258,15 @@ func (a *App) updateSettings() {
 				return
 			}
 			a.picker = newPicker(firstOr(a.cfg.MusicDirs, ""))
+			a.pickFor = pickMusic
+			a.mode = modePicker
+		case setMilkDir:
+			a.picker = newPicker(a.milkDir())
+			a.pickFor = pickMilkDrop
+			a.mode = modePicker
+		case setRadioDir:
+			a.picker = newPicker(a.radioDir())
+			a.pickFor = pickRadio
 			a.mode = modePicker
 		case setRescan:
 			a.startScan()
@@ -453,6 +468,10 @@ func (a *App) settingValue(i int) string {
 	switch i {
 	case setFolder:
 		return firstOr(a.cfg.MusicDirs, "-")
+	case setMilkDir:
+		return a.milkDir()
+	case setRadioDir:
+		return a.radioDir()
 	case setRescan:
 		return T("rescan_sub")
 	case setLanguage:
@@ -564,6 +583,7 @@ func settingNames() [setCount]string {
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
+		T("set_milk_dir"), T("set_radio_dir"),
 	}
 }
 
@@ -738,7 +758,7 @@ func (a *App) drawTile(dst *ebiten.Image, t tileRect, name string, x, y int, sel
 			rect(dst, dx+i*4, y+h-5, 2, 2, c)
 		}
 	case tileAction:
-		if id == setFolder {
+		if id == setFolder || id == setMilkDir || id == setRadioDir {
 			val = fitLeft(val, SmallFace, vw)
 		}
 		drawTextW(dst, val, SmallFace, x+5, vy, vw, withAlpha(valCol, 0xc0))

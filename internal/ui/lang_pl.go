@@ -680,7 +680,7 @@ func init() {
 		"set_volume":        "Głośność",
 		"set_sleep":         "Uśpij po",
 		"set_clock":         "Zegar 24 h",
-		"set_swap":          "Zamień A/B",
+		"set_swap":          "Zamień A/B i X/Y",
 		"never":             "Nigdy",
 		"set_sleep_mode":    "Tryb uśpienia",
 		"sleeping":          "Ekran wył.",

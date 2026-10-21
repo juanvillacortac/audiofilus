@@ -110,7 +110,7 @@ type crypt struct {
 	shakeAt       float64
 }
 
-func (a *App) cryptBestPath() string { return filepath.Join(a.paths.Data, "cripta.json") }
+func (a *App) cryptBestPath() string { return filepath.Join(a.paths.Data, "crypt.json") }
 
 // newCrypt empieza una partida en el piso 1.
 func (a *App) newCrypt() *crypt {

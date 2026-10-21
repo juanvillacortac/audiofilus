@@ -150,7 +150,7 @@ type tetris struct {
 }
 
 // tetBest es el récord, en data/bloques.json.
-func (a *App) tetBestPath() string { return filepath.Join(a.paths.Data, "bloques.json") }
+func (a *App) tetBestPath() string { return filepath.Join(a.paths.Data, "blocks.json") }
 
 func (a *App) newTetris() *tetris {
 	g := &tetris{hold: -1}

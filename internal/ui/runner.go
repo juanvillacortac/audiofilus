@@ -202,7 +202,7 @@ type runnerGame struct {
 	skyOut    *ebiten.Image // y ya en la paleta
 }
 
-func (a *App) runnerBestPath() string { return filepath.Join(a.paths.Data, "carrera.json") }
+func (a *App) runnerBestPath() string { return filepath.Join(a.paths.Data, "runner.json") }
 
 func (a *App) newRunner() *runnerGame {
 	g := &runnerGame{mult: 1, fallback: a.beatClock()}

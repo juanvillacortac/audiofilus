@@ -476,7 +476,7 @@ func init() {
 		"set_sleep":         "슬립 시간",
 		"set_sleep_mode":    "슬립 방식",
 		"set_sounds":        "음악 효과음",
-		"set_swap":          "A/B 바꾸기",
+		"set_swap":          "A/B·X/Y 바꾸기",
 		"set_ui_sounds":     "UI 효과음",
 		"set_volume":        "볼륨",
 		"settings":          "설정",

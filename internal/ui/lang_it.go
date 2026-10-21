@@ -475,7 +475,7 @@ func init() {
 		"set_sleep":         "Spegni dopo",
 		"set_sleep_mode":    "Modo sleep",
 		"set_sounds":        "Suoni della musica",
-		"set_swap":          "Scambia A/B",
+		"set_swap":          "Scambia A/B e X/Y",
 		"set_ui_sounds":     "Suoni dell'interfaccia",
 		"set_volume":        "Volume",
 		"settings":          "IMPOSTAZIONI",

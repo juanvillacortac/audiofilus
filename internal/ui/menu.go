@@ -236,6 +236,19 @@ func (a *App) openNowMenu() {
 	}
 	m.items = append(m.items, a.castItems()...) // enviar a un aparato (castui.go)
 	m.items = append(m.items, a.timerItem())
+	// El visualizador que se dejó puesto, de fondo (atenuado).
+	m.items = append(m.items, menuItem{label: T("vis_bg"), icon: visIcons[a.vis.kind],
+		do: func() {
+			a.cfg.UI.VisualBG = !a.cfg.UI.VisualBG
+			a.saveConfig()
+		},
+		active: func() bool { return a.cfg.UI.VisualBG },
+		value: func() string {
+			if !a.cfg.UI.VisualBG {
+				return T("off")
+			}
+			return T(visNames[a.vis.kind])
+		}})
 	if song := a.playingSong; song.Path != "" {
 		if remote.IsRemote(song.Path) {
 			m.items = append(m.items, menuItem{label: T("ytm_download"), icon: "download", do: func() { a.downloadRemote([]Song{song}) }})

@@ -78,6 +78,7 @@ type App struct {
 	mode           mode
 	scan           *Scan
 	picker         *Picker
+	pickFor        pickTarget // para qué es la carpeta del explorador (folders.go)
 	firstRun       bool
 	lib            *Library
 	covers         *covers
@@ -271,6 +272,9 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		return nil, err
 	}
 	SetLanguage(cfg.Language)
+	if !offline {
+		migrateGameFiles(paths.Data)
+	}
 	a := &App{
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
@@ -280,6 +284,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		kbEvents: make(chan kbEvent, 64),
 	}
 	a.input.swapAB = cfg.UI.SwapAB
+	a.vis.kind = visualizerIndex(cfg.UI.Visualizer)
 	// En el móvil se empieza con el dedo (AUDIOFILUS_TOUCH lo fuerza, para
 	// probarlo y para las capturas).
 	a.input.touch = StartService != nil || os.Getenv("AUDIOFILUS_TOUCH") != ""
@@ -459,13 +464,15 @@ func (a *App) Update() error {
 		}
 		return nil
 	case modePicker:
-		if dir := a.picker.update(&a.input); dir != "" {
+		if dir := a.picker.update(&a.input); dir != "" && a.pickFor != pickMusic {
+			a.pickedDir(dir) // la de MilkDrop o la de radio
+		} else if dir != "" {
 			a.cfg.MusicDirs = []string{dir}
 			a.firstRun = false
 			a.saveConfig()
 			a.startScan()
 		} else if a.lib != nil && !a.firstRun && a.picker.dir == "" && a.input.Pressed(ActBack) {
-			a.mode = modeMain // salir del explorador sin cambiar nada
+			a.mode, a.pickFor = modeMain, pickMusic // salir del explorador sin cambiar nada
 		}
 		return nil
 	}
@@ -741,6 +748,9 @@ func (a *App) updateMain() {
 		return
 	}
 	in := &a.input
+	if a.visualBGOn() {
+		a.stepVisual() // el visualizador de fondo del reproductor
+	}
 	if a.menu != nil {
 		a.updateMenu()
 		return
@@ -1223,6 +1233,9 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 			a.drawVisual(dst)
 			a.drawTopBar(dst, T("vis_title")+" · "+T(visNames[a.vis.kind]))
 		case NowPlaying:
+			if a.visualBGOn() && a.playingSong.Path != "" {
+				a.drawVisualBG(dst)
+			}
 			a.drawNowPlaying(dst)
 			a.drawTopBar(dst, T("now"))
 		case LibraryScreen:

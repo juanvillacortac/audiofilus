@@ -476,7 +476,7 @@ func init() {
 		"set_sleep":         "スリープまで",
 		"set_sleep_mode":    "スリープ方式",
 		"set_sounds":        "音楽の効果音",
-		"set_swap":          "A/B を入れ替え",
+		"set_swap":          "A/B と X/Y を入れ替え",
 		"set_ui_sounds":     "操作音",
 		"set_volume":        "音量",
 		"settings":          "設定",

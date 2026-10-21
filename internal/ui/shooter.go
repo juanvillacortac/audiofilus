@@ -47,7 +47,7 @@ type shooterGame struct {
 	fallback   float64
 }
 
-func (a *App) shooterBestPath() string { return filepath.Join(a.paths.Data, "naves.json") }
+func (a *App) shooterBestPath() string { return filepath.Join(a.paths.Data, "ships.json") }
 
 func (a *App) newShooter() *shooterGame {
 	g := &shooterGame{x: float64(max(a.w, 240)) / 2, y: float64(max(a.h, ScreenH) - bottomH - 26), lives: 3, fallback: a.beatClock()}

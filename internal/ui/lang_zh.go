@@ -475,7 +475,7 @@ func init() {
 		"set_sleep":         "自动熄屏",
 		"set_sleep_mode":    "熄屏方式",
 		"set_sounds":        "音乐音效",
-		"set_swap":          "交换 A/B",
+		"set_swap":          "交换 A/B 和 X/Y",
 		"set_ui_sounds":     "界面音效",
 		"set_volume":        "音量",
 		"settings":          "设置",

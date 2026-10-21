@@ -476,7 +476,7 @@ func init() {
 		"set_sleep":         "Veille après",
 		"set_sleep_mode":    "Mode veille",
 		"set_sounds":        "Sons de la musique",
-		"set_swap":          "Inverser A/B",
+		"set_swap":          "Inverser A/B et X/Y",
 		"set_ui_sounds":     "Sons de l’interface",
 		"set_volume":        "Volume",
 		"settings":          "RÉGLAGES",

@@ -49,7 +49,7 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster 
 
 ### Library
 
-- **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream. **HLS** stations (`.m3u8` split into segments: MPEG-TS, packed AAC/MP3 or fMP4, AES-128 encrypted too) play as well (thanks to volkybaba for the report and ideas).
+- **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder (or any folder you pick in Settings → *Radio lists*) and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream. **HLS** stations (`.m3u8` split into segments: MPEG-TS, packed AAC/MP3 or fMP4, AES-128 encrypted too) play as well (thanks to volkybaba for the report and ideas).
 - Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
@@ -120,8 +120,8 @@ The **MilkDrop** visualizer plays MilkDrop 1 presets (`.milk`), the classic Wina
 
 - **Open it:** SELECT → **Visualizer**, then ←/→ until **MilkDrop** (it's the last one: one ← from the first), or pick it from the START menu.
 - **Controls:** L1/R1 change preset, A locks the current one, START opens the menu (colors, next, previous, random, lock, rescan). On its own it moves to the next preset every 20 seconds or so, on a beat, with a two-second blend.
-- **Colors:** START → *Preset colors* shows each preset as its author made it; *Album colors* repaints it with the colors of the album that's playing.
-- **Your presets:** eight original presets are built in. Put your own `.milk` files (whole packs with subfolders are fine) in a `milkdrop` folder next to the app, then START → *Rescan presets*. MilkDrop 2 presets load, but their shaders are ignored.
+- **Colors:** START → *Colors* switches between *Preset*, each preset as its author made it, and *Album*, repainted with the colors of the album that's playing.
+- **Your presets:** eight original presets are built in. Put your own `.milk` files (whole packs with subfolders are fine) in a `milkdrop` folder next to the app (or any folder you pick in Settings → *MilkDrop presets*), then START → *Rescan presets*. MilkDrop 2 presets load, but their shaders are ignored.
 
 <p align="center">
   <img src="site/img/vis-milkdrop.webp" alt="MilkDrop" width="320">

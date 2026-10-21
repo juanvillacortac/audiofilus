@@ -44,7 +44,7 @@ type snakeGame struct {
 	fallback   float64 // el ancla del metrónomo si no hay tempo
 }
 
-func (a *App) snakeBestPath() string { return filepath.Join(a.paths.Data, "serpiente.json") }
+func (a *App) snakeBestPath() string { return filepath.Join(a.paths.Data, "snake.json") }
 
 // newSnake empieza una partida del tamaño de la pantalla.
 func (a *App) newSnake() *snakeGame {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,15 +29,37 @@ type gameCard struct {
 }
 
 var gameCards = []gameCard{
-	{Crypt, "sword", "scr_crypt", "gm_crypt_d", "cripta.json"},
-	{Blocks, "blocks", "scr_blocks", "gm_blocks_d", "bloques.json"},
-	{Rhythm, "note", "scr_rhythm", "gm_rhythm_d", "ritmo.json"},
-	{Quiz, "quiz", "scr_quiz", "gm_quiz_d", "adivina.json"},
-	{Snake, "snake", "scr_snake", "gm_snake_d", "serpiente.json"},
-	{Shooter, "ship", "scr_shooter", "gm_shooter_d", "naves.json"},
-	{Duel, "duel", "scr_duel", "gm_duel_d", "duelo.json"},
-	{Runner, "runner", "scr_runner", "gm_runner_d", "carrera.json"},
+	{Crypt, "sword", "scr_crypt", "gm_crypt_d", "crypt.json"},
+	{Blocks, "blocks", "scr_blocks", "gm_blocks_d", "blocks.json"},
+	{Rhythm, "note", "scr_rhythm", "gm_rhythm_d", "rhythm.json"},
+	{Quiz, "quiz", "scr_quiz", "gm_quiz_d", "quiz.json"},
+	{Snake, "snake", "scr_snake", "gm_snake_d", "snake.json"},
+	{Shooter, "ship", "scr_shooter", "gm_shooter_d", "ships.json"},
+	{Duel, "duel", "scr_duel", "gm_duel_d", "duel.json"},
+	{Runner, "runner", "scr_runner", "gm_runner_d", "runner.json"},
 	{Tracker, "tracker", "scr_tracker", "gm_tracker_d", ""},
+}
+
+// oldGameFiles son los nombres que tenían los récords hasta la v0.12 (en
+// español); al arrancar se pasan a los de ahora.
+var oldGameFiles = map[string]string{
+	"cripta.json": "crypt.json", "bloques.json": "blocks.json", "ritmo.json": "rhythm.json",
+	"adivina.json": "quiz.json", "serpiente.json": "snake.json", "naves.json": "ships.json",
+	"duelo.json": "duel.json", "carrera.json": "runner.json",
+}
+
+// migrateGameFiles renombra los récords con su nombre viejo, si aún no hay
+// uno con el nuevo (así no se pierde ninguno al actualizar).
+func migrateGameFiles(data string) {
+	for old, cur := range oldGameFiles {
+		from, to := filepath.Join(data, old), filepath.Join(data, cur)
+		if _, err := os.Stat(to); err == nil {
+			continue
+		}
+		if err := os.Rename(from, to); err != nil && !os.IsNotExist(err) {
+			log.Printf("rename %s: %v", from, err)
+		}
+	}
 }
 
 // isGame dice si una pantalla es un juego (o la de Juegos): en la barra de

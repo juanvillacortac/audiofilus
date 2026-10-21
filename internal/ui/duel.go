@@ -90,7 +90,7 @@ type duelGame struct {
 	snareAt    float64            // la última caja que lanzó notas (reloj del ritmo)
 }
 
-func (a *App) duelBestPath() string { return filepath.Join(a.paths.Data, "duelo.json") }
+func (a *App) duelBestPath() string { return filepath.Join(a.paths.Data, "duel.json") }
 
 func (a *App) newDuel() *duelGame {
 	g := &duelGame{hp: duMaxHP, fallback: a.beatClock()}

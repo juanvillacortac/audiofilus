@@ -52,6 +52,10 @@ const (
 // visNames son las claves de los nombres de cada visualizador.
 var visNames = [visCount]string{"vis_drift", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake", "vis_ridges", "vis_milk"}
 
+// visIcons son los iconos de cada visualizador (icons.go), en el orden de
+// visNames.
+var visIcons = [visCount]string{"car", "vis_bars", "vis_tunnel", "vis_plasma", "vis_waves", "vis_trench", "vis_lake", "vis_ridges", "vis_milk"}
+
 // visState es la pantalla de visualizadores.
 type visState struct {
 	kind       int
@@ -72,19 +76,41 @@ type visState struct {
 	lastKind   int
 	milk       *milkState    // MilkDrop (milkdrop.go)
 	milkOut    *ebiten.Image // su último fotograma
+	bg         bool          // se está pintando de fondo del reproductor
+	bgCanvas   *ebiten.Image // donde se pinta de fondo, para atenuarlo
+}
+
+// setVisualizer pone el visualizador k y lo guarda, para que la próxima vez
+// se abra en el mismo.
+func (a *App) setVisualizer(k int) {
+	a.vis.kind, a.vis.switchAt = k, a.t
+	a.cfg.UI.Visualizer = visNames[k][len("vis_"):]
+	a.saveConfig()
+}
+
+// visualizerIndex es el visualizador con ese nombre guardado ("lake"...), o
+// el primero si no hay o no existe.
+func visualizerIndex(name string) int {
+	for k, n := range visNames {
+		if n[len("vis_"):] == name {
+			return k
+		}
+	}
+	return 0
 }
 
 // updateVisual atiende la pantalla de visualizadores.
 func (a *App) updateVisual() {
 	v, in := &a.vis, &a.input
+	a.stepVisual()
 	if v.kind == visMilk && a.updateMilk() {
 		return
 	}
 	switch {
 	case in.Pressed(ActRight):
-		v.kind, v.switchAt = (v.kind+1)%visCount, a.t
+		a.setVisualizer((v.kind + 1) % visCount)
 	case in.Pressed(ActLeft):
-		v.kind, v.switchAt = (v.kind+visCount-1)%visCount, a.t
+		a.setVisualizer((v.kind + visCount - 1) % visCount)
 	case in.Pressed(ActConfirm):
 		switch {
 		case v.kind == visDrift:
@@ -123,7 +149,17 @@ func (a *App) updateVisual() {
 	case in.Repeat(ActVolDown):
 		a.changeVolume(-volumeStep)
 	}
-	switch v.kind {
+}
+
+// stepVisual mueve un paso (1/60 s) el visualizador elegido: las escenas
+// (Derrape, Trinchera, Lago) y el cambio solo de preset de MilkDrop. Se
+// llama en su pantalla y, si va de fondo, en la del reproductor.
+func (a *App) stepVisual() {
+	switch a.vis.kind {
+	case visMilk:
+		if m := a.milk(); m.cyc.Tick(1.0/60, a.beatHit && a.hearing()) {
+			a.milkGo(m.idx+1, milkBlend)
+		}
 	case visDrift:
 		if a.drift == nil {
 			a.drift = newDrift()
@@ -222,6 +258,9 @@ func (a *App) blitVisual(dst *ebiten.Image, scale, top int) {
 	dop.GeoM.Scale(float64(scale), float64(scale))
 	dop.GeoM.Translate(0, float64(top))
 	dst.DrawImage(v.out, dop)
+	if v.bg {
+		return // de fondo en el reproductor: sin nombre ni ayuda
+	}
 
 	// El nombre, un momento al cambiar.
 	if p := (a.t - v.switchAt) / 1.4; v.switchAt > 0 && p < 1 {
@@ -248,6 +287,31 @@ func (a *App) blitVisual(dst *ebiten.Image, scale, top int) {
 		aLabel = T("h_variant")
 	}
 	a.drawHints(dst, []hint{{"<>", T("h_visual")}, {"A", aLabel}, {"START", T("h_more")}, {"SEL", T("h_menu")}})
+}
+
+// visualBGAlpha es cuánto se ve el visualizador de fondo en el reproductor:
+// lo bastante para notarlo, poco para que la portada y los textos manden.
+const visualBGAlpha = 0.32
+
+// drawVisualBG pinta el visualizador elegido de fondo, atenuado, para el
+// reproductor (cfg.UI.VisualBG). Se dibuja a una imagen aparte, sin nombre
+// ni ayuda, y se mezcla con el fondo.
+func (a *App) drawVisualBG(dst *ebiten.Image) {
+	v := &a.vis
+	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
+	fitImg(&v.bgCanvas, w, h)
+	v.bgCanvas.Clear()
+	v.bg = true
+	a.drawVisual(v.bgCanvas)
+	v.bg = false
+	op := &ebiten.DrawImageOptions{}
+	op.ColorScale.ScaleAlpha(visualBGAlpha)
+	dst.DrawImage(v.bgCanvas, op)
+}
+
+// visualBGOn dice si el reproductor lleva el visualizador de fondo ahora.
+func (a *App) visualBGOn() bool {
+	return a.cfg.UI.VisualBG && a.screen == NowPlaying && !a.lyricsOn
 }
 
 // visBands es el espectro de ahora (0 si no suena).

@@ -475,7 +475,7 @@ func init() {
 		"set_sleep":         "Сон через",
 		"set_sleep_mode":    "Режим сна",
 		"set_sounds":        "Звуки музыки",
-		"set_swap":          "Поменять A/B",
+		"set_swap":          "Поменять A/B и X/Y",
 		"set_ui_sounds":     "Звуки меню",
 		"set_volume":        "Громкость",
 		"settings":          "НАСТРОЙКИ",

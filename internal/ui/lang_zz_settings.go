@@ -1,7 +1,8 @@
 package ui
 
 // Los textos de los ajustes de la v0.11: el remuestreo, DLNA y el
-// ecualizador paramétrico (peq.go), en los trece idiomas.
+// ecualizador paramétrico (peq.go), y las carpetas de MilkDrop y de la
+// radio (folders.go), en los trece idiomas.
 func init() {
 	for lang, m := range map[string]map[string]string{
 		"es": {
@@ -22,6 +23,8 @@ func init() {
 			"peq_h_field":       "CAMPO",
 			"peq_h_add":         "AÑADIR",
 			"peq_h_del":         "QUITAR",
+			"set_milk_dir":      "Presets de MilkDrop",
+			"set_radio_dir":     "Listas de radio",
 		},
 		"en": {
 			"set_resampler":     "Resampling",
@@ -41,6 +44,8 @@ func init() {
 			"peq_h_field":       "FIELD",
 			"peq_h_add":         "ADD",
 			"peq_h_del":         "REMOVE",
+			"set_milk_dir":      "MilkDrop presets",
+			"set_radio_dir":     "Radio lists",
 		},
 		"tr": {
 			"set_resampler":     "Yeniden örnekleme",
@@ -60,6 +65,8 @@ func init() {
 			"peq_h_field":       "ALAN",
 			"peq_h_add":         "EKLE",
 			"peq_h_del":         "SİL",
+			"set_milk_dir":      "MilkDrop presetleri",
+			"set_radio_dir":     "Radyo listeleri",
 		},
 		"de": {
 			"set_resampler":     "Resampling",
@@ -79,6 +86,8 @@ func init() {
 			"peq_h_field":       "FELD",
 			"peq_h_add":         "NEU",
 			"peq_h_del":         "WEG",
+			"set_milk_dir":      "MilkDrop-Presets",
+			"set_radio_dir":     "Radiolisten",
 		},
 		"fr": {
 			"set_resampler":     "Rééchantillonnage",
@@ -98,6 +107,8 @@ func init() {
 			"peq_h_field":       "CHAMP",
 			"peq_h_add":         "AJOUTER",
 			"peq_h_del":         "RETIRER",
+			"set_milk_dir":      "Presets MilkDrop",
+			"set_radio_dir":     "Listes de radio",
 		},
 		"it": {
 			"set_resampler":     "Ricampionamento",
@@ -117,6 +128,8 @@ func init() {
 			"peq_h_field":       "CAMPO",
 			"peq_h_add":         "AGGIUNGI",
 			"peq_h_del":         "RIMUOVI",
+			"set_milk_dir":      "Preset MilkDrop",
+			"set_radio_dir":     "Liste radio",
 		},
 		"pt": {
 			"set_resampler":     "Reamostragem",
@@ -136,6 +149,8 @@ func init() {
 			"peq_h_field":       "CAMPO",
 			"peq_h_add":         "ADICIONAR",
 			"peq_h_del":         "REMOVER",
+			"set_milk_dir":      "Presets do MilkDrop",
+			"set_radio_dir":     "Listas de rádio",
 		},
 		"pl": {
 			"set_resampler":     "Resampling",
@@ -155,6 +170,8 @@ func init() {
 			"peq_h_field":       "POLE",
 			"peq_h_add":         "DODAJ",
 			"peq_h_del":         "USUŃ",
+			"set_milk_dir":      "Presety MilkDrop",
+			"set_radio_dir":     "Listy radia",
 		},
 		"ru": {
 			"set_resampler":     "Ресемплинг",
@@ -174,6 +191,8 @@ func init() {
 			"peq_h_field":       "ПОЛЕ",
 			"peq_h_add":         "ДОБАВИТЬ",
 			"peq_h_del":         "УБРАТЬ",
+			"set_milk_dir":      "Пресеты MilkDrop",
+			"set_radio_dir":     "Списки радио",
 		},
 		"id": {
 			"set_resampler":     "Resampling",
@@ -193,6 +212,8 @@ func init() {
 			"peq_h_field":       "BIDANG",
 			"peq_h_add":         "TAMBAH",
 			"peq_h_del":         "HAPUS",
+			"set_milk_dir":      "Preset MilkDrop",
+			"set_radio_dir":     "Daftar radio",
 		},
 		"ja": {
 			"set_resampler":     "リサンプリング",
@@ -212,6 +233,8 @@ func init() {
 			"peq_h_field":       "項目",
 			"peq_h_add":         "追加",
 			"peq_h_del":         "削除",
+			"set_milk_dir":      "MilkDrop のプリセット",
+			"set_radio_dir":     "ラジオのリスト",
 		},
 		"zh": {
 			"set_resampler":     "重采样",
@@ -231,6 +254,8 @@ func init() {
 			"peq_h_field":       "字段",
 			"peq_h_add":         "添加",
 			"peq_h_del":         "删除",
+			"set_milk_dir":      "MilkDrop 预设",
+			"set_radio_dir":     "电台列表",
 		},
 		"ko": {
 			"set_resampler":     "리샘플링",
@@ -250,6 +275,8 @@ func init() {
 			"peq_h_field":       "항목",
 			"peq_h_add":         "추가",
 			"peq_h_del":         "삭제",
+			"set_milk_dir":      "MilkDrop 프리셋",
+			"set_radio_dir":     "라디오 목록",
 		},
 	} {
 		for k, v := range m {

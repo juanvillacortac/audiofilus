@@ -91,7 +91,9 @@ type Input struct {
 	decided  bool
 	// any dice si en este frame se pulsó cualquier tecla o botón.
 	any bool
-	// swapAB intercambia A y B, para quien los quiera al revés.
+	// swapAB intercambia A con B y X con Y: la distribución de Nintendo (A a
+	// la derecha, X arriba) en vez de la de Xbox, para que las letras de la
+	// ayuda sean las impresas en la consola.
 	swapAB bool
 	// stick cuenta cuántos frames lleva el joystick izquierdo empujado hacia
 	// cada dirección, igual que una cruceta: así vale en toda la app.
@@ -188,7 +190,8 @@ func (in *Input) update() {
 	in.updateStick()
 }
 
-// buttons son los botones de una acción, con A y B intercambiados si se pidió.
+// buttons son los botones de una acción, con A/B y X/Y intercambiados si se
+// pidió.
 func (in *Input) buttons(a Action) []ebiten.StandardGamepadButton {
 	if in.swapAB {
 		switch a {
@@ -196,6 +199,10 @@ func (in *Input) buttons(a Action) []ebiten.StandardGamepadButton {
 			return actionButtons[ActBack]
 		case ActBack:
 			return actionButtons[ActConfirm]
+		case ActShuffle:
+			return actionButtons[ActPause]
+		case ActPause:
+			return actionButtons[ActShuffle]
 		}
 	}
 	return actionButtons[a]

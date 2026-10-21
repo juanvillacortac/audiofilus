@@ -132,6 +132,16 @@ type UI struct {
 	// MilkDropColors son los colores del visualizador MilkDrop: "" los de
 	// cada preset, "album" los del disco que suena (el tema).
 	MilkDropColors string `json:"milkdrop_colors,omitempty"`
+	// MilkDropDir y RadioDir son las carpetas de los presets de MilkDrop y
+	// de las listas de radio; vacías, las de siempre (milkdrop/ y radio/
+	// junto a audiofilus).
+	MilkDropDir string `json:"milkdrop_dir,omitempty"`
+	// Visualizer es el último visualizador que se vio ("lake", "milk"...),
+	// para volver a él.
+	Visualizer string `json:"visualizer,omitempty"`
+	// VisualBG pone ese visualizador de fondo en el reproductor, atenuado.
+	VisualBG bool   `json:"visual_bg,omitempty"`
+	RadioDir string `json:"radio_dir,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen
