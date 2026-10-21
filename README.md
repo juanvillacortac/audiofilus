@@ -113,6 +113,21 @@ Nine visualizers that follow the beat: **Lake, Drift, Trench, Plasma, Tunnel, Wa
   <img src="site/img/vis-trench.webp" alt="Trench" width="320">
   <img src="site/img/vis-ridges.webp" alt="Ridges" width="320">
 </p>
+
+### MilkDrop
+
+The **MilkDrop** visualizer plays MilkDrop 1 presets (`.milk`), the classic Winamp visuals, drawn on the GPU with Kage shaders, on the handhelds too.
+
+- **Open it:** SELECT → **Visualizer**, then ←/→ until **MilkDrop** (it's the last one: one ← from the first), or pick it from the START menu.
+- **Controls:** L1/R1 change preset, A locks the current one, START opens the menu (colors, next, previous, random, lock, rescan). On its own it moves to the next preset every 20 seconds or so, on a beat, with a two-second blend.
+- **Colors:** START → *Preset colors* shows each preset as its author made it; *Album colors* repaints it with the colors of the album that's playing.
+- **Your presets:** eight original presets are built in. Put your own `.milk` files (whole packs with subfolders are fine) in a `milkdrop` folder next to the app, then START → *Rescan presets*. MilkDrop 2 presets load, but their shaders are ignored.
+
+<p align="center">
+  <img src="site/img/vis-milkdrop.webp" alt="MilkDrop" width="320">
+</p>
+
+More in [docs/milkdrop.md](docs/milkdrop.md).
 <p align="center">
   <img src="site/img/crypt.webp" alt="Crypt" width="320">
   <img src="site/img/runner.webp" alt="Runner" width="320">

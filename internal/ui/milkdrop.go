@@ -260,7 +260,7 @@ func (a *App) milkFrames(dir string) error {
 					a.beatHit = a.updateBeat()
 					a.updatePump()
 				}
-				if err := a.renderShot(filepath.Join(sub, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
+				if err := a.renderShot(filepath.Join(sub, fmt.Sprintf("f%04d.png", i)), 320); err != nil {
 					return err
 				}
 			}

@@ -2,6 +2,13 @@
 
 The **MilkDrop** visualizer, the last one on the Visualizer screen, plays MilkDrop 1 presets (`.milk` files). It is a reimplementation in pure Go plus Ebitengine: the equations are compiled to Go closures, and drawing uses `DrawTriangles` and two Kage shaders. It needs no cgo and no native libraries, so it builds and runs the same on the handhelds, the desktop and Windows. The code is in `internal/milkdrop`, and the UI glue is in `internal/ui/milkdrop.go`.
 
+## Opening it
+
+MilkDrop is in audiofilus 0.12.0 and newer.
+
+1. Open the **Visualizer** screen from the screens dock (SELECT → Visualizer).
+2. Press ← or → until the name at the top says **MilkDrop**. It is the last visualizer, so from the first one a single ← gets there. You can also press START and pick it from the list of visualizers.
+
 ## Controls
 
 | Button | What it does |

@@ -48,10 +48,12 @@ for arch in aarch64 x86_64; do
   zlib_a=$(find "$zb" -name 'libz*.a' | head -1)
 
   # libvgm, estática y sin lo que no hace falta (la salida de audio, los
-  # programas de ejemplo).
+  # programas de ejemplo). iconv viene en la glibc: se dice a mano, porque al
+  # compilar para otra arquitectura cmake no encuentra la libc para comprobarlo.
   vb="$work/vgm-$arch"
   cmake -S "$src" -B "$vb" "$@" -DBUILD_SHARED_LIBS=OFF -DBUILD_LIBAUDIO=OFF -DBUILD_TESTS=OFF \
     -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUSE_SANITIZERS=OFF -DUTIL_CHARCNV_ICONV=ON \
+    -DIconv_IS_BUILT_IN=TRUE -DIconv_LIBRARY=c \
     -DZLIB_INCLUDE_DIR="$work/zlib-$ZLIB_VERSION;$zb" -DZLIB_LIBRARY="$zlib_a" >/dev/null
   cmake --build "$vb" -j"$(nproc)" >/dev/null
   libs=$(find "$vb" -name 'libvgm-player*.a' -o -name 'libvgm-emu*.a' -o -name 'libvgm-utils*.a' | sort)

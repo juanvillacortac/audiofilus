@@ -29,6 +29,8 @@ done
 # el navegador tarda en decodificar varias a la vez y se ven lentas.
 anim() { magick -delay "$1" $2 -sample 33.3334% -sample 200% -define webp:lossless=true -loop 0 "$out/$3"; }
 for v in lake drift trench plasma tunnel waves bars ridges; do anim 5 "$tmp/f/visual/$v/f*.png" "vis-$v.webp"; done
+# MilkDrop, con pérdida: sus degradados sin pérdida pesan más de 3 MB.
+magick -delay 5 "$tmp/f/visual/milk/kaleido-bloom/f*.png" -sample 33.3334% -sample 200% -quality 65 -define webp:method=6 -loop 0 "$out/vis-milkdrop.webp"
 anim 5 "$tmp/f/ritmo/f*.png" rhythm.webp
 anim 5 "$tmp/f/bloques/f*.png" blocks.webp
 anim 5 "$tmp/f/f0*.png" player.webp
