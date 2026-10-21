@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>可视化与游戏 · audiofilus 文档</title>
-<meta name="description" content="八种可视化效果和八款游戏，随正在播放的音乐律动。">
+<meta name="description" content="九种可视化效果和八款游戏，随正在播放的音乐律动。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -85,7 +85,7 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>可视化与游戏</h1>
-    <p class="lede">八种可视化效果和八款游戏，随正在播放的音乐律动。</p>
+    <p class="lede">九种可视化效果和八款游戏，随正在播放的音乐律动。</p>
 
 <h2 id="visualizers">可视化效果</h2>
 <p>从屏幕栏打开 <strong>可视化</strong>。<kbd>←</kbd>/<kbd>→</kbd> 切换可视化效果，<kbd>A</kbd> 切换其镜头或变体。</p>
@@ -99,11 +99,22 @@ body { line-break: strict; }
 <tr><td>波形</td><td>波形</td></tr>
 <tr><td>Bars</td><td>频谱柱</td></tr>
 <tr><td>Ridges</td><td>层层堆叠的频谱线，像《<em>Unknown Pleasures</em>》的封面</td></tr>
+<tr><td>MilkDrop</td><td>经典 MilkDrop 预设，内置的或你自己的（<a href="#milkdrop">见下文</a>）</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="Lake 可视化效果" width="320" height="213" loading="lazy"><figcaption>Lake</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="Ridges 可视化效果" width="320" height="213" loading="lazy"><figcaption>Ridges</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>最后一个可视化效果播放 <strong>MilkDrop 1 预设</strong>（<code>.milk</code> 文件），也就是 Winamp 的经典可视化。它自带八个原创预设，你也可以添加自己的：把 <code>.milk</code> 文件放进程序旁边的应用 <code>milkdrop</code> 文件夹。支持子文件夹，所以可以把整个预设包直接解压到那里。MilkDrop 预设包在网上很容易找到。文件夹会在你第一次打开 MilkDrop 时读取；添加文件后，使用 <kbd>START</kbd> → <strong>重新扫描预设</strong>。</p>
+<p>大约每 20 秒，它会在一个节拍上切到下一个预设，并用两秒钟交叉过渡。</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>：上一个/下一个预设（在这个屏幕上不会切歌）。</li>
+<li><kbd>A</kbd>：<strong>锁定预设</strong>，让它不再切换；再按一次即可 <strong>解锁预设</strong>。</li>
+<li><kbd>START</kbd>：<strong>预设颜色</strong>、<strong>专辑颜色</strong>、<strong>下一个预设</strong>、<strong>上一个预设</strong>、<strong>随机预设</strong>、<strong>锁定预设</strong> 和 <strong>重新扫描预设</strong>。</li>
+</ul>
+<p><strong>预设颜色</strong>（默认）按作者的原样显示每个预设。<strong>专辑颜色</strong> 用正在播放的专辑的颜色重新上色，形状和亮度保持不变。MilkDrop 2 预设也能加载，但其着色器会被忽略，所以很多看起来与原版不同。</p>
 
 <h2 id="games">游戏</h2>
 <p>从屏幕栏打开 <strong>游戏</strong>。游戏会随正在播放的音乐节拍进行，包括 tracker 的歌曲。在所有游戏中 <kbd>START</kbd> 都是暂停。</p>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Visualizadores y juegos · Documentación de audiofilus</title>
-<meta name="description" content="Ocho visualizadores y ocho juegos que siguen el ritmo de lo que suena.">
+<meta name="description" content="Nueve visualizadores y ocho juegos que siguen el ritmo de lo que suena.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Visualizadores y juegos</h1>
-    <p class="lede">Ocho visualizadores y ocho juegos que siguen el ritmo de lo que suena.</p>
+    <p class="lede">Nueve visualizadores y ocho juegos que siguen el ritmo de lo que suena.</p>
 
 <h2 id="visualizers">Visualizadores</h2>
 <p>Abre <strong>Visualizador</strong> desde la barra de pantallas. <kbd>←</kbd>/<kbd>→</kbd> cambian de visualizador y <kbd>A</kbd> cambia su cámara o variante.</p>
@@ -86,11 +86,22 @@
 <tr><td>Ondas</td><td>Ondas</td></tr>
 <tr><td>Barras</td><td>Barras de espectro</td></tr>
 <tr><td>Crestas</td><td>Líneas de espectro apiladas, como la portada de <em>Unknown Pleasures</em></td></tr>
+<tr><td>MilkDrop</td><td>Los presets clásicos de MilkDrop, de serie o los tuyos (<a href="#milkdrop">más abajo</a>)</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="El visualizador Lago" width="320" height="213" loading="lazy"><figcaption>Lago</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="El visualizador Crestas" width="320" height="213" loading="lazy"><figcaption>Crestas</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>El último visualizador reproduce <strong>presets de MilkDrop 1</strong> (archivos <code>.milk</code>), el visualizador clásico de Winamp. Trae ocho presets originales y puedes añadir los tuyos: pon archivos <code>.milk</code> en la carpeta <code>milkdrop</code> de la app, junto al programa. Valen subcarpetas, así que puedes descomprimir ahí un pack entero. Los packs de presets de MilkDrop se encuentran fácilmente en internet. La carpeta se lee la primera vez que abres MilkDrop; después de añadir archivos, usa <kbd>START</kbd> → <strong>Buscar presets otra vez</strong>.</p>
+<p>Cada 20 segundos más o menos pasa al siguiente preset en un golpe, mezclando los dos durante dos segundos.</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>: preset anterior/siguiente (en esta pantalla no cambian la canción).</li>
+<li><kbd>A</kbd>: <strong>Fijar preset</strong>, para que deje de cambiar; púlsalo otra vez para <strong>Soltar preset</strong>.</li>
+<li><kbd>START</kbd>: <strong>Colores del preset</strong>, <strong>Colores del disco</strong>, <strong>Preset siguiente</strong>, <strong>Preset anterior</strong>, <strong>Preset al azar</strong>, <strong>Fijar preset</strong> y <strong>Buscar presets otra vez</strong>.</li>
+</ul>
+<p><strong>Colores del preset</strong> (lo normal) muestra cada preset como lo hizo su autor. <strong>Colores del disco</strong> lo repinta con los colores del disco que suena, sin perder sus formas ni su brillo. Los presets de MilkDrop 2 también cargan, pero sus shaders se ignoran, así que muchos se ven distintos del original.</p>
 
 <h2 id="games">Juegos</h2>
 <p>Abre <strong>Juegos</strong> desde la barra de pantallas. Se juegan al ritmo de lo que suena, incluidas las canciones del tracker. En todos los juegos <kbd>START</kbd> pausa.</p>

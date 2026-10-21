@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Визуализаторы и игры · документация audiofilus</title>
-<meta name="description" content="Восемь визуализаторов и восемь игр, следующих за ритмом того, что играет.">
+<meta name="description" content="Девять визуализаторов и восемь игр, следующих за ритмом того, что играет.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -74,7 +74,7 @@
   </aside>
   <article>
     <h1>Визуализаторы и игры</h1>
-    <p class="lede">Восемь визуализаторов и восемь игр, следующих за ритмом того, что играет.</p>
+    <p class="lede">Девять визуализаторов и восемь игр, следующих за ритмом того, что играет.</p>
 
 <h2 id="visualizers">Визуализаторы</h2>
 <p>Открой <strong>Визуализатор</strong> на панели экранов. <kbd>←</kbd>/<kbd>→</kbd> переключают визуализатор, а <kbd>A</kbd> меняет его камеру или вариант.</p>
@@ -88,11 +88,22 @@
 <tr><td>Волны</td><td>Волны</td></tr>
 <tr><td>Столбцы</td><td>Столбцы спектра</td></tr>
 <tr><td>Гребни</td><td>Линии спектра одна над другой, как на обложке <em>Unknown Pleasures</em></td></tr>
+<tr><td>MilkDrop</td><td>Классические пресеты MilkDrop, встроенные или твои (<a href="#milkdrop">см. ниже</a>)</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="Визуализатор Озеро" width="320" height="213" loading="lazy"><figcaption>Озеро</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="Визуализатор Гребни" width="320" height="213" loading="lazy"><figcaption>Гребни</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>Последний визуализатор проигрывает <strong>пресеты MilkDrop 1</strong> (файлы <code>.milk</code>), классического визуализатора Winamp. В нём есть восемь собственных пресетов, и можно добавить свои: положи файлы <code>.milk</code> в папку <code>milkdrop</code> приложения, рядом с программой. Подпапки тоже подходят, так что туда можно распаковать целый пак. Паки пресетов MilkDrop легко найти в интернете. Папка читается при первом открытии MilkDrop; после добавления файлов выбери <kbd>START</kbd> → <strong>Найти пресеты заново</strong>.</p>
+<p>Примерно каждые 20 секунд он переходит к следующему пресету на ударе, смешивая их две секунды.</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>: предыдущий/следующий пресет (на этом экране они не переключают песню).</li>
+<li><kbd>A</kbd>: <strong>Закрепить пресет</strong>, чтобы он больше не менялся; нажми ещё раз, чтобы <strong>Открепить пресет</strong>.</li>
+<li><kbd>START</kbd>: <strong>Цвета пресета</strong>, <strong>Цвета альбома</strong>, <strong>Следующий пресет</strong>, <strong>Предыдущий пресет</strong>, <strong>Случайный пресет</strong>, <strong>Закрепить пресет</strong> и <strong>Найти пресеты заново</strong>.</li>
+</ul>
+<p><strong>Цвета пресета</strong> (по умолчанию) показывают каждый пресет так, как его сделал автор. <strong>Цвета альбома</strong> перекрашивают его в цвета играющего альбома, сохраняя формы и яркость. Пресеты MilkDrop 2 тоже загружаются, но их шейдеры игнорируются, поэтому многие выглядят не так, как в оригинале.</p>
 
 <h2 id="games">Игры</h2>
 <p>Открой <strong>Игры</strong> на панели экранов. Они идут в ритм того, что играет, включая песни трекера. Во всех играх <kbd>START</kbd> ставит паузу.</p>

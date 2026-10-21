@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>비주얼라이저와 게임 · audiofilus 문서</title>
-<meta name="description" content="재생 중인 곡의 박자를 따라가는 비주얼라이저 여덟 개와 게임 여덟 개.">
+<meta name="description" content="재생 중인 곡의 박자를 따라가는 비주얼라이저 아홉 개와 게임 여덟 개.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -76,7 +76,7 @@
   </aside>
   <article>
     <h1>비주얼라이저와 게임</h1>
-    <p class="lede">재생 중인 곡의 박자를 따라가는 비주얼라이저 여덟 개와 게임 여덟 개.</p>
+    <p class="lede">재생 중인 곡의 박자를 따라가는 비주얼라이저 아홉 개와 게임 여덟 개.</p>
 
 <h2 id="visualizers">비주얼라이저</h2>
 <p>화면 바에서 <strong>비주얼라이저</strong>를 여세요. <kbd>←</kbd>/<kbd>→</kbd>로 비주얼라이저를 바꾸고, <kbd>A</kbd>로 카메라나 변형을 바꿔요.</p>
@@ -90,11 +90,22 @@
 <tr><td>물결</td><td>파형</td></tr>
 <tr><td>막대</td><td>스펙트럼 막대</td></tr>
 <tr><td>능선</td><td><em>Unknown Pleasures</em> 커버처럼 겹겹이 쌓인 스펙트럼 선</td></tr>
+<tr><td>MilkDrop</td><td>클래식 MilkDrop 프리셋, 내장된 것이나 내 것 (<a href="#milkdrop">아래 참고</a>)</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="호수 비주얼라이저" width="320" height="213" loading="lazy"><figcaption>호수</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="능선 비주얼라이저" width="320" height="213" loading="lazy"><figcaption>능선</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>마지막 비주얼라이저는 Winamp의 클래식 비주얼라이저인 <strong>MilkDrop 1 프리셋</strong>(<code>.milk</code> 파일)을 재생해요. 오리지널 프리셋 여덟 개가 들어 있고, 내 프리셋도 추가할 수 있어요. 프로그램 옆에 있는 앱의 <code>milkdrop</code> 폴더에 <code>.milk</code> 파일을 넣으세요. 하위 폴더도 되니까 팩 전체를 그대로 풀어 놓아도 돼요. MilkDrop 프리셋 팩은 인터넷에서 쉽게 찾을 수 있어요. 폴더는 MilkDrop을 처음 열 때 읽어요. 파일을 추가한 뒤에는 <kbd>START</kbd> → <strong>프리셋 다시 찾기</strong>를 쓰세요.</p>
+<p>약 20초마다 박자에 맞춰 다음 프리셋으로 넘어가고, 2초 동안 두 프리셋을 섞어요.</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>: 이전/다음 프리셋 (이 화면에서는 곡을 바꾸지 않아요).</li>
+<li><kbd>A</kbd>: <strong>프리셋 고정</strong>으로 바뀌지 않게 해요. 다시 누르면 <strong>고정 해제</strong>.</li>
+<li><kbd>START</kbd>: <strong>프리셋 색상</strong>, <strong>앨범 색상</strong>, <strong>다음 프리셋</strong>, <strong>이전 프리셋</strong>, <strong>무작위 프리셋</strong>, <strong>프리셋 고정</strong>, <strong>프리셋 다시 찾기</strong>.</li>
+</ul>
+<p><strong>프리셋 색상</strong>(기본)은 각 프리셋을 만든 사람이 만든 그대로 보여 줘요. <strong>앨범 색상</strong>은 모양과 밝기는 그대로 두고 재생 중인 앨범의 색으로 다시 칠해요. MilkDrop 2 프리셋도 불러오지만 셰이더는 무시되기 때문에, 원본과 다르게 보이는 것이 많아요.</p>
 
 <h2 id="games">게임</h2>
 <p>화면 바에서 <strong>게임</strong>을 여세요. 트래커 곡을 포함해 재생 중인 곡의 박자에 맞춰 진행돼요. 모든 게임에서 <kbd>START</kbd>는 일시정지예요.</p>

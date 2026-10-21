@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ビジュアライザーとゲーム · audiofilus ドキュメント</title>
-<meta name="description" content="再生中の音楽のビートに合わせて動く 8 つのビジュアライザーと 8 つのゲーム。">
+<meta name="description" content="再生中の音楽のビートに合わせて動く 9 つのビジュアライザーと 8 つのゲーム。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -75,7 +75,7 @@
   </aside>
   <article>
     <h1>ビジュアライザーとゲーム</h1>
-    <p class="lede">再生中の音楽のビートに合わせて動く 8 つのビジュアライザーと 8 つのゲーム。</p>
+    <p class="lede">再生中の音楽のビートに合わせて動く 9 つのビジュアライザーと 8 つのゲーム。</p>
 
 <h2 id="visualizers">ビジュアライザー</h2>
 <p>画面バーから<strong>ビジュアライザー</strong>を開きます。<kbd>←</kbd>/<kbd>→</kbd> でビジュアライザーを切り替え、<kbd>A</kbd> でカメラやバリエーションを変えます。</p>
@@ -89,11 +89,22 @@
 <tr><td>波</td><td>波</td></tr>
 <tr><td>バー</td><td>スペクトラムのバー</td></tr>
 <tr><td>稜線</td><td><em>Unknown Pleasures</em> のジャケットのように重なったスペクトラムの線</td></tr>
+<tr><td>MilkDrop</td><td>定番の MilkDrop プリセット。内蔵のものも自分のものも（<a href="#milkdrop">下記</a>）</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="Lake ビジュアライザー" width="320" height="213" loading="lazy"><figcaption>湖</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="Ridges ビジュアライザー" width="320" height="213" loading="lazy"><figcaption>稜線</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>最後のビジュアライザーは、Winamp の定番ビジュアライザー <strong>MilkDrop 1 のプリセット</strong>（<code>.milk</code> ファイル）を再生します。オリジナルのプリセットが 8 つ入っていて、自分のものも追加できます。プログラムの隣にあるアプリの <code>milkdrop</code> フォルダーに <code>.milk</code> ファイルを入れてください。サブフォルダーも使えるので、パックを丸ごと展開できます。MilkDrop のプリセットパックはネットで簡単に見つかります。フォルダーは MilkDrop を最初に開いたときに読み込まれます。ファイルを追加したら <kbd>START</kbd> → <strong>プリセットを再検索</strong> を使ってください。</p>
+<p>だいたい 20 秒ごとに、ビートに合わせて次のプリセットへ移り、2 秒かけて切り替わります。</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>：前/次のプリセット（この画面では曲は変わりません）。</li>
+<li><kbd>A</kbd>：<strong>プリセットを固定</strong> して切り替えを止めます。もう一度押すと <strong>固定を解除</strong>。</li>
+<li><kbd>START</kbd>：<strong>プリセットの色</strong>、<strong>アルバムの色</strong>、<strong>次のプリセット</strong>、<strong>前のプリセット</strong>、<strong>ランダムなプリセット</strong>、<strong>プリセットを固定</strong>、<strong>プリセットを再検索</strong>。</li>
+</ul>
+<p><strong>プリセットの色</strong>（標準）は、作者が作ったとおりの色で表示します。<strong>アルバムの色</strong> は、形や明るさはそのままに、再生中のアルバムの色で塗り直します。MilkDrop 2 のプリセットも読み込めますが、シェーダーは無視されるので、元とは見た目が違うものが多くなります。</p>
 
 <h2 id="games">ゲーム</h2>
 <p>画面バーから<strong>ゲーム</strong>を開きます。トラッカーの曲も含め、再生中の音楽のビートに合わせて遊べます。どのゲームでも <kbd>START</kbd> で一時停止します。</p>

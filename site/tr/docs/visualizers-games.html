@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Görselleştiriciler ve oyunlar · audiofilus belgeleri</title>
-<meta name="description" content="Çalan şeyin ritmini takip eden sekiz görselleştirici ve sekiz oyun.">
+<meta name="description" content="Çalan şeyin ritmini takip eden dokuz görselleştirici ve sekiz oyun.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Görselleştiriciler ve oyunlar</h1>
-    <p class="lede">Çalan şeyin ritmini takip eden sekiz görselleştirici ve sekiz oyun.</p>
+    <p class="lede">Çalan şeyin ritmini takip eden dokuz görselleştirici ve sekiz oyun.</p>
 
 <h2 id="visualizers">Görselleştiriciler</h2>
 <p>Ekranlar çubuğundan <strong>Görselleştirici</strong>'yi açın. <kbd>←</kbd>/<kbd>→</kbd> görselleştiriciyi değiştirir, <kbd>A</kbd> kamerasını ya da çeşidini değiştirir.</p>
@@ -86,11 +86,22 @@
 <tr><td>Dalgalar</td><td>Dalgalar</td></tr>
 <tr><td>Bars</td><td>Spektrum çubukları</td></tr>
 <tr><td>Ridges</td><td><em>Unknown Pleasures</em> kapağı gibi katmanlı spektrum çizgileri</td></tr>
+<tr><td>MilkDrop</td><td>Klasik MilkDrop presetleri, hazır gelenler ya da sizinkiler (<a href="#milkdrop">aşağıya bakın</a>)</td></tr>
 </table>
 <div class="pair">
 <figure><img class="px shot" src="../../img/vis-lake.webp" alt="Lake görselleştiricisi" width="320" height="213" loading="lazy"><figcaption>Lake</figcaption></figure>
 <figure><img class="px shot" src="../../img/vis-ridges.webp" alt="Ridges görselleştiricisi" width="320" height="213" loading="lazy"><figcaption>Ridges</figcaption></figure>
 </div>
+
+<h3 id="milkdrop">MilkDrop</h3>
+<p>Son görselleştirici, Winamp'ın klasik görselleştiricisi <strong>MilkDrop 1 presetlerini</strong> (<code>.milk</code> dosyaları) oynatır. Sekiz özgün presetle gelir ve kendi presetlerinizi ekleyebilirsiniz: <code>.milk</code> dosyalarını uygulamanın programın yanındaki <code>milkdrop</code> klasörüne koyun. Alt klasörler de olur, yani bütün bir paketi oraya açabilirsiniz. MilkDrop preset paketlerini internette kolayca bulabilirsiniz. Klasör, MilkDrop'u ilk açtığınızda okunur; dosya ekledikten sonra <kbd>START</kbd> → <strong>Presetleri yeniden tara</strong>'yı kullanın.</p>
+<p>Yaklaşık her 20 saniyede bir, bir vuruşta sonraki presete geçer ve ikisini iki saniye boyunca karıştırır.</p>
+<ul>
+<li><kbd>L1</kbd>/<kbd>R1</kbd>: önceki/sonraki preset (bu ekranda şarkıyı değiştirmezler).</li>
+<li><kbd>A</kbd>: değişmeyi durdurmak için <strong>Preseti kilitle</strong>; <strong>Preset kilidini aç</strong> için tekrar basın.</li>
+<li><kbd>START</kbd>: <strong>Preset renkleri</strong>, <strong>Albüm renkleri</strong>, <strong>Sonraki preset</strong>, <strong>Önceki preset</strong>, <strong>Rastgele preset</strong>, <strong>Preseti kilitle</strong> ve <strong>Presetleri yeniden tara</strong>.</li>
+</ul>
+<p><strong>Preset renkleri</strong> (varsayılan) her preseti yazarının yaptığı gibi gösterir. <strong>Albüm renkleri</strong> onu çalan albümün renkleriyle yeniden boyar; şekilleri ve parlaklığı kalır. MilkDrop 2 presetleri de yüklenir ama shader'ları yok sayılır, bu yüzden birçoğu orijinalinden farklı görünür.</p>
 
 <h2 id="games">Oyunlar</h2>
 <p>Ekranlar çubuğundan <strong>Oyunlar</strong>'ı açın. Tracker'ın şarkıları dahil, çalan şeyin ritmine göre oynanırlar. Her oyunda <kbd>START</kbd> duraklatır.</p>
