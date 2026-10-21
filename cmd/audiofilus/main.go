@@ -147,6 +147,7 @@ func startDetached(paths config.Paths) error {
 	c.Stdout, c.Stderr = logf, logf
 	c.SysProcAttr = detachAttr()
 	c.Env = append(os.Environ(), "AUDIOFILUS_HOME="+paths.Base)
+	closeInherited()
 	if err := c.Start(); err != nil {
 		return err
 	}

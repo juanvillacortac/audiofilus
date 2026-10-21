@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>掌机系统 · audiofilus 文档</title>
-<meta name="description" content="audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS 和 dArkOS 上的不同之处。">
+<meta name="description" content="audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -85,7 +85,7 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>掌机系统</h1>
-    <p class="lede">audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS 和 dArkOS 上的不同之处。</p>
+    <p class="lede">audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。</p>
 
 <p>audiofilus 启动时会识别系统，并使用该系统自带的工具来处理翻盖、电源键、音量和电池。已在运行 Knulli 的 Anbernic RG34XX-SP 上测试。</p>
 
@@ -95,6 +95,7 @@ body { line-break: strict; }
 <tr><th>系统</th><th>文件夹</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>，如果游戏在第二张 SD 卡上则是 <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS（应用）</td><td><code>MUOS/application</code> 下的应用文件夹</td></tr>
 </table>
 
@@ -119,9 +120,16 @@ body { line-break: strict; }
 <ul>
 <li>在 ROCKNIX 的“伪休眠”模式下（其设置中关闭了休眠模式），按电源键会静音并冻结一切，audiofilus 无法阻止。在普通休眠模式（默认）下，电源键会让 audiofilus 进入睡眠。</li>
 </ul>
-<h2 id="arkos">ArkOS 和 dArkOS</h2>
+<h2 id="arkos">ArkOS、dArkOS 和 EmuELEC</h2>
 <ul>
 <li>在电量计总是报告 0 % 的掌机上（比如运行 dArkOS 的 RG353V），电量会根据电荷量或电压估算，无法估算时则隐藏。</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>支持 Odroid Go Advance 和 Super、GameForce Chi 以及 Amlogic 电视盒子。尚未在真机上测试。</li>
+<li>在掌机上，播放器打开时，电源键会让 audiofilus 进入睡眠，而不是让掌机休眠。电视盒子从不休眠。</li>
+<li>请先从 EmuELEC 菜单安装 PortMaster。手动安装时，把 <code>Audiofilus.sh</code> 放进 <code>/storage/roms/ports_scripts</code>（EmuELEC 在这里列出移植游戏），把 <code>audiofilus</code> 文件夹放进 <code>/storage/roms/ports</code>。</li>
 </ul>
 
 <h2 id="power-use">耗电</h2>

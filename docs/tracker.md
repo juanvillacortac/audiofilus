@@ -81,7 +81,7 @@ Since the tracker mirrors LSDJ, most of it maps 1:1, in Game Boy mode: song rows
 
 | System | Ports | How |
 |---|---|---|
-| Linux handhelds (Knulli, muOS, ROCKNIX, ArkOS) and desktop | USB MIDI class devices (keyboards, controllers, sequencers) | ALSA raw MIDI character devices `/dev/snd/midiC<card>D<dev>`, read and written as files. Names come from `/proc/asound/card<N>/midi<D>` (or the card id). Knulli runs the UI as root; on other systems the user must be in the `audio` group. |
+| Linux handhelds (Knulli, muOS, ROCKNIX, ArkOS, EmuELEC) and desktop | USB MIDI class devices (keyboards, controllers, sequencers) | ALSA raw MIDI character devices `/dev/snd/midiC<card>D<dev>`, read and written as files. Names come from `/proc/asound/card<N>/midi<D>` (or the card id). Knulli runs the UI as root; on other systems the user must be in the `audio` group. |
 | Windows | Every MIDI input, paired with the output of the same name | `winmm.dll` through `golang.org/x/sys/windows` (`midiInOpen` with a callback, `midiOutShortMsg`). |
 | iOS / iPadOS | CoreMIDI sources, paired with the destination of the same name (USB through the camera adapter, already-paired Bluetooth MIDI) | `MIDIClientCreate`, `MIDIInputPortCreate`, `MIDISend`. |
 

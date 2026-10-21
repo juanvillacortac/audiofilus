@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Systemy konsol · dokumentacja audiofilus</title>
-<meta name="description" content="Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS i dArkOS.">
+<meta name="description" content="Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Systemy konsol</h1>
-    <p class="lede">Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS i dArkOS.</p>
+    <p class="lede">Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.</p>
 
 <p>audiofilus wykrywa system przy starcie i używa jego własnych narzędzi do klapki, przycisku zasilania, głośności i baterii. Testowany na Anbernic RG34XX-SP z Knulli.</p>
 
@@ -82,6 +82,7 @@
 <tr><th>System</th><th>Folder</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code> albo <code>/roms2/ports/audiofilus</code>, jeśli twoje gry są na drugiej karcie SD</td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (aplikacja)</td><td>folder aplikacji w <code>MUOS/application</code></td></tr>
 </table>
 
@@ -106,9 +107,16 @@
 <ul>
 <li>Z „fake suspend” w ROCKNIX (tryb usypiania wyłączony w jego ustawieniach) naciśnięcie przycisku zasilania wycisza i zamraża wszystko, a audiofilus nie może temu zapobiec. Przy zwykłym usypianiu (domyślnym) przycisk usypia audiofilus.</li>
 </ul>
-<h2 id="arkos">ArkOS i dArkOS</h2>
+<h2 id="arkos">ArkOS, dArkOS i EmuELEC</h2>
 <ul>
 <li>Na konsolach, których wskaźnik baterii zawsze pokazuje 0 % (np. RG353V z dArkOS), poziom baterii jest szacowany z ładunku lub napięcia albo ukryty.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Działa na Odroid Go Advance i Super, GameForce Chi oraz przystawkach TV z Amlogic. Nie był jeszcze testowany na prawdziwym urządzeniu.</li>
+<li>Na konsolach przenośnych przy otwartym odtwarzaczu przycisk zasilania usypia audiofilus zamiast konsoli. Przystawki TV nigdy się nie usypiają.</li>
+<li>Najpierw zainstaluj PortMaster z menu EmuELEC. Przy ręcznej instalacji wrzuć <code>Audiofilus.sh</code> do <code>/storage/roms/ports_scripts</code> (stąd EmuELEC bierze listę portów), a folder <code>audiofilus</code> do <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Zużycie baterii</h2>

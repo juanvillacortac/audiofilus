@@ -15,7 +15,7 @@ The sinc kernel has 32 taps per side at the lower rate (more when downsampling),
 
 Setting `resampler`:
 
-- `auto` (default): `quality` on the desktop, `linear` on handhelds. The service decides at startup from the platform name (`platform.Detect`: `desktop` vs Knulli/muOS/ROCKNIX/ArkOS).
+- `auto` (default): `quality` on the desktop, `linear` on handhelds. The service decides at startup from the platform name (`platform.Detect`: `desktop` vs Knulli/muOS/ROCKNIX/ArkOS/EmuELEC).
 - `linear` / `quality`: forced.
 
 A change applies from the next song (the current one keeps its resampler, so nothing skips). `Status.resampler` says which one the playing song uses (empty when the file is already at the output rate).

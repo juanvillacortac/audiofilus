@@ -4,7 +4,7 @@ A guide for coding agents (Claude Code, Codex, etc.) working on **audiofilus**: 
 
 ## Status
 
-- **Done:** the audio service and its CLI, the Ebitengine interface (library, player, visualizers, games, Subsonic/Jellyfin servers, radio, podcasts, and YouTube Music with each user's own yt-dlp), pocket mode, and integration with Knulli, muOS, ROCKNIX and ArkOS/dArkOS. Measured on the console: [docs/power.md](docs/power.md).
+- **Done:** the audio service and its CLI, the Ebitengine interface (library, player, visualizers, games, Subsonic/Jellyfin servers, radio, podcasts, and YouTube Music with each user's own yt-dlp), pocket mode, and integration with Knulli, muOS, ROCKNIX, ArkOS/dArkOS and EmuELEC. Measured on the console: [docs/power.md](docs/power.md).
 - **Pending:** desktop optimization (mouse, keyboard, windows), and later Android and iOS.
 
 ## Working with the author
@@ -49,7 +49,7 @@ GOOS=windows go vet ./...
 | `internal/library/` | Finding files (folders, `.m3u`) and reading tags |
 | `internal/control/` | The socket protocol between the service and its clients |
 | `internal/daemon/` | The service: ties together engine, platform, pocket mode and socket |
-| `internal/platform/` | Desktop (does nothing), Knulli, muOS, ROCKNIX and ArkOS/dArkOS (lid, power button, battery saver, app sleep; see [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) and [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
+| `internal/platform/` | Desktop (does nothing), Knulli, muOS, ROCKNIX, ArkOS/dArkOS and EmuELEC (lid, power button, battery saver, app sleep; see [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) and [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
 | `internal/input/` | Logical buttons from the SDL mapping, controller reading (evdev), gesture and shortcut detection, power and headset keys |
 | `internal/sdlmap/` | Asks SDL2 (through `purego`) for the controller mapping |
 | `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |
@@ -81,7 +81,7 @@ Architecture rules:
 - **Configuration is portable**: `audiofilus.json` and `data/` sit next to the binary (`config.Locate`). The only exception is the socket, which goes in `/tmp` because `/userdata` on Knulli is exFAT and doesn't support sockets.
 - **In the background the console suspends as usual.** Preventing that is up to the open app (`awake`, a permission that expires), never the service on its own.
 - **Buttons come from the SDL mapping**, not hardcoded codes: each console uses its own.
-- **Each system's integration (Knulli, muOS, ROCKNIX, ArkOS) only turns on when that system is detected** (`platform.Detect`); on the PC everything is a no-op, so the same code is tested in both places.
+- **Each system's integration (Knulli, muOS, ROCKNIX, ArkOS, EmuELEC) only turns on when that system is detected** (`platform.Detect`); on the PC everything is a no-op, so the same code is tested in both places.
 - **It also builds for Windows** (`GOOS=windows`, no cgo). Linux-only code goes in `_linux.go` files with a `_other.go` twin that does nothing; check with `GOOS=windows go vet ./...`. See [docs/architecture.md](docs/architecture.md#windows).
 
 ## Knulli

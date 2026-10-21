@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Handheld systems · audiofilus docs</title>
-<meta name="description" content="What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS and dArkOS.">
+<meta name="description" content="What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
 <link rel="apple-touch-icon" href="../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Handheld systems</h1>
-    <p class="lede">What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS and dArkOS.</p>
+    <p class="lede">What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.</p>
 
 <p>audiofilus detects the system when it starts and uses that system's own tools for the lid, the power button, the volume and the battery. Tested on an Anbernic RG34XX-SP with Knulli.</p>
 
@@ -82,6 +82,7 @@
 <tr><th>System</th><th>Folder</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, or <code>/roms2/ports/audiofilus</code> if your games are on the second SD card</td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (app)</td><td>the app's folder under <code>MUOS/application</code></td></tr>
 </table>
 
@@ -106,9 +107,16 @@
 <ul>
 <li>With ROCKNIX's “fake suspend” (suspend mode off in its settings), pressing the power button mutes and freezes everything, and audiofilus can't stop it. With normal suspend (the default), the button puts audiofilus to sleep.</li>
 </ul>
-<h2 id="arkos">ArkOS and dArkOS</h2>
+<h2 id="arkos">ArkOS, dArkOS and EmuELEC</h2>
 <ul>
 <li>On consoles whose battery gauge always reports 0 % (like the RG353V with dArkOS), the battery level is estimated from its charge or voltage, or hidden.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>It runs on the Odroid Go Advance and Super, the GameForce Chi and Amlogic TV boxes. It hasn't been tested on a real device yet.</li>
+<li>On the handhelds, with the player open, the power button puts audiofilus to sleep instead of suspending the console. TV boxes never suspend.</li>
+<li>Install PortMaster from the EmuELEC menu first. To install by hand, put <code>Audiofilus.sh</code> in <code>/storage/roms/ports_scripts</code> (where EmuELEC lists ports) and the <code>audiofilus</code> folder in <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Battery use</h2>

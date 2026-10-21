@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>휴대용 게임기 시스템 · audiofilus 문서</title>
-<meta name="description" content="Knulli, muOS, ROCKNIX, ArkOS, dArkOS에서 audiofilus가 다르게 하는 일.">
+<meta name="description" content="Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 audiofilus가 다르게 하는 일.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -76,7 +76,7 @@
   </aside>
   <article>
     <h1>휴대용 게임기 시스템</h1>
-    <p class="lede">Knulli, muOS, ROCKNIX, ArkOS, dArkOS에서 audiofilus가 다르게 하는 일.</p>
+    <p class="lede">Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 audiofilus가 다르게 하는 일.</p>
 
 <p>audiofilus는 시작할 때 시스템을 감지해서, 덮개, 전원 버튼, 볼륨, 배터리에 그 시스템의 도구를 써요. Knulli를 설치한 Anbernic RG34XX-SP에서 테스트했어요.</p>
 
@@ -86,6 +86,7 @@
 <tr><th>시스템</th><th>폴더</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, 게임이 두 번째 SD 카드에 있으면 <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (앱)</td><td><code>MUOS/application</code> 아래의 앱 폴더</td></tr>
 </table>
 
@@ -113,6 +114,13 @@
 <h2 id="arkos">ArkOS와 dArkOS</h2>
 <ul>
 <li>배터리 게이지가 항상 0 %로 나오는 게임기(dArkOS를 설치한 RG353V 등)에서는 충전량이나 전압으로 배터리 잔량을 추정하거나 숨겨요.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Odroid Go Advance와 Super, GameForce Chi, Amlogic TV 박스에서 실행돼요. 아직 실제 기기에서는 테스트하지 않았어요.</li>
+<li>휴대용 게임기에서는 플레이어가 열려 있을 때 전원 버튼을 누르면 게임기가 절전되는 대신 audiofilus가 슬립에 들어가요. TV 박스는 절전되지 않아요.</li>
+<li>먼저 EmuELEC 메뉴에서 PortMaster를 설치하세요. 직접 설치할 때는 <code>Audiofilus.sh</code>를 <code>/storage/roms/ports_scripts</code>(EmuELEC가 포트 목록을 읽는 곳)에, <code>audiofilus</code> 폴더를 <code>/storage/roms/ports</code>에 넣으세요.</li>
 </ul>
 
 <h2 id="power-use">배터리 사용량</h2>

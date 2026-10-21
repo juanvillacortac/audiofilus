@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sistem handheld · dokumentasi audiofilus</title>
-<meta name="description" content="Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dan dArkOS.">
+<meta name="description" content="Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Sistem handheld</h1>
-    <p class="lede">Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dan dArkOS.</p>
+    <p class="lede">Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.</p>
 
 <p>audiofilus mendeteksi sistem saat mulai dan memakai alat bawaan sistem itu untuk lipatan, tombol power, volume, dan baterai. Diuji di Anbernic RG34XX-SP dengan Knulli.</p>
 
@@ -82,6 +82,7 @@
 <tr><th>Sistem</th><th>Folder</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, atau <code>/roms2/ports/audiofilus</code> jika game-mu ada di kartu SD kedua</td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (aplikasi)</td><td>folder aplikasinya di bawah <code>MUOS/application</code></td></tr>
 </table>
 
@@ -109,6 +110,13 @@
 <h2 id="arkos">ArkOS dan dArkOS</h2>
 <ul>
 <li>Di konsol yang pengukur baterainya selalu melaporkan 0 % (seperti RG353V dengan dArkOS), level baterai diperkirakan dari muatan atau tegangannya, atau disembunyikan.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Berjalan di Odroid Go Advance dan Super, GameForce Chi, serta TV box Amlogic. Belum dicoba di perangkat sungguhan.</li>
+<li>Di handheld, saat pemutar terbuka, tombol power menidurkan audiofilus alih-alih membuat konsol suspend. TV box tidak pernah suspend.</li>
+<li>Pasang PortMaster dulu dari menu EmuELEC. Untuk memasang manual, taruh <code>Audiofilus.sh</code> di <code>/storage/roms/ports_scripts</code> (tempat EmuELEC mencari port) dan folder <code>audiofilus</code> di <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Pemakaian baterai</h2>

@@ -37,6 +37,8 @@ Screenshots come out at ×3 of 320×240. The script scales them down to 1:1 by t
 
 Copy `dist/audiofilus.zip` to PortMaster's `autoinstall` folder and open PortMaster, which installs it into `ports/`. See the [`test-on-knulli`](../.claude/skills/test-on-knulli/SKILL.md) skill.
 
+On **EmuELEC**, install PortMaster first from the EmuELEC menu. Installing by hand, the files go in two places: `Audiofilus.sh` in `/storage/roms/ports_scripts/` (the folder EmuELEC lists ports from) and the `audiofilus/` folder in `/storage/roms/ports/`.
+
 ## Other systems
 
-It has only been tested on Knulli. What does not depend on the system (the service, the UI, explicit background mode, the FN×3 shortcuts, the OLED sleep) should work on all of them. Preventing suspend, turning off the backlight and capturing the volume buttons is only implemented for Knulli (`internal/platform/knulli.go`); on the others it does nothing. ROCKNIX and muOS use PipeWire with PulseAudio compatibility. ArkOS and dArkOS use ALSA directly, where background music and game sound might not be able to play at the same time.
+It has only been tested on Knulli. What does not depend on the system (the service, the UI, explicit background mode, the FN×3 shortcuts, the OLED sleep) should work on all of them. Preventing suspend, turning off the backlight and handling the power button are implemented for Knulli ([knulli.md](knulli.md)), muOS ([muos.md](muos.md)), and ROCKNIX, ArkOS/dArkOS and EmuELEC ([rocknix-arkos.md](rocknix-arkos.md)); on any other system they do nothing. ROCKNIX and muOS use PipeWire with PulseAudio compatibility. ArkOS, dArkOS and EmuELEC use ALSA directly, where background music and game sound might not be able to play at the same time.

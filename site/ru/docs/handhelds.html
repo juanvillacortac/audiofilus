@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Портативные системы · документация audiofilus</title>
-<meta name="description" content="Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS и dArkOS.">
+<meta name="description" content="Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -74,7 +74,7 @@
   </aside>
   <article>
     <h1>Портативные системы</h1>
-    <p class="lede">Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS и dArkOS.</p>
+    <p class="lede">Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.</p>
 
 <p>audiofilus определяет систему при запуске и использует её собственные инструменты для крышки, кнопки питания, громкости и батареи. Проверено на Anbernic RG34XX-SP с Knulli.</p>
 
@@ -84,6 +84,7 @@
 <tr><th>Система</th><th>Папка</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code> или <code>/roms2/ports/audiofilus</code>, если игры лежат на второй SD-карте</td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (приложение)</td><td>папка приложения в <code>MUOS/application</code></td></tr>
 </table>
 
@@ -108,9 +109,16 @@
 <ul>
 <li>С «fake suspend» в ROCKNIX (режим сна выключен в её настройках) кнопка питания глушит и замораживает всё, и audiofilus не может этому помешать. С обычным сном (по умолчанию) кнопка переводит в сон audiofilus.</li>
 </ul>
-<h2 id="arkos">ArkOS и dArkOS</h2>
+<h2 id="arkos">ArkOS, dArkOS и EmuELEC</h2>
 <ul>
 <li>На консолях, чей датчик батареи всегда показывает 0 % (например, RG353V с dArkOS), уровень заряда оценивается по заряду или напряжению либо скрывается.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Работает на Odroid Go Advance и Super, GameForce Chi и ТВ-приставках на Amlogic. На реальном устройстве ещё не проверялся.</li>
+<li>На портативных консолях при открытом плеере кнопка питания переводит в сон audiofilus, а не консоль. ТВ-приставки в сон не уходят вообще.</li>
+<li>Сначала установи PortMaster из меню EmuELEC. При ручной установке положи <code>Audiofilus.sh</code> в <code>/storage/roms/ports_scripts</code> (оттуда EmuELEC берёт список портов), а папку <code>audiofilus</code> — в <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Расход батареи</h2>

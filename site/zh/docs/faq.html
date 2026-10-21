@@ -100,6 +100,7 @@ body { line-break: strict; }
 <details class="q" id="my-stations"><summary>可以添加自己的电台吗？</summary><p>可以：把 <code>.m3u</code>/<code>.pls</code> 列表放进应用的 <code>radio</code> 文件夹（它们会出现在 电台 → 我的列表 中），或在“收藏”或“我的列表”中使用 <kbd>START</kbd> → <strong>通过地址添加</strong>。</p></details>
 <details class="q" id="battery"><summary>电量显示不对。</summary><p>audiofilus 读取系统的电池信息。有些掌机的电量计总是报告 0 %（比如运行 dArkOS 的 RG353V）；这时 audiofilus 会根据电荷量或电压估算电量，无法估算时则隐藏。</p></details>
 <details class="q" id="darkos-log"><summary>在 dArkOS 上找不到应用的文件夹。</summary><p>如果你的游戏在第二张 SD 卡上，ports 位于 <code>/roms2/ports</code> 而不是 <code>/roms/ports</code>，因此日志在 <code>/roms2/ports/audiofilus/data/audiofilus.log</code>。</p></details>
+<details class="q" id="emuelec"><summary>能在 EmuELEC 上运行吗？</summary><p>可以，通过 PortMaster，支持 Odroid Go Advance 和 Super、GameForce Chi 以及 Amlogic 电视盒子。尚未在真机上测试：如果出了问题，请附上 <code>ports/audiofilus/log.txt</code> 提交 issue。参见 <a href="handhelds.html#emuelec">EmuELEC</a>。</p></details>
 <details class="q" id="power-button"><summary>按电源键没有让掌机休眠。</summary><p>播放器打开时，电源键的作用是让 audiofilus 进入睡眠（关屏，音乐继续），而不是让掌机休眠。转到后台之后，它会像平常一样休眠。在使用“伪休眠”的 ROCKNIX 上，参见 <a href="handhelds.html#rocknix">ROCKNIX</a>。</p></details>
 <details class="q" id="battery-use"><summary>它耗电多吗？</summary><p>很少：在 RG34XX-SP 上，熄屏方式约 260 mA，大约能放 11 到 12 小时音乐。可视化效果和均衡器耗电更多；关屏时不会绘制任何内容。</p></details>
 <details class="q" id="update"><summary>怎么更新？</summary><p>从 0.9.1 版起，在 <strong>设置 → 更新</strong> 中：有新版本时应用会提醒你，按 <kbd>A</kbd> 即可安装，设置保持不变。更早的版本需要手动更新一次：从最新发布下载新的包，覆盖旧的即可。</p></details>

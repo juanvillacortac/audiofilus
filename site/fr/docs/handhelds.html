@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Systèmes portables · documentation audiofilus</title>
-<meta name="description" content="Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS et dArkOS.">
+<meta name="description" content="Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>Systèmes portables</h1>
-    <p class="lede">Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS et dArkOS.</p>
+    <p class="lede">Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.</p>
 
 <p>audiofilus détecte le système au démarrage et utilise ses propres outils pour le clapet, le bouton d’alimentation, le volume et la batterie. Testé sur une Anbernic RG34XX-SP avec Knulli.</p>
 
@@ -82,6 +82,7 @@
 <tr><th>Système</th><th>Dossier</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, ou <code>/roms2/ports/audiofilus</code> si tes jeux sont sur la seconde carte SD</td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (appli)</td><td>le dossier de l’appli dans <code>MUOS/application</code></td></tr>
 </table>
 
@@ -106,9 +107,16 @@
 <ul>
 <li>Avec la «&nbsp;fausse veille&nbsp;» de ROCKNIX (mode de veille désactivé dans ses réglages), appuyer sur le bouton d’alimentation coupe le son et fige tout, et audiofilus ne peut pas l’empêcher. Avec la veille normale (par défaut), le bouton met audiofilus en veille.</li>
 </ul>
-<h2 id="arkos">ArkOS et dArkOS</h2>
+<h2 id="arkos">ArkOS, dArkOS et EmuELEC</h2>
 <ul>
 <li>Sur les consoles dont la jauge de batterie indique toujours 0&nbsp;% (comme la RG353V avec dArkOS), le niveau de batterie est estimé à partir de sa charge ou de sa tension, ou masqué.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Fonctionne sur les Odroid Go Advance et Super, la GameForce Chi et les box TV Amlogic. Pas encore testé sur un vrai appareil.</li>
+<li>Sur les consoles portables, lecteur ouvert, le bouton d’alimentation met audiofilus en veille au lieu de mettre la console en veille. Les box TV ne se mettent jamais en veille.</li>
+<li>Installe d’abord PortMaster depuis le menu d’EmuELEC. Pour l’installer à la main, mets <code>Audiofilus.sh</code> dans <code>/storage/roms/ports_scripts</code> (là où EmuELEC liste les ports) et le dossier <code>audiofilus</code> dans <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Consommation de batterie</h2>

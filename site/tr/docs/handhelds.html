@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>El konsolu sistemleri · audiofilus belgeleri</title>
-<meta name="description" content="audiofilus&#x27;un Knulli, muOS, ROCKNIX, ArkOS ve dArkOS&#x27;ta farklı yaptıkları.">
+<meta name="description" content="audiofilus&#x27;un Knulli, muOS, ROCKNIX, ArkOS, dArkOS ve EmuELEC&#x27;te farklı yaptıkları.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -72,7 +72,7 @@
   </aside>
   <article>
     <h1>El konsolu sistemleri</h1>
-    <p class="lede">audiofilus'un Knulli, muOS, ROCKNIX, ArkOS ve dArkOS'ta farklı yaptıkları.</p>
+    <p class="lede">audiofilus'un Knulli, muOS, ROCKNIX, ArkOS, dArkOS ve EmuELEC'te farklı yaptıkları.</p>
 
 <p>audiofilus açılırken sistemi algılar ve kapak, güç tuşu, ses ve pil için o sistemin kendi araçlarını kullanır. Knulli'li bir Anbernic RG34XX-SP'de test edildi.</p>
 
@@ -82,6 +82,7 @@
 <tr><th>Sistem</th><th>Klasör</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
 <tr><td>ArkOS, dArkOS</td><td><code>/roms/ports/audiofilus</code>, ya da oyunlarınız ikinci SD karttaysa <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS (uygulama)</td><td><code>MUOS/application</code> altındaki uygulama klasörü</td></tr>
 </table>
 
@@ -109,6 +110,13 @@
 <h2 id="arkos">ArkOS ve dArkOS</h2>
 <ul>
 <li>Pil göstergesi hep %0 bildiren konsollarda (dArkOS'lu RG353V gibi), pil seviyesi şarjdan ya da voltajdan tahmin edilir veya gizlenir.</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Odroid Go Advance ve Super, GameForce Chi ve Amlogic TV kutularında çalışır. Henüz gerçek bir cihazda denenmedi.</li>
+<li>El konsollarında, çalar açıkken güç tuşu konsolu askıya almak yerine audiofilus'u uyutur. TV kutuları hiç askıya alınmaz.</li>
+<li>Önce EmuELEC menüsünden PortMaster'ı kurun. Elle kurmak için <code>Audiofilus.sh</code> dosyasını <code>/storage/roms/ports_scripts</code> klasörüne (EmuELEC portları orada listeler), <code>audiofilus</code> klasörünü de <code>/storage/roms/ports</code> klasörüne koyun.</li>
 </ul>
 
 <h2 id="power-use">Pil kullanımı</h2>

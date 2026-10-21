@@ -20,10 +20,12 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-// Las portátiles con systemd: ROCKNIX y la familia ArkOS (ArkOS y dArkOS).
+// Las portátiles con systemd: ROCKNIX, la familia ArkOS (ArkOS y dArkOS) y
+// EmuELEC.
 // Comparten casi todo (sysfs para el brillo y el governor, logind), así que
 // es una sola plataforma con sus diferencias (sacadas de su código:
-// github.com/ROCKNIX/distribution y github.com/christianhaitian/dArkOS):
+// github.com/ROCKNIX/distribution, github.com/christianhaitian/dArkOS y
+// github.com/EmuELEC/EmuELEC):
 //
 //   - ROCKNIX deja la tapa y el botón de encendido a logind
 //     (HandleLidSwitch=suspend, HandlePowerKey=suspend): un inhibidor de
@@ -40,8 +42,17 @@ import (
 //     cierre inesperado, al volver a arrancar). Los ports corren como el
 //     usuario ark: lo que pide root va con sudo -n (ark lo tiene sin
 //     contraseña).
+//   - EmuELEC (Odroid Go Advance/Super, GameForce Chi y las cajas Amlogic,
+//     que no suspenden) también ignora el botón en logind: lo lleva
+//     oga_events.py, que como root llama a systemctl suspend. Como root,
+//     logind no respeta los inhibidores, así que con la app abierta se deja
+//     un sleep.conf con AllowSuspend=no (logind lo relee en cada petición:
+//     el suspend falla y el botón queda para el sleep de la app). Está en
+//     /storage, que no se borra al apagar: se quita al cerrar y, tras un
+//     cierre inesperado, al volver a arrancar. No suspende por inactividad.
+//     Todo corre como root.
 //   - Brillo: /sys/class/backlight. Volumen: en ROCKNIX, pactl (y su script
-//     "volume", que lo guarda); en ArkOS, ALSA con amixer.
+//     "volume", que lo guarda); en ArkOS y EmuELEC, ALSA con amixer.
 //   - Tapa: el sensor del AXP (hallkey) o, con kernel mainline (ROCKNIX), el
 //     interruptor SW_LID por evdev.
 
@@ -49,11 +60,14 @@ const (
 	arkPause        = "/usr/local/bin/pause.sh"
 	arkProcessCheck = "/usr/local/bin/processcheck.sh"
 	arkMounts       = "/tmp/audiofilus-arkos-mounts"
+	// eeNoSleep es el sleep.conf que pone EmuELEC sin suspensión (va detrás
+	// del suyo, sleep.conf, así que manda).
+	eeNoSleep = "/storage/.config/sleep.conf.d/zz-audiofilus.conf"
 )
 
-// handheld es ROCKNIX o la familia ArkOS.
+// handheld es ROCKNIX, la familia ArkOS o EmuELEC.
 type handheld struct {
-	name string // "rocknix" o "arkos"
+	name string // "rocknix", "arkos" o "emuelec"
 	opts Options
 
 	mu            sync.Mutex
@@ -66,20 +80,36 @@ type handheld struct {
 	frozenKeys    []int
 }
 
-// detectHandheld reconoce ROCKNIX por /etc/os-release y la familia ArkOS por
-// su pause.sh y su usuario ark.
+// detectHandheld reconoce ROCKNIX y EmuELEC por /etc/os-release y la familia
+// ArkOS por su pause.sh y su usuario ark.
 func detectHandheld(opts Options) *handheld {
 	osr, _ := os.ReadFile("/etc/os-release")
 	id := strings.ToLower(string(osr))
 	switch {
 	case strings.Contains(id, "rocknix"):
 		return &handheld{name: "rocknix", opts: opts}
+	case osReleaseID(id) == "emuelec":
+		// Si quedó de una vez anterior que terminó mal, la consola no
+		// suspendería nunca.
+		_ = os.Remove(eeNoSleep)
+		return &handheld{name: "emuelec", opts: opts}
 	case fileExists(arkPause) && (fileExists("/home/ark") || strings.Contains(id, "arkos")):
 		h := &handheld{name: "arkos", opts: opts}
 		h.unmountLeftovers()
 		return h
 	}
 	return nil
+}
+
+// osReleaseID es el ID= de un /etc/os-release (en minúsculas): EmuELEC trae
+// también los campos de CoreELEC y LibreELEC, así que se mira el ID.
+func osReleaseID(osr string) string {
+	for _, l := range strings.Split(osr, "\n") {
+		if v, ok := strings.CutPrefix(strings.TrimSpace(l), "id="); ok {
+			return strings.Trim(v, `"'`)
+		}
+	}
+	return ""
 }
 
 func fileExists(p string) bool {
@@ -113,8 +143,8 @@ func writeSys(path, value string) {
 	}
 }
 
-// SetAwake impide (o deja) la suspensión: el inhibidor de logind y, en
-// ArkOS, las copias de pause.sh y processcheck.sh.
+// SetAwake impide (o deja) la suspensión: el inhibidor de logind, en ArkOS
+// las copias de pause.sh y processcheck.sh, y en EmuELEC su sleep.conf.
 func (h *handheld) SetAwake(awake bool) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -126,7 +156,9 @@ func (h *handheld) SetAwake(awake bool) {
 		h.awake = true
 		// En ArkOS sin root, logind no lo da (y no hace falta: el botón lo
 		// lleva ogage, y la copia de pause.sh ya no suspende).
-		if h.name != "arkos" || os.Geteuid() == 0 {
+		if h.name == "emuelec" {
+			h.noSleepLocked(true)
+		} else if h.name != "arkos" || os.Geteuid() == 0 {
 			f, err := logindInhibit()
 			if err != nil {
 				log.Printf("logind inhibit: %v", err)
@@ -141,6 +173,9 @@ func (h *handheld) SetAwake(awake bool) {
 	}
 	if !awake && h.awake {
 		h.awake = false
+		if h.name == "emuelec" {
+			h.noSleepLocked(false)
+		}
 		if h.inhibit != nil {
 			h.inhibit.Close()
 			h.inhibit = nil
@@ -151,6 +186,25 @@ func (h *handheld) SetAwake(awake bool) {
 		h.mounted = nil
 		_ = os.Remove(arkMounts)
 	}
+}
+
+// noSleepLocked pone (o quita) el sleep.conf de EmuELEC que no deja
+// suspender.
+func (h *handheld) noSleepLocked(on bool) {
+	if !on {
+		if err := os.Remove(eeNoSleep); err != nil && !os.IsNotExist(err) {
+			log.Printf("emuelec sleep.conf: %v", err)
+		}
+		return
+	}
+	conf := "# audiofilus is open: it handles the power button (its app sleep).\n# Removed when it closes.\n[Sleep]\nAllowSuspend=no\n"
+	if err := os.MkdirAll(filepath.Dir(eeNoSleep), 0o755); err == nil {
+		err = os.WriteFile(eeNoSleep, []byte(conf), 0o644)
+		if err == nil {
+			return
+		}
+	}
+	log.Printf("emuelec sleep.conf: could not write %s", eeNoSleep)
 }
 
 // logindInhibit pide a logind que no suspenda (ni por el botón, la tapa o la
@@ -278,7 +332,8 @@ var amixerControls = []string{"Playback", "Master", "Headphone", "PCM"}
 
 var amixerPct = regexp.MustCompile(`\[(\d+)%\]`)
 
-// SystemVolume es el volumen del sistema: pactl en ROCKNIX, amixer en ArkOS.
+// SystemVolume es el volumen del sistema: pactl en ROCKNIX, amixer en ArkOS y
+// EmuELEC.
 func (h *handheld) SystemVolume() int {
 	if h.name == "rocknix" {
 		return pactlVolume()
@@ -297,7 +352,7 @@ func (h *handheld) SystemVolume() int {
 }
 
 // SetSystemVolume lo cambia: en ROCKNIX con su script "volume" (que lo
-// guarda) o pactl; en ArkOS con amixer.
+// guarda) o pactl; en ArkOS y EmuELEC con amixer.
 func (h *handheld) SetSystemVolume(v int) error {
 	if h.name == "rocknix" {
 		if fileExists("/usr/bin/volume") {
@@ -314,7 +369,7 @@ func (h *handheld) SetSystemVolume(v int) error {
 }
 
 // SetVolumeKeys no hace nada: los botones de volumen los llevan input_sense
-// (ROCKNIX) y ogage (ArkOS); el servicio lee el volumen cada pocos segundos.
+// (ROCKNIX), ogage (ArkOS) y oga_events.py (EmuELEC); el servicio lee el volumen cada pocos segundos.
 func (h *handheld) SetVolumeKeys(bool) {}
 
 // LidClosed: el sensor del AXP (hallkey) o el interruptor SW_LID por evdev.

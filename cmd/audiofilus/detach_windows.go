@@ -8,3 +8,7 @@ func detachAttr() *syscall.SysProcAttr {
 	const detachedProcess, newProcessGroup = 0x00000008, 0x00000200
 	return &syscall.SysProcAttr{CreationFlags: detachedProcess | newProcessGroup, HideWindow: true}
 }
+
+// closeInherited no hace nada en Windows: los handles no se heredan si no se
+// piden.
+func closeInherited() {}

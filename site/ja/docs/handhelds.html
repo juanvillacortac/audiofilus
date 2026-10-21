@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>携帯ゲーム機 · audiofilus ドキュメント</title>
-<meta name="description" content="Knulli、muOS、ROCKNIX、ArkOS、dArkOS で audiofilus が何を変えるか。">
+<meta name="description" content="Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で audiofilus が何を変えるか。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -75,7 +75,7 @@
   </aside>
   <article>
     <h1>携帯ゲーム機</h1>
-    <p class="lede">Knulli、muOS、ROCKNIX、ArkOS、dArkOS で audiofilus が何を変えるか。</p>
+    <p class="lede">Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で audiofilus が何を変えるか。</p>
 
 <p>audiofilus は起動時にシステムを検出し、ふた、電源ボタン、音量、バッテリーにそのシステム自身の仕組みを使います。Knulli を入れた Anbernic RG34XX-SP でテストしています。</p>
 
@@ -84,7 +84,8 @@
 <table>
 <tr><th>システム</th><th>フォルダー</th></tr>
 <tr><td>Knulli</td><td><code>/userdata/roms/ports/audiofilus</code></td></tr>
-<tr><td>ArkOS、dArkOS</td><td><code>/roms/ports/audiofilus</code>、ゲームが 2 枚目の SD カードにある場合は <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>ArkOS、dArkOS、EmuELEC</td><td><code>/roms/ports/audiofilus</code>、ゲームが 2 枚目の SD カードにある場合は <code>/roms2/ports/audiofilus</code></td></tr>
+<tr><td>EmuELEC</td><td><code>/storage/roms/ports/audiofilus</code></td></tr>
 <tr><td>muOS（アプリ）</td><td><code>MUOS/application</code> の下のアプリのフォルダー</td></tr>
 </table>
 
@@ -112,6 +113,13 @@
 <h2 id="arkos">ArkOS と dArkOS</h2>
 <ul>
 <li>バッテリー残量が常に 0 % と表示されるゲーム機（dArkOS の RG353V など）では、残量を充電量か電圧から推定するか、表示しません。</li>
+</ul>
+
+<h2 id="emuelec">EmuELEC</h2>
+<ul>
+<li>Odroid Go Advance／Super、GameForce Chi、Amlogic の TV ボックスで動作します。実機ではまだ試していません。</li>
+<li>携帯ゲーム機では、プレイヤーが開いているとき、電源ボタンはゲーム機をスリープさせずに audiofilus をスリープさせます。TV ボックスはスリープしません。</li>
+<li>先に EmuELEC のメニューから PortMaster をインストールしてください。手動でインストールする場合は、<code>Audiofilus.sh</code> を <code>/storage/roms/ports_scripts</code>（EmuELEC がポートを一覧表示する場所）に、<code>audiofilus</code> フォルダーを <code>/storage/roms/ports</code> に置きます。</li>
 </ul>
 
 <h2 id="power-use">バッテリーの消費</h2>
