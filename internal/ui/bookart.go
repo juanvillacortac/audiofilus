@@ -88,16 +88,11 @@ func drawCassette(dst *ebiten.Image, cx, cy, r int, angle, progress float64, th 
 }
 
 // drawBookArt pinta el icono del libro en el cuadro de la portada
-// (size×size), para los audiolibros sin portada: como la nota de las
-// canciones sin portada, pero grande (a escala entera) y del color del disco.
+// (size×size), para los audiolibros sin portada: igual que la nota de las
+// canciones sin portada (drawCover), en el centro y en el color tenue.
 func drawBookArt(dst *ebiten.Image, x, y, size int, th Theme) {
 	panel(dst, x, y, size, size, th.Bg2)
-	img := icon("book")
-	w := img.Bounds().Dx()
-	k := max(1, size*45/100/w)
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(float64(k), float64(k))
-	op.GeoM.Translate(float64(x+(size-w*k)/2), float64(y+(size-w*k)/2))
-	op.ColorScale.ScaleWithColor(th.Accent)
-	dst.DrawImage(img, op)
+	if size >= 20 {
+		drawIcon(dst, "book", x+size/2-4, y+size/2-4, th.Dim)
+	}
 }
