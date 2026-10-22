@@ -229,8 +229,9 @@ type App struct {
 	shotDay     int      // en las capturas, el día especial que se finge
 
 	theme    Theme
-	themeFor *Album   // el tema se tiñe con este álbum en cuanto se lea su portada
-	frames2  frameLog // los fotogramas lentos (framelog.go)
+	themeFor *Album    // el tema se tiñe con este álbum en cuanto se lea su portada
+	frames2  frameLog  // los fotogramas lentos (framelog.go)
+	books    bookState // los audiolibros (books.go)
 
 	t        float64 // segundos desde que arrancó, para las animaciones
 	now      time.Time
@@ -359,6 +360,7 @@ func (a *App) startScan() {
 
 // Close suelta el servicio: la música sigue sonando en segundo plano.
 func (a *App) Close() {
+	a.saveBooks()
 	if a.sleeping {
 		a.send("sleep", "off")
 	}
@@ -500,6 +502,7 @@ func (a *App) Update() error {
 	a.pollMeta() // lo que vuelve de las herramientas de las etiquetas (tagsui.go)
 	a.pollModules()
 	a.trackPodcast()
+	a.trackBooks() // los audiolibros: dónde iban, capítulos, velocidad (books.go)
 	a.updatePings()
 	a.watchProfile()
 	a.tweenPosition()
@@ -772,6 +775,10 @@ func (a *App) updateMain() {
 		a.jumpLetter(-1) // en la biblioteca, L y R saltan de letra en letra
 	case a.screen == LibraryScreen && in.Repeat(ActNext):
 		a.jumpLetter(1)
+	case a.screen == NowPlaying && a.isBook(a.playingSong.Path) && in.Pressed(ActPrev):
+		a.chapterStep(-1) // en un libro, L1/R1 cambian de capítulo (books.go)
+	case a.screen == NowPlaying && a.isBook(a.playingSong.Path) && in.Pressed(ActNext):
+		a.chapterStep(1)
 	case in.Pressed(ActPrev):
 		a.send("prev")
 	case in.Pressed(ActNext):
@@ -808,8 +815,14 @@ func (a *App) updateMain() {
 		}
 		// Izquierda/derecha: un toque cambia de canción y mantenerlo busca.
 		// Así se puede todo sin gatillos, que no todas las consolas tienen.
-		a.tapOrHold(&a.leftHold, in.duration(ActLeft), "prev", -10)
-		a.tapOrHold(&a.rightHold, in.duration(ActRight), "next", +10)
+		if a.spoken() {
+			// Un libro o un podcast: un toque salta 30 s (books.go).
+			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "-30", -10)
+			a.tapOrHold(&a.rightHold, in.duration(ActRight), "+30", +10)
+		} else {
+			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "prev", -10)
+			a.tapOrHold(&a.rightHold, in.duration(ActRight), "next", +10)
+		}
 	case LibraryScreen:
 		a.updateLibrary()
 	case Queue:
@@ -2575,7 +2588,14 @@ func (a *App) tapOrHold(h *holdState, d int, cmd string, seek float64) {
 		return
 	}
 	if h.frames > 0 && !h.sought {
-		a.send(cmd)
+		switch cmd {
+		case "-30":
+			a.seekBy(-bookSkip)
+		case "+30":
+			a.seekBy(bookSkip)
+		default:
+			a.send(cmd)
+		}
 	}
 	*h = holdState{}
 }

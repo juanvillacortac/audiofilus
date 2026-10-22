@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* audiolibros y archivos de módulos, a lo ancho: así ninguna queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Grafischer oder parametrischer Equalizer</h3>
-          <p>Zehn Bänder mit Presets für Rock, Metal, Gesang, Bass und mehr, oder ein parametrischer mit bis zu acht Bändern (Glocke, Shelves, Pass-Filter) und seiner Kurve auf dem Bildschirm. Flach kostet er nichts.</p>
+          <p>Zehn Bänder mit Presets für Rock, Metal, Gesang, Bass und mehr, oder ein parametrischer mit bis zu zehn Bändern (Glocke, Shelves, Pass-Filter) und seiner Kurve auf dem Bildschirm. Flach kostet er nichts.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ und Crossfeed</h3>
+          <p>Such dein Kopfhörermodell, und seine AutoEq-Korrektur landet im parametrischen Equalizer. Crossfeed macht hart gepanntes Stereo mit Kopfhörern angenehmer.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD und CUE-Sheets</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Schlaftimer</h3>
           <p>Stopp die Musik nach 15 bis 90 Minuten oder am Ende des Songs, auch bei geschlossenem Player.</p>
         </div>
+        <div class="point">
+          <h3>Wecker</h3>
+          <p>Wach mit einer Playlist oder einem Sender auf, die Lautstärke steigt langsam an, auch bei geschlossenem Player.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -566,6 +574,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Melde dich mit deinem Jellyfin-Benutzer an und durchstöbere die Musikbibliothek und Playlists wie deine eigenen Dateien.</p></div>
         <div class="source"><span class="tag">Live</span><h3>Internetradio</h3><p>Tausende Sender von radio-browser.info, nach Land oder Genre, mit dem aktuellen Songtitel aus dem Stream. Bring deine eigenen .m3u- oder .pls-Senderlisten mit oder füge einen Sender über seine Adresse hinzu. Auch HLS-Streams spielen.</p></div>
         <div class="source"><span class="tag">Folgen</span><h3>Podcasts</h3><p>Top-Sendungen für dein Land, Suche oder jeder beliebige RSS-Feed per Adresse. Folgen werden zum Offline-Hören heruntergeladen und merken sich, wo du aufgehört hast.</p></div>
+        <div class="source wide"><span class="tag">Für lange</span><h3>Hörbücher</h3><p><code>.m4b</code>-Dateien und Bücher in Ordnern: Es merkt sich in jedem, wo du warst, mit Kapiteln, 30-Sekunden-Sprüngen und Tempo ohne Änderung der Tonhöhe.</p></div>
         <div class="source"><span class="tag">Bring dein eigenes mit</span><h3>YouTube Music</h3><p>Kopier dein eigenes yt-dlp neben die App, und die Suche erscheint: hören, ohne herunterzuladen, oder Songs mit Cover und Tags in deiner Bibliothek speichern.</p></div>
         <div class="source wide"><span class="tag">Szene</span><h3>Modul-Archive</h3><p>The Mod Archive, Modland, VGMRips und AMP auf einem Bildschirm: stöbere im Beliebten, Neuen oder Zufälligen, such, hör rein, sichere in deiner Bibliothek oder öffne ein Modul im Tracker. Sie erscheinen auch in der Suche.</p></div>
       </div>

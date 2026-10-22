@@ -101,7 +101,7 @@
 <p>Moving a band yourself turns the preset into <strong>Custom</strong>. On touch screens, tap a column to set its height. With the equalizer on, ten bands cost about 5&nbsp;% of a handheld's CPU at its lowest clock; flat, they cost nothing.</p>
 
 <h2 id="parametric-eq">Parametric equalizer</h2>
-<p>Up to eight bands you shape yourself, with a curve drawn above them. Each band has a type, <strong>Peak</strong>, <strong>Low shelf</strong>, <strong>High shelf</strong>, <strong>Low pass</strong> or <strong>High pass</strong>, a frequency (20&nbsp;Hz to 20&nbsp;kHz), a gain (±15&nbsp;dB; pass filters don't use it) and a Q (0.3, wide, to 10, narrow). The first row is the <strong>Preamp</strong>, to make room for boosts.</p>
+<p>Up to ten bands you shape yourself, with a curve drawn above them. Each band has a type, <strong>Peak</strong>, <strong>Low shelf</strong>, <strong>High shelf</strong>, <strong>Low pass</strong> or <strong>High pass</strong>, a frequency (20&nbsp;Hz to 20&nbsp;kHz), a gain (±15&nbsp;dB; pass filters don't use it) and a Q (0.3, wide, to 10, narrow). The first row is the <strong>Preamp</strong>, to make room for boosts.</p>
 <table>
 <tr><th>Button</th><th>Does</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pick a row (the preamp or a band)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Close (changes apply as you make them)</td></tr>
 </table>
 <p>The limiter still guards against clipping. Switching back to the graphic one keeps your parametric bands for later.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>In the equalizer menu, <strong>AutoEQ</strong> → <strong>Search for your model</strong> looks up your headphones in <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, a free database of thousands of models (the index is downloaded once and kept for a week). Each result shows who measured it. The one you pick goes into the parametric equalizer, now with up to ten bands, which opens so you can see or tweak it. Offline, put <code>ParametricEQ.txt</code> files (from AutoEq or Equalizer APO) in an <code>eq</code> folder next to the app and pick them from the same menu.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Settings → <strong>Crossfeed</strong> sends a little of each channel to the other, filtered and slightly delayed, as when you listen to speakers. Records with instruments on one side only are easier on the ears with headphones. <strong>Light</strong>, <strong>Medium</strong> or <strong>Strong</strong>; off by default.</p>
 
 <h2 id="resampler">Resampling</h2>
 <p>Songs at a different rate from the output (44.1&nbsp;kHz files on 48&nbsp;kHz, for example) are converted as they play. <strong>Settings → Resampling</strong>:</p>

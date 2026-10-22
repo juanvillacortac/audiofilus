@@ -235,6 +235,9 @@ func (a *App) openNowMenu() {
 		m.items = append(m.items, a.markItems(a.playingSong)...)
 	}
 	m.items = append(m.items, a.castItems()...) // enviar a un aparato (castui.go)
+	if a.spoken() {
+		m.items = append(m.items, a.bookMenuItems()...) // capítulos, velocidad (books.go)
+	}
 	m.items = append(m.items, a.timerItem())
 	// El visualizador que se dejó puesto, de fondo (atenuado).
 	m.items = append(m.items, menuItem{label: T("vis_bg"), icon: visIcons[a.vis.kind],

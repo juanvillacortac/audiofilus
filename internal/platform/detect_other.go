@@ -2,6 +2,8 @@
 
 package platform
 
+import "time"
+
 // Fuera de Linux no hay Knulli, muOS, ROCKNIX ni ArkOS: siempre escritorio.
 
 func detectKnulli(Options) Platform   { return nil }
@@ -16,3 +18,6 @@ func ExternalDisplay() bool { return false }
 
 // WiredJack no se sabe fuera de Linux.
 func WiredJack() (plugged, known bool) { return false, false }
+
+// SetWakeAlarm no hace nada fuera de Linux.
+func SetWakeAlarm(time.Time) error { return nil }

@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Grafik ya da parametrik ekolayzer</h3>
-          <p>On bant ve rock, metal, vokal, bas ve daha fazlası için hazır ayarlar, ya da en fazla sekiz bantlı (tepe, raflar, geçiren filtreler) ve eğrisi ekranda olan parametrik bir ekolayzer. Düzken hiçbir şeye mal olmaz.</p>
+          <p>On bant ve rock, metal, vokal, bas ve daha fazlası için hazır ayarlar, ya da en fazla on bantlı (tepe, raflar, geçiren filtreler) ve eğrisi ekranda olan parametrik bir ekolayzer. Düzken hiçbir şeye mal olmaz.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ ve çapraz besleme</h3>
+          <p>Kulaklık modelini ara, AutoEq düzeltmesi parametrik ekolayzere gitsin. Çapraz besleme, çok açık stereo kayıtları kulaklıkta daha az yorucu yapar.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD ve CUE dosyaları</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Uyku zamanlayıcısı</h3>
           <p>Müziği 15 ile 90 dakika sonra ya da şarkının sonunda durdurun, çalar kapalıyken bile.</p>
         </div>
+        <div class="point">
+          <h3>Alarm</h3>
+          <p>Bir çalma listesi ya da istasyonla, sesi yavaş yavaş yükselerek uyan; oynatıcı kapalıyken bile.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -566,6 +574,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Sunucu</span><h3>Jellyfin</h3><p>Jellyfin kullanıcınızla giriş yapın ve müzik kütüphanesine ve çalma listelerine kendi dosyalarınız gibi göz atın.</p></div>
         <div class="source"><span class="tag">Canlı</span><h3>İnternet radyosu</h3><p>radio-browser.info'dan binlerce istasyon, ülkeye ya da türe göre; yayından gelen güncel şarkı adıyla. Kendi .m3u ya da .pls istasyon listelerinizi getirin veya bir istasyonu adresiyle ekleyin. HLS yayınları da çalar.</p></div>
         <div class="source"><span class="tag">Bölümler</span><h3>Podcast'ler</h3><p>Ülkenizin en popüler programları, arama ya da adresiyle herhangi bir RSS akışı. Bölümler çevrimdışı dinlemek için iner ve kaldığınız yeri hatırlar.</p></div>
+        <div class="source wide"><span class="tag">Uzun dinlemeler</span><h3>Sesli kitaplar</h3><p><code>.m4b</code> dosyaları ve klasördeki kitaplar: her birinde nerede kaldığını hatırlar; bölümler, 30 saniyelik atlamalar ve tonu değiştirmeyen hız.</p></div>
         <div class="source"><span class="tag">Kendininkini getir</span><h3>YouTube Music</h3><p>Kendi yt-dlp'nizi uygulamanın yanına kopyalayın, arama ortaya çıksın: indirmeden dinleyin ya da şarkıları kapak ve etiketleriyle kütüphanenize kaydedin.</p></div>
         <div class="source wide"><span class="tag">Sahne</span><h3>Modül arşivleri</h3><p>The Mod Archive, Modland, VGMRips ve AMP tek ekranda: popüler, yeni ya da rastgele olanlara göz atın, arayın, dinleyin, kütüphanenize kaydedin ya da bir modülü tracker'da açın. Aramada da çıkarlar.</p></div>
       </div>

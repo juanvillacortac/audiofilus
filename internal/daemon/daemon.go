@@ -78,6 +78,7 @@ type Daemon struct {
 	outputAt     time.Time  // cuándo se miró output por última vez
 	docked       bool       // hay una pantalla externa (se mira con output)
 	outputBusy   bool       // se está mirando la salida (refreshOutput)
+	alarm        Alarm      // la alarma (alarm.go)
 	dockedAt     time.Time  // cuándo se miró docked
 	quit         chan struct{}
 	quitOnce     sync.Once
@@ -247,6 +248,8 @@ func Run(paths config.Paths) error {
 	stopJack := make(chan struct{})
 	go d.watchJack(stopJack) // pausa al desenchufar los audífonos (jack.go)
 	defer close(stopJack)
+	d.loadAlarm()
+	go d.watchAlarm(stopJack) // la alarma (alarm.go)
 	stopListens := make(chan struct{})
 	go d.trackListens(store, stopListens)
 	defer close(stopListens)
@@ -680,7 +683,7 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		if err := d.setTimer(req.Args); err != nil {
 			return nil, err
 		}
-	case "replaygain", "preamp", "eq", "crossfade", "eqmode", "peq", "peqpreamp", "resampler":
+	case "replaygain", "preamp", "eq", "crossfade", "eqmode", "peq", "peqpreamp", "resampler", "crossfeed":
 		dsp, err := dspCommand(e.DSPConfig(), req.Cmd, req.Args)
 		if err != nil {
 			return nil, err
@@ -698,6 +701,19 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		e.SetRepeat(r)
 	case "dlna":
 		return d.dlnaCommand(req.Args) // dlna.go
+	case "alarm":
+		return d.alarmCommand(req.Args)
+	case "speed":
+		// La velocidad de reproducción (audiolibros y podcasts), sin tocar
+		// el tono; la pone la interfaz según lo que suena.
+		if len(req.Args) != 1 {
+			return nil, errors.New("usage: speed <0.5..3>")
+		}
+		v, err := strconv.ParseFloat(req.Args[0], 64)
+		if err != nil || v <= 0 {
+			return nil, errors.New("usage: speed <0.5..3>")
+		}
+		e.SetSpeed(v)
 	case "volume":
 		if len(req.Args) != 1 {
 			return nil, errors.New("usage: volume <0..2>")
@@ -838,6 +854,8 @@ type FullStatus struct {
 	Lid bool `json:"lid,omitempty"`
 	// Docked: hay una pantalla externa (HDMI): la tapa no apaga la pantalla.
 	Docked bool `json:"docked,omitempty"`
+	// Alarm es la alarma (alarm.go), con su próxima hora.
+	Alarm Alarm `json:"alarm"`
 	// Output es por dónde sale el sonido: speaker, wired, bluetooth o "" si
 	// no se sabe.
 	Output string `json:"output"`
@@ -859,6 +877,9 @@ func (d *Daemon) status() FullStatus {
 	}
 	d.mu.Unlock()
 	s.Lid = d.plat.LidClosed()
+	d.mu.Lock()
+	s.Alarm = d.alarm
+	d.mu.Unlock()
 	if !s.Sleep {
 		s.Output = d.audioOutput() // en sleep no se ve: no se gasta en pactl
 		d.mu.Lock()

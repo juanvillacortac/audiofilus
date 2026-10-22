@@ -365,6 +365,15 @@ var iconArt = map[string]string{
 .#####.
 ..###..
 ...#...`,
+	// speed es el de la velocidad de los audiolibros.
+	"speed": `
+.......
+..###..
+.#...#.
+#..#..#
+#...#.#
+#.....#
+.......`,
 	// palette es el de los colores de MilkDrop (del preset o del disco).
 	"palette": `
 .#####.

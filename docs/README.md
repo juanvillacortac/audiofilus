@@ -12,3 +12,12 @@
 | [milkdrop.md](milkdrop.md) | The MilkDrop visualizer: presets, what is supported, limits |
 | [linux-desktop.md](linux-desktop.md) | Linux desktop and Omarchy: launcher entry, icon, window class, media keys |
 | [portmaster.md](portmaster.md) | The PortMaster port: launcher, metadata, packaging |
+| [audio-quality.md](audio-quality.md) | Resampler, parametric EQ, AutoEQ, crossfeed, playback speed (WSOLA), DSD |
+| [tracker.md](tracker.md) | The LSDJ-style tracker: song, chains, phrases, instruments, MIDI, import and export |
+| [modules.md](modules.md) | The online module archives: The Mod Archive, Modland, VGMRips, AMP |
+| [metadata.md](metadata.md) | Tag tools, covers, MusicBrainz and ReplayGain computing |
+| [tagwrite.md](tagwrite.md) | Writing tags into files |
+| [smart-playlists.md](smart-playlists.md) | Smart playlists: rules, sorting, limits |
+| [cast.md](cast.md) | Sending music to Chromecast and DLNA renderers |
+| [dlna.md](dlna.md) | The DLNA/UPnP server and renderer |
+| [ios.md](ios.md) | The iPhone and iPad app |

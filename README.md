@@ -32,11 +32,16 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster 
 - Gapless playback, fade on pause, shuffle, repeat, "play next" and a queue that survives restarts.
 - Volume stays in sync with the system, including boost above 100%.
 - **Sleep timer:** stop the music after 15 to 90 minutes or at the end of the song, even with the player closed.
+- **Alarm:** wake up to whatever played last, a playlist or a favorite station, every day, on weekdays, on weekends or once, with the volume rising over a minute. The service plays it with the player closed, and on handhelds it sets the console clock (RTC) to wake it from sleep.
+- **Unplugging wired headphones pauses** the music, also in the background, so it doesn't suddenly come out of the speaker.
+- **Docked:** with an external display (HDMI) connected, closing the lid doesn't turn the screen off.
 
 ### Sound
 
 - **ReplayGain** per song, per album, or automatic (album in order, song on shuffle), with preamp and clipping protection; Opus R128 gains too.
-- **10-band equalizer** with presets (rock, metal, vocal, bass, loudness...) and a band editor, or a **parametric equalizer** with up to 8 bands (peak, shelves, low/high pass), preamp and its curve on screen.
+- **10-band equalizer** with presets (rock, metal, vocal, bass, loudness...) and a band editor, or a **parametric equalizer** with up to 10 bands (peak, shelves, low/high pass), preamp and its curve on screen.
+- **AutoEQ:** search for your headphone model in the [AutoEq](https://github.com/jaakkopasanen/AutoEq) database and its correction goes into the parametric equalizer; or load `ParametricEQ.txt` files (AutoEq or Equalizer APO) from an `eq` folder next to the app.
+- **Crossfeed** for headphones (light, medium or strong, like bs2b): a little of each channel goes to the other, filtered and delayed, so hard-panned records are easier on the ears.
 - **Compute ReplayGain** (EBU R128) for songs that don't have it, written into the files.
 - **Resampling**: a light linear one on handhelds (battery) and a high-quality sinc one on the desktop, or pick one.
 - **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
@@ -83,7 +88,8 @@ Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster 
 | **Subsonic / OpenSubsonic** (Navidrome and others) | Browse, stream, cache and download; edit their playlists |
 | **Jellyfin** | Same, with your Jellyfin user and its playlists |
 | **Internet radio** | Stations from radio-browser.info by country or genre, with the live song title (ICY); Icecast/Shoutcast and HLS streams |
-| **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume |
+| **Podcasts** | Top shows for your country, search, any RSS feed; downloads and resume; 30-second skips and speed without changing the pitch |
+| **Audiobooks** | `.m4b` files, files with the audiobook genre, or books in an `Audiobooks` folder (one file per chapter). It remembers where you were in each book even if music plays in between, shows chapters (`.m4b` and MP3), L1/R1 change chapter, ←/→ skip 30 seconds, and speed goes from 0.75× to 2× without changing the pitch |
 | **YouTube Music** | Search without signing in; listen without downloading, or save songs with cover and tags. Requires your own `yt-dlp` (see below) |
 | **Module archives** | The Mod Archive, Modland, VGMRips and AMP: browse what's popular, new or random, search (also from Search), listen, save to your library or open a MOD/XM in the tracker. No account needed |
 
@@ -149,6 +155,8 @@ More in [docs/milkdrop.md](docs/milkdrop.md).
 - The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.
 - Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
 - 13 languages: English, Spanish, Portuguese, French, Italian, German, Polish, Turkish (thanks to volkybaba), Russian, Indonesian, Japanese, Chinese and Korean. Japanese, Chinese and Korean text (song titles too) shows in a pixel font, Fusion Pixel. 12 h (AM/PM) or 24 h clock.
+- **Color:** each album's colors, or a fixed color to match your console's shell (red, orange, yellow, green, ice blue, blue, purple, pink, pearl pink, white, platinum, graphite or black).
+- With a station or a podcast playing, `B` on Now Playing goes back to Radio or Podcasts instead of the library.
 - On desktop: fullscreen with sharp pixels.
 
 <p align="center">
@@ -252,6 +260,7 @@ The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile and libxmp are l
 dist/audiofilus play ~/Music          # starts the service and plays
 dist/audiofilus status
 dist/audiofilus next | prev | toggle | seek +30 | shuffle on | repeat all
+dist/audiofilus speed 1.5 | crossfeed medium | alarm set '{"on":true,"hour":7,"min":30,"days":[1,2,3,4,5]}'
 dist/audiofilus quit
 ```
 

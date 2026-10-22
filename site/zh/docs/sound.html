@@ -114,7 +114,7 @@ body { line-break: strict; }
 <p>自己调整频段后，预设会变为 <strong>自定义</strong>。在触摸屏上，点按某一列即可设置其高度。开启均衡器时，十个频段在掌机最低频率下约占 5&nbsp;% 的 CPU；保持平直时完全不占用。</p>
 
 <h2 id="parametric-eq">参数均衡器</h2>
-<p>最多八个由你自己塑形的频段，上方会画出曲线。每个频段有类型（<strong>峰值</strong>、<strong>低架</strong>、<strong>高架</strong>、<strong>低通</strong>或<strong>高通</strong>）、频率（20&nbsp;Hz 到 20&nbsp;kHz）、增益（±15&nbsp;dB；通滤波器不用它）和 Q（0.3 宽，10 窄）。第一行是<strong>前级增益</strong>，为提升留出余量。</p>
+<p>最多十个由你自己塑形的频段，上方会画出曲线。每个频段有类型（<strong>峰值</strong>、<strong>低架</strong>、<strong>高架</strong>、<strong>低通</strong>或<strong>高通</strong>）、频率（20&nbsp;Hz 到 20&nbsp;kHz）、增益（±15&nbsp;dB；通滤波器不用它）和 Q（0.3 宽，10 窄）。第一行是<strong>前级增益</strong>，为提升留出余量。</p>
 <table>
 <tr><th>按键</th><th>作用</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>选择一行（前级增益或某个频段）</td></tr>
@@ -124,6 +124,12 @@ body { line-break: strict; }
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>关闭（改动即时生效）</td></tr>
 </table>
 <p>限幅器仍会防止削波。切回图形均衡器时，参数频段会保留下来以后再用。</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>在均衡器菜单中，<strong>AutoEQ</strong> → <strong>搜索型号</strong> 会在 <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>（收录数千款型号的免费数据库）中查找你的耳机（索引只下载一次，保留一周）。每个结果都会显示测量者。选中的配置会进入参数均衡器（现在最多十个频段），并打开以便查看或微调。离线时，把 <code>ParametricEQ.txt</code> 文件（来自 AutoEq 或 Equalizer APO）放进应用旁边的 <code>eq</code> 文件夹，在同一菜单中选择。</p>
+
+<h2 id="crossfeed">交叉馈送</h2>
+<p>设置 → <strong>交叉馈送</strong> 会把每个声道的一点声音经过滤波并稍加延迟后送到另一侧，就像听音箱时那样。乐器只在一侧的录音用耳机听也不那么累。可选<strong>轻</strong>、<strong>中</strong>或<strong>强</strong>；默认关闭。</p>
 
 <h2 id="resampler">重采样</h2>
 <p>采样率与输出不同的歌曲（例如在 48&nbsp;kHz 输出下播放 44.1&nbsp;kHz 的文件）会在播放时转换。<strong>设置 → 重采样</strong>：</p>

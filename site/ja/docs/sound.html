@@ -104,7 +104,7 @@
 <p>自分でバンドを動かすと、プリセットは<strong>カスタム</strong>になります。タッチスクリーンでは、列をタップするとその高さに設定されます。イコライザーがオンのとき、10 バンドの負荷は最低クロックの携帯ゲーム機で CPU の約 5&nbsp;% です。フラットなら負荷はありません。</p>
 
 <h2 id="parametric-eq">パラメトリックイコライザー</h2>
-<p>自分で形を決める最大 8 バンドで、上にカーブが描かれます。各バンドには種類（<strong>ピーク</strong>、<strong>ローシェルフ</strong>、<strong>ハイシェルフ</strong>、<strong>ローパス</strong>、<strong>ハイパス</strong>）、周波数（20&nbsp;Hz〜20&nbsp;kHz）、ゲイン（±15&nbsp;dB。パス系のフィルターでは使いません）、Q（0.3 で広く、10 で狭く）があります。最初の行は<strong>プリアンプ</strong>で、持ち上げる分の余裕を作ります。</p>
+<p>自分で形を決める最大 10 バンドで、上にカーブが描かれます。各バンドには種類（<strong>ピーク</strong>、<strong>ローシェルフ</strong>、<strong>ハイシェルフ</strong>、<strong>ローパス</strong>、<strong>ハイパス</strong>）、周波数（20&nbsp;Hz〜20&nbsp;kHz）、ゲイン（±15&nbsp;dB。パス系のフィルターでは使いません）、Q（0.3 で広く、10 で狭く）があります。最初の行は<strong>プリアンプ</strong>で、持ち上げる分の余裕を作ります。</p>
 <table>
 <tr><th>ボタン</th><th>動作</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>行を選ぶ（プリアンプまたはバンド）</td></tr>
@@ -114,6 +114,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>閉じる（変更はその場で反映されます）</td></tr>
 </table>
 <p>クリップ防止のリミッターはそのまま働きます。グラフィックに戻しても、パラメトリックのバンドはあとのために残ります。</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>イコライザーのメニューで <strong>AutoEQ</strong> → <strong>モデルを検索</strong>を選ぶと、何千ものモデルが載った無料のデータベース <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a> でヘッドホンを探します（インデックスは一度ダウンロードして 1 週間保持）。結果には測定者も表示されます。選んだものは最大 10 バンドになったパラメトリックイコライザーに入り、確認や微調整のために開きます。オフラインでは、<code>ParametricEQ.txt</code> ファイル（AutoEq または Equalizer APO のもの）をアプリの隣の <code>eq</code> フォルダーに置き、同じメニューから選べます。</p>
+
+<h2 id="crossfeed">クロスフィード</h2>
+<p>設定 → <strong>クロスフィード</strong>は、スピーカーで聴くときのように、各チャンネルの音を少しだけフィルターと遅延をかけて反対側に混ぜます。楽器が片側だけにある録音もヘッドホンで聴き疲れしにくくなります。<strong>弱</strong>、<strong>中</strong>、<strong>強</strong>から選べ、標準はオフです。</p>
 
 <h2 id="resampler">リサンプリング</h2>
 <p>出力と違うサンプルレートの曲（たとえば 48&nbsp;kHz 出力での 44.1&nbsp;kHz のファイル）は、再生しながら変換されます。<strong>設定 → リサンプリング</strong>：</p>

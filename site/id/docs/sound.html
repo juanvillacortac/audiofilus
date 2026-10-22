@@ -101,7 +101,7 @@
 <p>Menggeser band sendiri mengubah preset menjadi <strong>Kustom</strong>. Di layar sentuh, ketuk sebuah kolom untuk mengatur tingginya. Dengan ekualiser aktif, sepuluh band memakai sekitar 5&nbsp;% CPU handheld di kecepatan terendahnya; saat datar, tidak memakai apa-apa.</p>
 
 <h2 id="parametric-eq">Ekualiser parametrik</h2>
-<p>Hingga delapan band yang kamu bentuk sendiri, dengan kurva yang digambar di atasnya. Setiap band punya tipe, <strong>Puncak</strong>, <strong>Rak rendah</strong>, <strong>Rak tinggi</strong>, <strong>Low pass</strong>, atau <strong>High pass</strong>, frekuensi (20&nbsp;Hz sampai 20&nbsp;kHz), penguatan (±15&nbsp;dB; filter pass tidak memakainya), dan Q (0,3, lebar, sampai 10, sempit). Baris pertama adalah <strong>Preamp</strong>, untuk memberi ruang bagi penguatan.</p>
+<p>Hingga sepuluh band yang kamu bentuk sendiri, dengan kurva yang digambar di atasnya. Setiap band punya tipe, <strong>Puncak</strong>, <strong>Rak rendah</strong>, <strong>Rak tinggi</strong>, <strong>Low pass</strong>, atau <strong>High pass</strong>, frekuensi (20&nbsp;Hz sampai 20&nbsp;kHz), penguatan (±15&nbsp;dB; filter pass tidak memakainya), dan Q (0,3, lebar, sampai 10, sempit). Baris pertama adalah <strong>Preamp</strong>, untuk memberi ruang bagi penguatan.</p>
 <table>
 <tr><th>Tombol</th><th>Fungsi</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pilih baris (preamp atau band)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Tutup (perubahan langsung berlaku)</td></tr>
 </table>
 <p>Limiter tetap menjaga dari clipping. Kembali ke yang grafis menyimpan band parametrikmu untuk nanti.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>Di menu ekualiser, <strong>AutoEQ</strong> → <strong>Cari modelnya</strong> mencari headphone-mu di <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, basis data bebas berisi ribuan model (indeks diunduh sekali dan disimpan seminggu). Setiap hasil menunjukkan siapa yang mengukurnya. Yang kamu pilih masuk ke ekualiser parametrik, kini hingga sepuluh band, yang terbuka agar bisa dilihat atau diubah. Tanpa internet, taruh file <code>ParametricEQ.txt</code> (dari AutoEq atau Equalizer APO) di folder <code>eq</code> di samping aplikasi dan pilih dari menu yang sama.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Pengaturan → <strong>Crossfeed</strong> mengirim sedikit tiap kanal ke kanal lainnya, difilter dan sedikit tertunda, seperti saat mendengar speaker. Rekaman dengan instrumen hanya di satu sisi jadi tidak terlalu melelahkan di headphone. <strong>Ringan</strong>, <strong>Sedang</strong> atau <strong>Kuat</strong>; mati secara bawaan.</p>
 
 <h2 id="resampler">Resampling</h2>
 <p>Lagu dengan laju yang berbeda dari keluaran (misalnya berkas 44,1&nbsp;kHz di 48&nbsp;kHz) diubah saat diputar. <strong>Pengaturan → Resampling</strong>:</p>

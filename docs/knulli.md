@@ -19,6 +19,12 @@ Notes:
 - Mounts are recorded in `/tmp/audiofilus-mounts`. If the service dies without cleaning up, the next start undoes them (`unmountRecorded`). Since `/tmp` is tmpfs, a reboot also cleans everything.
 - With the music paused and the lid **already closed**, the console doesn't suspend: Knulli only acts when the lid *is closed*.
 
+## Alarm, headphones and external display
+
+- **Alarm** (`daemon/alarm.go`): when an alarm is set, the service writes its time (30 s early) to `/sys/class/rtc/rtc0/wakealarm` (first `0`, then the Unix time) so the RTC wakes a suspended console; it is cleared when the alarm is turned off. It checks the wall clock every 15 s (Go timers don't count while suspended) and doesn't ring if the console woke more than 10 minutes late. While it plays, the usual `audiofilus.pause` keeps `idlewatcher` from suspending.
+- **Unplugging headphones** (`daemon/jack.go`): while playing, once a second the service reads the H700 jack pin in `/sys/kernel/debug/gpio` and pauses when it goes low.
+- **External display:** every 10 s, with the interface open, the service looks for a connected HDMI output (`extcon`, the Android `switch/hdmi` and DRM `status`); with one, closing the lid doesn't put the app to sleep. The audio output check no longer runs `pactl list sinks` on the H700 (with HDMI it froze the picture for most of a second): the jack comes from the pin and Bluetooth from `pactl info`'s default sink.
+
 ## The app's sleep
 
 `audiofilus sleep on` (the interface will request it):

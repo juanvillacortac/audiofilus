@@ -38,6 +38,9 @@ Almost every command responds with the full state (`daemon.FullStatus`):
 | `next` · `prev` | — | `prev` restarts the song if it has played for more than 3 s, like Songo |
 | `jump` | `n` | Plays position `n` of the queue |
 | `seek` | `s` · `+s` · `-s` | Jumps to `s` seconds or moves `±s` |
+| `speed` | `0.5…3` | Playback speed without changing the pitch (WSOLA); not saved, the interface sends it per track (audiobooks and podcasts) |
+| `crossfeed` | `off`·`light`·`medium`·`strong` | Crossfeed for headphones (saved in `dsp`) |
+| `alarm` | `[set <json>` · `off` · `test]` | With no arguments returns the alarm; `set` replaces it (`{"on":true,"hour":7,"min":30,"days":[1,2,3,4,5],"once":false,"source":"","fade":60}`; days 0 = Sunday, empty = every day; source empty = the last queue, or a playlist, folder, file or `radio://` station), `off` turns it off, `test` rings it now. The status carries it as `alarm`, with `next` |
 | `shuffle` | `[on\|off\|toggle]` | With no argument, toggles |
 | `repeat` | `off\|all\|one` | |
 | `volume` | `0..2` | The audiofilus volume (1 is the original); the UI uses `volstep` |

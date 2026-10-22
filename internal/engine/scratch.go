@@ -56,6 +56,9 @@ func (e *Engine) histWrite(buf []float32) {
 // histReset olvida la historia (un salto o un cambio de canción a mano: lo
 // de antes ya no es lo que suena) y corta el scratch.
 func (e *Engine) histReset() {
+	if e.st != nil {
+		e.st = newStretcher(e.speed) // un salto: lo que esperaba ya no vale
+	}
 	e.histFrom = e.histN
 	e.scr = nil
 }

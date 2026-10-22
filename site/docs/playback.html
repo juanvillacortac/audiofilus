@@ -85,8 +85,22 @@
 </ul>
 <p>The More menu has the album and artist, <a href="lyrics.html">Lyrics</a>, Like, Rating, Sleep timer, Add to a playlist, Save queue as playlist, Queue, Shuffle, Repeat (Off, All, One), Turn the screen off, Go to background and Quit.</p>
 
+<p>With a station or a podcast playing, <kbd>B</kbd> goes back to <a href="radio-podcasts.html">Radio or Podcasts</a> instead of the library.</p>
+
 <h3 id="visualizer-background">Visualizer background</h3>
 <p>More → <strong>Visualizer background</strong> puts the visualizer you last chose on the <a href="visualizers-games.html#visualizers">Visualizer</a> screen behind Now Playing. It is dimmed and mixed under the theme background, so its pulses still show, and the cover, text and controls stay on top. It always uses the album's colors (MilkDrop too) and hides while lyrics are open. It is off by default because it uses more battery; its value shows which visualizer it uses.</p>
+
+<h2 id="audiobooks">Audiobooks</h2>
+<p>A book is a <code>.m4b</code> file, anything whose genre is audiobook, or anything inside a folder named <em>Audiobooks</em> (also <em>Audiolibros</em>, <em>Hörbücher</em> and the like in other languages). A book split across several files is its folder, and each file is a chapter.</p>
+<ul>
+<li>It remembers where you were in each book (the file and the second), even if music plays in between. Play the book from the start and it picks up where you left off; pick a chapter yourself and it starts there. More → <strong>From the beginning</strong> starts over.</li>
+<li>Chapters inside <code>.m4b</code> and MP3 files show under the title (<em>Chapter 3/12 · Title</em>); More → <strong>Chapters</strong> lists them. Long times show as hours, like 1:02:05.</li>
+<li><kbd>L1</kbd>/<kbd>R1</kbd> change chapter (or file), and a tap on <kbd>←</kbd>/<kbd>→</kbd> skips 30 seconds back or forward; holding them still seeks.</li>
+<li>More → <strong>Speed</strong>: 0.75× to 2× without changing the pitch. It applies to audiobooks and podcasts; music always plays at normal speed.</li>
+</ul>
+
+<h2 id="alarm">Alarm</h2>
+<p>Settings → <strong>Alarm</strong>: the <strong>Time</strong>, the <strong>Days</strong> (<strong>Every day</strong>, <strong>Weekdays</strong>, <strong>Weekends</strong> or <strong>Once</strong>) and <strong>What plays</strong> (<strong>Whatever played last</strong>, a playlist or a favorite station). The volume rises over a minute. The service plays it, so it works with the player closed, and on handhelds it sets the console clock to wake it from sleep (not if it is turned off). If the console wakes more than 10 minutes late, it doesn't ring. <strong>Try it now</strong> tests it.</p>
 
 <h2 id="queue">The queue</h2>
 <p>The <strong>Queue</strong> screen shows what plays next. <strong>Play next</strong> puts a song right after the current one; <strong>Add to queue</strong> puts it at the end. Playback is gapless, pausing fades out, and the queue and position survive restarts.</p>
@@ -126,8 +140,12 @@
 <p>A single tap does nothing, so pocket presses don't count. On devices with a vibration motor, each gesture gives a short buzz. On an RG34XX-SP sleep draws about 260&nbsp;mA: around 11 to 12 hours of music.</p>
 <p>On desktops, sleep and its settings don't apply and are hidden.</p>
 
+<p>With an external display connected (HDMI), closing the lid doesn't turn the screen off, so you can play with a controller and the lid shut.</p>
+
 <h2 id="headphones">Headphone buttons</h2>
 <p>Bluetooth and wired headphone buttons control the music with the player open or closed. A single-button headset follows the usual convention: one press pauses, two skip to the next song, three go back.</p>
+
+<p>Unplugging wired headphones pauses the music, also with the player closed, so it doesn't suddenly play through the speaker.</p>
 
 <h2 id="open-with">Opening files from your file manager</h2>
 <p>Files and folders you open with audiofilus play as a <strong>temporary queue</strong>: folders are expanded with everything inside, and nothing is saved as a playlist (use <strong>Save queue as playlist</strong> to keep it). If the player is already open, it just switches to the new queue.</p>

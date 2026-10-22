@@ -101,7 +101,7 @@
 <p>Mexer numa banda você mesmo transforma o preset em <strong>Manual</strong>. Em telas de toque, toque numa coluna para definir a altura. Com o equalizador ligado, dez bandas custam cerca de 5&nbsp;% da CPU de um portátil no clock mais baixo; no plano, não custam nada.</p>
 
 <h2 id="parametric-eq">Equalizador paramétrico</h2>
-<p>Até oito bandas que você mesmo molda, com a curva desenhada acima. Cada banda tem um tipo, <strong>Pico</strong>, <strong>Shelf grave</strong>, <strong>Shelf agudo</strong>, <strong>Passa-baixa</strong> ou <strong>Passa-alta</strong>, uma frequência (20&nbsp;Hz a 20&nbsp;kHz), um ganho (±15&nbsp;dB; os filtros passa não usam) e um Q (0,3, largo, a 10, estreito). A primeira linha é o <strong>Pré-amp</strong>, para dar espaço aos reforços.</p>
+<p>Até dez bandas que você mesmo molda, com a curva desenhada acima. Cada banda tem um tipo, <strong>Pico</strong>, <strong>Shelf grave</strong>, <strong>Shelf agudo</strong>, <strong>Passa-baixa</strong> ou <strong>Passa-alta</strong>, uma frequência (20&nbsp;Hz a 20&nbsp;kHz), um ganho (±15&nbsp;dB; os filtros passa não usam) e um Q (0,3, largo, a 10, estreito). A primeira linha é o <strong>Pré-amp</strong>, para dar espaço aos reforços.</p>
 <table>
 <tr><th>Botão</th><th>Faz</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Escolher uma linha (o pré-amp ou uma banda)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Fechar (as mudanças valem na hora)</td></tr>
 </table>
 <p>O limitador continua evitando distorção. Voltar ao gráfico guarda suas bandas paramétricas para depois.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>No menu do equalizador, <strong>AutoEQ</strong> → <strong>Procurar o modelo</strong> busca seus fones no <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, um banco de dados livre com milhares de modelos (o índice é baixado uma vez e guardado por uma semana). Cada resultado mostra quem mediu. O escolhido vai para o equalizador paramétrico, agora com até dez bandas, que abre para você ver ou ajustar. Sem conexão, coloque arquivos <code>ParametricEQ.txt</code> (do AutoEq ou do Equalizer APO) numa pasta <code>eq</code> ao lado do app e escolha no mesmo menu.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Ajustes → <strong>Crossfeed</strong> manda um pouco de cada canal para o outro, filtrado e um pouco atrasado, como quando se ouve caixas de som. Discos com instrumentos só de um lado cansam menos com fones. <strong>Leve</strong>, <strong>Médio</strong> ou <strong>Forte</strong>; vem desligado.</p>
 
 <h2 id="resampler">Reamostragem</h2>
 <p>Músicas numa taxa diferente da saída (arquivos de 44,1&nbsp;kHz numa saída de 48&nbsp;kHz, por exemplo) são convertidas enquanto tocam. <strong>Ajustes → Reamostragem</strong>:</p>

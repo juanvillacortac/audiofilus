@@ -51,6 +51,8 @@ type Status struct {
 	// "quality"; vacío si no hace falta, porque ya está a la frecuencia de
 	// salida). Con DSP.Resampler "auto", así se sabe cuál tocó.
 	Resampler string `json:"resampler,omitempty"`
+	// Speed es la velocidad de reproducción (1: normal; ver SetSpeed).
+	Speed float64 `json:"speed,omitempty"`
 }
 
 // Engine es seguro para uso concurrente. El hilo de audio de oto llama a Read;
@@ -102,6 +104,11 @@ type Engine struct {
 	histN    int64
 	histFrom int64
 	scr      *scratch
+	// speed es la velocidad de reproducción (1: normal) y st, el que la
+	// cambia sin tocar el tono (stretch.go), o nil a velocidad normal.
+	speed float64
+	st    *stretcher
+	xfeed crossfeed // para audífonos (crossfeed.go)
 
 	// OpenRemote abre una pista remota ("subsonic://...", "radio://..."):
 	// ready si ya puede sonar; si no, empieza a prepararla (bajarla,
@@ -247,7 +254,13 @@ func (e *Engine) Read(p []byte) (int, error) {
 			e.maybeCrossfadeLocked()
 			end = min(end, n+xfChunk*2)
 		}
-		got, err := e.rs.Read(buf[n:end])
+		var got int
+		var err error
+		if e.st != nil {
+			got, err = e.st.Read(buf[n:end], e.rs.Read)
+		} else {
+			got, err = e.rs.Read(buf[n:end])
+		}
 		gainBuf(buf[n:n+got], e.gain)
 		e.mixTailLocked(buf[n : n+got])
 		n += got
@@ -259,6 +272,9 @@ func (e *Engine) Read(p []byte) (int, error) {
 			log.Printf("decode error in %s: %v", e.track.Path, err)
 		}
 		// Terminó la canción: se pasa a la siguiente sin silencio entre medias.
+		if e.st != nil {
+			e.st = newStretcher(e.speed) // la entrada nueva empieza de cero
+		}
 		if !e.advanceLocked(true) {
 			e.ended = true
 			e.setPlayingLocked(false)
@@ -266,6 +282,7 @@ func (e *Engine) Read(p []byte) (int, error) {
 		}
 	}
 	e.eq.process(buf[:n])
+	e.xfeed.process(buf[:n])
 	e.limit.process(buf[:n], e.boost, len(e.eq.bands) > 0 || e.gain > 1)
 	e.meter.add(buf[:n], time.Now().Add(e.meter.latency), e.rate)
 	for i := 0; i < n; i++ {
@@ -701,6 +718,37 @@ func (e *Engine) SetVolume(v float64) {
 	}
 }
 
+// SetSpeed cambia la velocidad de reproducción (de 0,5 a 3; 1 es normal) sin
+// cambiar el tono: para audiolibros y podcasts. Vacía el búfer para que se
+// oiga enseguida.
+func (e *Engine) SetSpeed(v float64) {
+	v = math.Max(0.5, math.Min(3, v))
+	if math.Abs(v-1) < 0.01 {
+		v = 1
+	}
+	e.mu.Lock()
+	same := e.speedLocked() == v
+	e.mu.Unlock()
+	if same {
+		return
+	}
+	e.apply(func() {
+		e.speed = v
+		e.st = nil
+		if v != 1 {
+			e.st = newStretcher(v)
+		}
+	})
+}
+
+// speedLocked es la velocidad (1 si no se puso).
+func (e *Engine) speedLocked() float64 {
+	if e.speed == 0 {
+		return 1
+	}
+	return e.speed
+}
+
 // SetDSP cambia la configuración del sonido (se oye tras el búfer).
 func (e *Engine) SetDSP(d DSP) {
 	d = d.Normalize()
@@ -708,6 +756,9 @@ func (e *Engine) SetDSP(d DSP) {
 	defer e.mu.Unlock()
 	e.dsp = d
 	e.eq.setDSP(d, e.rate)
+	if d.Crossfeed != e.xfeed.level || e.xfeed.rateAt != e.rate {
+		e.xfeed.set(d.Crossfeed, e.rate)
+	}
 	e.gain = replayGain(d, e.gainTags, e.gainOK, e.q.Shuffled())
 	if d.Crossfade == 0 {
 		e.stopCrossfadeLocked()
@@ -808,7 +859,14 @@ func (e *Engine) Status() Status {
 		if e.rs != nil {
 			pending = e.rs.Pending()
 		}
+		if e.st != nil {
+			// Lo que espera en el cambio de velocidad (a la frecuencia de
+			// salida), y lo que hay en el búfer, que es más (o menos) canción.
+			pending += e.st.Pending() * rate / float64(e.rate)
+			buffered *= e.speed
+		}
 		s.Position = math.Max((float64(e.src.Position())-pending)/rate-buffered, 0)
+		s.Speed = e.speedLocked()
 		if l := e.src.Length(); l > 0 {
 			s.Duration = float64(l) / rate
 		}

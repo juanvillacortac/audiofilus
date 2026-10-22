@@ -41,8 +41,8 @@ If SDL is missing or doesn't recognize the controller, the standard Linux codes 
 
 ```
 file ────► decode.Source ─► resample.Reader ─► Engine.Read ─────────────────────────► oto.Player ─► PulseAudio/PipeWire
-           (stereo float32,   (to 48 kHz,         ReplayGain → crossfade mix → EQ →
-            its own rate)      linear)            limiter → float32 → bytes; advances the queue)
+           (stereo float32,   (to 48 kHz,         [speed: WSOLA] → ReplayGain → crossfade mix →
+            its own rate)      linear)            EQ → crossfeed → limiter → bytes; advances the queue)
 ```
 
 - **`decode`** picks the decoder from the first bytes of the file (not from the extension) and always outputs interleaved stereo float32 at the file's sample rate. Mono is duplicated; more than two channels are reduced to the two front ones.
@@ -51,6 +51,7 @@ file ────► decode.Source ─► resample.Reader ─► Engine.Read ─
 - **Sound processing** (`engine/dsp.go`, `engine/crossfade.go`), configured with `engine.DSP` (commands `replaygain`, `preamp`, `eq`, `crossfade`; saved in `data/state.json`):
   - **ReplayGain:** the gain is read from the file's tags when it opens (`library.ReadGain`: Vorbis/FLAC `REPLAYGAIN_*`, ID3 `TXXX`, MP4 `----`, Opus `R128_*` + 5 dB) and applied to each chunk as it is read, so a gapless change of song changes the gain on the exact sample. Modes: track, album, auto (album in order, track on shuffle) or off; a preamp; never above what the peak allows. Remote songs (Subsonic transcodes) and radio get none.
   - **Crossfade:** when the song has that many seconds left, the queue advances (the next song is announced as usual) and the old source keeps playing underneath as `tail`, fading with equal-power sine/cosine curves until it ends. Not between consecutive songs of the same album in order, nor with repeat-one, the sleep timer's "end of song", remote songs, very short songs (under three fades) or sources without a length. Reading is done in 1024-frame chunks while it is on, to start on time. A manual change of song or a seek cuts it.
+  - **Speed and crossfeed:** for audiobooks and podcasts the UI can set a speed (`speed`), done with WSOLA without changing the pitch (`engine/stretch.go`); crossfeed for headphones (`crossfeed`, `engine/crossfeed.go`). See [audio-quality.md](audio-quality.md).
   - **Equalizer:** ten peaking biquads (31 Hz to 16 kHz, one octave wide, RBJ cookbook), only the bands that are not at 0, with 80 % of the biggest boost taken off first; the limiter then catches what still goes over (it runs whenever the EQ or a positive gain is on, not only with boost). Ten bands cost about 5 % of one core at 480 MHz on the RG34XX-SP.
 - **Output rate:** `sample_rate` in `audiofilus.json` (44.1, 48, 96 or 192 kHz, from Settings). oto opens one context per process, so changing it restarts the service (`restart`: `Run` returns `ErrRestart` without telling the interface to close, the binary re-executes itself with `syscall.Exec`, and if it was playing it carries on, `State.Resume`). With the file at that rate and nothing applied (volume at 100 %, no ReplayGain or EQ), samples go out untouched; PipeWire or PulseAudio may still resample to their own rate, so this is not a bit-perfect path.
 - **`oto`** talks to PulseAudio over its protocol, in pure Go. On Knulli everything runs as root without `XDG_RUNTIME_DIR`; `usePulseSocket` points `PULSE_SERVER` to `/var/run/pulse/native`, because otherwise `oto` would fall back to ALSA and clash with PipeWire.
@@ -74,6 +75,8 @@ Next to the binary:
 | `data/history.jsonl` | Every listen, one JSON line each (`internal/history`): written by the service, read by the interface |
 | `data/favorites.json` | Liked songs and ratings, with their title, artist and album (written by the interface) |
 | `data/scrobbles.json` | Listens waiting to reach Last.fm or ListenBrainz (no connection) |
+| `data/books.json` | Where each audiobook was left: the file and the second (written by the interface, `ui/books.go`) |
+| `data/alarm.json` | The alarm: on, time, days, what plays (written by the service, `daemon/alarm.go`) |
 
 On startup, the service restores the queue and position from last time, paused.
 

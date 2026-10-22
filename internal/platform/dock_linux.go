@@ -3,7 +3,9 @@ package platform
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Las pantallas externas (HDMI, DisplayPort) y los audífonos de cable, leídos
@@ -65,4 +67,21 @@ func WiredJack() (plugged, known bool) {
 		}
 	}
 	return false, false
+}
+
+// SetWakeAlarm programa el reloj de la consola (RTC) para que la despierte
+// de la suspensión a la hora t (cero: lo quita). Pide root: directo si ya
+// lo es, si no con sudo (ArkOS).
+func SetWakeAlarm(t time.Time) error {
+	const f = "/sys/class/rtc/rtc0/wakealarm"
+	if _, err := os.Stat(f); err != nil {
+		return nil // sin reloj que despierte: nada que hacer
+	}
+	// Primero se borra (si hay una puesta, no deja poner otra).
+	writeSys(f, "0")
+	if t.IsZero() {
+		return nil
+	}
+	writeSys(f, strconv.FormatInt(t.Unix(), 10))
+	return nil
 }

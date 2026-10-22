@@ -101,7 +101,7 @@
 <p>Bir bandı kendiniz oynatmak hazır ayarı <strong>Özel</strong>'e çevirir. Dokunmatik ekranlarda yüksekliğini ayarlamak için bir sütuna dokunun. Ekolayzer açıkken on bant, bir el konsolunun en düşük hızında işlemcisinin yaklaşık %5'ini harcar; düzken hiçbir şey harcamaz.</p>
 
 <h2 id="parametric-eq">Parametrik ekolayzer</h2>
-<p>Kendin şekillendirdiğin en fazla sekiz bant, üstlerinde çizilen eğriyle. Her bandın bir türü, <strong>Tepe</strong>, <strong>Alçak raf</strong>, <strong>Yüksek raf</strong>, <strong>Alçak geçiren</strong> ya da <strong>Yüksek geçiren</strong>, bir frekansı (20&nbsp;Hz – 20&nbsp;kHz), bir kazancı (±15&nbsp;dB; geçiren filtreler kullanmaz) ve bir Q'su (0,3 geniş, 10 dar) vardır. İlk satır, yükseltmelere yer açmak için <strong>Ön kazanç</strong>'tır.</p>
+<p>Kendin şekillendirdiğin en fazla on bant, üstlerinde çizilen eğriyle. Her bandın bir türü, <strong>Tepe</strong>, <strong>Alçak raf</strong>, <strong>Yüksek raf</strong>, <strong>Alçak geçiren</strong> ya da <strong>Yüksek geçiren</strong>, bir frekansı (20&nbsp;Hz – 20&nbsp;kHz), bir kazancı (±15&nbsp;dB; geçiren filtreler kullanmaz) ve bir Q'su (0,3 geniş, 10 dar) vardır. İlk satır, yükseltmelere yer açmak için <strong>Ön kazanç</strong>'tır.</p>
 <table>
 <tr><th>Tuş</th><th>Ne yapar</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Bir satır seç (ön kazanç ya da bir bant)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Kapat (değişiklikler hemen uygulanır)</td></tr>
 </table>
 <p>Sınırlayıcı kırpılmaya karşı korumaya devam eder. Grafiğe geri dönmek parametrik bantlarını sonraya saklar.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>Ekolayzer menüsünde <strong>AutoEQ</strong> → <strong>Modelini ara</strong>, kulaklığını binlerce modelin bulunduğu özgür bir veritabanı olan <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a> içinde arar (dizin bir kez indirilir ve bir hafta saklanır). Her sonuç onu kimin ölçtüğünü gösterir. Seçtiğin, artık on banda kadar çıkan parametrik ekolayzere gider ve görmen ya da ayarlaman için açılır. Bağlantı yokken <code>ParametricEQ.txt</code> dosyalarını (AutoEq ya da Equalizer APO'dan) uygulamanın yanındaki <code>eq</code> klasörüne koy ve aynı menüden seç.</p>
+
+<h2 id="crossfeed">Çapraz besleme</h2>
+<p>Ayarlar → <strong>Çapraz besleme</strong>, her kanaldan diğerine biraz ses gönderir; hoparlörle dinlerken olduğu gibi süzülmüş ve hafif gecikmeli. Enstrümanları tek tarafta olan kayıtlar kulaklıkta daha az yorar. <strong>Hafif</strong>, <strong>Orta</strong> ya da <strong>Güçlü</strong>; varsayılan olarak kapalı.</p>
 
 <h2 id="resampler">Yeniden örnekleme</h2>
 <p>Çıkıştan farklı frekanstaki şarkılar (örneğin 48&nbsp;kHz'de 44,1&nbsp;kHz dosyalar) çalarken dönüştürülür. <strong>Ayarlar → Yeniden örnekleme</strong>:</p>

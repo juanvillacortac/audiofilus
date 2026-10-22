@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -513,7 +513,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>グラフィックとパラメトリックのイコライザー</h3>
-          <p>ロック、メタル、ボーカル、低音などのプリセットがある 10 バンドか、最大 8 バンド（ピーク、シェルフ、パスフィルター）のパラメトリックで、カーブも画面に表示されます。フラットなら負荷はゼロです。</p>
+          <p>ロック、メタル、ボーカル、低音などのプリセットがある 10 バンドか、最大 10 バンド（ピーク、シェルフ、パスフィルター）のパラメトリックで、カーブも画面に表示されます。フラットなら負荷はゼロです。</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ とクロスフィード</h3>
+          <p>ヘッドホンのモデルを検索すると、AutoEq の補正がパラメトリックイコライザーに入ります。クロスフィードで、左右に大きく振った音もヘッドホンで聴き疲れしにくくなります。</p>
         </div>
         <div class="point">
           <h3>クロスフェード、DSD、CUE シート</h3>
@@ -553,6 +557,10 @@ footer img { height: 56px; width: auto; }
           <h3>スリープタイマー</h3>
           <p>15〜90 分後、または曲の終わりで音楽を止めます。プレイヤーを閉じていても動作します。</p>
         </div>
+        <div class="point">
+          <h3>アラーム</h3>
+          <p>プレイリストやラジオ局で、音量が少しずつ上がりながら起こしてくれます。プレーヤーを閉じていても大丈夫。</p>
+        </div>
       </div>
     </div>
   </section>
@@ -570,6 +578,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">サーバー</span><h3>Jellyfin</h3><p>Jellyfin のユーザーでサインインし、その音楽ライブラリとプレイリストを自分のファイルのように閲覧できます。</p></div>
         <div class="source"><span class="tag">ライブ</span><h3>インターネットラジオ</h3><p>radio-browser.info の何千もの局を、国やジャンルから。ストリームから今流れている曲名も表示します。自分の .m3u や .pls の局リストを持ち込んだり、アドレスで局を追加したりできます。HLS 配信の局も再生できます。</p></div>
         <div class="source"><span class="tag">エピソード</span><h3>ポッドキャスト</h3><p>あなたの国の人気番組、検索、またはアドレスで任意の RSS フィード。エピソードはオフラインで聴けるようにダウンロードされ、止めた場所を覚えています。</p></div>
+        <div class="source wide"><span class="tag">じっくり聴く</span><h3>オーディオブック</h3><p><code>.m4b</code> ファイルやフォルダーのブックで、ブックごとに続きの位置を覚えます。チャプター、30 秒スキップ、音程を変えない速度変更も。</p></div>
         <div class="source"><span class="tag">持ち込み</span><h3>YouTube Music</h3><p>自分の yt-dlp をアプリの隣にコピーすると検索が使えるようになります：ダウンロードせずに聴くことも、ジャケットとタグ付きでライブラリに保存することもできます。</p></div>
         <div class="source wide"><span class="tag">シーン</span><h3>モジュールのアーカイブ</h3><p>The Mod Archive、Modland、VGMRips、AMP をひとつの画面に：人気・新着・ランダムを眺めて、検索して、聴いて、ライブラリに保存したり、モジュールをトラッカーで開いたり。検索にも出てきます。</p></div>
       </div>

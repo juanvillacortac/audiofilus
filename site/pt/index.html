@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Equalizador gráfico ou paramétrico</h3>
-          <p>Dez bandas com presets para rock, metal, voz, graves e mais, ou um paramétrico de até oito bandas (pico, shelves, filtros passa) com a curva na tela. Plano, não custa nada.</p>
+          <p>Dez bandas com presets para rock, metal, voz, graves e mais, ou um paramétrico de até dez bandas (pico, shelves, filtros passa) com a curva na tela. Plano, não custa nada.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ e crossfeed</h3>
+          <p>Procure o modelo dos seus fones e a correção do AutoEq vai para o equalizador paramétrico. O crossfeed deixa o estéreo muito aberto menos cansativo nos fones.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD e arquivos CUE</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Temporizador</h3>
           <p>Pare a música depois de 15 a 90 minutos ou no fim da música, mesmo com o player fechado.</p>
         </div>
+        <div class="point">
+          <h3>Alarme</h3>
+          <p>Acorde com uma playlist ou uma rádio, com o volume subindo aos poucos, mesmo com o player fechado.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -565,7 +573,8 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Servidor</span><h3>Subsonic</h3><p>Navidrome e outros servidores Subsonic ou OpenSubsonic. As músicas tocam em streaming, ficam em cache para a próxima vez e podem ser baixadas. Edite as playlists deles pelo app.</p></div>
         <div class="source"><span class="tag">Servidor</span><h3>Jellyfin</h3><p>Entre com seu usuário do Jellyfin e navegue pela biblioteca de música e pelas playlists como se fossem seus arquivos.</p></div>
         <div class="source"><span class="tag">Ao vivo</span><h3>Rádio pela internet</h3><p>Milhares de rádios do radio-browser.info, por país ou gênero, com o título da música atual vindo do stream. Use suas próprias listas .m3u ou .pls, ou adicione uma rádio pelo endereço. Streams HLS também tocam.</p></div>
-        <div class="source"><span class="tag">Episódios</span><h3>Podcasts</h3><p>Os mais ouvidos do seu país, busca ou qualquer feed RSS pelo endereço. Os episódios são baixados para ouvir offline e lembram onde você parou.</p></div>
+        <div class="source wide"><span class="tag">Episódios</span><h3>Podcasts</h3><p>Os mais ouvidos do seu país, busca ou qualquer feed RSS pelo endereço. Os episódios são baixados para ouvir offline e lembram onde você parou.</p></div>
+        <div class="source"><span class="tag">Para ouvir com calma</span><h3>Audiolivros</h3><p>Arquivos <code>.m4b</code> e livros em pastas: lembra onde você parou em cada um, com capítulos, pulos de 30 segundos e velocidade sem mudar o tom.</p></div>
         <div class="source wide"><span class="tag">Cena</span><h3>Acervos de módulos</h3><p>The Mod Archive, Modland, VGMRips e AMP numa tela só: explore os mais populares, os novos ou aleatórios, busque, ouça, salve na sua biblioteca ou abra um módulo no tracker. Eles aparecem na Busca também.</p></div>
         <div class="source"><span class="tag">Traga o seu</span><h3>YouTube Music</h3><p>Coloque seu próprio yt-dlp ao lado do app e a busca aparece: ouça sem baixar ou salve músicas na sua biblioteca com capa e tags.</p></div>
       </div>

@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Graphic or parametric equalizer</h3>
-          <p>Ten bands with presets for rock, metal, vocals, bass and more, or a parametric one with up to eight bands (peak, shelves, pass filters) and its curve on screen. Flat, it costs nothing.</p>
+          <p>Ten bands with presets for rock, metal, vocals, bass and more, or a parametric one with up to ten bands (peak, shelves, pass filters) and its curve on screen. Flat, it costs nothing.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ and crossfeed</h3>
+          <p>Search for your headphone model and its AutoEq correction goes into the parametric equalizer. Crossfeed makes hard-panned stereo easier on the ears with headphones.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD and CUE sheets</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Sleep timer</h3>
           <p>Stop the music after 15 to 90 minutes or at the end of the song, even with the player closed.</p>
         </div>
+        <div class="point">
+          <h3>Alarm</h3>
+          <p>Wake up to a playlist or a station, with the volume rising little by little, even with the player closed.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -566,6 +574,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Sign in with your Jellyfin user and browse its music library and playlists like your own files.</p></div>
         <div class="source"><span class="tag">Live</span><h3>Internet radio</h3><p>Thousands of stations from radio-browser.info, by country or genre, with the current song title from the stream. Bring your own .m3u or .pls station lists, or add a station by its address. HLS streams play too.</p></div>
         <div class="source"><span class="tag">Episodes</span><h3>Podcasts</h3><p>Top shows for your country, search, or any RSS feed by address. Episodes download for offline listening and remember where you stopped.</p></div>
+        <div class="source wide"><span class="tag">Long listens</span><h3>Audiobooks</h3><p><code>.m4b</code> files and books in folders: it remembers where you were in each one, with chapters, 30-second skips and speed without changing the pitch.</p></div>
         <div class="source"><span class="tag">Bring your own</span><h3>YouTube Music</h3><p>Copy your own yt-dlp next to the app and search appears: listen without downloading, or save songs into your library with cover and tags.</p></div>
         <div class="source wide"><span class="tag">Scene</span><h3>Module archives</h3><p>The Mod Archive, Modland, VGMRips and AMP in one screen: browse what's popular, new or random, search, listen, save to your library or open a module in the tracker. They show up in Search too.</p></div>
       </div>

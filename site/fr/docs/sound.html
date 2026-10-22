@@ -101,7 +101,7 @@
 <p>Déplacer une bande toi-même transforme le préréglage en <strong>Perso</strong>. Sur écran tactile, touche une colonne pour régler sa hauteur. Égaliseur actif, les dix bandes coûtent environ 5&nbsp;% du processeur d’une console portable à sa fréquence la plus basse&#8239;; à plat, elles ne coûtent rien.</p>
 
 <h2 id="parametric-eq">Égaliseur paramétrique</h2>
-<p>Jusqu’à huit bandes que tu façonnes toi-même, avec une courbe dessinée au-dessus. Chaque bande a un type, <strong>Cloche</strong>, <strong>Shelf grave</strong>, <strong>Shelf aigu</strong>, <strong>Passe-bas</strong> ou <strong>Passe-haut</strong>, une fréquence (20&nbsp;Hz à 20&nbsp;kHz), un gain (±15&nbsp;dB&#8239;; les filtres passe ne l’utilisent pas) et un Q (0,3, large, à 10, étroit). La première ligne est le <strong>Préampli</strong>, pour laisser de la marge aux renforts.</p>
+<p>Jusqu’à dix bandes que tu façonnes toi-même, avec une courbe dessinée au-dessus. Chaque bande a un type, <strong>Cloche</strong>, <strong>Shelf grave</strong>, <strong>Shelf aigu</strong>, <strong>Passe-bas</strong> ou <strong>Passe-haut</strong>, une fréquence (20&nbsp;Hz à 20&nbsp;kHz), un gain (±15&nbsp;dB&#8239;; les filtres passe ne l’utilisent pas) et un Q (0,3, large, à 10, étroit). La première ligne est le <strong>Préampli</strong>, pour laisser de la marge aux renforts.</p>
 <table>
 <tr><th>Bouton</th><th>Effet</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Choisir une ligne (le préampli ou une bande)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Fermer (les changements s’appliquent au fur et à mesure)</td></tr>
 </table>
 <p>Le limiteur continue d’éviter la saturation. Revenir au graphique garde tes bandes paramétriques pour plus tard.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>Dans le menu de l’égaliseur, <strong>AutoEQ</strong> → <strong>Chercher ton modèle</strong> cherche ton casque dans <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, une base de données libre de milliers de modèles (l’index est téléchargé une fois et gardé une semaine). Chaque résultat indique qui l’a mesuré. Celui que tu choisis va dans l’égaliseur paramétrique, désormais jusqu’à dix bandes, qui s’ouvre pour le voir ou le retoucher. Hors ligne, mets des fichiers <code>ParametricEQ.txt</code> (d’AutoEq ou d’Equalizer APO) dans un dossier <code>eq</code> à côté de l’app et choisis-les dans le même menu.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Réglages → <strong>Crossfeed</strong> envoie un peu de chaque canal vers l’autre, filtré et légèrement retardé, comme avec des enceintes. Les disques avec des instruments d’un seul côté fatiguent moins au casque. <strong>Léger</strong>, <strong>Moyen</strong> ou <strong>Fort</strong> ; désactivé par défaut.</p>
 
 <h2 id="resampler">Rééchantillonnage</h2>
 <p>Les morceaux à une fréquence différente de la sortie (des fichiers en 44,1&nbsp;kHz sur une sortie en 48&nbsp;kHz, par exemple) sont convertis pendant la lecture. <strong>Réglages → Rééchantillonnage</strong>&nbsp;:</p>

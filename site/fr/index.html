@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -515,7 +515,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Égaliseur graphique ou paramétrique</h3>
-          <p>Dix bandes avec des préréglages rock, metal, voix, basses et plus, ou un paramétrique jusqu’à huit bandes (cloche, shelfs, filtres passe) avec sa courbe à l’écran. À plat, il ne coûte rien.</p>
+          <p>Dix bandes avec des préréglages rock, metal, voix, basses et plus, ou un paramétrique jusqu’à dix bandes (cloche, shelfs, filtres passe) avec sa courbe à l’écran. À plat, il ne coûte rien.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ et crossfeed</h3>
+          <p>Cherche le modèle de ton casque et sa correction AutoEq part dans l’égaliseur paramétrique. Le crossfeed rend la stéréo très écartée moins fatigante au casque.</p>
         </div>
         <div class="point">
           <h3>Fondu enchaîné, DSD et fichiers CUE</h3>
@@ -555,6 +559,10 @@ footer img { height: 56px; width: auto; }
           <h3>Minuterie</h3>
           <p>Arrête la musique après 15 à 90 minutes ou à la fin de la chanson, même lecteur fermé.</p>
         </div>
+        <div class="point">
+          <h3>Réveil</h3>
+          <p>Réveille-toi avec une playlist ou une station, le volume montant peu à peu, même lecteur fermé.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -571,7 +579,8 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Serveur</span><h3>Subsonic</h3><p>Navidrome et les autres serveurs Subsonic ou OpenSubsonic. Les chansons sont lues en streaming, restent en cache pour la prochaine écoute et peuvent être téléchargées. Modifie leurs playlists depuis l’appli.</p></div>
         <div class="source"><span class="tag">Serveur</span><h3>Jellyfin</h3><p>Connecte-toi avec ton compte Jellyfin et parcours sa bibliothèque musicale et ses playlists comme tes propres fichiers.</p></div>
         <div class="source"><span class="tag">En direct</span><h3>Radio Internet</h3><p>Des milliers de stations de radio-browser.info, par pays ou par genre, avec le titre en cours tiré du flux. Apporte tes propres listes de stations .m3u ou .pls, ou ajoute une station par son adresse. Les flux HLS passent aussi.</p></div>
-        <div class="source"><span class="tag">Épisodes</span><h3>Podcasts</h3><p>Les meilleures émissions de ton pays, la recherche, ou n’importe quel flux RSS par son adresse. Les épisodes se téléchargent pour l’écoute hors ligne et reprennent là où tu t’es arrêté.</p></div>
+        <div class="source wide"><span class="tag">Épisodes</span><h3>Podcasts</h3><p>Les meilleures émissions de ton pays, la recherche, ou n’importe quel flux RSS par son adresse. Les épisodes se téléchargent pour l’écoute hors ligne et reprennent là où tu t’es arrêté.</p></div>
+        <div class="source"><span class="tag">Écoutes longues</span><h3>Livres audio</h3><p>Fichiers <code>.m4b</code> et livres en dossiers : il retient où tu en étais dans chacun, avec chapitres, sauts de 30 secondes et vitesse sans changer la hauteur.</p></div>
         <div class="source wide"><span class="tag">Scène</span><h3>Archives de modules</h3><p>The Mod Archive, Modland, VGMRips et AMP dans un seul écran&nbsp;: explore les plus populaires, les nouveautés ou au hasard, cherche, écoute, garde dans ta bibliothèque ou ouvre un module dans le tracker. Ils apparaissent aussi dans la recherche.</p></div>
         <div class="source"><span class="tag">Apporte le tien</span><h3>YouTube Music</h3><p>Copie ton propre yt-dlp à côté de l’appli et la recherche apparaît&nbsp;: écoute sans télécharger, ou enregistre des chansons dans ta bibliothèque avec pochette et tags.</p></div>
       </div>

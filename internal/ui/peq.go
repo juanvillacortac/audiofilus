@@ -44,6 +44,8 @@ func (a *App) openEQMenu() {
 				a.status.DSP.EQMode = "parametric"
 				a.openPEQ()
 			}},
+		// El perfil de los audífonos, de AutoEq (autoequi.go).
+		{label: "AutoEQ", icon: "headphones", do: a.openAutoEQ},
 	}}
 }
 
@@ -195,8 +197,11 @@ func (a *App) drawPEQ(dst *ebiten.Image) {
 	rect(dst, px+1, py, pw-2, 1, th.Accent)
 	drawIcon(dst, "eq", px+8, py+7, th.Accent)
 	drawText(dst, T("eq_parametric"), SmallFace, px+20, py+8, th.Text)
-	// La curva: de 20 Hz a 20 kHz en escala logarítmica, ±15 dB.
-	cx, cy, cw, chh := px+8, py+20, pw-16, 56
+	// La curva: de 20 Hz a 20 kHz en escala logarítmica, ±15 dB. Con muchas
+	// bandas (las diez de un perfil de AutoEQ) se encoge para que quepan.
+	const rowH = 11
+	cx, cy, cw := px+8, py+20, pw-16
+	chh := max(30, min(56, ph-20-8-(len(e.bands)+1)*rowH-4))
 	panel(dst, cx, cy, cw, chh, withAlpha(th.Bg, 0x90))
 	zero := cy + chh/2
 	rect(dst, cx, zero, cw, 1, withAlpha(th.Dim, 0x60))
@@ -214,7 +219,6 @@ func (a *App) drawPEQ(dst *ebiten.Image) {
 	}
 	// Las bandas: una fila cada una (la primera, el preamp).
 	y := cy + chh + 8
-	const rowH = 11
 	pre := fmt.Sprintf("%s  %+.1f dB", T("eq_preamp"), e.preamp)
 	if e.row == 0 {
 		panel(dst, px+6, y-2, pw-12, rowH, mix(th.Bg2, th.Accent, 0.35))

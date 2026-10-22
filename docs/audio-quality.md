@@ -1,4 +1,4 @@
-# Audio quality: resampler, parametric EQ, DSD
+# Audio quality: resampler, parametric EQ, AutoEQ, crossfeed, speed, DSD
 
 What the engine does to the sound between the decoder and the output, and the settings that change it. All of it lives in the service (`internal/engine`, persisted in `data/state.json` as part of `dsp`).
 
@@ -32,7 +32,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go test -c -o resample.test ./internal/res
 
 ## Parametric EQ
 
-Besides the 10-band graphic EQ (`eq`, presets), there is a parametric EQ with up to 8 bands. `eq_mode` picks which one plays: `graphic` (default) or `parametric`. Both keep their settings, so switching back and forth loses nothing.
+Besides the 10-band graphic EQ (`eq`, presets), there is a parametric EQ with up to 10 bands (`engine.PEQMax`; AutoEq profiles use 10). `eq_mode` picks which one plays: `graphic` (default) or `parametric`. Both keep their settings, so switching back and forth loses nothing.
 
 Each band (`engine.PEQBand`, JSON):
 
@@ -49,16 +49,38 @@ Each band (`engine.PEQBand`, JSON):
 
 Filters are RBJ "Audio EQ Cookbook" biquads, the same as the graphic EQ. Bands above 45 % of the output rate are skipped, and so are peak/shelf bands at 0 dB (no cost). `peq_preamp_db` (−24 to +12) is applied before the bands, together with the same automatic headroom as the graphic EQ (80 % of the biggest boost); the limiter after the EQ still catches what goes over. Out-of-range values are clamped and unknown types dropped (`DSP.Normalize`).
 
+## AutoEQ
+
+`internal/autoeq` brings in headphone corrections from [AutoEq](https://github.com/jaakkopasanen/AutoEq) (free, thousands of models). The UI (`ui/autoequi.go`, from the EQ tile's menu → *AutoEQ*) downloads `results/INDEX.md` from the repository (about 850 KB; cached a week in `data/cache/autoeq-index.md`, and used even if stale when offline), searches it by words (names starting with the query first), and for the chosen entry fetches `<folder>/<model> ParametricEQ.txt`. That file is the Equalizer APO format:
+
+```
+Preamp: -6.1 dB
+Filter 1: ON LSC Fc 105 Hz Gain 6.4 dB Q 0.70
+Filter 2: ON PK Fc 8800 Hz Gain 5.1 dB Q 1.42
+```
+
+`autoeq.ParseParametric` maps `PK`/`PEQ` to peak, `LSC`/`LS` to lowshelf, `HSC`/`HS` to highshelf, `LP`/`HP` to the pass filters, skips `OFF` filters and keeps at most `PEQMax`. The result goes to the parametric EQ (`eqmode parametric`, `peq`, `peqpreamp`) and the editor opens. `.txt` files in an `eq/` folder next to the binary are offered in the same menu, for offline use.
+
+## Crossfeed
+
+`engine/crossfeed.go`, after the EQ: each channel gets a little of the other through a one-pole low-pass (which also delays it slightly), like hearing speakers, so hard-panned records tire less on headphones. Three bs2b-style levels in `DSP.Crossfeed`: `light` (700 Hz, −9.5 dB), `medium` (700 Hz, −6 dB), `strong` (650 Hz, −4.5 dB); the output is scaled by 1/(1+g) so the summed lows don't get louder. Off (`""`) costs nothing.
+
+## Speed (audiobooks and podcasts)
+
+`engine/stretch.go` changes the playback speed without changing the pitch, with WSOLA: 32 ms windows (1536 frames at 48 kHz) with half overlap and a Hann window; each window is taken `speed` times further along the input than along the output, shifted up to ±10 ms to where it best matches what was just played (normalized cross-correlation on a decimated mono mix). It runs after the resampler, at the output rate, only when the speed isn't 1, so music never pays for it. The engine resets it on seeks and on song changes, and `Status.Position` accounts for what it holds (`stretcher.Pending`) and for the output buffer at that speed. The UI sets it per track: `ui.book_speed` (0.75× to 2×) for audiobooks and podcasts, 1× for everything else.
+
 ## Service commands
 
 ```
 eqmode graphic|parametric
-peq '<JSON array of bands>'      # replaces all bands, at most 8
+peq '<JSON array of bands>'      # replaces all bands, at most 10
 peqpreamp <dB>
 resampler auto|linear|quality
+crossfeed off|light|medium|strong
+speed <0.5..3>                   # not saved; the UI sends it per track
 ```
 
-They answer with the status like the other DSP commands (`replaygain`, `preamp`, `eq`, `crossfade`), and the result is saved in the service state. The UI reads the current values from `status.dsp` (`eq_mode`, `peq`, `peq_preamp_db`, `resampler`) and the active resampler from `status.resampler`.
+They answer with the status like the other DSP commands (`replaygain`, `preamp`, `eq`, `crossfade`), and the result is saved in the service state (except `speed`, which is reported as `status.speed`). The UI reads the current values from `status.dsp` (`eq_mode`, `peq`, `peq_preamp_db`, `resampler`) and the active resampler from `status.resampler`.
 
 ## DSD: converted to PCM, no DoP
 

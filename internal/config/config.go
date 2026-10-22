@@ -144,7 +144,10 @@ type UI struct {
 	// ThemeColor es un color fijo para la interfaz ("blue", "purple"...;
 	// ui/theme.go), por ejemplo el de la carcasa; vacío, el de cada disco.
 	ThemeColor string `json:"theme_color,omitempty"`
-	RadioDir   string `json:"radio_dir,omitempty"`
+	// BookSpeed es la velocidad de los audiolibros y los podcasts (0 o 1:
+	// normal); la música va siempre a la normal.
+	BookSpeed float64 `json:"book_speed,omitempty"`
+	RadioDir  string  `json:"radio_dir,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

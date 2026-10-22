@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Korektor graficzny albo parametryczny</h3>
-          <p>Dziesięć pasm z presetami do rocka, metalu, wokalu, basu i innych, albo parametryczny z maksymalnie ośmioma pasmami (szczyt, półki, filtry przepustowe) i krzywą na ekranie. Płaski nic nie kosztuje.</p>
+          <p>Dziesięć pasm z presetami do rocka, metalu, wokalu, basu i innych, albo parametryczny z maksymalnie dziesięcioma pasmami (szczyt, półki, filtry przepustowe) i krzywą na ekranie. Płaski nic nie kosztuje.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ i crossfeed</h3>
+          <p>Wyszukaj model słuchawek, a jego korekta z AutoEq trafi do korektora parametrycznego. Crossfeed sprawia, że mocno rozstawione stereo mniej męczy w słuchawkach.</p>
         </div>
         <div class="point">
           <h3>Przenikanie, DSD i pliki CUE</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Wyłącznik</h3>
           <p>Zatrzymaj muzykę po 15–90 minutach albo na końcu utworu, nawet przy zamkniętym odtwarzaczu.</p>
         </div>
+        <div class="point">
+          <h3>Budzik</h3>
+          <p>Obudź się przy playliście albo stacji, z głośnością rosnącą powoli, nawet przy zamkniętym odtwarzaczu.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -566,6 +574,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Serwer</span><h3>Jellyfin</h3><p>Zaloguj się kontem Jellyfin i przeglądaj jego bibliotekę muzyczną i playlisty jak własne pliki.</p></div>
         <div class="source"><span class="tag">Na żywo</span><h3>Radio internetowe</h3><p>Tysiące stacji z radio-browser.info, według kraju lub gatunku, z tytułem bieżącego utworu ze strumienia. Dodaj własne listy stacji .m3u lub .pls albo dodaj stację przez adres. Strumienie HLS też grają.</p></div>
         <div class="source"><span class="tag">Odcinki</span><h3>Podcasty</h3><p>Najpopularniejsze programy w twoim kraju, wyszukiwanie albo dowolny kanał RSS przez adres. Odcinki pobierają się do słuchania offline i pamiętają, gdzie skończyłeś.</p></div>
+        <div class="source wide"><span class="tag">Na długo</span><h3>Audiobooki</h3><p>Pliki <code>.m4b</code> i książki w folderach: pamięta, gdzie skończyłeś w każdej, z rozdziałami, skokami o 30 sekund i prędkością bez zmiany wysokości dźwięku.</p></div>
         <div class="source"><span class="tag">Przynieś własne</span><h3>YouTube Music</h3><p>Skopiuj własny yt-dlp obok aplikacji, a pojawi się wyszukiwanie: słuchaj bez pobierania albo zapisuj utwory do biblioteki z okładką i tagami.</p></div>
         <div class="source wide"><span class="tag">Scena</span><h3>Archiwa modułów</h3><p>The Mod Archive, Modland, VGMRips i AMP na jednym ekranie: przeglądaj popularne, nowe albo losowe, szukaj, słuchaj, zapisuj w bibliotece albo otwórz moduł w trackerze. Pojawiają się też w wyszukiwaniu.</p></div>
       </div>

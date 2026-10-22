@@ -101,7 +101,7 @@
 <p>Wenn du ein Band selbst verschiebst, wird das Preset zu <strong>Eigene</strong>. Auf Touchscreens tippst du auf eine Säule, um ihre Höhe festzulegen. Mit eingeschaltetem Equalizer kosten zehn Bänder etwa 5&nbsp;% der CPU eines Handhelds bei niedrigstem Takt; flach kosten sie nichts.</p>
 
 <h2 id="parametric-eq">Parametrischer Equalizer</h2>
-<p>Bis zu acht Bänder, die du selbst formst, mit der Kurve darüber. Jedes Band hat eine Form, <strong>Glocke</strong>, <strong>Bass-Shelf</strong>, <strong>Höhen-Shelf</strong>, <strong>Tiefpass</strong> oder <strong>Hochpass</strong>, eine Frequenz (20&nbsp;Hz bis 20&nbsp;kHz), eine Verstärkung (±15&nbsp;dB; Pass-Filter nutzen sie nicht) und ein Q (0,3, breit, bis 10, schmal). Die erste Zeile ist die <strong>Vorverstärkung</strong>, um Platz für Anhebungen zu schaffen.</p>
+<p>Bis zu zehn Bänder, die du selbst formst, mit der Kurve darüber. Jedes Band hat eine Form, <strong>Glocke</strong>, <strong>Bass-Shelf</strong>, <strong>Höhen-Shelf</strong>, <strong>Tiefpass</strong> oder <strong>Hochpass</strong>, eine Frequenz (20&nbsp;Hz bis 20&nbsp;kHz), eine Verstärkung (±15&nbsp;dB; Pass-Filter nutzen sie nicht) und ein Q (0,3, breit, bis 10, schmal). Die erste Zeile ist die <strong>Vorverstärkung</strong>, um Platz für Anhebungen zu schaffen.</p>
 <table>
 <tr><th>Taste</th><th>Macht</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Eine Zeile wählen (die Vorverstärkung oder ein Band)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Schließen (Änderungen gelten sofort)</td></tr>
 </table>
 <p>Der Limiter schützt weiter vor Übersteuerung. Wechselst du zurück zum grafischen, bleiben deine parametrischen Bänder für später.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>Im Equalizer-Menü sucht <strong>AutoEQ</strong> → <strong>Modell suchen</strong> deine Kopfhörer in <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, einer freien Datenbank mit Tausenden Modellen (der Index wird einmal geladen und eine Woche behalten). Jedes Ergebnis zeigt, wer es gemessen hat. Das gewählte kommt in den parametrischen Equalizer, jetzt mit bis zu zehn Bändern, der sich zum Ansehen oder Nachjustieren öffnet. Offline legst du <code>ParametricEQ.txt</code>-Dateien (von AutoEq oder Equalizer APO) in einen Ordner <code>eq</code> neben der App und wählst sie im selben Menü.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Einstellungen → <strong>Crossfeed</strong> schickt etwas von jedem Kanal in den anderen, gefiltert und leicht verzögert, wie beim Hören über Lautsprecher. Platten mit Instrumenten nur auf einer Seite ermüden mit Kopfhörern weniger. <strong>Leicht</strong>, <strong>Mittel</strong> oder <strong>Stark</strong>; standardmäßig aus.</p>
 
 <h2 id="resampler">Resampling</h2>
 <p>Songs mit einer anderen Rate als der Ausgabe (44,1-kHz-Dateien bei 48&nbsp;kHz zum Beispiel) werden beim Abspielen umgerechnet. <strong>Einstellungen → Resampling</strong>:</p>

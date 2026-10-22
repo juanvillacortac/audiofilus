@@ -101,7 +101,7 @@
 <p>Samodzielne przesunięcie pasma zmienia preset na <strong>Własny</strong>. Na ekranach dotykowych dotknij kolumny, by ustawić jej wysokość. Z włączonym korektorem dziesięć pasm kosztuje około 5&nbsp;% procesora konsoli przy najniższym taktowaniu; płaskie nic nie kosztują.</p>
 
 <h2 id="parametric-eq">Korektor parametryczny</h2>
-<p>Do ośmiu pasm, które kształtujesz sam, z krzywą narysowaną nad nimi. Każde pasmo ma typ, <strong>Szczyt</strong>, <strong>Półka niska</strong>, <strong>Półka wysoka</strong>, <strong>Dolnoprzepustowy</strong> albo <strong>Górnoprzepustowy</strong>, częstotliwość (od 20&nbsp;Hz do 20&nbsp;kHz), wzmocnienie (±15&nbsp;dB; filtry przepustowe go nie używają) i Q (od 0,3, szerokie, do 10, wąskie). Pierwszy wiersz to <strong>Przedwzmacniacz</strong>, żeby zrobić miejsce na podbicia.</p>
+<p>Do dziesięciu pasm, które kształtujesz sam, z krzywą narysowaną nad nimi. Każde pasmo ma typ, <strong>Szczyt</strong>, <strong>Półka niska</strong>, <strong>Półka wysoka</strong>, <strong>Dolnoprzepustowy</strong> albo <strong>Górnoprzepustowy</strong>, częstotliwość (od 20&nbsp;Hz do 20&nbsp;kHz), wzmocnienie (±15&nbsp;dB; filtry przepustowe go nie używają) i Q (od 0,3, szerokie, do 10, wąskie). Pierwszy wiersz to <strong>Przedwzmacniacz</strong>, żeby zrobić miejsce na podbicia.</p>
 <table>
 <tr><th>Przycisk</th><th>Działanie</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Wybierz wiersz (przedwzmacniacz albo pasmo)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Zamknij (zmiany działają od razu)</td></tr>
 </table>
 <p>Limiter dalej chroni przed przesterowaniem. Po powrocie do graficznego pasma parametryczne zostają na później.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>W menu korektora <strong>AutoEQ</strong> → <strong>Szukaj modelu</strong> szuka twoich słuchawek w <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, wolnej bazie tysięcy modeli (indeks pobiera się raz i trzyma przez tydzień). Każdy wynik pokazuje, kto go zmierzył. Wybrany trafia do korektora parametrycznego, teraz do dziesięciu pasm, który się otwiera, żeby go obejrzeć lub poprawić. Offline wrzuć pliki <code>ParametricEQ.txt</code> (z AutoEq lub Equalizer APO) do folderu <code>eq</code> obok aplikacji i wybierz je w tym samym menu.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Ustawienia → <strong>Crossfeed</strong> przesyła trochę każdego kanału do drugiego, przefiltrowane i lekko opóźnione, jak przy słuchaniu z głośników. Płyty z instrumentami tylko po jednej stronie mniej męczą w słuchawkach. <strong>Lekki</strong>, <strong>Średni</strong> albo <strong>Mocny</strong>; domyślnie wyłączony.</p>
 
 <h2 id="resampler">Resampling</h2>
 <p>Utwory o innej częstotliwości niż wyjście (na przykład pliki 44,1&nbsp;kHz przy 48&nbsp;kHz) są przeliczane podczas grania. <strong>Ustawienia → Resampling</strong>:</p>

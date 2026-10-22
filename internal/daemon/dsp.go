@@ -5,6 +5,7 @@ import (
 	"errors"
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 )
@@ -87,6 +88,11 @@ func dspCommand(d engine.DSP, cmd string, args []string) (engine.DSP, error) {
 			return d, errors.New("usage: peqpreamp <dB>")
 		}
 		d.PEQPreamp = v
+	case "crossfeed":
+		if len(args) != 1 || !slices.Contains(engine.CrossfeedLevels, strings.TrimPrefix(args[0], "off")) {
+			return d, errors.New("usage: crossfeed off|light|medium|strong")
+		}
+		d.Crossfeed = strings.TrimPrefix(args[0], "off")
 	case "resampler":
 		if len(args) != 1 || (args[0] != "auto" && args[0] != "linear" && args[0] != "quality") {
 			return d, errors.New("usage: resampler auto|linear|quality")

@@ -28,3 +28,11 @@ ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=1:sample_rate=48000"
 ```
 
 `opus.ogg` is also used to check that, without the C libraries (`AUDIOFILUS_DECODER=go`), Opus is rejected with `ErrUnsupported`.
+
+`chapters.m4b` and `chapters.mp3` are three seconds of tone with three chapters (One, Two, Three, a second each), for `TestChapters`. ffmpeg writes both kinds of MP4 chapters (Nero `chpl` and the QuickTime text track) and ID3 `CHAP` frames in the MP3:
+
+```sh
+printf ';FFMETADATA1\ntitle=Book\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=0\nEND=1000\ntitle=One\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=1000\nEND=2000\ntitle=Two\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=2000\nEND=3000\ntitle=Three\n' > ch.txt
+ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=3:sample_rate=22050" -i ch.txt -map_metadata 1 -map_chapters 1 -ac 1 -c:a aac -b:a 24k chapters.m4b
+ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=3:sample_rate=22050" -i ch.txt -map_metadata 1 -map_chapters 1 -ac 1 -c:a libmp3lame -b:a 32k -id3v2_version 3 chapters.mp3
+```

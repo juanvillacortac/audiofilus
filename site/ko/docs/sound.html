@@ -105,7 +105,7 @@
 <p>밴드를 직접 움직이면 프리셋이 <strong>사용자</strong>로 바뀌어요. 터치 화면에서는 열을 탭해서 높이를 정해요. 이퀄라이저를 켜면 10개 밴드가 가장 낮은 클럭의 휴대용 게임기 CPU를 약 5&nbsp;% 쓰고, 플랫이면 전혀 쓰지 않아요.</p>
 
 <h2 id="parametric-eq">파라메트릭 이퀄라이저</h2>
-<p>직접 모양을 정하는 최대 8개 밴드로, 위쪽에 곡선이 그려져요. 밴드마다 종류(<strong>피크</strong>, <strong>로우 셸프</strong>, <strong>하이 셸프</strong>, <strong>로우패스</strong>, <strong>하이패스</strong>), 주파수(20&nbsp;Hz~20&nbsp;kHz), 게인(±15&nbsp;dB, 패스 필터는 쓰지 않아요), Q(0.3은 넓게, 10은 좁게)가 있어요. 첫 줄은 <strong>프리앰프</strong>로, 올리는 만큼의 여유를 만들어요.</p>
+<p>직접 모양을 정하는 최대 10개 밴드로, 위쪽에 곡선이 그려져요. 밴드마다 종류(<strong>피크</strong>, <strong>로우 셸프</strong>, <strong>하이 셸프</strong>, <strong>로우패스</strong>, <strong>하이패스</strong>), 주파수(20&nbsp;Hz~20&nbsp;kHz), 게인(±15&nbsp;dB, 패스 필터는 쓰지 않아요), Q(0.3은 넓게, 10은 좁게)가 있어요. 첫 줄은 <strong>프리앰프</strong>로, 올리는 만큼의 여유를 만들어요.</p>
 <table>
 <tr><th>버튼</th><th>동작</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>줄 고르기(프리앰프 또는 밴드)</td></tr>
@@ -115,6 +115,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>닫기(바꾼 내용은 바로 적용돼요)</td></tr>
 </table>
 <p>클리핑을 막는 리미터는 그대로 작동해요. 그래픽으로 돌아가도 파라메트릭 밴드는 나중을 위해 남아 있어요.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>이퀄라이저 메뉴에서 <strong>AutoEQ</strong> → <strong>모델 검색</strong>을 고르면 수천 가지 모델이 담긴 무료 데이터베이스 <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>에서 헤드폰을 찾아요(인덱스는 한 번 받아 일주일 보관). 결과마다 누가 측정했는지 보여요. 고른 것은 이제 최대 10밴드가 된 파라메트릭 이퀄라이저에 들어가고, 확인하거나 다듬을 수 있게 열려요. 오프라인이라면 <code>ParametricEQ.txt</code> 파일(AutoEq 또는 Equalizer APO)을 앱 옆의 <code>eq</code> 폴더에 넣고 같은 메뉴에서 고르세요.</p>
+
+<h2 id="crossfeed">크로스피드</h2>
+<p>설정 → <strong>크로스피드</strong>는 스피커로 들을 때처럼 각 채널의 소리를 조금씩 필터링하고 살짝 늦춰 반대쪽에 섞어요. 악기가 한쪽에만 있는 음반도 헤드폰으로 덜 피곤하게 들을 수 있어요. <strong>약하게</strong>, <strong>중간</strong>, <strong>강하게</strong> 중에서 고르고, 기본값은 꺼짐이에요.</p>
 
 <h2 id="resampler">리샘플링</h2>
 <p>출력과 샘플레이트가 다른 곡(예: 48&nbsp;kHz 출력에서 44.1&nbsp;kHz 파일)은 재생하면서 변환해요. <strong>설정 → 리샘플링</strong>:</p>

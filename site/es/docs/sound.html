@@ -101,7 +101,7 @@
 <p>Si mueves una banda tú mismo, el ajuste pasa a <strong>A mano</strong>. En pantallas táctiles, toca una columna para fijar su altura. Con el ecualizador activo, las diez bandas cuestan un 5&nbsp;% de la CPU de una portátil a su velocidad más baja; en plano, no cuestan nada.</p>
 
 <h2 id="parametric-eq">Ecualizador paramétrico</h2>
-<p>Hasta ocho bandas que das forma tú, con una curva dibujada encima. Cada banda tiene un tipo, <strong>Pico</strong>, <strong>Graves</strong> (estante bajo), <strong>Agudos</strong> (estante alto), <strong>Paso bajo</strong> o <strong>Paso alto</strong>, una frecuencia (20&nbsp;Hz a 20&nbsp;kHz), una ganancia (±15&nbsp;dB; los filtros de paso no la usan) y una Q (0,3, ancha, a 10, estrecha). La primera fila es el <strong>Preamp</strong>, para dejar margen a los realces.</p>
+<p>Hasta diez bandas que das forma tú, con una curva dibujada encima. Cada banda tiene un tipo, <strong>Pico</strong>, <strong>Graves</strong> (estante bajo), <strong>Agudos</strong> (estante alto), <strong>Paso bajo</strong> o <strong>Paso alto</strong>, una frecuencia (20&nbsp;Hz a 20&nbsp;kHz), una ganancia (±15&nbsp;dB; los filtros de paso no la usan) y una Q (0,3, ancha, a 10, estrecha). La primera fila es el <strong>Preamp</strong>, para dejar margen a los realces.</p>
 <table>
 <tr><th>Botón</th><th>Hace</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Elegir una fila (el preamp o una banda)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Cerrar (los cambios se aplican mientras los haces)</td></tr>
 </table>
 <p>El limitador sigue evitando la saturación. Volver al gráfico guarda tus bandas paramétricas para luego.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>En el menú del ecualizador, <strong>AutoEQ</strong> → <strong>Buscar el modelo</strong> busca tus audífonos en <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, una base de datos libre con miles de modelos (el índice se baja una vez y se guarda una semana). Cada resultado dice quién lo midió. El que elijas va al ecualizador paramétrico, ahora de hasta diez bandas, que se abre para verlo o retocarlo. Sin conexión, deja archivos <code>ParametricEQ.txt</code> (de AutoEq o de Equalizer APO) en una carpeta <code>eq</code> junto a la app y elígelos en el mismo menú.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Ajustes → <strong>Crossfeed</strong> manda un poco de cada canal al otro, filtrado y algo retrasado, como cuando se oyen altavoces. Los discos con instrumentos solo a un lado cansan menos con audífonos. <strong>Suave</strong>, <strong>Medio</strong> o <strong>Fuerte</strong>; viene apagado.</p>
 
 <h2 id="resampler">Remuestreo</h2>
 <p>Las canciones a una frecuencia distinta de la de salida (archivos de 44,1&nbsp;kHz en una salida de 48&nbsp;kHz, por ejemplo) se convierten mientras suenan. <strong>Ajustes → Remuestreo</strong>:</p>

@@ -5,7 +5,6 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"math"
 	"strings"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -466,7 +465,9 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	if wide {
 		drawTextW(dst, artist, SmallFace, tx, ty, tw, th.Accent)
 		drawTextW(dst, album, SmallFace, tx, ty+11, tw, th.Dim)
-		if count > 0 {
+		if ch := a.chapterLine(); ch != "" {
+			drawTextW(dst, ch, SmallFace, tx, ty+22, tw, th.Dim) // un libro con capítulos
+		} else if count > 0 {
 			drawText(dst, T("track_of", a.playingIdx+1, count), SmallFace, tx, ty+22, th.Dim)
 		}
 		ty += 40
@@ -717,11 +718,6 @@ func (a *App) drawLiveBar(dst *ebiten.Image, x, y, w int) {
 		p := int(math.Mod(a.t*0.35, 1) * float64(bw-16))
 		rect(dst, bx+p, y+1, 16, 3, th.Accent)
 	}
-}
-
-func clock(sec float64) string {
-	d := time.Duration(sec) * time.Second
-	return fmt.Sprintf("%d:%02d", int(d.Minutes()), int(d.Seconds())%60)
 }
 
 // drawMiniPlayer pinta lo que suena abajo, mientras se navega.

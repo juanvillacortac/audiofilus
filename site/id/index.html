@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -509,7 +509,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>Ekualiser grafis atau parametrik</h3>
-          <p>Sepuluh band dengan preset untuk rock, metal, vokal, bass, dan lainnya, atau yang parametrik dengan hingga delapan band (puncak, rak, filter pass) dan kurvanya di layar. Saat datar, tidak memakan apa pun.</p>
+          <p>Sepuluh band dengan preset untuk rock, metal, vokal, bass, dan lainnya, atau yang parametrik dengan hingga sepuluh band (puncak, rak, filter pass) dan kurvanya di layar. Saat datar, tidak memakan apa pun.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ dan crossfeed</h3>
+          <p>Cari model headphone-mu dan koreksi AutoEq-nya masuk ke ekualiser parametrik. Crossfeed membuat stereo yang sangat terpisah tidak melelahkan di headphone.</p>
         </div>
         <div class="point">
           <h3>Crossfade, DSD, dan CUE sheet</h3>
@@ -549,6 +553,10 @@ footer img { height: 56px; width: auto; }
           <h3>Timer tidur</h3>
           <p>Hentikan musik setelah 15 sampai 90 menit atau di akhir lagu, bahkan saat pemutar ditutup.</p>
         </div>
+        <div class="point">
+          <h3>Alarm</h3>
+          <p>Bangun dengan playlist atau stasiun, volumenya naik perlahan, bahkan saat pemutar tertutup.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -566,6 +574,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">Server</span><h3>Jellyfin</h3><p>Masuk dengan akun Jellyfin-mu dan jelajahi pustaka musik serta playlist-nya seperti file milikmu sendiri.</p></div>
         <div class="source"><span class="tag">Langsung</span><h3>Radio internet</h3><p>Ribuan stasiun dari radio-browser.info, per negara atau genre, dengan judul lagu yang sedang diputar dari stream-nya. Bawa daftar stasiun .m3u atau .pls milikmu, atau tambahkan stasiun lewat alamatnya. Stream HLS juga bisa diputar.</p></div>
         <div class="source"><span class="tag">Episode</span><h3>Podcast</h3><p>Acara teratas di negaramu, pencarian, atau feed RSS apa pun lewat alamatnya. Episode bisa diunduh untuk didengar offline dan ingat di mana kamu berhenti.</p></div>
+        <div class="source wide"><span class="tag">Dengar lama</span><h3>Buku audio</h3><p>File <code>.m4b</code> dan buku dalam folder: mengingat sampai mana kamu di tiap buku, dengan bab, lompatan 30 detik dan kecepatan tanpa mengubah nada.</p></div>
         <div class="source"><span class="tag">Bawa sendiri</span><h3>YouTube Music</h3><p>Salin yt-dlp milikmu ke samping aplikasi dan pencarian pun muncul: dengar tanpa mengunduh, atau simpan lagu ke pustakamu lengkap dengan sampul dan tag.</p></div>
         <div class="source wide"><span class="tag">Scene</span><h3>Arsip modul</h3><p>The Mod Archive, Modland, VGMRips, dan AMP dalam satu layar: jelajahi yang populer, terbaru, atau acak, cari, dengarkan, simpan ke pustaka, atau buka modul di tracker. Semuanya juga muncul di Cari.</p></div>
       </div>

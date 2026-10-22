@@ -186,8 +186,8 @@ figure { margin: 0; }
 .games { margin-top: 3rem; }
 
 /* Sources */
-.sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.sources .wide { grid-column: 1 / -1; } /* la séptima tarjeta: a lo ancho, no sola en su fila */
+.sources { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.sources .wide { grid-column: 1 / -1; } /* las anchas van a lo ancho: así ninguna tarjeta queda sola en su fila */
 @media (max-width: 880px) { .sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .sources { grid-template-columns: 1fr; } }
 .source { background: var(--panel); padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
@@ -514,7 +514,11 @@ footer img { height: 56px; width: auto; }
         </div>
         <div class="point">
           <h3>그래픽 또는 파라메트릭 이퀄라이저</h3>
-          <p>록, 메탈, 보컬, 저음 등의 프리셋이 있는 10밴드, 또는 최대 8밴드(피크, 셸프, 패스 필터)의 파라메트릭을 곡선과 함께 화면에서 써요. 평평하면 부담은 전혀 없어요.</p>
+          <p>록, 메탈, 보컬, 저음 등의 프리셋이 있는 10밴드, 또는 최대 10밴드(피크, 셸프, 패스 필터)의 파라메트릭을 곡선과 함께 화면에서 써요. 평평하면 부담은 전혀 없어요.</p>
+        </div>
+        <div class="point">
+          <h3>AutoEQ와 크로스피드</h3>
+          <p>헤드폰 모델을 검색하면 AutoEq 보정이 파라메트릭 이퀄라이저에 들어가요. 크로스피드는 좌우로 크게 벌어진 스테레오를 헤드폰으로 덜 피곤하게 해 줘요.</p>
         </div>
         <div class="point">
           <h3>크로스페이드, DSD, CUE 시트</h3>
@@ -554,6 +558,10 @@ footer img { height: 56px; width: auto; }
           <h3>취침 타이머</h3>
           <p>15~90분 뒤 또는 곡이 끝날 때 음악을 멈춰요. 플레이어를 닫아 두어도 작동합니다.</p>
         </div>
+        <div class="point">
+          <h3>알람</h3>
+          <p>재생목록이나 방송국으로, 볼륨이 조금씩 올라가며 깨워 줘요. 플레이어를 닫아도 돼요.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -571,6 +579,7 @@ footer img { height: 56px; width: auto; }
         <div class="source"><span class="tag">서버</span><h3>Jellyfin</h3><p>Jellyfin 계정으로 로그인해서 음악 보관함과 재생목록을 내 파일처럼 둘러보세요.</p></div>
         <div class="source"><span class="tag">라이브</span><h3>인터넷 라디오</h3><p>radio-browser.info의 수천 개 방송국을 나라나 장르별로, 스트림에서 받은 현재 곡 제목과 함께. 직접 만든 .m3u나 .pls 방송국 목록을 넣거나, 주소로 방송국을 추가할 수 있어요. HLS 스트림도 재생돼요.</p></div>
         <div class="source"><span class="tag">에피소드</span><h3>팟캐스트</h3><p>내 나라의 인기 프로그램, 검색, 또는 주소로 아무 RSS 피드나. 에피소드는 오프라인으로 듣도록 내려받을 수 있고, 멈춘 위치를 기억해요.</p></div>
+        <div class="source wide"><span class="tag">오래 듣기</span><h3>오디오북</h3><p><code>.m4b</code> 파일과 폴더 속 책: 책마다 어디까지 들었는지 기억하고, 챕터, 30초 건너뛰기, 음 높이를 바꾸지 않는 속도 조절까지.</p></div>
         <div class="source"><span class="tag">직접 준비하기</span><h3>YouTube Music</h3><p>앱 옆에 직접 받은 yt-dlp를 넣으면 검색이 나타나요. 내려받지 않고 듣거나, 커버와 태그를 붙여 보관함에 저장하세요.</p></div>
         <div class="source wide"><span class="tag">씬</span><h3>모듈 아카이브</h3><p>The Mod Archive, Modland, VGMRips, AMP를 한 화면에서: 인기, 새로 나온 것, 무작위로 둘러보고, 검색하고, 듣고, 보관함에 저장하거나 모듈을 트래커에서 열어요. 검색에도 나와요.</p></div>
       </div>

@@ -101,7 +101,7 @@
 <p>Muovere tu una banda trasforma il preset in <strong>Personale</strong>. Sugli schermi touch, tocca una colonna per impostarne l'altezza. Con l'equalizzatore attivo, dieci bande costano circa il 5&nbsp;% della CPU di una console portatile alla frequenza più bassa; piatto, non costa nulla.</p>
 
 <h2 id="parametric-eq">Equalizzatore parametrico</h2>
-<p>Fino a otto bande che modelli tu, con la curva disegnata sopra. Ogni banda ha un tipo, <strong>Picco</strong>, <strong>Shelf bassi</strong>, <strong>Shelf alti</strong>, <strong>Passa basso</strong> o <strong>Passa alto</strong>, una frequenza (da 20&nbsp;Hz a 20&nbsp;kHz), un guadagno (±15&nbsp;dB; i filtri passa non lo usano) e un Q (da 0,3, largo, a 10, stretto). La prima riga è il <strong>Preamp</strong>, per fare spazio agli aumenti.</p>
+<p>Fino a dieci bande che modelli tu, con la curva disegnata sopra. Ogni banda ha un tipo, <strong>Picco</strong>, <strong>Shelf bassi</strong>, <strong>Shelf alti</strong>, <strong>Passa basso</strong> o <strong>Passa alto</strong>, una frequenza (da 20&nbsp;Hz a 20&nbsp;kHz), un guadagno (±15&nbsp;dB; i filtri passa non lo usano) e un Q (da 0,3, largo, a 10, stretto). La prima riga è il <strong>Preamp</strong>, per fare spazio agli aumenti.</p>
 <table>
 <tr><th>Tasto</th><th>Cosa fa</th></tr>
 <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Scegli una riga (il preamp o una banda)</td></tr>
@@ -111,6 +111,12 @@
 <tr><td><kbd>B</kbd> / <kbd>START</kbd></td><td>Chiudi (le modifiche valgono man mano)</td></tr>
 </table>
 <p>Il limitatore continua a evitare la saturazione. Tornando a quello grafico, le bande parametriche restano per dopo.</p>
+
+<h2 id="autoeq">AutoEQ</h2>
+<p>Nel menu dell’equalizzatore, <strong>AutoEQ</strong> → <strong>Cerca il modello</strong> cerca le tue cuffie in <a href="https://github.com/jaakkopasanen/AutoEq">AutoEq</a>, un database libero con migliaia di modelli (l’indice si scarica una volta e si tiene per una settimana). Ogni risultato dice chi l’ha misurato. Quello che scegli va nell’equalizzatore parametrico, ora fino a dieci bande, che si apre per vederlo o ritoccarlo. Senza rete, metti file <code>ParametricEQ.txt</code> (di AutoEq o di Equalizer APO) in una cartella <code>eq</code> accanto all’app e sceglili dallo stesso menu.</p>
+
+<h2 id="crossfeed">Crossfeed</h2>
+<p>Impostazioni → <strong>Crossfeed</strong> manda un po’ di ogni canale all’altro, filtrato e un po’ ritardato, come quando si ascoltano le casse. I dischi con strumenti da un solo lato stancano meno in cuffia. <strong>Leggero</strong>, <strong>Medio</strong> o <strong>Forte</strong>; spento di default.</p>
 
 <h2 id="resampler">Ricampionamento</h2>
 <p>I brani a una frequenza diversa dall'uscita (file a 44,1&nbsp;kHz su 48&nbsp;kHz, per esempio) si convertono mentre suonano. <strong>Impostazioni → Ricampionamento</strong>:</p>

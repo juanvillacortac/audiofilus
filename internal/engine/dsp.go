@@ -40,6 +40,9 @@ type DSP struct {
 	// quality en el escritorio y linear en las portátiles, por la batería).
 	// Se aplica desde la canción siguiente.
 	Resampler string `json:"resampler,omitempty"`
+	// Crossfeed mezcla algo de cada canal en el otro para los audífonos
+	// (crossfeed.go): "" apagado, "light", "medium" o "strong".
+	Crossfeed string `json:"crossfeed,omitempty"`
 }
 
 // PEQBand es una banda del ecualizador paramétrico.
@@ -54,7 +57,7 @@ type PEQBand struct {
 }
 
 // PEQMax es cuántas bandas tiene como mucho el paramétrico.
-const PEQMax = 8
+const PEQMax = 10
 
 // PEQTypes son las formas de una banda, en el orden en que se ofrecen.
 var PEQTypes = []string{"peak", "lowshelf", "highshelf", "lowpass", "highpass"}
@@ -121,6 +124,9 @@ func (d DSP) Normalize() DSP {
 		d.ReplayGain = "auto"
 	}
 	d.Preamp = math.Max(-12, math.Min(12, d.Preamp))
+	if _, ok := crossfeedLevels[d.Crossfeed]; !ok {
+		d.Crossfeed = ""
+	}
 	if len(d.EQ) != len(EQBands) {
 		d.EQ = nil
 	}
