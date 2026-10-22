@@ -1,0 +1,60 @@
+# The Android app (audiofilus.apk), signed with the release key from the
+# repository secrets (see docs/android.md). Run by hand from the Actions tab
+# ("Run workflow"); releases build it too (release.yml).
+name: Android
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+      ANDROID_KEYSTORE_PASSWORD:
+      ANDROID_KEY_ALIAS:
+      ANDROID_KEY_PASSWORD:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # The runner's SDK (ANDROID_HOME) plus the NDK and platform the app uses.
+      - name: NDK and platform
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.2.13676358" "platforms;android-36" >/dev/null
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+
+      - name: The C decoders (android/libs.sh)
+        run: android/libs.sh
+
+      - name: The app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          AUDIOFILUS_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          AUDIOFILUS_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          AUDIOFILUS_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # The app's version is the tag's (v0.15.0 -> 0.15.0).
+          [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=${GITHUB_REF_NAME#v}
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            export AUDIOFILUS_KEYSTORE="$RUNNER_TEMP/release.jks"
+          fi
+          android/build.sh release
+          cp android/app/build/outputs/apk/release/app-release.apk audiofilus.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiofilus-android
+          path: audiofilus.apk
+          retention-days: 14

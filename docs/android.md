@@ -14,7 +14,9 @@ mise exec -- android/build.sh      # debug APK; "release" for the release one
 - `android/build.sh` builds `ebitenmobile` from the same commit of the Ebitengine fork that `go.mod` uses (like the iOS workflow), turns `mobile/` into `android/app/libs/mobile.aar` (`ebitenmobile bind -target android/arm64,android/amd64 -javapkg dev.audiofilus`) and runs Gradle. The app version comes from `VERSION` (`0.15.0`), and `versionCode` from it (`1500`).
 - `android/libs.sh` compiles **libfdk-aac** (AAC: M4A, M4B, AAC radio) with the NDK and puts it, with the NDK's `libc++_shared.so`, in `jniLibs`. audiofilus loads it with purego by name (`libfdk-aac.so`), which works because the APK extracts its native libraries (`useLegacyPackaging`). fdk-aac's Android build includes the platform's private `log/log.h`, so the script gives it a stub. MP3, FLAC, Ogg Vorbis, WAV, AIFF and ALAC decode in Go; Opus, tracker modules and console music aren't there yet.
 - `android/app` is a plain Gradle project in Kotlin, with framework APIs only (no androidx).
-- Release signing: `AUDIOFILUS_KEYSTORE`, `AUDIOFILUS_KEYSTORE_PASSWORD`, `AUDIOFILUS_KEY_ALIAS` and `AUDIOFILUS_KEY_PASSWORD` in the environment; without them the release APK is signed with the debug key.
+- Release signing: `AUDIOFILUS_KEYSTORE`, `AUDIOFILUS_KEYSTORE_PASSWORD`, `AUDIOFILUS_KEY_ALIAS` and `AUDIOFILUS_KEY_PASSWORD` in the environment; without them the release APK is signed with the debug key. The release key (alias `audiofilus`, certificate SHA-256 `16:6B:68:99:…:8B:85`) lives with the author, outside the repo, and in the repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`. Losing it means updates can't be installed over the existing app.
+- `.github/workflows/android.yml` builds the signed `audiofilus.apk` (by hand from the Actions tab, or from `release.yml` on every release, which attaches it).
+- The launcher icon is adaptive pixel art made by `tools/android/icon.sh` (background, foreground and monochrome layers, drawn at 72 px for 108 dp).
 
 ## Differences from the handhelds (shared with iOS)
 

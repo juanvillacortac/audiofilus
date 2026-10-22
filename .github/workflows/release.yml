@@ -1,6 +1,7 @@
 # When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
 # release with the PortMaster port, the Linux and Windows binaries and the
-# unsigned iOS app (built on macOS by ios.yml, at the same time).
+# unsigned iOS app and the Android app (built by ios.yml and android.yml, at
+# the same time).
 name: Release
 on:
   push:
@@ -12,8 +13,12 @@ jobs:
   ios:
     uses: ./.github/workflows/ios.yml
 
+  android:
+    uses: ./.github/workflows/android.yml
+    secrets: inherit
+
   release:
-    needs: ios
+    needs: [ios, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,6 +73,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: audiofilus-ios
+          path: out
+      - name: The Android app
+        uses: actions/download-artifact@v4
+        with:
+          name: audiofilus-android
           path: out
       - name: Checksums
         run: (cd out && sha256sum * > SHA256SUMS)
