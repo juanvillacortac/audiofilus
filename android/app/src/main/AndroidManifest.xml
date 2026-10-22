@@ -20,11 +20,15 @@
     <uses-feature android:name="android.hardware.gamepad" android:required="false" />
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
 
+    <!-- requestLegacyExternalStorage: en Android 10 deja leer la música por su
+         ruta (también en la SD); desde Android 11 la ruta funciona con el
+         permiso de audio y esto se ignora. -->
     <application
         android:label="audiofilus"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.Audiofilus"
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         android:appCategory="audio"
         android:isGame="false">
 

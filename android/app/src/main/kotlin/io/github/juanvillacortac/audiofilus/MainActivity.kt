@@ -28,6 +28,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import dev.audiofilus.mobile.EbitenView
 import dev.audiofilus.mobile.Host
@@ -226,8 +227,36 @@ class MainActivity : Activity(), Host {
             contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } catch (_: SecurityException) {
         }
-        treePath(DocumentsContract.getTreeDocumentId(uri))?.let { Mobile.setMusicFolder(it) }
+        val path = treePath(DocumentsContract.getTreeDocumentId(uri)) ?: return
+        // audiofilus lee la música por su ruta: sin el permiso de audio (o si
+        // el sistema no deja listar esa carpeta) no encontraría nada.
+        if (!canReadAudio()) {
+            pendingFolder = path
+            askPermissions()
+            return
+        }
+        useFolder(path)
     }
+
+    // pendingFolder es la carpeta elegida que espera el permiso de audio.
+    private var pendingFolder: String? = null
+
+    // useFolder pone path como la carpeta de la música, o avisa si no se
+    // puede leer.
+    private fun useFolder(path: String) {
+        val f = File(path)
+        Log.i(TAG, "music folder $path: readable ${f.canRead()}, entries ${f.list()?.size}")
+        if (f.list() == null) {
+            Toast.makeText(this, getString(R.string.folder_unreadable, path), Toast.LENGTH_LONG).show()
+            return
+        }
+        Mobile.setMusicFolder(path)
+        getSharedPreferences("audiofilus", MODE_PRIVATE).edit().putBoolean("folder_set", true).apply()
+    }
+
+    private fun canReadAudio(): Boolean = checkSelfPermission(
+        if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
+    ) == PackageManager.PERMISSION_GRANTED
 
     // nowPlaying lo llama audiofilus (desde su hilo) cada vez que cambia lo
     // que suena: lo que muestran la notificación y la pantalla bloqueada.
@@ -261,14 +290,20 @@ class MainActivity : Activity(), Host {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSIONS) firstFolder()
+        if (requestCode != PERMISSIONS) return
+        val picked = pendingFolder
+        pendingFolder = null
+        when {
+            picked == null -> firstFolder()
+            canReadAudio() -> useFolder(picked)
+            else -> Toast.makeText(this, R.string.need_audio_permission, Toast.LENGTH_LONG).show()
+        }
     }
 
     // firstFolder pone la carpeta Music del teléfono como la de la música,
     // una sola vez (después manda lo que elija el usuario en Ajustes).
     private fun firstFolder() {
-        val audio = if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE
-        if (checkSelfPermission(audio) != PackageManager.PERMISSION_GRANTED) return
+        if (!canReadAudio()) return
         val prefs = getSharedPreferences("audiofilus", MODE_PRIVATE)
         if (prefs.getBoolean("folder_set", false)) return
         @Suppress("DEPRECATION")

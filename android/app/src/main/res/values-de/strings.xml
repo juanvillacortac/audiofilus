@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Wiedergabe</string>
+    <string name="folder_unreadable">%1$s kann nicht gelesen werden. Erlaube audiofilus den Zugriff auf Musik und Audio oder wähle einen anderen Ordner.</string>
+    <string name="need_audio_permission">audiofilus braucht die Berechtigung für Musik und Audio, um diesen Ordner zu lesen. Du kannst sie in den App-Einstellungen erteilen.</string>
+</resources>

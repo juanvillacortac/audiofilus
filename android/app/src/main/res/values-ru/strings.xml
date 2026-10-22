@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Воспроизведение</string>
+    <string name="folder_unreadable">Не удаётся прочитать %1$s. Разрешите audiofilus доступ к музыке и аудио или выберите другую папку.</string>
+    <string name="need_audio_permission">audiofilus нужно разрешение на музыку и аудио, чтобы читать эту папку. Его можно дать в настройках приложения.</string>
+</resources>

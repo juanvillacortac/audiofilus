@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Çalma</string>
+    <string name="folder_unreadable">%1$s okunamıyor. audiofilus\'un müzik ve ses erişimine izin verin veya başka bir klasör seçin.</string>
+    <string name="need_audio_permission">audiofilus\'un o klasörü okuyabilmesi için müzik ve ses izni gerekiyor. Uygulamanın ayarlarından verebilirsiniz.</string>
+</resources>
