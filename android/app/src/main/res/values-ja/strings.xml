@@ -3,4 +3,5 @@
     <string name="channel_playback">再生</string>
     <string name="folder_unreadable">%1$s を読み込めません。audiofilus に音楽とオーディオへのアクセスを許可するか、別のフォルダを選んでください。</string>
     <string name="need_audio_permission">そのフォルダを読み込むには、audiofilus に音楽とオーディオの権限が必要です。アプリの設定で許可できます。</string>
+    <string name="folder_picked">音楽フォルダ: %1$s（%2$d 件）</string>
 </resources>

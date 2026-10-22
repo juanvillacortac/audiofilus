@@ -3,4 +3,5 @@
     <string name="channel_playback">Reprodução</string>
     <string name="folder_unreadable">Não é possível ler %1$s. Permita que o audiofilus acesse música e áudio, ou escolha outra pasta.</string>
     <string name="need_audio_permission">O audiofilus precisa da permissão de música e áudio para ler essa pasta. Você pode concedê-la nas configurações do app.</string>
+    <string name="folder_picked">Pasta de música: %1$s (%2$d itens)</string>
 </resources>

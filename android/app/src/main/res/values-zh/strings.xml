@@ -3,4 +3,5 @@
     <string name="channel_playback">播放</string>
     <string name="folder_unreadable">无法读取 %1$s。请允许 audiofilus 访问音乐和音频，或选择其他文件夹。</string>
     <string name="need_audio_permission">audiofilus 需要音乐和音频权限才能读取该文件夹。你可以在应用设置中授予。</string>
+    <string name="folder_picked">音乐文件夹：%1$s（%2$d 项）</string>
 </resources>

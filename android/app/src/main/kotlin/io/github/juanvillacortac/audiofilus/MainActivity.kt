@@ -277,6 +277,9 @@ class MainActivity : Activity(), Host {
         }
         Mobile.setMusicFolder(path)
         getSharedPreferences("audiofilus", MODE_PRIVATE).edit().putString("folder_for", home).apply()
+        // Qué carpeta quedó y cuánto deja ver Android de ella (si no aparece
+        // la música, esto dice por qué).
+        Toast.makeText(this, getString(R.string.folder_picked, path, f.list()?.size ?: 0), Toast.LENGTH_LONG).show()
     }
 
     private fun canReadAudio(): Boolean = checkSelfPermission(
@@ -347,14 +350,20 @@ class MainActivity : Activity(), Host {
 
         // treePath convierte el documento de una carpeta elegida en su ruta:
         // los del almacenamiento del sistema ("primary:Music/Rock",
-        // "1A2B-3C4D:Música") y los que ya la llevan ("raw:/storage/...", de
+        // "1A2B-3C4D:Música", "home:..." para Documentos) y los que ya la
+        // llevan ("raw:/storage/...", de
         // algunos gestores de archivos). De otros proveedores, null.
         @Suppress("DEPRECATION")
         fun treePath(authority: String?, id: String): String? {
             if (id.startsWith("raw:/")) return id.removePrefix("raw:")
             if (authority != "com.android.externalstorage.documents") return null
             val (volume, rel) = id.split(":", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
-            val base = if (volume == "primary") Environment.getExternalStorageDirectory().path else "/storage/$volume"
+            val base = when (volume) {
+                "primary" -> Environment.getExternalStorageDirectory().path
+                // La raíz "Documentos" del proveedor del sistema.
+                "home" -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).path
+                else -> "/storage/$volume"
+            }
             return if (rel.isEmpty()) base else "$base/$rel"
         }
     }

@@ -3,4 +3,5 @@
     <string name="channel_playback">Pemutaran</string>
     <string name="folder_unreadable">Tidak dapat membaca %1$s. Izinkan audiofilus mengakses musik dan audio, atau pilih folder lain.</string>
     <string name="need_audio_permission">audiofilus memerlukan izin musik dan audio untuk membaca folder itu. Anda dapat memberikannya di pengaturan aplikasi.</string>
+    <string name="folder_picked">Folder musik: %1$s (%2$d item)</string>
 </resources>

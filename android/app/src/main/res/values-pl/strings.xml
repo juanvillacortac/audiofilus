@@ -3,4 +3,5 @@
     <string name="channel_playback">Odtwarzanie</string>
     <string name="folder_unreadable">Nie można odczytać %1$s. Zezwól audiofilus na dostęp do muzyki i audio albo wybierz inny folder.</string>
     <string name="need_audio_permission">audiofilus potrzebuje uprawnienia do muzyki i audio, aby odczytać ten folder. Możesz je nadać w ustawieniach aplikacji.</string>
+    <string name="folder_picked">Folder z muzyką: %1$s (elementy: %2$d)</string>
 </resources>
