@@ -27,12 +27,17 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+          cache: gradle
+          cache-dependency-path: android/**/*.gradle.kts
 
-      # The runner's SDK (ANDROID_HOME) plus the NDK and platform the app uses.
+      # The runner's SDK (ANDROID_HOME) and its newest preinstalled NDK; the
+      # platform is only downloaded if the image doesn't have it (downloading
+      # an NDK took six minutes).
       - name: NDK and platform
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.2.13676358" "platforms;android-36" >/dev/null
-          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=${ANDROID_NDK_LATEST_HOME:?no preinstalled NDK}" >> "$GITHUB_ENV"
+          [ -d "$ANDROID_HOME/platforms/android-36" ] ||
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-36" >/dev/null
 
       - name: The C decoders (android/libs.sh)
         run: android/libs.sh
