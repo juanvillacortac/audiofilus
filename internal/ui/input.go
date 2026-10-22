@@ -88,6 +88,9 @@ type Input struct {
 	// usingPad dice si lo último que se usó fue un mando, para mostrar sus
 	// botones en la ayuda; si fue el teclado, se muestran las teclas.
 	usingPad bool
+	// padsSeen son los mandos que había el frame anterior: si hay más, se
+	// acaba de conectar uno.
+	padsSeen int
 	decided  bool
 	// any dice si en este frame se pulsó cualquier tecla o botón.
 	any bool
@@ -175,6 +178,13 @@ func (in *Input) update() {
 	if !in.decided {
 		in.usingPad = len(in.pads) > 0
 	}
+	// Al aparecer un mando (al abrir, o al conectarlo después) la interfaz
+	// pasa a la del mando también en el móvil, que empieza con el dedo; tocar
+	// la pantalla la devuelve a la táctil (pointerDown).
+	if len(in.pads) > in.padsSeen {
+		in.usingPad, in.touch = true, false
+	}
+	in.padsSeen = len(in.pads)
 	in.any = false
 	in.virt = [actCount]bool{}
 	if in.keys = inpututil.AppendJustPressedKeys(in.keys[:0]); len(in.keys) > 0 {

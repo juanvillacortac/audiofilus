@@ -481,7 +481,7 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 
 // updateRhythmFrame avanza Ritmo sin botones (para la maqueta).
 func (a *App) updateRhythmFrame() {
-	a.input = Input{touch: a.input.touch}
+	a.input = Input{touch: a.input.touch, padsSeen: a.input.padsSeen}
 	a.beatHit = a.updateBeat()
 	a.updateRhythm()
 }
