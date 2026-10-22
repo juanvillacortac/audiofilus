@@ -1,8 +1,10 @@
 package ui
 
 import (
+	"image"
 	"image/color"
 	"math"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -87,68 +89,84 @@ func drawCassette(dst *ebiten.Image, cx, cy, r int, angle, progress float64, th 
 	}
 }
 
-// drawBookArt pinta un libro de tapa dura en el cuadro de la portada
-// (size×size), para los audiolibros sin portada: la tapa del color del disco
-// con su marco y la placa del título, el lomo con sus nervios, el canto de
-// las hojas, la cinta de marcapáginas y su sombra; todo con contorno, como
-// pixel art.
+// bookSprite es el libro abierto de los audiolibros sin portada, dibujado a
+// mano píxel a píxel como los iconos (29×24): o contorno, P página, S y s
+// sombra de la página, T texto, C tapa (el color del disco), D su sombra y
+// R la cinta de marcapáginas (el segundo color).
+const bookSprite = `
+.............................
+...oooooo...........oooooo...
+..oPPPPPPooo.....oooPPPPPPo..
+.oPPPPPPPPPPoo.ooPPPPPPPPPPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPTTTTTPPPPSoSPPTTTTTTTPPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPTTTTTTTPPSoSPPTTTTTTTTPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPTTTTTTPPPSoSPPTTTTTTPPPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPTTTTTTTPPSoSPPTTTTTTTTPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPTTTTPPPPPSoSPPTTTTTPPPPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
+.osPPPPPPPPPPSoSPPPPPPPPPPso.
+.ossssPPPPPPPSoSPPPPPPPsssso.
+oCoooossssPPPSoSPPPssssooooCo
+oCCCCCoooosssSoSsssooooCCCCCo
+oCCCCCCCCCooooRooooCCCCCCCCCo
+oDDDDDDDDDDDDDRDDDDDDDDDDDDDo
+.oooooooooooooRooooooooooooo.
+..............R..............`
+
+// bookSprites son los libros ya pintados, por tema (cambia con el disco).
+var bookSprites = map[Theme]*ebiten.Image{}
+
+// bookImage es el libro con los colores de th.
+func bookImage(th Theme) *ebiten.Image {
+	if img, ok := bookSprites[th]; ok {
+		return img
+	}
+	rows := strings.Split(strings.Trim(bookSprite, "\n"), "\n")
+	pal := map[byte]color.RGBA{
+		'o': mix(th.Shadow, color.RGBA{0x1a, 0x14, 0x22, 0xff}, 0.5),
+		'P': {0xee, 0xe6, 0xd2, 0xff},
+		'S': {0xce, 0xc2, 0xac, 0xff},
+		's': {0xd6, 0xcc, 0xb8, 0xff},
+		'T': {0x96, 0x8c, 0x80, 0xff},
+		'C': th.Accent,
+		'D': mix(th.Accent, th.Shadow, 0.4),
+		'R': th.Accent2,
+	}
+	img := image.NewRGBA(image.Rect(0, 0, len(rows[0]), len(rows)))
+	for y, r := range rows {
+		for x := 0; x < len(r); x++ {
+			if c, ok := pal[r[x]]; ok {
+				img.SetRGBA(x, y, c)
+			}
+		}
+	}
+	if len(bookSprites) > 32 {
+		for k, v := range bookSprites {
+			v.Deallocate()
+			delete(bookSprites, k)
+		}
+	}
+	e := ebiten.NewImageFromImage(img)
+	bookSprites[th] = e
+	return e
+}
+
+// drawBookArt pinta el libro en el cuadro de la portada (size×size), para
+// los audiolibros sin portada: el sprite a la mayor escala entera que quepa,
+// centrado.
 func drawBookArt(dst *ebiten.Image, x, y, size int, th Theme) {
 	panel(dst, x, y, size, size, th.Bg2)
-	u := max(1, size/48) // un "pixel" del dibujo
-	bw, bh := size*50/100, size*68/100
-	bx, by := x+(size-bw)/2+u*2, y+(size-bh)/2-u*2
-	spine, pages := size*9/100, max(2, size*4/100)
-	outline := mix(th.Shadow, th.Bg, 0.3)
-	cover := th.Accent
-	dark := mix(th.Accent, th.Shadow, 0.45)
-	light := mix(th.Accent, th.Text, 0.35)
-	paper := color.RGBA{0xee, 0xe6, 0xd2, 0xff}
-	paperLine := mix(paper, th.Shadow, 0.25)
-
-	// La sombra, abajo a la derecha.
-	rect(dst, bx-spine+u*2, by+bh+pages, bw+spine+pages, u*2, withAlpha(th.Shadow, 0x90))
-	// El canto de las hojas: a la derecha y abajo, con rayas.
-	rect(dst, bx+u, by+pages, bw+pages-u, bh, paper)
-	for k := by + pages + u*2; k < by+bh+pages-u; k += u * 2 {
-		rect(dst, bx+bw, k, pages-u, max(1, u/2), paperLine)
-	}
-	for k := bx + u*2; k < bx+bw; k += u * 3 {
-		rect(dst, k, by+bh, max(1, u/2), pages-u, paperLine)
-	}
-	// La tapa, con su contorno, el brillo arriba y a la izquierda.
-	rect(dst, bx-u, by-u, bw+u*2, bh+u*2, outline)
-	rect(dst, bx, by, bw, bh, cover)
-	rect(dst, bx, by, bw, u, light)
-	rect(dst, bx, by, u, bh, light)
-	// El marco grabado y la placa clara del título, con dos líneas.
-	fm := size * 6 / 100
-	frame := mix(cover, th.Shadow, 0.3)
-	rect(dst, bx+fm, by+fm, bw-2*fm, u, frame)
-	rect(dst, bx+fm, by+bh-fm-u, bw-2*fm, u, frame)
-	rect(dst, bx+fm, by+fm, u, bh-2*fm, frame)
-	rect(dst, bx+bw-fm-u, by+fm, u, bh-2*fm, frame)
-	px, py, pw, ph := bx+fm*2, by+bh*22/100, bw-fm*4, bh*22/100
-	rect(dst, px-u, py-u, pw+u*2, ph+u*2, outline)
-	rect(dst, px, py, pw, ph, paper)
-	rect(dst, px+pw/8, py+ph/3, pw*3/4, max(1, u), mix(th.Shadow, paper, 0.2))
-	rect(dst, px+pw/4, py+ph*2/3, pw/2, max(1, u), mix(th.Shadow, paper, 0.4))
-	// Un adorno debajo: un rombo.
-	cx, cy, d := bx+bw/2, by+bh*66/100, max(2, size/18)
-	for k := 0; k <= d; k++ {
-		rect(dst, cx-k, cy-d+k, 2*k+1, 1, light)
-		rect(dst, cx-k, cy+d-k, 2*k+1, 1, light)
-	}
-	// El lomo, más oscuro, con tres nervios.
-	rect(dst, bx-spine-u, by-u, spine+u, bh+u*2, outline)
-	rect(dst, bx-spine, by, spine, bh, dark)
-	for _, f := range []int{18, 50, 82} {
-		ry := by + bh*f/100
-		rect(dst, bx-spine, ry, spine, u*2, mix(dark, th.Text, 0.25))
-		rect(dst, bx-spine, ry+u*2, spine, u, outline)
-	}
-	// La cinta de marcapáginas, colgando por abajo.
-	rw := max(2, size/22)
-	rx := bx + bw*70/100
-	rect(dst, rx, by+bh, rw, size*9/100, th.Accent2)
-	rect(dst, rx, by+bh+size*9/100, rw/2, u, th.Accent2) // la punta en V
+	img := bookImage(th)
+	w, h := img.Bounds().Dx(), img.Bounds().Dy()
+	k := max(1, size*82/100/w)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(float64(k), float64(k))
+	op.GeoM.Translate(float64(x+(size-w*k)/2), float64(y+(size-h*k)/2))
+	dst.DrawImage(img, op)
 }
