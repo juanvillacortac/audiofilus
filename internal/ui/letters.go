@@ -134,7 +134,7 @@ func (a *App) drawLetter(dst *ebiten.Image) {
 	// La letra, al doble: en un lienzo a su tamaño y ampliada sin suavizar.
 	const cw, ch = 24, 24
 	if letterCanvas == nil {
-		letterCanvas = ebiten.NewImage(cw, ch)
+		letterCanvas = newTarget(cw, ch)
 	}
 	letterCanvas.Clear()
 	tw := textWidth(a.letter, BigFace)

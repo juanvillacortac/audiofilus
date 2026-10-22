@@ -243,7 +243,7 @@ func (a *App) drawSnake(dst *ebiten.Image) {
 		if snDots != nil {
 			snDots.Deallocate()
 		}
-		snDots = ebiten.NewImage(bw, bh)
+		snDots = newTarget(bw, bh)
 		for y := 0; y < g.rows; y++ {
 			for x := 0; x < g.cols; x++ {
 				snDots.Set(x*snCell+snCell/2, y*snCell+snCell/2, color.White)

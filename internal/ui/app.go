@@ -229,7 +229,8 @@ type App struct {
 	shotDay     int      // en las capturas, el día especial que se finge
 
 	theme    Theme
-	themeFor *Album // el tema se tiñe con este álbum en cuanto se lea su portada
+	themeFor *Album   // el tema se tiñe con este álbum en cuanto se lea su portada
+	frames2  frameLog // los fotogramas lentos (framelog.go)
 
 	t        float64 // segundos desde que arrancó, para las animaciones
 	now      time.Time
@@ -285,6 +286,9 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	}
 	a.input.swapAB = cfg.UI.SwapAB
 	a.vis.kind = visualizerIndex(cfg.UI.Visualizer)
+	if th, ok := fixedTheme(cfg.UI.ThemeColor); ok {
+		a.theme = th
+	}
 	// En el móvil se empieza con el dedo (AUDIOFILUS_TOUCH lo fuerza, para
 	// probarlo y para las capturas).
 	a.input.touch = StartService != nil || os.Getenv("AUDIOFILUS_TOUCH") != ""
@@ -404,6 +408,7 @@ func (a *App) exit(background bool) {
 
 // Update atiende los botones y sigue al servicio.
 func (a *App) Update() error {
+	defer a.frameStart()() // los fotogramas lentos, al log (framelog.go)
 	if dir := a.pendingFolder.Swap(nil); dir != nil {
 		a.cfg.MusicDirs = []string{*dir}
 		a.saveConfig()
@@ -795,7 +800,7 @@ func (a *App) updateMain() {
 		case in.Pressed(ActMenu):
 			a.openNowMenu()
 		case in.Pressed(ActBack):
-			a.screen = LibraryScreen
+			a.screen = a.playingHome()
 		case in.Pressed(ActUp):
 			a.scratch(-1) // huevo de pascua: scratch con el vinilo (eggs.go)
 		case in.Pressed(ActDown):
@@ -1101,6 +1106,7 @@ func firstOr(s []string, d string) string {
 
 // Draw pinta la pantalla actual.
 func (a *App) Draw(screen *ebiten.Image) {
+	defer a.drawStart()()
 	if a.BenchVisual != "" {
 		return // la prueba pinta en su lienzo; pintar aquí también falsearía la medida
 	}
@@ -1146,6 +1152,11 @@ func (a *App) warmUp() {
 // colores (se leen con la portada, en segundo plano).
 func (a *App) updateTheme() {
 	if a.themeFor == nil {
+		return
+	}
+	// Con un color fijo (Ajustes → Color), los discos no lo cambian.
+	if th, ok := fixedTheme(a.cfg.UI.ThemeColor); ok {
+		a.theme, a.themeFor = th, nil
 		return
 	}
 	c1, c2, ok := a.themeFor.Accent()
@@ -2453,12 +2464,30 @@ func (a *App) tweenPosition() {
 // vinylSpin es lo que gira el vinilo por segundo de canción (radianes).
 const vinylSpin = 1.4
 
+// playingHome es a dónde lleva Atrás desde el reproductor: la pantalla de
+// lo que suena (Radio, Podcasts) y, si no, la biblioteca. Así no se cambia
+// de contexto sin querer al volver.
+func (a *App) playingHome() Screen {
+	switch p := a.playingSong.Path; {
+	case radio.IsRadio(p):
+		return Radio
+	case p != "" && strings.HasPrefix(p, a.podDir()):
+		return Podcasts
+	}
+	return LibraryScreen
+}
+
 // lidClosed dice si se acaba de cerrar la tapa. En las Anbernic con tapa
 // (RG34XX-SP, RG35XXSP) la tapa manda Insert al cerrarse y Delete al abrirse
 // por el mismo dispositivo del mando (Knulli lo atiende con triggerhappy:
 // lid-control). En el PC, Insert es solo una tecla.
 func (a *App) lidClosed() bool {
 	if a.status.Platform == "" || a.status.Platform == "desktop" {
+		return false
+	}
+	// En la base o con HDMI a la tele, la tapa cerrada es lo normal (se
+	// juega con mando): no apaga la pantalla.
+	if a.status.Docked {
 		return false
 	}
 	// Knulli manda Insert al cerrarla (por el mando); en muOS, y también en

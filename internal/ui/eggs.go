@@ -68,7 +68,7 @@ func applyGameBoy(screen *ebiten.Image) {
 		if gbImg != nil {
 			gbImg.Deallocate()
 		}
-		gbImg = ebiten.NewImage(w, h)
+		gbImg = newTarget(w, h)
 	}
 	op := &ebiten.DrawRectShaderOptions{}
 	op.Images[0] = screen

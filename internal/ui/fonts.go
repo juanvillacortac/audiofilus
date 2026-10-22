@@ -283,7 +283,7 @@ func drawFaded(dst *ebiten.Image, s string, face text.Face, x, y, w, off int, le
 	}
 	h := 24
 	if scratch == nil {
-		scratch = ebiten.NewImage(640, h)
+		scratch = newTarget(640, h)
 	}
 	w = min(w, scratch.Bounds().Dx())
 	top := smallCapTop

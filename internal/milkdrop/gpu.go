@@ -174,12 +174,12 @@ func (r *Renderer) prepare() error {
 			if g.fb[i] != nil {
 				g.fb[i].Deallocate()
 			}
-			g.fb[i] = ebiten.NewImage(r.w, r.h)
+			g.fb[i] = newTarget(r.w, r.h)
 		}
 		if g.out != nil {
 			g.out.Deallocate()
 		}
-		g.out = ebiten.NewImage(r.w, r.h)
+		g.out = newTarget(r.w, r.h)
 		g.resized = false
 	}
 	return nil
@@ -260,4 +260,12 @@ const paletteKeep = 0.15
 func (r *Renderer) SetPalette(stops [4][3]float32, amount float64) {
 	r.palette = stops
 	r.paletteMix = float32(clamp(amount, 0, 1))
+}
+
+// newTarget crea una imagen en la que se dibuja cada fotograma (la
+// realimentación, la salida), fuera del atlas de Ebitengine: dentro, el atlas
+// la mueve a veces entre páginas con copias en la GPU, que en las portátiles
+// son tirones.
+func newTarget(w, h int) *ebiten.Image {
+	return ebiten.NewImageWithOptions(image.Rect(0, 0, w, h), &ebiten.NewImageOptions{Unmanaged: true})
 }

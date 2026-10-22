@@ -82,6 +82,53 @@ var DefaultTheme = Theme{
 	Shadow:  color.RGBA{0x05, 0x04, 0x0a, 0xff},
 }
 
+// themeColor es un color fijo para la interfaz (Ajustes → Color): su nombre
+// (la clave "tc_<nombre>" de lang) y sus dos tonos.
+type themeColor struct {
+	name            string
+	accent, accent2 color.RGBA
+	plain           bool // el fondo sin teñir y más negro (el de la carcasa negra)
+}
+
+// themeColors son los colores fijos que se pueden elegir, pensados para ir con
+// las carcasas de las consolas (las de la RG34XX-SP: índigo, blanco con
+// botones lila, amarillo con botones rojos, negro con los de colores, azul
+// cobalto; las metálicas platino, grafito, azul y rosa perla; y el celeste de
+// la GBA SP); el segundo tono es el de los botones.
+// El primero ("album") es el de cada disco.
+var themeColors = []themeColor{
+	{name: "album"},
+	{"red", color.RGBA{0xe8, 0x45, 0x3c, 0xff}, color.RGBA{0xf2, 0x99, 0x4a, 0xff}, false},
+	{"orange", color.RGBA{0xf2, 0x8a, 0x2e, 0xff}, color.RGBA{0xf2, 0xc9, 0x4c, 0xff}, false},
+	{"yellow", color.RGBA{0xf2, 0xc4, 0x18, 0xff}, color.RGBA{0xe0, 0x3a, 0x48, 0xff}, false},
+	{"green", color.RGBA{0x4c, 0xc9, 0x6a, 0xff}, color.RGBA{0x2e, 0xc4, 0xb6, 0xff}, false},
+	{"ice", color.RGBA{0x9c, 0xc8, 0xe0, 0xff}, color.RGBA{0xdc, 0xe9, 0xf2, 0xff}, false},
+	{"blue", color.RGBA{0x34, 0x52, 0xd0, 0xff}, color.RGBA{0x8a, 0xa0, 0xf2, 0xff}, false},
+	{"purple", color.RGBA{0x6a, 0x5a, 0xe0, 0xff}, color.RGBA{0xc8, 0xc6, 0xe0, 0xff}, false},
+	{"pink", color.RGBA{0xf0, 0x60, 0x9e, 0xff}, color.RGBA{0xf2, 0x9a, 0x8a, 0xff}, false},
+	{"pearlpink", color.RGBA{0xf0, 0xb8, 0xd0, 0xff}, color.RGBA{0xd4, 0xd2, 0xd8, 0xff}, false},
+	{"white", color.RGBA{0xf4, 0xf4, 0xf6, 0xff}, color.RGBA{0x9a, 0x86, 0xec, 0xff}, false},
+	{"platinum", color.RGBA{0xb4, 0xc0, 0xcc, 0xff}, color.RGBA{0x7a, 0x86, 0x96, 0xff}, false},
+	{"graphite", color.RGBA{0x84, 0x88, 0x92, 0xff}, color.RGBA{0x5c, 0x5f, 0x68, 0xff}, false},
+	{"black", color.RGBA{0xe8, 0xe8, 0xec, 0xff}, color.RGBA{0x4a, 0x4c, 0x54, 0xff}, true},
+}
+
+// fixedTheme es el tema del color fijo con ese nombre, si lo hay.
+func fixedTheme(name string) (Theme, bool) {
+	for _, c := range themeColors[1:] {
+		if c.name != name {
+			continue
+		}
+		t := ThemeFor(c.accent, c.accent2)
+		if c.plain {
+			t.Bg = color.RGBA{0x06, 0x06, 0x08, 0xff}
+			t.Bg2 = color.RGBA{0x14, 0x14, 0x18, 0xff}
+		}
+		return t, true
+	}
+	return Theme{}, false
+}
+
 // ThemeFor devuelve el tema teñido con los colores de una portada.
 func ThemeFor(accent, accent2 color.RGBA) Theme {
 	t := DefaultTheme

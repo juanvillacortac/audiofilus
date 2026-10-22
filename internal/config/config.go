@@ -140,8 +140,11 @@ type UI struct {
 	// para volver a él.
 	Visualizer string `json:"visualizer,omitempty"`
 	// VisualBG pone ese visualizador de fondo en el reproductor, atenuado.
-	VisualBG bool   `json:"visual_bg,omitempty"`
-	RadioDir string `json:"radio_dir,omitempty"`
+	VisualBG bool `json:"visual_bg,omitempty"`
+	// ThemeColor es un color fijo para la interfaz ("blue", "purple"...;
+	// ui/theme.go), por ejemplo el de la carcasa; vacío, el de cada disco.
+	ThemeColor string `json:"theme_color,omitempty"`
+	RadioDir   string `json:"radio_dir,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

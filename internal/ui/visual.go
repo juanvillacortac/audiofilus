@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"image"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -186,7 +187,15 @@ func fitImg(img **ebiten.Image, w, h int) {
 	if *img != nil {
 		(*img).Deallocate()
 	}
-	*img = ebiten.NewImage(w, h)
+	*img = newTarget(w, h)
+}
+
+// newTarget crea una imagen en la que se dibuja cada fotograma, fuera del
+// atlas de Ebitengine (Unmanaged): dentro, el atlas la mueve a veces entre
+// sus páginas con copias en la GPU, y en la Mali de las portátiles eso da
+// tirones (en Trancazo bajaron de 110-180 ms a 50-90 ms al sacarlas).
+func newTarget(w, h int) *ebiten.Image {
+	return ebiten.NewImageWithOptions(image.Rect(0, 0, w, h), &ebiten.NewImageOptions{Unmanaged: true})
 }
 
 // drawVisual pinta el visualizador elegido.

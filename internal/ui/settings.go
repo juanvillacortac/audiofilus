@@ -49,6 +49,7 @@ const (
 	setDLNARenderer
 	setMilkDir
 	setRadioDir
+	setThemeColor
 	setCount
 )
 
@@ -121,6 +122,7 @@ var settingSections = []settingSection{
 		{setSleep, "moon", tileChoice},
 		{setSleepMode, "screen", tileChoice},
 		{setClock, "clock", tileToggle},
+		{setThemeColor, "palette", tileChoice},
 	}},
 	{"sec_system", []settingTile{
 		{setLanguage, "globe", tileChoice},
@@ -377,6 +379,21 @@ func (a *App) changeSetting(id, step int) {
 		} else {
 			a.send("restart")
 		}
+	case setThemeColor:
+		n, i := a.settingChoice(id)
+		c := themeColors[cycle(n, i)]
+		a.cfg.UI.ThemeColor = ""
+		if c.name != "album" {
+			a.cfg.UI.ThemeColor = c.name
+		}
+		a.saveConfig()
+		if th, ok := fixedTheme(a.cfg.UI.ThemeColor); ok {
+			a.theme = th
+		} else if a.playing != nil {
+			a.themeFor = a.playing // vuelve al color del disco que suena
+		} else {
+			a.theme = DefaultTheme
+		}
 	case setResampler:
 		n, i := a.settingChoice(id)
 		m := resamplerModes[cycle(n, i)]
@@ -450,6 +467,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(xfChoices), func(i int) bool { return xfChoices[i] == a.dspOf().Crossfade })
 	case setResampler:
 		return find(len(resamplerModes), func(i int) bool { return resamplerModes[i] == orDefault(a.dspOf().Resampler, "auto") })
+	case setThemeColor:
+		return find(len(themeColors), func(i int) bool { return themeColors[i].name == orDefault(a.cfg.UI.ThemeColor, "album") })
 	case setRate:
 		return find(len(rateChoices), func(i int) bool { return rateChoices[i] == a.cfg.SampleRate })
 	}
@@ -514,6 +533,8 @@ func (a *App) settingValue(i int) string {
 		return T("eq_" + a.dspOf().EQPreset)
 	case setResampler:
 		return T("rs_" + orDefault(a.dspOf().Resampler, "auto"))
+	case setThemeColor:
+		return T("tc_" + orDefault(a.cfg.UI.ThemeColor, "album"))
 	case setDLNAServer:
 		return onOffLabel(a.cfg.DLNA.Server)
 	case setDLNARenderer:
@@ -583,7 +604,7 @@ func settingNames() [setCount]string {
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
-		T("set_milk_dir"), T("set_radio_dir"),
+		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"),
 	}
 }
 
@@ -809,6 +830,8 @@ func choiceLabel(id, i int) string {
 		return T("rg_" + rgModes[i])
 	case setResampler:
 		return T("rs_" + resamplerModes[i])
+	case setThemeColor:
+		return T("tc_" + themeColors[i].name)
 	case setRate:
 		return rateLabel(rateChoices[i])
 	case setCrossfade:

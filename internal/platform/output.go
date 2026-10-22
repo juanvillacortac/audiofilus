@@ -4,9 +4,11 @@ package platform
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 // Las salidas de audio que distingue OutputKind.
@@ -36,11 +38,33 @@ func AudioOutput() string {
 		}
 		return OutputSpeaker
 	}
-	out := ""
-	if info, err := exec.Command("pactl", "info").Output(); err == nil {
-		if sinks, err := exec.Command("pactl", "list", "sinks").Output(); err == nil {
-			out = outputKind(defaultSink(string(info)), string(sinks))
+	// Las portátiles con el pin de los audífonos (H700): el pin dice cable o
+	// altavoz, y para el bluetooth basta el nombre de la salida por defecto
+	// (pactl info). pactl list sinks no se usa allí: lista todas las salidas
+	// consultando sus controles de ALSA, también los del audio HDMI, y en los
+	// Allwinner el HDMI comparte controlador con el vídeo: con la consola en
+	// la tele, cada consulta paraba la imagen casi un segundo.
+	if b, err := os.ReadFile(gpioDebug); err == nil {
+		if plugged, found := jackFromGPIO(string(b)); found {
+			if strings.HasPrefix(pactlDefaultSink(), "bluez") {
+				return OutputBluetooth
+			}
+			if plugged {
+				return OutputWired
+			}
+			return OutputSpeaker
 		}
+	}
+	out := ""
+	start := time.Now()
+	if name := pactlDefaultSink(); name != "" {
+		if sinks, err := exec.Command("pactl", "list", "sinks").Output(); err == nil {
+			out = outputKind(name, string(sinks))
+		}
+	}
+	// Lento, al log: para ver si coincide con los tirones de la interfaz.
+	if d := time.Since(start); d > 200*time.Millisecond {
+		log.Printf("pactl took %v", d.Round(time.Millisecond))
 	}
 	if out == OutputBluetooth || out == OutputWired {
 		return out
@@ -55,15 +79,17 @@ func AudioOutput() string {
 			return OutputSpeaker
 		}
 	}
-	if b, err := os.ReadFile(gpioDebug); err == nil {
-		if plugged, found := jackFromGPIO(string(b)); found {
-			if plugged {
-				return OutputWired
-			}
-			return OutputSpeaker
-		}
-	}
 	return out
+}
+
+// pactlDefaultSink es la salida por defecto de PulseAudio (pactl info: es
+// barato, no consulta las tarjetas), o "" si no hay pactl.
+func pactlDefaultSink() string {
+	info, err := exec.Command("pactl", "info").Output()
+	if err != nil {
+		return ""
+	}
+	return defaultSink(string(info))
 }
 
 // gpioDebug es la lista de pines del kernel, con su nombre y su estado.

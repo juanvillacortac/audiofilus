@@ -76,6 +76,9 @@ type Daemon struct {
 	volumeSeq    int        // sube con cada cambio de volumen, para el indicador
 	output       string     // por dónde sale el sonido (platform.Output*)
 	outputAt     time.Time  // cuándo se miró output por última vez
+	docked       bool       // hay una pantalla externa (se mira con output)
+	outputBusy   bool       // se está mirando la salida (refreshOutput)
+	dockedAt     time.Time  // cuándo se miró docked
 	quit         chan struct{}
 	quitOnce     sync.Once
 	// DLNA (dlna.go): lo encendido, con qué configuración, y el último error.
@@ -241,6 +244,9 @@ func Run(paths config.Paths) error {
 	stopInput := d.startInput()
 	stopPower := d.startPower()
 	stopMedia := d.startMedia()
+	stopJack := make(chan struct{})
+	go d.watchJack(stopJack) // pausa al desenchufar los audífonos (jack.go)
+	defer close(stopJack)
 	stopListens := make(chan struct{})
 	go d.trackListens(store, stopListens)
 	defer close(stopListens)
@@ -830,6 +836,8 @@ type FullStatus struct {
 	PowerSeq int `json:"power_seq"`
 	// Lid: la tapa está cerrada (el sensor de la consola, en Knulli y muOS).
 	Lid bool `json:"lid,omitempty"`
+	// Docked: hay una pantalla externa (HDMI): la tapa no apaga la pantalla.
+	Docked bool `json:"docked,omitempty"`
 	// Output es por dónde sale el sonido: speaker, wired, bluetooth o "" si
 	// no se sabe.
 	Output string `json:"output"`
@@ -853,6 +861,9 @@ func (d *Daemon) status() FullStatus {
 	s.Lid = d.plat.LidClosed()
 	if !s.Sleep {
 		s.Output = d.audioOutput() // en sleep no se ve: no se gasta en pactl
+		d.mu.Lock()
+		s.Docked = d.docked
+		d.mu.Unlock()
 		if s.State == "playing" {
 			s.Meter = d.eng.Meter()
 		}
@@ -865,23 +876,48 @@ func (d *Daemon) status() FullStatus {
 // plano no cuesta nada.
 const outputEvery = 2 * time.Second
 
-// audioOutput es la salida de audio, mirada como mucho cada outputEvery.
+// audioOutput es la salida de audio que se conoce, y si hace más de
+// outputEvery que se miró, la vuelve a mirar en segundo plano. Nunca espera:
+// mirarla lanza pactl (dos veces), que en las portátiles tarda cientos de ms
+// (más con HDMI, que añade salidas), y el estado se pide muchas veces por
+// segundo para el analizador del reproductor: esperar lo congelaba.
 func (d *Daemon) audioOutput() string {
 	d.mu.Lock()
-	if time.Since(d.outputAt) < outputEvery {
-		defer d.mu.Unlock()
-		return d.output
+	defer d.mu.Unlock()
+	if !d.outputBusy && time.Since(d.outputAt) >= outputEvery {
+		d.outputBusy = true
+		go d.refreshOutput()
 	}
-	d.outputAt = time.Now() // otro estado a la vez no la vuelve a mirar
-	d.mu.Unlock()
+	return d.output
+}
+
+// dockedEvery es cada cuánto se mira si hay una pantalla externa: conectarla
+// es raro, y leer su estado puede sondear la conexión.
+const dockedEvery = 10 * time.Second
+
+// refreshOutput mira la salida de audio y (cada dockedEvery) si hay una
+// pantalla externa.
+func (d *Daemon) refreshOutput() {
 	out := platform.AudioOutput()
 	d.mu.Lock()
+	docked, check := d.docked, time.Since(d.dockedAt) >= dockedEvery
+	d.mu.Unlock()
+	if check {
+		docked = platform.ExternalDisplay()
+	}
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if check {
+		d.dockedAt = time.Now()
+	}
 	if out != d.output {
 		log.Printf("audio output: %q", out)
 	}
-	d.output = out
-	d.mu.Unlock()
-	return out
+	if docked != d.docked {
+		log.Printf("external display: %v", docked)
+	}
+	d.output, d.docked = out, docked
+	d.outputAt, d.outputBusy = time.Now(), false
 }
 
 // intArg lee un único argumento entero.

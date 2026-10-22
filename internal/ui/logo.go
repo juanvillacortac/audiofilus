@@ -75,8 +75,8 @@ func drawLogoAt(dst *ebiten.Image, x, y int, t float64, scale int) {
 	th := DefaultTheme
 	lw, lh := splashLogoSize()
 	if logoCanvas == nil || logoCanvas.Bounds().Dx() != lw {
-		logoCanvas = ebiten.NewImage(lw, lh)
-		logoMask = ebiten.NewImage(lw, lh)
+		logoCanvas = newTarget(lw, lh)
+		logoMask = newTarget(lw, lh)
 	}
 	logoCanvas.Clear()
 	logoMask.Clear()

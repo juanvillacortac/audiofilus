@@ -121,3 +121,43 @@ func TestSwapButtons(t *testing.T) {
 		t.Errorf("Start should not change: %v", got)
 	}
 }
+
+// Atrás desde el reproductor lleva a la pantalla de lo que suena: Radio con
+// una emisora, Podcasts con un episodio y la biblioteca con lo demás.
+func TestPlayingHome(t *testing.T) {
+	a := &App{}
+	a.paths.Data = filepath.Join("data")
+	for path, want := range map[string]Screen{
+		"radio://abc": Radio,
+		filepath.Join("data", "podcasts", "show", "ep.mp3"): Podcasts,
+		filepath.Join("music", "song.flac"):                 LibraryScreen,
+		"":                                                  LibraryScreen,
+	} {
+		a.playingSong.Path = path
+		if got := a.playingHome(); got != want {
+			t.Errorf("%q: back goes to %v, want %v", path, got, want)
+		}
+	}
+}
+
+// Con un color fijo, el tema es ese y no cambia con el disco; "album" (o
+// nada) vuelve al color de cada disco.
+func TestThemeColor(t *testing.T) {
+	th, ok := fixedTheme("blue")
+	if !ok || th.Accent != themeColors[6].accent {
+		t.Fatalf("blue: %v %v", ok, th.Accent)
+	}
+	if _, ok := fixedTheme("album"); ok {
+		t.Error("album should not be a fixed color")
+	}
+	if _, ok := fixedTheme(""); ok {
+		t.Error("empty should not be a fixed color")
+	}
+	a := &App{offline: true}
+	a.cfg.UI.ThemeColor = "pink"
+	a.themeFor = &Album{} // un disco nuevo: con color fijo no se tiñe
+	a.updateTheme()
+	if a.theme.Accent != themeColors[8].accent || a.themeFor != nil {
+		t.Errorf("fixed pink: accent %v, pending %v", a.theme.Accent, a.themeFor != nil)
+	}
+}

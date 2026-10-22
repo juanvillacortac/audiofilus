@@ -44,7 +44,7 @@ func (a *App) drawTransition(dst *ebiten.Image) {
 			if *img != nil {
 				(*img).Deallocate()
 			}
-			*img = ebiten.NewImage(w, h)
+			*img = newTarget(w, h)
 		}
 	}
 	fit(&a.transImg)
