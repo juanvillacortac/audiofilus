@@ -250,6 +250,13 @@ func Run(paths config.Paths) error {
 	defer close(stopJack)
 	d.loadAlarm()
 	go d.watchAlarm(stopJack) // la alarma (alarm.go)
+	// Sin servicio no hay quien la haga sonar: al salir, que no despierte la
+	// consola (al volver a arrancar se programa otra vez).
+	defer func() {
+		if d.plat.Name() != "desktop" {
+			_ = platform.SetWakeAlarm(time.Time{})
+		}
+	}()
 	stopListens := make(chan struct{})
 	go d.trackListens(store, stopListens)
 	defer close(stopListens)

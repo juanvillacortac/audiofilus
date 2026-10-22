@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -41,7 +42,7 @@ type Alarm struct {
 
 // alarmEvery es cada cuánto se mira la hora: con el reloj de verdad (no un
 // temporizador, que no cuenta mientras la consola está suspendida).
-const alarmEvery = 15 * time.Second
+const alarmEvery = 5 * time.Second
 
 // next es la próxima vez que suena después de now.
 func (a Alarm) next(now time.Time) time.Time {
@@ -155,12 +156,21 @@ func (d *Daemon) ringAlarm(a Alarm) {
 		fade = 60
 	}
 	go func() {
+		set := 0.02 // lo último que puso la alarma
 		for i := 1; i <= fade; i++ {
 			time.Sleep(time.Second)
-			if e.Status().State != "playing" {
-				return // la apagaron: no se sube más
+			st := e.Status()
+			if st.State != "playing" {
+				// La pausaron a medio subir: el volumen vuelve a lo que
+				// era (si no, lo siguiente sonaría casi en silencio).
+				e.SetVolume(target)
+				return
 			}
-			e.SetVolume(target * float64(i) / float64(fade))
+			if math.Abs(st.Volume-set) > 0.01 {
+				return // lo movieron a mano: manda lo suyo
+			}
+			set = target * float64(i) / float64(fade)
+			e.SetVolume(set)
 		}
 	}()
 }
