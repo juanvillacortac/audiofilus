@@ -119,7 +119,16 @@ body { line-break: strict; }
 <figure><img class="px shot" src="../../img/audiobook-menu.png" alt="有声书的「更多」菜单：章节、速度 1.25×、从头开始" width="360" height="240" loading="lazy"><figcaption>「更多」中的章节、速度和从头开始</figcaption></figure>
 
 <h2 id="alarm">闹钟</h2>
-<p>设置 → <strong>闹钟</strong>：<strong>时间</strong>、<strong>日期</strong>（<strong>每天</strong>、<strong>工作日</strong>、<strong>周末</strong>或<strong>仅一次</strong>）以及<strong>播放内容</strong>（<strong>上次播放的内容</strong>、一个播放列表或收藏的电台）。音量会在一分钟内逐渐升高。由后台服务播放，所以关闭播放器也能响；在掌机上它会设置主机时钟，把主机从睡眠中唤醒（关机时不行）。如果主机晚了超过 10 分钟才醒，就不会响。<strong>立即试听</strong> 可以测试。</p>
+<p>设置 → <strong>闹钟</strong>：<strong>时间</strong>、<strong>日期</strong>（<strong>每天</strong>、<strong>工作日</strong>、<strong>周末</strong>或<strong>仅一次</strong>）以及<strong>播放内容</strong>（<strong>上次播放的内容</strong>、一个播放列表或收藏的电台）。音量会在一分钟内逐渐升高。由后台服务播放，所以关闭播放器也能响；能否把睡眠中的主机也唤醒取决于系统（见下）。如果主机晚了超过 10 分钟才醒，就不会响。<strong>立即试听</strong> 可以测试。</p>
+<p>什么时候会响：</p>
+<ul>
+<li>主机醒着时<strong>总是</strong>会响：应用开着（包括应用自己的熄屏睡眠）或在后台。关机时绝不会响。</li>
+<li><strong>Knulli</strong>：也会唤醒睡眠中的主机，合上盖子也行（已在 RG34XX-SP 上测试）。</li>
+<li><strong>ROCKNIX、ArkOS 和 dArkOS</strong>：应该也能唤醒，但还没测试。</li>
+<li><strong>muOS</strong>：只有睡眠时间短于 muOS 的自动关机（默认 10 分钟），或该项设为从不时才会唤醒。用 muOS 的“睡到唤醒”选项时不会。</li>
+<li><strong>EmuELEC</strong>：主机从不睡眠，所以应用在后台时就会响。</li>
+</ul>
+<p>如果闹钟要唤醒主机，请关闭系统的睡眠后自动关机，或把它设得比离闹钟的时间更长。</p>
 <figure><img class="px shot" src="../../img/alarm.png" alt="闹钟菜单：已开启，工作日 07:30，以及播放内容" width="360" height="240" loading="lazy"><figcaption>闹钟</figcaption></figure>
 
 <h2 id="queue">播放队列</h2>

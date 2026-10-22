@@ -110,7 +110,16 @@
 <figure><img class="px shot" src="../../img/audiobook-menu.png" alt="오디오북의 더보기 메뉴: 챕터, 속도 1.25×, 처음부터" width="360" height="240" loading="lazy"><figcaption>더보기의 챕터, 속도, 처음부터</figcaption></figure>
 
 <h2 id="alarm">알람</h2>
-<p>설정 → <strong>알람</strong>: <strong>시간</strong>, <strong>요일</strong>(<strong>매일</strong>, <strong>평일</strong>, <strong>주말</strong>, <strong>한 번</strong>), <strong>재생할 것</strong>(<strong>마지막으로 재생한 것</strong>, 재생목록, 즐겨찾는 방송국)을 고르세요. 볼륨은 1분에 걸쳐 올라가요. 서비스가 재생하므로 플레이어를 닫아도 울리고, 휴대용 기기에서는 콘솔 시계를 설정해 잠자기에서 깨워요(전원이 꺼져 있으면 안 돼요). 콘솔이 10분 넘게 늦게 깨면 울리지 않아요. <strong>지금 테스트</strong>로 시험할 수 있어요.</p>
+<p>설정 → <strong>알람</strong>: <strong>시간</strong>, <strong>요일</strong>(<strong>매일</strong>, <strong>평일</strong>, <strong>주말</strong>, <strong>한 번</strong>), <strong>재생할 것</strong>(<strong>마지막으로 재생한 것</strong>, 재생목록, 즐겨찾는 방송국)을 고르세요. 볼륨은 1분에 걸쳐 올라가요. 서비스가 재생하므로 플레이어를 닫아도 울려요. 잠자는 콘솔까지 깨울 수 있는지는 시스템에 따라 달라요(아래). 콘솔이 10분 넘게 늦게 깨면 울리지 않아요. <strong>지금 테스트</strong>로 시험할 수 있어요.</p>
+<p>울리는 때:</p>
+<ul>
+<li>콘솔이 깨어 있으면 <strong>항상</strong>: 앱이 열려 있을 때(화면이 꺼진 앱의 잠자기 중에도)나 백그라운드일 때. 전원이 꺼져 있으면 울리지 않아요.</li>
+<li><strong>Knulli</strong>: 잠자는 콘솔도 깨워요. 덮개를 닫아도 돼요(RG34XX-SP에서 확인).</li>
+<li><strong>ROCKNIX, ArkOS, dArkOS</strong>: 깨울 수 있을 거예요. 다만 아직 시험해 보지 않았어요.</li>
+<li><strong>muOS</strong>: muOS 자동 전원 끄기(기본 10분)보다 짧게 잠들었거나 그 설정이 '안 함'일 때만 깨워요. muOS의 '깨울 때까지 잠자기'로는 안 돼요.</li>
+<li><strong>EmuELEC</strong>: 콘솔이 잠들지 않으니 앱이 백그라운드에 있으면 울려요.</li>
+</ul>
+<p>알람으로 콘솔을 깨워야 한다면 시스템의 잠자기 후 자동 전원 끄기를 끄거나, 알람까지 남은 시간보다 길게 설정하세요.</p>
 <figure><img class="px shot" src="../../img/alarm.png" alt="알람 메뉴: 켜짐, 평일 07:30, 재생할 것" width="360" height="240" loading="lazy"><figcaption>알람</figcaption></figure>
 
 <h2 id="queue">대기열</h2>

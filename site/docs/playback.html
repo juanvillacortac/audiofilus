@@ -106,7 +106,16 @@
 <figure><img class="px shot" src="../img/audiobook-menu.png" alt="The More menu of an audiobook with Chapters, Speed 1.25× and From the beginning" width="360" height="240" loading="lazy"><figcaption>Chapters, speed and From the beginning in More</figcaption></figure>
 
 <h2 id="alarm">Alarm</h2>
-<p>Settings → <strong>Alarm</strong>: the <strong>Time</strong>, the <strong>Days</strong> (<strong>Every day</strong>, <strong>Weekdays</strong>, <strong>Weekends</strong> or <strong>Once</strong>) and <strong>What plays</strong> (<strong>Whatever played last</strong>, a playlist or a favorite station). The volume rises over a minute. The service plays it, so it works with the player closed, and on handhelds it sets the console clock to wake it from sleep (not if it is turned off). If the console wakes more than 10 minutes late, it doesn't ring. <strong>Try it now</strong> tests it.</p>
+<p>Settings → <strong>Alarm</strong>: the <strong>Time</strong>, the <strong>Days</strong> (<strong>Every day</strong>, <strong>Weekdays</strong>, <strong>Weekends</strong> or <strong>Once</strong>) and <strong>What plays</strong> (<strong>Whatever played last</strong>, a playlist or a favorite station). The volume rises over a minute. The service plays it, so it works with the player closed; whether it can also wake a sleeping console depends on the system (below). If the console wakes more than 10 minutes late, it doesn't ring. <strong>Try it now</strong> tests it.</p>
+<p>When it rings:</p>
+<ul>
+<li><strong>Always</strong> with the console awake: the app open (also in its sleep, with the screen off) or in the background. Never with the console turned off.</li>
+<li><strong>Knulli</strong>: it also wakes a sleeping console, lid closed included (tested on an RG34XX-SP).</li>
+<li><strong>ROCKNIX, ArkOS and dArkOS</strong>: it should wake a sleeping console too, but it isn't tested yet.</li>
+<li><strong>muOS</strong>: it only wakes it if it has been asleep for less than muOS's automatic shutdown (10 minutes by default), or if that is set to never. With muOS's sleep-until-wake option it doesn't.</li>
+<li><strong>EmuELEC</strong>: the console never sleeps, so it rings with the app in the background.</li>
+</ul>
+<p>If the alarm has to wake the console, turn off the system's shutdown after sleep, or set it longer than the time until the alarm.</p>
 <figure><img class="px shot" src="../img/alarm.png" alt="The alarm menu: on, at 07:30 on weekdays, and what plays" width="360" height="240" loading="lazy"><figcaption>The alarm</figcaption></figure>
 
 <h2 id="queue">The queue</h2>

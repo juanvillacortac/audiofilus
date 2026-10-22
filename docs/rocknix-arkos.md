@@ -30,3 +30,12 @@ EmuELEC runs on the Odroid Go Advance and Super, the GameForce Chi and Amlogic T
 - **The power button:** its `oga_events.py` (`projects/Rockchip/devices/OdroidGoAdvance/packages/odroidgoa-utils`) reads `rk8xx_pwrkey` and runs `systemctl suspend` as root; logind is set to ignore the button (`packages/sysutils/systemd/package.mk`). A logind inhibitor does nothing against root, hence the `sleep.conf` drop-in described in the table.
 - **Launching:** EmulationStation runs a port through a pipe into `head` (`CMD | head -300`, with the exit code on fd 3) and doesn't come back to its menu until that pipe closes. The service gets its own log file as output, and before starting it `daemon -detach` marks every descriptor it inherited to close on exec (`closeInherited` in `cmd/audiofilus`), so the music in the background never keeps EmulationStation waiting.
 - **Installing:** through PortMaster (EmuELEC menu → install PortMaster first). By hand, the layout differs from other systems: the launcher `Audiofilus.sh` goes in `/storage/roms/ports_scripts/` (where EmuELEC lists ports) and the `audiofilus/` folder in `/storage/roms/ports/`.
+
+## Alarm
+
+The alarm (`daemon/alarm.go`) rings whenever the service runs and the console is awake: the app open (also in its sleep) or in the background. Waking a suspended console (from each system's source; not tested on a device):
+
+- **ROCKNIX, ArkOS and dArkOS:** they suspend through systemd (`systemctl suspend`, or logind for the power key and lid on ROCKNIX), and nothing in that path touches RTC alarms. So the alarm the service writes to the wake-capable RTC (`device/power/wakeup` `enabled`; on H700 boards with a mainline kernel the SoC RTC is `rtc1`, on RK3326/RK3566 the PMIC RTC) should wake them. Whether the PMIC RTCs wake from `mem` on these devices is not verified.
+- **EmuELEC:** it never suspends (logind ignores the power key and lid on the TV boxes, and the handhelds go to the audiofilus sleep while the app is open), so the alarm rings with the app in the background. It doesn't ring with the box turned off.
+
+HDMI: DRM `status` (`/sys/class/drm/card*-HDMI-A-*/status`) on ROCKNIX and dArkOS, and `/sys/class/amhdmitx/amhdmitx0/hpd_state` on Amlogic boxes.

@@ -109,7 +109,16 @@
 <figure><img class="px shot" src="../../img/audiobook-menu.png" alt="オーディオブックのメニュー：チャプター、速度 1.25×、最初から" width="360" height="240" loading="lazy"><figcaption>メニューのチャプター、速度、最初から</figcaption></figure>
 
 <h2 id="alarm">アラーム</h2>
-<p>設定 → <strong>アラーム</strong>：<strong>時刻</strong>、<strong>曜日</strong>（<strong>毎日</strong>、<strong>平日</strong>、<strong>週末</strong>、<strong>1回だけ</strong>）、<strong>再生するもの</strong>（<strong>最後に再生したもの</strong>、プレイリスト、お気に入りのラジオ局）を設定します。音量は 1 分かけて上がります。鳴らすのはサービスなので、プレーヤーを閉じていても動きます。携帯機ではスリープから起こすためにコンソールの時計を設定します（電源が切れているときは不可）。10 分以上遅れて起きた場合は鳴りません。<strong>今すぐ試す</strong>でテストできます。</p>
+<p>設定 → <strong>アラーム</strong>：<strong>時刻</strong>、<strong>曜日</strong>（<strong>毎日</strong>、<strong>平日</strong>、<strong>週末</strong>、<strong>1回だけ</strong>）、<strong>再生するもの</strong>（<strong>最後に再生したもの</strong>、プレイリスト、お気に入りのラジオ局）を設定します。音量は 1 分かけて上がります。鳴らすのはサービスなので、プレーヤーを閉じていても動きます。スリープ中のコンソールまで起こせるかはシステムによります（下記）。10 分以上遅れて起きた場合は鳴りません。<strong>今すぐ試す</strong>でテストできます。</p>
+<p>鳴るとき：</p>
+<ul>
+<li>コンソールが起きていれば<strong>いつでも</strong>：アプリを開いているとき（画面を消したアプリのスリープ中も）やバックグラウンド。電源が切れているときは鳴りません。</li>
+<li><strong>Knulli</strong>：スリープ中のコンソールも起こします。フタを閉じていても大丈夫です（RG34XX-SP で確認）。</li>
+<li><strong>ROCKNIX、ArkOS、dArkOS</strong>：起こせるはずですが、まだ試していません。</li>
+<li><strong>muOS</strong>：muOS の自動電源オフ（初期設定 10 分）より短いスリープか、それを「しない」にしているときだけ起こします。muOS の「起こすまでスリープ」では起こしません。</li>
+<li><strong>EmuELEC</strong>：コンソールはスリープしないので、アプリがバックグラウンドなら鳴ります。</li>
+</ul>
+<p>アラームでコンソールを起こしたいときは、システムのスリープ後の自動電源オフを切るか、アラームまでの時間より長くしてください。</p>
 <figure><img class="px shot" src="../../img/alarm.png" alt="アラームのメニュー：オン、平日 07:30、再生するもの" width="360" height="240" loading="lazy"><figcaption>アラーム</figcaption></figure>
 
 <h2 id="queue">キュー</h2>

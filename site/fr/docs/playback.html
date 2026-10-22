@@ -106,7 +106,16 @@
 <figure><img class="px shot" src="../../img/audiobook-menu.png" alt="Le menu Plus d'un livre audio avec Chapitres, Vitesse 1,25× et Depuis le début" width="360" height="240" loading="lazy"><figcaption>Chapitres, vitesse et Depuis le début dans Plus</figcaption></figure>
 
 <h2 id="alarm">Réveil</h2>
-<p>Réglages → <strong>Réveil</strong> : l’<strong>Heure</strong>, les <strong>Jours</strong> (<strong>Tous les jours</strong>, <strong>En semaine</strong>, <strong>Le week-end</strong> ou <strong>Une fois</strong>) et <strong>Ce qui joue</strong> (<strong>Le dernier écouté</strong>, une playlist ou une station favorite). Le volume monte pendant une minute. C’est le service qui le joue, donc ça marche le lecteur fermé, et sur les consoles portables il programme l’horloge de la console pour la sortir de veille (pas si elle est éteinte). Si la console se réveille avec plus de 10 minutes de retard, il ne sonne pas. <strong>Essayer</strong> le teste.</p>
+<p>Réglages → <strong>Réveil</strong> : l’<strong>Heure</strong>, les <strong>Jours</strong> (<strong>Tous les jours</strong>, <strong>En semaine</strong>, <strong>Le week-end</strong> ou <strong>Une fois</strong>) et <strong>Ce qui joue</strong> (<strong>Le dernier écouté</strong>, une playlist ou une station favorite). Le volume monte pendant une minute. C’est le service qui le joue, donc ça marche le lecteur fermé ; qu’il sorte aussi une console de veille dépend du système (ci-dessous). Si la console se réveille avec plus de 10 minutes de retard, il ne sonne pas. <strong>Essayer</strong> le teste.</p>
+<p>Quand il sonne :</p>
+<ul>
+<li><strong>Toujours</strong> avec la console éveillée : l’app ouverte (aussi dans sa veille, écran éteint) ou en arrière-plan. Jamais console éteinte.</li>
+<li><strong>Knulli</strong> : il sort aussi la console de veille, même couvercle fermé (testé sur une RG34XX-SP).</li>
+<li><strong>ROCKNIX, ArkOS et dArkOS</strong> : il devrait aussi la réveiller, mais ce n’est pas encore testé.</li>
+<li><strong>muOS</strong> : il ne la réveille que si elle dort depuis moins longtemps que l’arrêt automatique de muOS (10 minutes par défaut), ou si celui-ci est sur jamais. Avec l’option de muOS « dormir jusqu’au réveil », non.</li>
+<li><strong>EmuELEC</strong> : la console ne se met jamais en veille, donc il sonne avec l’app en arrière-plan.</li>
+</ul>
+<p>Si le réveil doit sortir la console de veille, désactive l’arrêt après la veille du système, ou règle-le plus long que le temps restant avant le réveil.</p>
 <figure><img class="px shot" src="../../img/alarm.png" alt="Le menu du réveil : activé, à 07:30 en semaine, et ce qui joue" width="360" height="240" loading="lazy"><figcaption>Le réveil</figcaption></figure>
 
 <h2 id="queue">La file d’attente</h2>

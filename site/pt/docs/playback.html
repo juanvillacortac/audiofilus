@@ -106,7 +106,16 @@
 <figure><img class="px shot" src="../../img/audiobook-menu.png" alt="O menu Mais de um audiolivro com Capítulos, Velocidade 1,25× e Do começo" width="360" height="240" loading="lazy"><figcaption>Capítulos, velocidade e Do começo em Mais</figcaption></figure>
 
 <h2 id="alarm">Alarme</h2>
-<p>Ajustes → <strong>Alarme</strong>: a <strong>Hora</strong>, os <strong>Dias</strong> (<strong>Todos os dias</strong>, <strong>Dias úteis</strong>, <strong>Fim de semana</strong> ou <strong>Uma vez</strong>) e <strong>O que toca</strong> (<strong>O último que tocou</strong>, uma playlist ou uma rádio favorita). O volume sobe durante um minuto. Quem toca é o serviço, então funciona com o player fechado, e nos portáteis ele programa o relógio do console para acordá-lo da suspensão (não se estiver desligado). Se o console acordar mais de 10 minutos atrasado, não toca. <strong>Testar agora</strong> testa.</p>
+<p>Ajustes → <strong>Alarme</strong>: a <strong>Hora</strong>, os <strong>Dias</strong> (<strong>Todos os dias</strong>, <strong>Dias úteis</strong>, <strong>Fim de semana</strong> ou <strong>Uma vez</strong>) e <strong>O que toca</strong> (<strong>O último que tocou</strong>, uma playlist ou uma rádio favorita). O volume sobe durante um minuto. Quem toca é o serviço, então funciona com o player fechado; se ele também acorda o console suspenso depende do sistema (abaixo). Se o console acordar mais de 10 minutos atrasado, não toca. <strong>Testar agora</strong> testa.</p>
+<p>Quando ele toca:</p>
+<ul>
+<li><strong>Sempre</strong> com o console acordado: o app aberto (também no modo de suspensão dele, com a tela apagada) ou em segundo plano. Nunca com o console desligado.</li>
+<li><strong>Knulli</strong>: também acorda o console suspenso, mesmo com a tampa fechada (testado num RG34XX-SP).</li>
+<li><strong>ROCKNIX, ArkOS e dArkOS</strong>: deveria acordá-lo também, mas ainda não foi testado.</li>
+<li><strong>muOS</strong>: só acorda se ele estiver suspenso há menos tempo que o desligamento automático do muOS (10 minutos por padrão), ou se isso estiver em nunca. Com a opção do muOS de dormir até acordar, não.</li>
+<li><strong>EmuELEC</strong>: o console nunca entra em suspensão, então toca com o app em segundo plano.</li>
+</ul>
+<p>Se o alarme precisa acordar o console, desative o desligamento após a suspensão do sistema ou deixe-o mais longo que o tempo até o alarme.</p>
 <figure><img class="px shot" src="../../img/alarm.png" alt="O menu do alarme: ligado, às 07:30 nos dias úteis, e o que toca" width="360" height="240" loading="lazy"><figcaption>O alarme</figcaption></figure>
 
 <h2 id="queue">A fila</h2>

@@ -24,3 +24,15 @@ If something doesn't work on muOS, the most likely causes: its `muhotkey` grabbi
 Releases also ship `audiofilus.muxapp` (built by `build.sh`): a zip with an `audiofilus/` folder that muOS's Archive Manager extracts into its applications folder (`MUOS/application`), so audiofilus shows up in **Applications** instead of Ports. The folder holds `mux_launch.sh` (from `muos/audiofilus/`), the `glyph/audiofilus.png` icon its `ICON` header names, the arm64 binary and the licenses; settings and `data/` live in that same folder (`AUDIOFILUS_HOME`).
 
 muOS runs `mux_launch.sh <app folder>`. The launcher works with both launcher generations, Jacaranda and later (`SETUP_APP`) and the older ones (`SETUP_SDL_ENVIRONMENT`), sourcing whichever of `func.sh`, `stage.sh` and `retro.sh` exist. It needs nothing from PortMaster: the gamepad mapping comes from the system's SDL, and there is no `gptokeyb`. muOS closes an application with `pgrep -f <foreground_process>`, which would also match the music service (`audiofilusd daemon`). So the launcher starts the UI in the background and registers its **PID** as the foreground process, which muOS kills directly, and the music keeps playing only if "Background" was chosen, as with the port. Not tested on a muOS device yet.
+
+## Alarm
+
+The alarm (`daemon/alarm.go`) rings whenever the service runs and the console is awake. Waking a suspended console is best effort on muOS (from its source, not tested on a device):
+
+- **What suspends:** `script/system/suspend.sh` runs `mususpend --state mem`. There is no pre-suspend hook directory, so audiofilus can't re-arm the alarm right before sleeping as it does on Knulli; it writes it to the wake-capable RTC (on the H700 boards `rtc1`, relative to that clock's own time) when the alarm is set.
+- **Auto shutdown:** muOS writes its own shutdown timer to the RTC before suspending (default 600 s) and powers off when a wake comes after that deadline. So the alarm only wakes the console if it has been asleep for less than that timer, or if the timer is set to never.
+- **Sleep until wake:** with that option muOS writes `0` to the RTC to get its deepest standby, which clears the alarm.
+
+Tip for users: if the alarm must wake the console, turn off the shutdown after sleep, or set it longer than the time until the alarm.
+
+HDMI: `/sys/class/extcon/hdmi/cable.0/state` (`1` connected), read by `platform.ExternalDisplay`. muOS still sleeps on lid close with HDMI.
