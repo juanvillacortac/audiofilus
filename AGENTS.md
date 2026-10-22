@@ -5,7 +5,7 @@ A guide for coding agents (Claude Code, Codex, etc.) working on **audiofilus**: 
 ## Status
 
 - **Done:** the audio service and its CLI, the Ebitengine interface (library, player, visualizers, games, Subsonic/Jellyfin servers, radio, podcasts, and YouTube Music with each user's own yt-dlp), pocket mode, and integration with Knulli, muOS, ROCKNIX, ArkOS/dArkOS and EmuELEC. Measured on the console: [docs/power.md](docs/power.md).
-- **Pending:** desktop optimization (mouse, keyboard, windows), and later Android and iOS.
+- **Pending:** desktop optimization (mouse, keyboard, windows); the Android app is in progress ([docs/android.md](docs/android.md)).
 
 ## Working with the author
 
@@ -66,6 +66,7 @@ GOOS=windows go vet ./...
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
+| `mobile/`, `ios/`, `android/` | The phone apps: `mobile/` is audiofilus as a package for ebitenmobile; `ios/` the iOS app ([docs/ios.md](docs/ios.md)); `android/` the Android app, its build scripts and Gradle project ([docs/android.md](docs/android.md)) |
 | `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
 | `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/fdk-aac/` | `build.sh`: the same for libfdk-aac (M4A, M4B, AAC radio), which muOS and others don't ship |

@@ -103,7 +103,10 @@ type App struct {
 	quitting      bool // se pidió salir: Update termina el bucle
 	ptr           pointer
 	pendingFolder atomic.Pointer[string] // una carpeta elegida fuera (SetMusicFolder)
-	ptrOX, ptrOY  int                    // dónde empieza la interfaz en la pantalla (SetPointerOffset)
+	// El gesto Atrás del sistema (Android): backReq lo pide para el próximo
+	// fotograma; atRoot dice si ya no hay adónde volver (BackGesture).
+	backReq, atRoot atomic.Bool
+	ptrOX, ptrOY    int // dónde empieza la interfaz en la pantalla (SetPointerOffset)
 	// ExternalBackdrop: el fondo lo pinta quien la contiene, en toda la
 	// pantalla (el móvil, con DrawBackdrop): la interfaz no pinta el suyo y
 	// no se nota el borde de la zona segura.
@@ -352,6 +355,19 @@ var PickFolder func()
 // siguiente Update.
 func (a *App) SetMusicFolder(dir string) { a.pendingFolder.Store(&dir) }
 
+// BackGesture atiende el gesto Atrás del sistema (en Android; se llama desde
+// otro hilo). En Reproduciendo, sin menús ni teclado, no hay adónde volver:
+// devuelve false y la app pasa a segundo plano. Si no, cuenta como B en el
+// próximo fotograma.
+func (a *App) BackGesture() bool {
+	if a.atRoot.Load() {
+		return false
+	}
+	a.backReq.Store(true)
+	ebiten.ScheduleFrame()
+	return true
+}
+
 // startScan busca la música de la configuración en segundo plano.
 func (a *App) startScan() {
 	a.scan = StartScan(a.paths, a.cfg.MusicDirs)
@@ -424,6 +440,12 @@ func (a *App) Update() error {
 	}
 	pollFonts(a.ShotsDir != "" || a.FramesDir != "") // las capturas, con todas las letras
 	a.input.update()
+	if a.backReq.Swap(false) {
+		a.input.inject(ActBack)
+	}
+	defer func() {
+		a.atRoot.Store(a.screen == NowPlaying && a.menu == nil && !a.lyricsOn && !a.sleeping)
+	}()
 	a.updatePointer()
 	a.setBottomH()
 	a.covers.collect(a.t)

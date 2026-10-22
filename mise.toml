@@ -1,0 +1,8 @@
+# Las herramientas para compilar lo que no es Go puro: zig (libgme, libvgm,
+# fdk-aac y las DLL de Windows) y la app de Android (el SDK, con ANDROID_HOME,
+# y un JDK que Gradle acepte). El NDK y la plataforma se instalan dentro del
+# SDK: sdkmanager "ndk;28.2.13676358" "platforms;android-36" (ver docs/android.md).
+[tools]
+zig = "0.15.2"
+android-sdk = "latest"
+java = "temurin-21"

@@ -1,0 +1,7 @@
+.gradle/
+build/
+local.properties
+# Lo genera ebitenmobile desde mobile/ (android/build.sh).
+app/libs/
+# Las bibliotecas de los decodificadores, compiladas con el NDK.
+app/src/main/jniLibs/

@@ -476,6 +476,13 @@ func openWhenReady(list []string) {
 	}
 }
 
+// Back es el gesto Atrás del sistema: false si no hay adónde volver en la
+// interfaz (la app pasa entonces a segundo plano).
+func Back() bool {
+	a := g.current()
+	return a != nil && a.BackGesture()
+}
+
 // Play, Pause, Toggle, Next y Previous son los botones de la pantalla
 // bloqueada, el Centro de control y los auriculares.
 func Play()     { call("resume") }
