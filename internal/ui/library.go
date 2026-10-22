@@ -37,6 +37,7 @@ type Album struct {
 	Songs         []Song
 	coverPath     string // archivo del que sacar la portada; vacío si no tiene
 	stray         bool   // no está en la biblioteca (lo que suena de YouTube Music)
+	noAlbum       bool   // reúne las canciones sin álbum (su título es T("no_album"))
 
 	mu       sync.Mutex
 	decoded  bool // ya se leyó la portada una vez (para sus colores)
@@ -156,8 +157,9 @@ func buildLibrary(entries []entry) *Library {
 		if s.Title == "" {
 			s.Title = strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
 		}
-		if s.Album == "" {
-			s.Album = "Sin álbum"
+		noAlbum := s.Album == ""
+		if noAlbum {
+			s.Album = T("no_album")
 		}
 		albumArtist := firstArtist(e.AlbumArtist)
 		if albumArtist == "" {
@@ -166,7 +168,7 @@ func buildLibrary(entries []entry) *Library {
 		key := strings.ToLower(albumArtist + "\x00" + s.Album)
 		a := byKey[key]
 		if a == nil {
-			a = &Album{Title: s.Album, Artist: albumArtist, scaled: map[int]*coverImage{}}
+			a = &Album{Title: s.Album, Artist: albumArtist, noAlbum: noAlbum, scaled: map[int]*coverImage{}}
 			byKey[key] = a
 			lib.Albums = append(lib.Albums, a)
 		}
@@ -399,4 +401,28 @@ func (a *Album) decodeRemoteCover() image.Image {
 // entero si es una pista de un CUE (ver decode.CuePath).
 func audioFile(path string) string {
 	return decode.FileOf(path)
+}
+
+// relabel pone el nombre del disco sin álbum en el idioma actual (tras
+// cambiarlo en Ajustes).
+func (l *Library) relabel() {
+	if l == nil {
+		return
+	}
+	t := T("no_album")
+	for _, al := range l.Albums {
+		if !al.noAlbum {
+			continue
+		}
+		al.Title = t
+		for i := range al.Songs {
+			al.Songs[i].Album = t
+			l.song[al.Songs[i].Path] = al.Songs[i]
+		}
+	}
+	for i, s := range l.Songs {
+		if al := l.byPath[s.Path]; al != nil && al.noAlbum {
+			l.Songs[i].Album = t
+		}
+	}
 }

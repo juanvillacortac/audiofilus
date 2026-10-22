@@ -119,3 +119,19 @@ func TestQuizSkipsBooks(t *testing.T) {
 		t.Errorf("quiz pool %v, want only the song", g.pool)
 	}
 }
+
+// Las canciones sin álbum van a un disco con el nombre en el idioma de la
+// interfaz, que cambia al cambiar el idioma.
+func TestNoAlbumLanguage(t *testing.T) {
+	defer SetLanguage(lang)
+	SetLanguage("en")
+	lib := buildLibrary([]entry{{Path: "a.mp3", Title: "A"}})
+	if len(lib.Albums) != 1 || lib.Albums[0].Title != "No album" || lib.Songs[0].Album != "No album" {
+		t.Fatalf("album %q, song album %q, want No album", lib.Albums[0].Title, lib.Songs[0].Album)
+	}
+	SetLanguage("de")
+	lib.relabel()
+	if lib.Albums[0].Title != "Kein Album" || lib.Songs[0].Album != "Kein Album" || lib.song["a.mp3"].Album != "Kein Album" {
+		t.Errorf("after relabel: %q %q", lib.Albums[0].Title, lib.Songs[0].Album)
+	}
+}

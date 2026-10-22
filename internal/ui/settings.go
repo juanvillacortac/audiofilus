@@ -340,6 +340,7 @@ func (a *App) changeSetting(id, step int) {
 		_, i := a.settingChoice(id)
 		SetLanguage(languages[cycle(len(languages), i)])
 		a.cfg.Language = lang
+		a.local.relabel()
 		a.resetBrowse() // los títulos de las vistas están en el idioma anterior
 		a.saveConfig()
 	case setShuffle:

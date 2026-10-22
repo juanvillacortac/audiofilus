@@ -141,7 +141,7 @@ func buildRemoteLibrary(server string, cat catalog) (*Library, map[string]remote
 	entries := make([]entry, 0, len(cat.Songs))
 	songs := make(map[string]remote.Song, len(cat.Songs))
 	for _, s := range cat.Songs {
-		if s.Album == "[Unknown Album]" { // Navidrome: como la biblioteca local, "Sin álbum"
+		if s.Album == "[Unknown Album]" { // Navidrome: como en la biblioteca local, sin álbum
 			s.Album = ""
 		}
 		e := entry{Path: remote.SongPath(server, s.ID), Title: s.Title, Artist: s.Artist,

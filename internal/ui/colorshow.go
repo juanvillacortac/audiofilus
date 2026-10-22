@@ -56,7 +56,7 @@ func mixTheme(a, b Theme, t float64) Theme {
 func (a *App) pickColorful(n int) []*Album {
 	var cands []*Album
 	for _, al := range a.lib.Albums {
-		if al.HasCover() && len(al.Songs) > 0 && al.Title != "Sin álbum" {
+		if al.HasCover() && len(al.Songs) > 0 && !al.noAlbum {
 			cands = append(cands, al)
 			a.cover(al, 16)
 		}

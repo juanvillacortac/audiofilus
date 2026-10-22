@@ -994,7 +994,7 @@ func (a *App) simulatePlaying() {
 	sel := -1
 	for i, al := range a.lib.Albums {
 		want := a.ShotsAlbum == "" || strings.Contains(strings.ToLower(al.Artist+" "+al.Title), strings.ToLower(a.ShotsAlbum))
-		if want && al.Title != "Sin álbum" && len(al.Songs) >= 5 && al.HasCover() {
+		if want && !al.noAlbum && len(al.Songs) >= 5 && al.HasCover() {
 			sel = i
 			break
 		}
