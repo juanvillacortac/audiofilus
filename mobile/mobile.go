@@ -277,6 +277,7 @@ func start(home, tmp, langs string) error {
 		return err
 	}
 	os.Setenv("AUDIOFILUS_SOCKET", "audiofilus.sock")
+	ui.UpdateDir = filepath.Join(tmp, "update") // el APK nuevo (Android)
 	paths, err := config.Locate()
 	if err != nil {
 		return err
@@ -362,6 +363,20 @@ func start(home, tmp, langs string) error {
 	g.app = app
 	g.mu.Unlock()
 	return nil
+}
+
+// Installer es lo que instala una versión nueva de la app: solo la app de
+// Android de GitHub (la de Google Play y la de iOS las actualiza la tienda o
+// AltStore). Aparte de Host para no pedírselo a iOS.
+type Installer interface {
+	// InstallPackage le pasa al sistema el APK bajado (y comprobado) en path.
+	InstallPackage(path string)
+}
+
+// SetInstaller activa Ajustes → Actualizar con ese instalador. Llamarla
+// antes de Start.
+func SetInstaller(i Installer) {
+	ui.InstallPackage = i.InstallPackage
 }
 
 // SetHost le da a audiofilus la app que abre el selector de carpetas.

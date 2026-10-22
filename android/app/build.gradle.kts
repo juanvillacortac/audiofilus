@@ -37,6 +37,14 @@ android {
             }
         }
     }
+    // Dos versiones de la misma app: la de GitHub se actualiza sola (Ajustes →
+    // Actualizar, con el permiso de instalar paquetes); la de Google Play no
+    // puede pedir ese permiso y la actualiza la tienda.
+    flavorDimensions += "store"
+    productFlavors {
+        create("github") { dimension = "store" }
+        create("play") { dimension = "store" }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false

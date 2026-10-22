@@ -170,7 +170,7 @@ func (a *App) sections() []settingSection {
 	hide := map[int]bool{setSleep: !a.canSleep(), setSleepMode: !a.canSleep(),
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
-		setRate: a.mobile(), setUpdate: a.mobile(), setResampler: a.mobile(),
+		setRate: a.mobile(), setUpdate: a.mobile() && InstallPackage == nil, setResampler: a.mobile(),
 		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(),
 		// En el móvil no hay explorador de carpetas fuera de la app.
 		setMilkDir: a.mobile(), setRadioDir: a.mobile()}

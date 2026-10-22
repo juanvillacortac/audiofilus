@@ -22,13 +22,16 @@
 
     <!-- requestLegacyExternalStorage: en Android 10 deja leer la música por su
          ruta (también en la SD); desde Android 11 la ruta funciona con el
-         permiso de audio y esto se ignora. -->
+         permiso de audio y esto se ignora. enableOnBackInvokedCallback: el
+         gesto Atrás llega a MainActivity (OnBackInvokedCallback) también en
+         Android 13 a 15; sin esto solo en Android 16, y antes cerraba la app. -->
     <application
         android:label="audiofilus"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.Audiofilus"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
+        android:enableOnBackInvokedCallback="true"
         android:appCategory="audio"
         android:isGame="false">
 

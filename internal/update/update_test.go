@@ -137,6 +137,29 @@ func TestInstallBadChecksum(t *testing.T) {
 	}
 }
 
+// Fetch (la app de Android) baja el APK comprobado a donde se pide, y con un
+// SHA256 que no coincide no deja nada.
+func TestFetchAPK(t *testing.T) {
+	dest := filepath.Join(t.TempDir(), "update", APK)
+	fakeGitHub(t, APK, []byte("new apk"), "")
+	rel, _ := Latest(context.Background())
+	if err := Fetch(context.Background(), rel, APK, dest, nil); err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := os.ReadFile(dest); string(b) != "new apk" {
+		t.Errorf("apk %q", b)
+	}
+	bad := filepath.Join(t.TempDir(), APK)
+	fakeGitHub(t, APK, []byte("evil apk"), "00")
+	rel, _ = Latest(context.Background())
+	if err := Fetch(context.Background(), rel, APK, bad, nil); err == nil {
+		t.Error("fetched an apk with a wrong checksum")
+	}
+	if _, err := os.Stat(bad); err == nil {
+		t.Error("a bad apk was written")
+	}
+}
+
 // Un paquete con rutas que salen de la instalación no escribe fuera.
 func TestInstallZipSlip(t *testing.T) {
 	root, exe := portDir(t)

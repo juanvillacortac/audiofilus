@@ -21,8 +21,16 @@ import (
 // las releases de GitHub si hay una versión nueva; si la hay, se avisa una
 // vez, y en Ajustes → Actualizar se instala con A: baja el paquete de esta
 // instalación, comprueba su SHA256, cambia los archivos y reinicia el
-// servicio y la interfaz (la música sigue donde iba). En el móvil no: allí
-// actualiza AltStore o la tienda.
+// servicio y la interfaz (la música sigue donde iba). En la app de Android de
+// GitHub, igual pero con el APK, que instala el sistema (InstallPackage); en
+// iOS y en la de Google Play no: allí actualiza AltStore o la tienda.
+
+// InstallPackage, si está (la app de Android de GitHub), le pasa al sistema
+// el APK bajado para que lo instale; UpdateDir es dónde se baja.
+var (
+	InstallPackage func(path string)
+	UpdateDir      string
+)
 
 // updateState es lo que se sabe de las actualizaciones.
 type updateState struct {
@@ -82,8 +90,17 @@ func (a *App) canUpdate() bool {
 		u.kind = update.Detect(u.exe)
 		update.Cleanup(u.exe)
 	}
-	return !a.mobile() && !a.offline && u.kind != update.None && version.Version != "dev"
+	if a.offline || version.Version == "dev" {
+		return false
+	}
+	if a.mobile() {
+		return InstallPackage != nil && UpdateDir != ""
+	}
+	return u.kind != update.None
 }
+
+// apkPath es dónde se baja el APK de la app de Android.
+func apkPath() string { return filepath.Join(UpdateDir, update.APK) }
 
 // checkUpdate mira la última release en segundo plano.
 func (a *App) checkUpdate() {
@@ -151,12 +168,19 @@ func (a *App) pressUpdate() {
 		u.dlDone.Store(0)
 		u.dlSize.Store(-1)
 		rel, exe := u.latest, u.exe
+		mobile := a.mobile()
 		go func(done chan updateResult) {
-			err := update.Install(context.Background(), rel, exe, func(d, t int64) {
+			progress := func(d, t int64) {
 				u.dlDone.Store(d)
 				u.dlSize.Store(t)
 				ebiten.ScheduleFrame()
-			})
+			}
+			var err error
+			if mobile {
+				err = update.Fetch(context.Background(), rel, update.APK, apkPath(), progress)
+			} else {
+				err = update.Install(context.Background(), rel, exe, progress)
+			}
 			done <- updateResult{installed: true, err: err}
 			ebiten.ScheduleFrame()
 		}(u.done)
@@ -175,6 +199,13 @@ func (a *App) finishUpdate(err error) {
 		log.Printf("update install: %v", err)
 		u.err = err.Error()
 		a.flash(T("upd_failed", err))
+		return
+	}
+	if a.mobile() {
+		// El sistema pide confirmar y cambia la app (y la reabre).
+		log.Printf("update: %s downloaded; handing it to the installer", u.latest.Tag)
+		a.flash(T("upd_confirm", u.latest.Tag))
+		InstallPackage(apkPath())
 		return
 	}
 	log.Printf("updated to %s; restarting", u.latest.Tag)

@@ -43,6 +43,8 @@ class MainActivity : Activity(), Host {
     private var settingText = false
     private var keyboardShown = false
     private var imeVisible = false
+    // home es la carpeta de audiofilus (homeDir).
+    private var home = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +52,9 @@ class MainActivity : Activity(), Host {
 
         Media.init(applicationContext)
         Mobile.setHost(this)
-        Mobile.start(homeDir().path, cacheDir.path, languages())
+        Store.setup(this)
+        home = homeDir().path
+        Mobile.start(home, cacheDir.path, languages())
 
         val root = FrameLayout(this)
         game = GameView(this)
@@ -91,11 +95,26 @@ class MainActivity : Activity(), Host {
 
     // homeDir es la carpeta de audiofilus (audiofilus.json, data/, el log):
     // la de la app en el almacenamiento compartido, que se ve desde el PC por
-    // USB (Android/data/...); si no está, la interna.
+    // USB (Android/data/...); si no está o no se puede usar (archivos de una
+    // instalación anterior con otro dueño), la interna.
     private fun homeDir(): File {
-        val dir = getExternalFilesDir(null) ?: filesDir
+        val ext = getExternalFilesDir(null)
+        if (ext != null && usable(ext)) return ext
+        Log.w(TAG, "home: $ext not usable, using ${filesDir.path}")
+        filesDir.mkdirs()
+        return filesDir
+    }
+
+    // usable dice si audiofilus puede escribir en dir y leer lo suyo que ya
+    // haya ahí.
+    private fun usable(dir: File): Boolean = try {
         dir.mkdirs()
-        return dir
+        File(dir, ".probe").apply { writeText("ok"); delete() }
+        listOf("audiofilus.json", "data").map { File(dir, it) }.all { f ->
+            !f.exists() || f.canRead() && (!f.isDirectory || f.canWrite())
+        }
+    } catch (_: Exception) {
+        false
     }
 
     // languages son los idiomas del sistema, "es-VE,en-US".
@@ -227,7 +246,13 @@ class MainActivity : Activity(), Host {
             contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } catch (_: SecurityException) {
         }
-        val path = treePath(DocumentsContract.getTreeDocumentId(uri)) ?: return
+        val id = DocumentsContract.getTreeDocumentId(uri)
+        Log.i(TAG, "picked folder: ${uri.authority} $id")
+        val path = treePath(uri.authority, id)
+        if (path == null) {
+            Toast.makeText(this, getString(R.string.folder_unreadable, "${uri.authority}: $id"), Toast.LENGTH_LONG).show()
+            return
+        }
         // audiofilus lee la música por su ruta: sin el permiso de audio (o si
         // el sistema no deja listar esa carpeta) no encontraría nada.
         if (!canReadAudio()) {
@@ -251,7 +276,7 @@ class MainActivity : Activity(), Host {
             return
         }
         Mobile.setMusicFolder(path)
-        getSharedPreferences("audiofilus", MODE_PRIVATE).edit().putBoolean("folder_set", true).apply()
+        getSharedPreferences("audiofilus", MODE_PRIVATE).edit().putString("folder_for", home).apply()
     }
 
     private fun canReadAudio(): Boolean = checkSelfPermission(
@@ -301,16 +326,17 @@ class MainActivity : Activity(), Host {
     }
 
     // firstFolder pone la carpeta Music del teléfono como la de la música,
-    // una sola vez (después manda lo que elija el usuario en Ajustes).
+    // una sola vez por carpeta de audiofilus (después manda lo que elija el
+    // usuario en Ajustes; si audiofilus cambió de carpeta, otra vez).
     private fun firstFolder() {
         if (!canReadAudio()) return
         val prefs = getSharedPreferences("audiofilus", MODE_PRIVATE)
-        if (prefs.getBoolean("folder_set", false)) return
+        if (prefs.getString("folder_for", null) == home) return
         @Suppress("DEPRECATION")
         val music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
         if (music.isDirectory) {
             Mobile.setMusicFolder(music.path)
-            prefs.edit().putBoolean("folder_set", true).apply()
+            prefs.edit().putString("folder_for", home).apply()
         }
     }
 
@@ -319,10 +345,14 @@ class MainActivity : Activity(), Host {
         private const val PICK_FOLDER = 1
         private const val PERMISSIONS = 2
 
-        // treePath convierte el documento de una carpeta elegida
-        // ("primary:Music/Rock", "1A2B-3C4D:Música") en su ruta.
+        // treePath convierte el documento de una carpeta elegida en su ruta:
+        // los del almacenamiento del sistema ("primary:Music/Rock",
+        // "1A2B-3C4D:Música") y los que ya la llevan ("raw:/storage/...", de
+        // algunos gestores de archivos). De otros proveedores, null.
         @Suppress("DEPRECATION")
-        fun treePath(id: String): String? {
+        fun treePath(authority: String?, id: String): String? {
+            if (id.startsWith("raw:/")) return id.removePrefix("raw:")
+            if (authority != "com.android.externalstorage.documents") return null
             val (volume, rel) = id.split(":", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
             val base = if (volume == "primary") Environment.getExternalStorageDirectory().path else "/storage/$volume"
             return if (rel.isEmpty()) base else "$base/$rel"

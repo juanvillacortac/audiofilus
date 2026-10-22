@@ -7,10 +7,18 @@ on:
   workflow_dispatch:
   workflow_call:
     secrets:
+      LASTFM_KEY:
+        required: false
+      LASTFM_SECRET:
+        required: false
       ANDROID_KEYSTORE_BASE64:
+        required: false
       ANDROID_KEYSTORE_PASSWORD:
+        required: false
       ANDROID_KEY_ALIAS:
+        required: false
       ANDROID_KEY_PASSWORD:
+        required: false
 
 jobs:
   apk:
@@ -48,6 +56,8 @@ jobs:
           AUDIOFILUS_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           AUDIOFILUS_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           AUDIOFILUS_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
         run: |
           # The app's version is the tag's (v0.15.0 -> 0.15.0).
           [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=${GITHUB_REF_NAME#v}
@@ -55,8 +65,9 @@ jobs:
             echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
             export AUDIOFILUS_KEYSTORE="$RUNNER_TEMP/release.jks"
           fi
-          android/build.sh release
-          cp android/app/build/outputs/apk/release/app-release.apk audiofilus.apk
+          # The GitHub one, which updates itself (Settings → Update).
+          android/build.sh release github
+          cp android/app/build/outputs/apk/github/release/app-github-release.apk audiofilus.apk
 
       - uses: actions/upload-artifact@v4
         with:

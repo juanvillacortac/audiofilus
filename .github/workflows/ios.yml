@@ -6,6 +6,11 @@ name: iOS
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      LASTFM_KEY:
+        required: false
+      LASTFM_SECRET:
+        required: false
 
 jobs:
   ipa:
@@ -29,7 +34,17 @@ jobs:
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
       - name: audiofilus, as a framework
-        run: ebitenmobile bind -target ios -iosversion 15.0 -trimpath -o ios/Mobile.xcframework ./mobile
+        env:
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+        run: |
+          # The version (the tag, as in build.sh) and the Last.fm keys.
+          pkg=github.com/juanvillacortac/audiofilus/internal
+          version=dev
+          [ "$GITHUB_REF_TYPE" = tag ] && version=$GITHUB_REF_NAME
+          ebitenmobile bind -target ios -iosversion 15.0 -trimpath \
+            -ldflags "-X $pkg/version.Version=$version -X $pkg/scrobble.DefaultLastFMKey=$LASTFM_KEY -X $pkg/scrobble.DefaultLastFMSecret=$LASTFM_SECRET" \
+            -o ios/Mobile.xcframework ./mobile
 
       - name: The Xcode project
         run: |

@@ -182,28 +182,9 @@ func Install(ctx context.Context, rel *Release, exe string, progress Progress) e
 	if name == "" {
 		return errors.New("this installation can't update itself")
 	}
-	url, ok := rel.Assets[name]
-	if !ok {
-		return fmt.Errorf("%s: not in release %s", name, rel.Tag)
-	}
-	sumsURL, ok := rel.Assets["SHA256SUMS"]
-	if !ok {
-		return fmt.Errorf("SHA256SUMS: not in release %s", rel.Tag)
-	}
-	sums, err := download(ctx, sumsURL, nil)
+	data, err := verified(ctx, rel, name, progress)
 	if err != nil {
 		return err
-	}
-	want, err := sumFor(sums, name)
-	if err != nil {
-		return err
-	}
-	data, err := download(ctx, url, progress)
-	if err != nil {
-		return err
-	}
-	if got := sha256.Sum256(data); hex.EncodeToString(got[:]) != want {
-		return fmt.Errorf("%s: checksum mismatch", name)
 	}
 	files, err := extract(k, data)
 	if err != nil {
@@ -212,7 +193,54 @@ func Install(ctx context.Context, rel *Release, exe string, progress Progress) e
 	return place(k, filepath.Dir(exe), files)
 }
 
-// download baja url entera a memoria (los paquetes son de unos 20 MB).
+// APK es el paquete de la app de Android (la de GitHub: la de Google Play
+// la actualiza la tienda).
+const APK = "audiofilus.apk"
+
+// Fetch baja el paquete name de rel a dest, comprobado con su SHA256 (para
+// la app de Android, que lo instala el sistema).
+func Fetch(ctx context.Context, rel *Release, name, dest string, progress Progress) error {
+	data, err := verified(ctx, rel, name, progress)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(dest, data, 0o644)
+}
+
+// verified baja el paquete name de rel y comprueba su SHA256 con el
+// SHA256SUMS de la release.
+func verified(ctx context.Context, rel *Release, name string, progress Progress) ([]byte, error) {
+	url, ok := rel.Assets[name]
+	if !ok {
+		return nil, fmt.Errorf("%s: not in release %s", name, rel.Tag)
+	}
+	sumsURL, ok := rel.Assets["SHA256SUMS"]
+	if !ok {
+		return nil, fmt.Errorf("SHA256SUMS: not in release %s", rel.Tag)
+	}
+	sums, err := download(ctx, sumsURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	want, err := sumFor(sums, name)
+	if err != nil {
+		return nil, err
+	}
+	data, err := download(ctx, url, progress)
+	if err != nil {
+		return nil, err
+	}
+	if got := sha256.Sum256(data); hex.EncodeToString(got[:]) != want {
+		return nil, fmt.Errorf("%s: checksum mismatch", name)
+	}
+	return data, nil
+}
+
+// download baja url entera a memoria (los paquetes son de unos 20 MB; el APK,
+// de unos 40).
 func download(ctx context.Context, url string, progress Progress) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {

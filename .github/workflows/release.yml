@@ -12,6 +12,7 @@ permissions:
 jobs:
   ios:
     uses: ./.github/workflows/ios.yml
+    secrets: inherit
 
   android:
     uses: ./.github/workflows/android.yml
