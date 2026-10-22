@@ -50,6 +50,26 @@ func TestTrackBooksMarks(t *testing.T) {
 	}
 }
 
+// Al volver a abrir la interfaz con un libro sonando de fondo no se salta a
+// la marca guardada (la de cuando se cerró): el servicio sabe por dónde va.
+// Un libro que empieza después sí sigue donde se dejó.
+func TestTrackBooksReopen(t *testing.T) {
+	a := &App{offline: true}
+	a.books.loaded = true
+	a.books.marks = map[string]bookMark{"a.m4b": {Path: "a.m4b", Pos: 754}, "b.m4b": {Path: "b.m4b", Pos: 300}}
+	a.status.Platform = "muos"
+	a.playingSong.Path, a.duration, a.position = "a.m4b", 3600, 0
+	a.trackBooks()
+	if a.message != "" {
+		t.Errorf("reopening resumed the book: %q", a.message)
+	}
+	a.playingSong.Path, a.position = "b.m4b", 0
+	a.trackBooks()
+	if a.message != T("bk_resume", clock(300)) {
+		t.Errorf("a book that starts later didn't resume: %q", a.message)
+	}
+}
+
 // El capítulo que suena y su línea; sin capítulos, ninguna.
 func TestChapterLine(t *testing.T) {
 	a := &App{}

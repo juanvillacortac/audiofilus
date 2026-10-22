@@ -45,14 +45,18 @@ type bookMark struct {
 
 // bookState es lo de los libros en la interfaz.
 type bookState struct {
-	loaded   bool
-	marks    map[string]bookMark // por libro (bookKey)
-	dirty    bool
-	savedAt  float64
-	handled  string            // la pista ya atendida al empezar (reanudar, velocidad)
-	chapters []decode.Chapter  // los del archivo que suena
-	chFor    string            // de qué archivo son
-	chCh     chan bookChapters // los que llegan de leerlos en segundo plano
+	loaded  bool
+	marks   map[string]bookMark // por libro (bookKey)
+	dirty   bool
+	savedAt float64
+	handled string // la pista ya atendida al empezar (reanudar, velocidad)
+	// connected: ya llegó el primer estado del servicio; initial, la pista
+	// que estaba cargada entonces (hasta atenderla).
+	connected bool
+	initial   string
+	chapters  []decode.Chapter  // los del archivo que suena
+	chFor     string            // de qué archivo son
+	chCh      chan bookChapters // los que llegan de leerlos en segundo plano
 }
 
 type bookChapters struct {
@@ -142,12 +146,19 @@ func (a *App) trackBooks() {
 	default:
 	}
 	path := a.playingSong.Path
+	// La pista que ya estaba cargada al conectarse la interfaz (se volvió a
+	// abrir con el libro sonando de fondo) no empieza: el servicio sabe por
+	// dónde va, y la marca es de cuando se cerró la interfaz.
+	if !b.connected && a.status.Platform != "" {
+		b.connected, b.initial = true, path
+	}
 	if path == "" {
 		return
 	}
 	if b.handled != path {
 		b.handled = path
-		a.startedTrack(path)
+		a.startedTrack(path, path != b.initial)
+		b.initial = ""
 	}
 	if !a.isBook(path) || a.duration <= 0 {
 		return
@@ -164,8 +175,8 @@ func (a *App) trackBooks() {
 }
 
 // startedTrack atiende una pista que empieza: la velocidad (la de los libros
-// y podcasts, o la normal) y, en un libro, seguir donde se dejó.
-func (a *App) startedTrack(path string) {
+// y podcasts, o la normal) y, en un libro, seguir donde se dejó (si resume).
+func (a *App) startedTrack(path string, resume bool) {
 	b := &a.books
 	speed := 1.0
 	if a.spoken() {
@@ -182,7 +193,7 @@ func (a *App) startedTrack(path string) {
 		b.chCh <- bookChapters{path, decode.Chapters(path)}
 	}()
 	m, ok := b.marks[bookKey(path)]
-	if !ok || a.position > 5 {
+	if !ok || !resume || a.position > 5 {
 		return
 	}
 	switch {
