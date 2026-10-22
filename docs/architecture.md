@@ -90,7 +90,7 @@ The C libraries are loaded at runtime with purego (`decode/native.go`), without 
 |---|---|---|---|
 | MP3 | `libmpg123` (C); otherwise `hajimehoshi/go-mp3` | 0.6 % (go-mp3: ~18 %) | |
 | Opus (`.opus`, `.ogg`) | `libopusfile` (C) | 1.4 % | Always 48 kHz |
-| AAC (`.m4a`, `.mp4`) | `libfdk-aac` (C) + our own MP4 reader (`decode/mp4.go`) | 2.0 % | HE-AAC comes out at double the sample rate |
+| AAC (`.m4a`, `.mp4`) | `libfdk-aac` (C) + our own MP4 reader (`decode/mp4.go`) | 2.0 % | HE-AAC comes out at double the sample rate. The packages bundle it in `libs.<arch>` (`tools/fdk-aac/build.sh`): Knulli ships it, muOS doesn't |
 | ALAC (`.m4a`) | Pure Go (`decode/alac`, from `alicebob/alac`, MIT) + `mp4.go` | 3.7 % | 16 and 24 bits, mono and stereo |
 | Ogg Vorbis | Pure Go (`jfreymuth/oggvorbis`) | 2.7 % | |
 | FLAC | Pure Go (`mewkiz/flac`) | 5.3 % | Seeks by bisecting frame headers (no seek table needed, ~40 ms on the console), then decodes up to the requested frame |

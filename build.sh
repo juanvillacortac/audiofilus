@@ -75,6 +75,17 @@ if [ -d build/libvgm ]; then
 else
   echo "build/libvgm missing: the packages go without libvgm (tools/libvgm/build.sh)" >&2
 fi
+# libfdk-aac (M4A, M4B, radios AAC), igual, si se compiló con
+# tools/fdk-aac/build.sh build/fdk-aac: Knulli la trae, muOS y otros no.
+if [ -d build/fdk-aac ]; then
+  for a in aarch64 x86_64; do
+    mkdir -p "$pkg/audiofilus/libs.$a"
+    cp build/fdk-aac/libs.$a/libfdk-aac.so.2 "$pkg/audiofilus/libs.$a/"
+  done
+  cp build/fdk-aac/fdk-aac-LICENSE.txt build/fdk-aac/fdk-aac-SOURCE.txt "$pkg/audiofilus/licenses/"
+else
+  echo "build/fdk-aac missing: the packages go without libfdk-aac (tools/fdk-aac/build.sh)" >&2
+fi
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip
 
@@ -92,6 +103,10 @@ cp -r "$pkg/audiofilus/licenses" "$app/audiofilus/"
 if [ -d build/libvgm ]; then
   mkdir -p "$app/audiofilus/libs.aarch64"
   cp build/libvgm/libs.aarch64/libvgmshim.so "$app/audiofilus/libs.aarch64/"
+fi
+if [ -d build/fdk-aac ]; then
+  mkdir -p "$app/audiofilus/libs.aarch64"
+  cp build/fdk-aac/libs.aarch64/libfdk-aac.so.2 "$app/audiofilus/libs.aarch64/"
 fi
 chmod +x "$app/audiofilus/mux_launch.sh" "$app/audiofilus/audiofilus.aarch64"
 (cd "$app" && zip -qr ../audiofilus.muxapp .)
