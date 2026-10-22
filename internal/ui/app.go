@@ -2405,6 +2405,7 @@ func (a *App) writeFrames() error {
 		a.t = base + float64(i)/20
 		a.position = start + float64(i)/20*1.25
 		a.shownPos = a.position
+		a.spin += 2 * a.spinSpeed() // a 20 fps, lo que giraría en tres fotogramas de 60 (el tercero, al dibujar)
 		for k := 0; k < 3; k++ {
 			a.beatHit = a.updateBeat()
 			a.updatePump()
