@@ -57,7 +57,7 @@ func (d *Daemon) watchJack(stop <-chan struct{}) {
 		}
 		if known && was && !plugged {
 			log.Print("headphones unplugged: pause")
-			d.eng.Pause()
+			d.eng.PauseNow() // en seco: el fundido sonaría por el altavoz
 		}
 		was, known = plugged, true
 	}

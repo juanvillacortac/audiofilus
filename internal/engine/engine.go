@@ -577,6 +577,24 @@ func (e *Engine) Pause() {
 	}()
 }
 
+// PauseNow pausa en seco, sin el fundido de Pause: al desenchufar los
+// audífonos, porque ese fundido (y la espera al búfer) sonaba por el altavoz.
+// El volumen va a cero y el dispositivo se suspende al momento; al volver a
+// sonar, Play sube desde cero como siempre.
+func (e *Engine) PauseNow() {
+	e.mu.Lock()
+	if !e.playing {
+		e.mu.Unlock()
+		return
+	}
+	e.setPlayingLocked(false)
+	e.fadeGen++ // cancela cualquier fundido en curso
+	e.mu.Unlock()
+	e.player.SetVolume(0)
+	e.player.Pause()
+	_ = e.ctx.Suspend()
+}
+
 // rampVolume lleva el volumen del player de from a to en sec segundos, por
 // pasos. Devuelve false si otro fundido lo canceló.
 func (e *Engine) rampVolume(gen int, from, to, sec float64) bool {
