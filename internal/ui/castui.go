@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/juanvillacortac/audiofilus/internal/cast"
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/dlna"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
 )
@@ -97,6 +99,10 @@ func (a *App) castSearch() {
 	ch := a.castEvents()
 	go func() {
 		devs, err := cast.Discover(context.Background(), 3*time.Second)
+		// El renderer DLNA de este mismo audiofilus también aparece: fuera.
+		if own := dlna.RendererUDN(a.paths.Data); own != "" {
+			devs = slices.DeleteFunc(devs, func(d cast.Device) bool { return strings.EqualFold(d.ID, own) })
+		}
 		ch <- castEvent{devs: devs, found: true, err: err}
 		ebiten.ScheduleFrame()
 	}()

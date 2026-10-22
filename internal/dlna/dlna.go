@@ -228,6 +228,17 @@ func (s *Service) mux() http.Handler {
 
 // persistentUUID es el UUID guardado en data/<name> (lo crea la primera vez):
 // el mismo equipo tiene que verse siempre igual en la red.
+// RendererUDN es el UDN ("uuid:...") del renderer de este audiofilus, el
+// guardado en dataDir ("" si nunca se encendió): así "Enviar a" no se ofrece
+// a sí mismo.
+func RendererUDN(dataDir string) string {
+	b, err := os.ReadFile(filepath.Join(dataDir, "dlna-renderer.uuid"))
+	if id := strings.TrimSpace(string(b)); err == nil && len(id) == 36 {
+		return "uuid:" + id
+	}
+	return ""
+}
+
 func persistentUUID(dataDir, name string) string {
 	p := filepath.Join(dataDir, name)
 	if b, err := os.ReadFile(p); err == nil {

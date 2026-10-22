@@ -520,3 +520,16 @@ func xmlValid(b []byte) error {
 		}
 	}
 }
+
+// TestRendererUDN comprueba que RendererUDN da el UDN del renderer guardado
+// (el que anuncia por SSDP) y nada si nunca se creó.
+func TestRendererUDN(t *testing.T) {
+	dir := t.TempDir()
+	if got := RendererUDN(dir); got != "" {
+		t.Errorf("RendererUDN before creating = %q, want empty", got)
+	}
+	id := persistentUUID(dir, "dlna-renderer.uuid")
+	if got := RendererUDN(dir); got != "uuid:"+id {
+		t.Errorf("RendererUDN = %q, want %q", got, "uuid:"+id)
+	}
+}
