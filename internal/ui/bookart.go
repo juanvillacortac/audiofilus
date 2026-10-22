@@ -90,34 +90,35 @@ func drawCassette(dst *ebiten.Image, cx, cy, r int, angle, progress float64, th 
 }
 
 // bookSprite es el libro abierto de los audiolibros sin portada, dibujado a
-// mano píxel a píxel como los iconos (29×24): o contorno, P página, S y s
-// sombra de la página, T texto, C tapa (el color del disco), D su sombra y
-// R la cinta de marcapáginas (el segundo color).
+// mano píxel a píxel como los iconos (31×24): o contorno, P página, S su
+// sombra junto al lomo, s el canto de las hojas, T texto, C la tapa (el
+// color del disco), que asoma a los lados y por debajo siguiendo la curva de
+// las hojas, y R la cinta de marcapáginas (el segundo color).
 const bookSprite = `
-.............................
-...oooooo...........oooooo...
-..oPPPPPPooo.....oooPPPPPPo..
-.oPPPPPPPPPPoo.ooPPPPPPPPPPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPTTTTTPPPPSoSPPTTTTTTTPPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPTTTTTTTPPSoSPPTTTTTTTTPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPTTTTTTPPPSoSPPTTTTTTPPPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPTTTTTTTPPSoSPPTTTTTTTTPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPTTTTPPPPPSoSPPTTTTTPPPPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.oPPPPPPPPPPPSoSPPPPPPPPPPPo.
-.osPPPPPPPPPPSoSPPPPPPPPPPso.
-.ossssPPPPPPPSoSPPPPPPPsssso.
-oCoooossssPPPSoSPPPssssooooCo
-oCCCCCoooosssSoSsssooooCCCCCo
-oCCCCCCCCCooooRooooCCCCCCCCCo
-oDDDDDDDDDDDDDRDDDDDDDDDDDDDo
-.oooooooooooooRooooooooooooo.
-..............R..............`
+.oooooo.................oooooo.
+oPPPPPPooo...........oooPPPPPPo
+oPPPPPPPPPoo.......ooPPPPPPPPPo
+oPPPPPPPPPPPoo...ooPPPPPPPPPPPo
+oCPPPPPPPPPPPPoooPPPPPPPPPPPPCo
+oCPTTTTTTTPPPPSoSPPTTTTTTTTPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPTTTTTTTTTPPSoSPPTTTTTTTPPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPTTTTTTTTPPPSoSPPTTTTTTTTTPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPTTTTTTTTTPPSoSPPTTTTTTTTPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPTTTTTTPPPPPSoSPPTTTTTPPPPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
+oCsssPPPPPPPPPSoSPPPPPPPPPsssCo
+oCCCCsssssPPPPSoSPPPPsssssCCCCo
+oCCCCCCCCCssssSoSssssCCCCCCCCCo
+.ooooCCCCCCCCCsosCCCCCCCCCoooo.
+.....oooooCCCCCRCCCCCooooo.....
+..........ooooCRCoooo..........
+..............oRo..............`
 
 // bookSprites son los libros ya pintados, por tema (cambia con el disco).
 var bookSprites = map[Theme]*ebiten.Image{}
@@ -132,10 +133,9 @@ func bookImage(th Theme) *ebiten.Image {
 		'o': mix(th.Shadow, color.RGBA{0x1a, 0x14, 0x22, 0xff}, 0.5),
 		'P': {0xee, 0xe6, 0xd2, 0xff},
 		'S': {0xce, 0xc2, 0xac, 0xff},
-		's': {0xd6, 0xcc, 0xb8, 0xff},
+		's': {0xc8, 0xbc, 0xa6, 0xff},
 		'T': {0x96, 0x8c, 0x80, 0xff},
 		'C': th.Accent,
-		'D': mix(th.Accent, th.Shadow, 0.4),
 		'R': th.Accent2,
 	}
 	img := image.NewRGBA(image.Rect(0, 0, len(rows[0]), len(rows)))
@@ -164,7 +164,7 @@ func drawBookArt(dst *ebiten.Image, x, y, size int, th Theme) {
 	panel(dst, x, y, size, size, th.Bg2)
 	img := bookImage(th)
 	w, h := img.Bounds().Dx(), img.Bounds().Dy()
-	k := max(1, size*82/100/w)
+	k := max(1, size*96/100/w)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(float64(k), float64(k))
 	op.GeoM.Translate(float64(x+(size-w*k)/2), float64(y+(size-h*k)/2))
