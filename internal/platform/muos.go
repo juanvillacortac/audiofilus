@@ -161,10 +161,20 @@ func (m *muos) ExitSleep() error {
 	}
 	if m.screenOff {
 		bright := muosVar(muosConfig, "settings/general/brightness")
-		if bright == "" || bright == "0" {
-			bright = "90"
+		b, err := strconv.Atoi(bright)
+		if err != nil || b <= 0 {
+			b = 90
 		}
-		run(filepath.Join(muosScripts, "bright.sh"), bright)
+		// Dos veces, uno de diferencia y luego el de verdad, como hace muOS al
+		// salir de su suspensión: su bright.sh (en Jacaranda) solo escribe la
+		// retroiluminación si el valor cambia respecto al guardado, y con el
+		// mismo valor quitaba el negro de la pantalla pero la dejaba sin luz.
+		nudge := b - 1
+		if nudge < 1 {
+			nudge = b + 1
+		}
+		run(filepath.Join(muosScripts, "bright.sh"), strconv.Itoa(nudge))
+		run(filepath.Join(muosScripts, "bright.sh"), strconv.Itoa(b))
 		m.screenOff = false
 	}
 	return nil
