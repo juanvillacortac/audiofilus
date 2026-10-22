@@ -105,3 +105,17 @@ func TestParseClock(t *testing.T) {
 		}
 	}
 }
+
+// El quiz no pregunta por audiolibros: solo las canciones entran en la
+// partida.
+func TestQuizSkipsBooks(t *testing.T) {
+	a := &App{offline: true, local: &Library{Songs: []Song{
+		{Title: "Song", Path: filepath.Join("Music", "song.mp3")},
+		{Title: "Dune", Path: filepath.Join("Music", "dune.m4b")},
+		{Title: "Ch 1", Path: filepath.Join("Audiobooks", "Dune", "01.mp3")},
+	}}}
+	g := a.newQuiz()
+	if len(g.pool) != 1 || g.pool[0].Title != "Song" {
+		t.Errorf("quiz pool %v, want only the song", g.pool)
+	}
+}

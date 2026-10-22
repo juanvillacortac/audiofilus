@@ -45,8 +45,9 @@ type quizGame struct {
 
 func (a *App) quizBestPath() string { return filepath.Join(a.paths.Data, "quiz.json") }
 
-// newQuiz prepara una partida con las canciones de la tarjeta (la primera
-// ronda la pide quien la guarda en a.quiz, con quizRound).
+// newQuiz prepara una partida con las canciones de la tarjeta, sin los
+// audiolibros (un trozo de narración no se adivina; la primera ronda la pide
+// quien la guarda en a.quiz, con quizRound).
 func (a *App) newQuiz() *quizGame {
 	g := &quizGame{chosen: -1}
 	if b, err := os.ReadFile(a.quizBestPath()); err == nil {
@@ -57,7 +58,7 @@ func (a *App) newQuiz() *quizGame {
 	}
 	if a.local != nil {
 		for _, s := range a.local.Songs {
-			if s.Title != "" && !strings.Contains(s.Path, "://") {
+			if s.Title != "" && !strings.Contains(s.Path, "://") && !a.isBook(s.Path) {
 				g.pool = append(g.pool, s)
 			}
 		}
