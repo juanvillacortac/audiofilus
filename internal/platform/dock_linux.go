@@ -54,13 +54,30 @@ func ExternalDisplay() bool {
 	return false
 }
 
-// WiredJack dice si hay audífonos de cable enchufados, y si se sabe:
-// extcon (HEADPHONE=), el pin de detección de las H700 (debugfs), el archivo
-// de muOS o el "Playback Path" de ArkOS. Es más barato que AudioOutput (sin pactl) para mirarlo cada
-// segundo mientras suena.
-func WiredJack() (plugged, known bool) {
-	// extcon (la RG34XX-SP con Knulli: extcon0 "HEADPHONE=0"): lo estándar y
-	// lo más barato.
+// WiredJack dice si hay audífonos de cable enchufados, y si se sabe: el pin
+// de detección de las H700 (debugfs), el archivo de muOS, el "Playback Path"
+// de ArkOS y, al final, extcon (HEADPHONE=). extcon va al final porque no es
+// de fiar en todas: en la RG34XX-SP con Knulli se queda en HEADPHONE=0 con
+// los audífonos puestos (el pin sí cambia). cheap dice si leerlo cuesta
+// poco (un archivo) o lanza un programa (amixer, en ArkOS).
+func WiredJack() (plugged, known, cheap bool) {
+	if b, err := os.ReadFile(gpioDebug); err == nil {
+		if plugged, found := jackFromGPIO(string(b)); found {
+			return plugged, true, true
+		}
+	}
+	if _, err := os.Stat(muosRun); err == nil {
+		_, err := os.Stat(muosRun + "/headphones")
+		return err == nil, true, true
+	}
+	if fileExists(arkPause) {
+		switch out := AudioOutput(); out { // lanza amixer: no tan barato
+		case OutputWired:
+			return true, true, false
+		case OutputSpeaker:
+			return false, true, false
+		}
+	}
 	ext, _ := filepath.Glob("/sys/class/extcon/*/state")
 	for _, f := range ext {
 		b, err := os.ReadFile(f)
@@ -69,28 +86,11 @@ func WiredJack() (plugged, known bool) {
 		}
 		for _, line := range strings.Fields(strings.ToUpper(string(b))) {
 			if v, ok := strings.CutPrefix(line, "HEADPHONE="); ok {
-				return v == "1", true
+				return v == "1", true, true
 			}
 		}
 	}
-	if _, err := os.Stat(muosRun); err == nil {
-		_, err := os.Stat(muosRun + "/headphones")
-		return err == nil, true
-	}
-	if b, err := os.ReadFile(gpioDebug); err == nil {
-		if plugged, found := jackFromGPIO(string(b)); found {
-			return plugged, true
-		}
-	}
-	if fileExists(arkPause) {
-		switch out := AudioOutput(); out {
-		case OutputWired:
-			return true, true
-		case OutputSpeaker:
-			return false, true
-		}
-	}
-	return false, false
+	return false, false, false
 }
 
 // Archivos del despertador: la hora (Unix) a la que hay que despertar y el

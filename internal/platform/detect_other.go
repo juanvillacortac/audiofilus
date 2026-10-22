@@ -17,7 +17,7 @@ func AudioOutput() string { return "" }
 func ExternalDisplay() bool { return false }
 
 // WiredJack no se sabe fuera de Linux.
-func WiredJack() (plugged, known bool) { return false, false }
+func WiredJack() (plugged, known, cheap bool) { return false, false, false }
 
 // SetWakeAlarm no hace nada fuera de Linux.
 func SetWakeAlarm(time.Time) error { return nil }
