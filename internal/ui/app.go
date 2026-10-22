@@ -2392,6 +2392,27 @@ func (a *App) writeFrames() error {
 			return err
 		}
 	}
+	// Un audiolibro sonando: el casete con los carretes girando (6 s).
+	bookDir := filepath.Join(a.FramesDir, "audiolibro")
+	if err := os.MkdirAll(bookDir, 0o755); err != nil {
+		return err
+	}
+	restore := a.shotBook()
+	defer restore()
+	start := a.position
+	base = a.t + 1
+	for i := 0; i < 120; i++ {
+		a.t = base + float64(i)/20
+		a.position = start + float64(i)/20*1.25
+		a.shownPos = a.position
+		for k := 0; k < 3; k++ {
+			a.beatHit = a.updateBeat()
+			a.updatePump()
+		}
+		if err := a.renderShot(filepath.Join(bookDir, fmt.Sprintf("f%04d.png", i)), 360); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

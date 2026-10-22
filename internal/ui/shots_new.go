@@ -15,20 +15,7 @@ import (
 // fijo (writeShots), con datos inventados: la maqueta no tiene libros, red
 // ni servicio. Deja todo como estaba.
 func (a *App) shotsNew(shot func(string) error) error {
-	// Un audiolibro de once horas y media, en el capítulo 5, a 1,25×.
-	// Sin portada (la del disco de la maqueta no es la de un libro).
-	al := a.playing
-	song, pos, dur, speed := a.playingSong, a.position, a.duration, a.cfg.UI.BookSpeed
-	a.playing = nil
-	book := filepath.Join(string(filepath.Separator)+"shots", "Audiobooks", "The Lighthouse Keeper.m4b")
-	a.playingSong = Song{Path: book, Title: "The Lighthouse Keeper", Artist: "Mara Quill", Album: "The Lighthouse Keeper"}
-	names := []string{"Opening Credits", "The Storm", "A Letter from the Mainland", "The Lamp Room", "Fog", "The Keeper's Log",
-		"Low Tide", "The Visitor", "Signals", "Winter", "The Wreck", "What the Sea Kept", "Spring Again", "Epilogue", "End Credits"}
-	a.books.chapters, a.books.chFor = nil, book
-	for i, n := range names {
-		a.books.chapters = append(a.books.chapters, decode.Chapter{Start: float64(i) * 2768, Title: n})
-	}
-	a.position, a.duration, a.cfg.UI.BookSpeed = 4*2768+1312, 41520, 1.25
+	restore := a.shotBook()
 	a.screen = NowPlaying
 	if err := shot("audiolibro"); err != nil {
 		return err
@@ -42,9 +29,7 @@ func (a *App) shotsNew(shot func(string) error) error {
 		return err
 	}
 	a.menu = nil
-	a.playingSong, a.position, a.duration, a.cfg.UI.BookSpeed = song, pos, dur, speed
-	a.books.chapters, a.books.chFor = nil, ""
-	a.playing = al
+	restore()
 
 	// La alarma, entre semana a las 7:30, con una emisora favorita.
 	alarm := a.status.Alarm
@@ -114,3 +99,26 @@ Filter 8: ON PK Fc 2055 Hz Gain 1.2 dB Q 3.23
 Filter 9: ON PK Fc 587 Hz Gain 0.4 dB Q 1.19
 Filter 10: ON PK Fc 5332 Hz Gain -1.1 dB Q 5.75
 `
+
+// shotBook pone a "sonar" un audiolibro inventado (once horas y media, en
+// el capítulo 5, a 1,25×, sin portada) para las capturas y la secuencia;
+// devuelve lo que lo deja todo como estaba.
+func (a *App) shotBook() func() {
+	al := a.playing
+	song, pos, dur, speed := a.playingSong, a.position, a.duration, a.cfg.UI.BookSpeed
+	a.playing = nil
+	book := filepath.Join(string(filepath.Separator)+"shots", "Audiobooks", "The Lighthouse Keeper.m4b")
+	a.playingSong = Song{Path: book, Title: "The Lighthouse Keeper", Artist: "Mara Quill", Album: "The Lighthouse Keeper"}
+	names := []string{"Opening Credits", "The Storm", "A Letter from the Mainland", "The Lamp Room", "Fog", "The Keeper's Log",
+		"Low Tide", "The Visitor", "Signals", "Winter", "The Wreck", "What the Sea Kept", "Spring Again", "Epilogue", "End Credits"}
+	a.books.chapters, a.books.chFor = nil, book
+	for i, n := range names {
+		a.books.chapters = append(a.books.chapters, decode.Chapter{Start: float64(i) * 2768, Title: n})
+	}
+	a.position, a.duration, a.cfg.UI.BookSpeed = 4*2768+1312, 41520, 1.25
+	a.shownPos = a.position
+	return func() {
+		a.playing, a.playingSong, a.position, a.duration, a.cfg.UI.BookSpeed = al, song, pos, dur, speed
+		a.books.chapters, a.books.chFor = nil, ""
+	}
+}
