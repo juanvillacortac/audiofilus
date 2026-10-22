@@ -62,3 +62,26 @@ func TestBatteryEstimate(t *testing.T) {
 		t.Error("0 % with nothing to estimate from should hide the battery")
 	}
 }
+
+// TestSysBatteryChargeRatio comprueba que el contador de carga manda sobre
+// la capacidad: el RK817 de una RG353V con dArkOS da un porcentaje que no
+// es cero pero tampoco es el real, y el nivel sale de charge_now/charge_full.
+func TestSysBatteryChargeRatio(t *testing.T) {
+	dir := t.TempDir()
+	d := filepath.Join(dir, "battery")
+	if err := os.MkdirAll(d, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	files := map[string]string{
+		"type": "Battery", "capacity": "24", "status": "Discharging",
+		"charge_now": "3200000", "charge_full": "3870000",
+	}
+	for f, v := range files {
+		if err := os.WriteFile(filepath.Join(d, f), []byte(v+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if level, _, ok := sysBattery(dir); !ok || level != 0.83 {
+		t.Errorf("charge counter gives %v (%v), want 0.83", level, ok)
+	}
+}

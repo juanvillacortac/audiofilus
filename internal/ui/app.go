@@ -1029,10 +1029,15 @@ func sysBattery(dir string) (level float64, charging, ok bool) {
 		if _, err := fmt.Sscan(read(sup, "capacity"), &v); err != nil || v < 0 || v > 100 {
 			v = -1
 		}
-		if v <= 0 {
+		// El contador de carga manda sobre la capacidad: hay medidores que
+		// dan un porcentaje que no es cero pero tampoco es el real (el RK817
+		// de la RG353V con dArkOS marca 24 % casi llena), mientras que
+		// charge_now/charge_full sí sigue a la carga.
+		if r := batteryChargeRatio(func(f string) string { return read(sup, f) }); r >= 0 {
+			v = r
+		} else if v <= 0 {
 			// 0 % con la consola encendida no es real: el medidor no calcula
-			// el porcentaje (el RK817 de la RG353V con dArkOS). Se saca de la
-			// carga, o de la tensión.
+			// el porcentaje (el mismo RK817). Se saca de la tensión.
 			v = batteryEstimate(func(f string) string { return read(sup, f) })
 		}
 		if v < 0 {
@@ -1061,10 +1066,10 @@ var liIon = []struct{ v, pct float64 }{
 	{3.70, 30}, {3.65, 20}, {3.60, 12}, {3.50, 5}, {3.40, 0},
 }
 
-// batteryEstimate calcula el porcentaje cuando la batería no lo da: de la
-// carga (charge_now/charge_full o energy_now/energy_full) o, si no, de la
-// tensión con la curva de una celda de litio. -1 si no hay con qué.
-func batteryEstimate(read func(f string) string) int {
+// batteryChargeRatio saca el porcentaje del contador de carga
+// (charge_now/charge_full o energy_now/energy_full), o -1 si el medidor no
+// lo lleva.
+func batteryChargeRatio(read func(f string) string) int {
 	num := func(f string) float64 {
 		var v float64
 		if _, err := fmt.Sscan(read(f), &v); err != nil {
@@ -1076,6 +1081,23 @@ func batteryEstimate(read func(f string) string) int {
 		if now, full := num(pair[0]), num(pair[1]); now >= 0 && full > 0 {
 			return int(math.Round(math.Min(100, now/full*100)))
 		}
+	}
+	return -1
+}
+
+// batteryEstimate calcula el porcentaje cuando la batería no lo da: de la
+// carga (charge_now/charge_full o energy_now/energy_full) o, si no, de la
+// tensión con la curva de una celda de litio. -1 si no hay con qué.
+func batteryEstimate(read func(f string) string) int {
+	if r := batteryChargeRatio(read); r >= 0 {
+		return r
+	}
+	num := func(f string) float64 {
+		var v float64
+		if _, err := fmt.Sscan(read(f), &v); err != nil {
+			return -1
+		}
+		return v
 	}
 	uv := num("voltage_now")
 	if uv <= 0 {
