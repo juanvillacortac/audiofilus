@@ -365,11 +365,27 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	slide := size * 34 / 100
 	r := size/2 - 3
 	a.spin += a.spinSpeed() // el vinilo solo gira mientras suena
-	drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
+	book := a.isBook(song.Path)
+	if book {
+		// Un audiolibro: un casete en vez del vinilo (bookart.go), con la
+		// cinta pasando de un carrete al otro según lo escuchado.
+		progress := 0.0
+		if a.duration > 0 {
+			progress = a.shownPos / a.duration
+		}
+		// Un poco más afuera que el vinilo: que se vea el carrete de la derecha.
+		drawCassette(dst, cx+size/2+slide+r/3, cy+size/2, r, a.spin, progress, th)
+	} else {
+		drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
+	}
 	// La portada entra desde el lado al cambiar de canción, con un destello.
 	ox := a.coverOffset(size)
 	rect(dst, cx+2+ox, cy+2, size, size, th.Shadow)
-	a.drawCover(dst, al, cx+ox, cy, size, 1)
+	if book && (al == nil || !al.HasCover()) {
+		drawBookArt(dst, cx+ox, cy, size, th) // sin portada: un librito
+	} else {
+		a.drawCover(dst, al, cx+ox, cy, size, 1)
+	}
 	if f := a.coverFlash(); f > 0 {
 		rect(dst, cx+ox, cy, size, size, withAlpha(th.Text, uint8(150*f)))
 	}

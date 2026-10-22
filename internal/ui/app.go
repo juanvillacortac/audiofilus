@@ -1676,6 +1676,9 @@ func (a *App) writeShots() error {
 		return err
 	}
 	a.menu = nil
+	if err := a.shotsNew(shot); err != nil {
+		return err
+	}
 	// Buscar con resultados de YouTube Music (inventados: la maqueta no usa
 	// la red ni yt-dlp).
 	a.screen, a.libTab, a.tabFocus = LibraryScreen, tabSearch, false

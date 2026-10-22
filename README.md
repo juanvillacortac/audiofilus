@@ -98,6 +98,7 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
 <p align="center">
   <img src="site/img/search-youtube.png" alt="Search with YouTube results" width="360">
   <img src="site/img/radio.png" alt="Internet radio" width="360">
+  <img src="site/img/audiobook.png" alt="An audiobook playing: a book drawing, a cassette and the current chapter" width="360">
 </p>
 
 ### Visualizers and games

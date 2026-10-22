@@ -18,7 +18,8 @@ dist/audiofilus -music "$music" -album "$album" -lang en -shots "$tmp/s" -frames
 # Capturas fijas, a ×4 (1440×960).
 for pair in reproduciendo:player albumes:albums buscar-youtube:search-youtube \
   reproduciendo-radio:radio reproduciendo-streaming:streaming guia:guide menu:menu \
-  pantallas:dock lista-anadir:playlist-add cola:queue; do
+  pantallas:dock lista-anadir:playlist-add cola:queue audiolibro:audiobook audiolibro-capitulos:audiobook-chapters \
+  audiolibro-menu:audiobook-menu alarma:alarm autoeq:autoeq autoeq-aplicado:autoeq-applied color:theme-color; do
   magick "$tmp/s/${pair%%:*}-3x2.png" -sample 33.3334% -sample 400% -strip "$out/${pair##*:}.png"
 done
 for r in 1x1 4x3 3x2 16x9 21x9; do
