@@ -309,6 +309,16 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 	}
 	fx := (w - fw - side - margin) / 2
 	top, bottom := topH+6, h-bottomH-4
+	// En vertical (el móvil) no cabe el panel al lado: va arriba, en una
+	// franja (lo que suena a la izquierda y los puntos a la derecha), y los
+	// carriles quedan centrados debajo, tan anchos como quepan.
+	portrait := h > w*5/4
+	if portrait {
+		laneW = max(22, min(56, (w-2*margin)/rhLanes))
+		fw = rhLanes * laneW
+		fx = (w - fw) / 2
+		top += rhHeadH
+	}
 	hitY := bottom - 26
 	// Con el dedo: tocar un carril es pulsar su botón, en el momento de tocar.
 	for lane := range rhLanes {
@@ -454,6 +464,11 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 		drawTextW(dst, msg, SmallFace, fx+max(0, (fw-textWidth(msg, SmallFace))/2), top+(hitY-top)/2, fw, th.Dim)
 	}
 
+	if portrait {
+		a.drawRhythmHead(dst, g, margin, top-rhHeadH, w-2*margin)
+		a.drawHints(dst, []hint{{"START", T("h_pause")}, {"SEL", T("h_menu")}, {"FN", T("h_guide")}})
+		return
+	}
 	// A la derecha, lo justo: puntos, combo, precisión y lo que suena.
 	sx := fx + fw + margin + 4
 	y := top
@@ -477,6 +492,38 @@ func (a *App) drawRhythmGame(dst *ebiten.Image) {
 		drawTextW(dst, a.playingSong.Artist, SmallFace, sx+30, bottom-14, w-sx-30-4, th.Accent)
 	}
 	a.drawHints(dst, []hint{{"START", T("h_pause")}, {"SEL", T("h_menu")}, {"FN", T("h_guide")}})
+}
+
+// rhHeadH es el alto de la franja de arriba en vertical (drawRhythmHead).
+const rhHeadH = 40
+
+// drawRhythmHead es el panel de Ritmo en vertical, en una franja de ancho w
+// en x, y: lo que suena (portada, título y artista) a la izquierda, los
+// puntos a la derecha y, debajo, combo, precisión y récord.
+func (a *App) drawRhythmHead(dst *ebiten.Image, g *rhythmGame, x, y, w int) {
+	th := a.theme
+	score := fmt.Sprint(g.score)
+	sw := max(textWidth(score, BigFace), textWidth(T("tet_score"), SmallFace))
+	drawText(dst, T("tet_score"), SmallFace, x+w-textWidth(T("tet_score"), SmallFace), y, th.Dim)
+	drawText(dst, score, BigFace, x+w-textWidth(score, BigFace), y+10, th.Text)
+	if a.playing != nil {
+		a.drawCover(dst, a.playing, x, y, 24, 1)
+		tw := w - 28 - sw - 6
+		drawTextW(dst, a.playingSong.Title, SmallFace, x+28, y+2, tw, th.Text)
+		drawTextW(dst, a.playingSong.Artist, SmallFace, x+28, y+12, tw, th.Accent)
+	}
+	combo := fmt.Sprintf("%s %d", "COMBO", g.combo)
+	cc := th.Accent
+	if g.fever() {
+		combo = fmt.Sprintf("FEVER %d", g.combo)
+		if int(a.t*8)%2 == 0 {
+			cc = th.Accent2
+		}
+	}
+	ly := y + 28
+	drawText(dst, combo, SmallFace, x, ly, cc)
+	rest := fmt.Sprintf("%.1f%%  ·  %s %d", g.accuracy(), T("tet_best"), max(g.best, g.score))
+	drawText(dst, rest, SmallFace, x+w-textWidth(rest, SmallFace), ly, th.Dim)
 }
 
 // updateRhythmFrame avanza Ritmo sin botones (para la maqueta).
