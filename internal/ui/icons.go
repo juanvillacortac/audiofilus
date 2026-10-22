@@ -365,6 +365,18 @@ var iconArt = map[string]string{
 .#####.
 ..###..
 ...#...`,
+	// book es el de los audiolibros (9×9): el lomo grueso, el título en la
+	// tapa y el canto de las hojas abajo.
+	"book": `
+.#######.
+##.....#.
+##.###.#.
+##.....#.
+##.###.#.
+##.....#.
+########.
+##.....##
+.#######.`,
 	// speed es el de la velocidad de los audiolibros.
 	"speed": `
 .......

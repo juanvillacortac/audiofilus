@@ -1,10 +1,8 @@
 package ui
 
 import (
-	"image"
 	"image/color"
 	"math"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -13,7 +11,7 @@ import (
 // Lo que se ve en el reproductor con un audiolibro: un casete en vez del
 // vinilo que asoma tras la portada (con los carretes girando mientras suena
 // y la cinta pasando de uno a otro según lo escuchado) y, si el libro no
-// tiene portada, un librito en su lugar.
+// tiene portada, el icono del libro en su lugar.
 
 // cassetteSpin es cuántas veces más rápido que el vinilo giran los carretes.
 const cassetteSpin = 4
@@ -89,84 +87,17 @@ func drawCassette(dst *ebiten.Image, cx, cy, r int, angle, progress float64, th 
 	}
 }
 
-// bookSprite es el libro abierto de los audiolibros sin portada, dibujado a
-// mano píxel a píxel como los iconos (31×24): o contorno, P página, S su
-// sombra junto al lomo, s el canto de las hojas, T texto, C la tapa (el
-// color del disco), que asoma a los lados y por debajo siguiendo la curva de
-// las hojas, y R la cinta de marcapáginas (el segundo color).
-const bookSprite = `
-.oooooo.................oooooo.
-oPPPPPPooo...........oooPPPPPPo
-oPPPPPPPPPoo.......ooPPPPPPPPPo
-oPPPPPPPPPPPoo...ooPPPPPPPPPPPo
-oCPPPPPPPPPPPPoooPPPPPPPPPPPPCo
-oCPTTTTTTTPPPPSoSPPTTTTTTTTPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPTTTTTTTTTPPSoSPPTTTTTTTPPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPTTTTTTTTPPPSoSPPTTTTTTTTTPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPTTTTTTTTTPPSoSPPTTTTTTTTPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPTTTTTTPPPPPSoSPPTTTTTPPPPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCPPPPPPPPPPPPSoSPPPPPPPPPPPPCo
-oCsssPPPPPPPPPSoSPPPPPPPPPsssCo
-oCCCCsssssPPPPSoSPPPPsssssCCCCo
-oCCCCCCCCCssssSoSssssCCCCCCCCCo
-.ooooCCCCCCCCCsosCCCCCCCCCoooo.
-.....oooooCCCCCRCCCCCooooo.....
-..........ooooCRCoooo..........
-..............oRo..............`
-
-// bookSprites son los libros ya pintados, por tema (cambia con el disco).
-var bookSprites = map[Theme]*ebiten.Image{}
-
-// bookImage es el libro con los colores de th.
-func bookImage(th Theme) *ebiten.Image {
-	if img, ok := bookSprites[th]; ok {
-		return img
-	}
-	rows := strings.Split(strings.Trim(bookSprite, "\n"), "\n")
-	pal := map[byte]color.RGBA{
-		'o': mix(th.Shadow, color.RGBA{0x1a, 0x14, 0x22, 0xff}, 0.5),
-		'P': {0xee, 0xe6, 0xd2, 0xff},
-		'S': {0xce, 0xc2, 0xac, 0xff},
-		's': {0xc8, 0xbc, 0xa6, 0xff},
-		'T': {0x96, 0x8c, 0x80, 0xff},
-		'C': th.Accent,
-		'R': th.Accent2,
-	}
-	img := image.NewRGBA(image.Rect(0, 0, len(rows[0]), len(rows)))
-	for y, r := range rows {
-		for x := 0; x < len(r); x++ {
-			if c, ok := pal[r[x]]; ok {
-				img.SetRGBA(x, y, c)
-			}
-		}
-	}
-	if len(bookSprites) > 32 {
-		for k, v := range bookSprites {
-			v.Deallocate()
-			delete(bookSprites, k)
-		}
-	}
-	e := ebiten.NewImageFromImage(img)
-	bookSprites[th] = e
-	return e
-}
-
-// drawBookArt pinta el libro en el cuadro de la portada (size×size), para
-// los audiolibros sin portada: el sprite a la mayor escala entera que quepa,
-// centrado.
+// drawBookArt pinta el icono del libro en el cuadro de la portada
+// (size×size), para los audiolibros sin portada: como la nota de las
+// canciones sin portada, pero grande (a escala entera) y del color del disco.
 func drawBookArt(dst *ebiten.Image, x, y, size int, th Theme) {
 	panel(dst, x, y, size, size, th.Bg2)
-	img := bookImage(th)
-	w, h := img.Bounds().Dx(), img.Bounds().Dy()
-	k := max(1, size*96/100/w)
+	img := icon("book")
+	w := img.Bounds().Dx()
+	k := max(1, size*45/100/w)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(float64(k), float64(k))
-	op.GeoM.Translate(float64(x+(size-w*k)/2), float64(y+(size-h*k)/2))
+	op.GeoM.Translate(float64(x+(size-w*k)/2), float64(y+(size-w*k)/2))
+	op.ColorScale.ScaleWithColor(th.Accent)
 	dst.DrawImage(img, op)
 }
