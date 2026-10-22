@@ -315,13 +315,14 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 				d.act(input.Prev)
 			}
 		})
-	case input.KeyPlayPause:
+	case input.KeyPlayPause, input.KeyPlayCD, input.KeyPauseCD:
+		// Muchos audífonos bluetooth (los Huawei FreeBuds, por ejemplo) no
+		// mandan play/pausa sino PLAY o PAUSE según lo que creen que pasa, y
+		// no saben si audiofilus suena (sin MPRIS nadie se lo dice): tras
+		// pausar con los botones de la consola, su doble toque mandaba PAUSE
+		// otra vez y no hacía nada. Así que cualquiera de los tres alterna.
 		d.act(input.TogglePause)
-	case input.KeyPlayCD:
-		if !d.eng.Playing() {
-			d.act(input.TogglePause)
-		}
-	case input.KeyPauseCD, input.KeyStopCD, input.KeyStop:
+	case input.KeyStopCD, input.KeyStop:
 		if d.eng.Playing() {
 			d.act(input.TogglePause)
 		}
