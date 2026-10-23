@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // Config es audiofilus.json, junto al binario. Sus rutas relativas se resuelven
@@ -324,10 +325,24 @@ func writeJSON(path string, v any) error {
 		err = os.Chmod(tmp, 0o644)
 	}
 	if err == nil {
-		err = os.Rename(tmp, path)
+		err = renameRetry(tmp, path)
 	}
 	if err != nil {
 		os.Remove(tmp)
+	}
+	return err
+}
+
+// renameRetry es os.Rename con unos reintentos: en Windows, cambiar un
+// archivo que otro proceso está cambiando a la vez da "Access is denied" un
+// instante.
+func renameRetry(from, to string) error {
+	var err error
+	for range 20 {
+		if err = os.Rename(from, to); err == nil {
+			return nil
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
 	return err
 }

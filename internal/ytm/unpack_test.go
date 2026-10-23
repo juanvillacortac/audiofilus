@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -53,7 +54,7 @@ func TestUnpackZip(t *testing.T) {
 		if want := filepath.Join(base, "yt-dlp", "yt-dlp_linux_aarch64"); bin != want {
 			t.Fatalf("prefix %q: Find = %q, want %q", prefix, bin, want)
 		}
-		if fi, err := os.Stat(bin); err != nil || fi.Mode()&0o111 == 0 {
+		if fi, err := os.Stat(bin); err != nil || runtime.GOOS != "windows" && fi.Mode()&0o111 == 0 {
 			t.Errorf("prefix %q: not executable (%v)", prefix, err)
 		}
 		if b, _ := os.ReadFile(filepath.Join(base, "yt-dlp", "_internal", "libpython3.so")); string(b) != "lib" {
