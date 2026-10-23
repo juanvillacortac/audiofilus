@@ -322,12 +322,22 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 				d.do(input.Prev, false)
 			}
 		})
-	case input.KeyPlayPause, input.KeyPlayCD, input.KeyPauseCD:
-		// Muchos audífonos bluetooth (los Huawei FreeBuds, por ejemplo) no
-		// mandan play/pausa sino PLAY o PAUSE según lo que creen que pasa, y
-		// no saben si audiofilus suena (sin MPRIS nadie se lo dice): tras
-		// pausar con los botones de la consola, su doble toque mandaba PAUSE
-		// otra vez y no hacía nada. Así que cualquiera de los tres alterna.
+	case input.KeyPlayCD, input.KeyPauseCD:
+		// Con el reproductor registrado en BlueZ los audífonos saben si
+		// suena, y PLAY y PAUSE son lo que dicen (la detección de puesta:
+		// quitárselos pausa, ponérselos reanuda solo si los pausó ella). Sin
+		// él no lo saben: los que mandan PLAY o PAUSE según lo que creen (los
+		// Huawei FreeBuds) se desincronizaban, así que entonces alternan.
+		if d.bt != nil && d.bt.Registered() {
+			if key == input.KeyPlayCD {
+				d.eng.Play()
+			} else {
+				d.eng.Pause()
+			}
+			return
+		}
+		d.do(input.TogglePause, false)
+	case input.KeyPlayPause:
 		d.do(input.TogglePause, false)
 	case input.KeyStopCD, input.KeyStop:
 		if d.eng.Playing() {

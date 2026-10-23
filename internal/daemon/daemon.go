@@ -50,6 +50,9 @@ type Daemon struct {
 	cfg   config.Config
 	eng   *engine.Engine
 	plat  platform.Platform
+	// bt es el reproductor registrado en BlueZ (los audífonos bluetooth
+	// saben si suena); nil en el PC o sin bluetooth.
+	bt *mpris.BlueZ
 
 	mu         sync.Mutex
 	sleeping   bool
@@ -132,6 +135,18 @@ func Run(paths config.Paths) error {
 	} else {
 		defer mp.Close()
 	}
+	// El reproductor para los audífonos bluetooth (BlueZ): en las portátiles,
+	// donde nadie más le dice a los audífonos si suena (en el PC lo hace el
+	// escritorio). Con él, PLAY y PAUSE de los audífonos son lo que dicen.
+	if d.plat.Name() != "desktop" {
+		bt, err := mpris.StartBlueZ(eng, func() { d.quitOnce.Do(func() { close(d.quit) }) })
+		if err != nil {
+			log.Printf("bluetooth player disabled: %v", err)
+		} else {
+			d.bt = bt
+			defer bt.Close()
+		}
+	}
 	// La bandeja del sistema, solo en el escritorio (las portátiles no tienen).
 	var tr *tray.Tray
 	if d.plat.Name() == "desktop" {
@@ -157,6 +172,9 @@ func Run(paths config.Paths) error {
 		d.saveState()
 		if mp != nil {
 			mp.Update()
+		}
+		if d.bt != nil {
+			d.bt.Update()
 		}
 		if tr != nil {
 			tr.Update()

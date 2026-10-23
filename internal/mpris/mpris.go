@@ -40,6 +40,7 @@ type Server struct {
 	eng   *engine.Engine
 	quit  func()
 	conn  *dbus.Conn
+	path  dbus.ObjectPath // dónde está publicado (el de MPRIS, o el de BlueZ)
 	props *prop.Properties
 
 	mu      sync.Mutex
@@ -66,19 +67,31 @@ func Start(eng *engine.Engine, quit func()) (*Server, error) {
 		conn.Close()
 		return nil, fmt.Errorf("D-Bus name %s is taken", busName)
 	}
-	s := &Server{eng: eng, quit: quit, conn: conn, stop: make(chan struct{})}
-	if err := conn.Export(root{s}, objectPath, ifaceRoot); err != nil {
+	s, err := publish(conn, objectPath, eng, quit)
+	if err != nil {
+		conn.Close()
 		return nil, err
 	}
-	if err := conn.ExportWithMap(player{s}, map[string]string{"SeekBy": "Seek"}, objectPath, ifacePlay); err != nil {
+	return s, nil
+}
+
+// publish publica el reproductor en conn, en path: las interfaces de MPRIS,
+// sus propiedades y su introspección, y lo mantiene al día.
+func publish(conn *dbus.Conn, path dbus.ObjectPath, eng *engine.Engine, quit func()) (*Server, error) {
+	s := &Server{eng: eng, quit: quit, conn: conn, path: path, stop: make(chan struct{})}
+	if err := conn.Export(root{s}, path, ifaceRoot); err != nil {
 		return nil, err
 	}
-	s.props, err = prop.Export(conn, objectPath, s.propMap())
+	if err := conn.ExportWithMap(player{s}, map[string]string{"SeekBy": "Seek"}, path, ifacePlay); err != nil {
+		return nil, err
+	}
+	var err error
+	s.props, err = prop.Export(conn, path, s.propMap())
 	if err != nil {
 		return nil, err
 	}
 	node := &introspect.Node{
-		Name: objectPath,
+		Name: string(path),
 		Interfaces: []introspect.Interface{
 			introspect.IntrospectData,
 			prop.IntrospectData,
@@ -86,7 +99,7 @@ func Start(eng *engine.Engine, quit func()) (*Server, error) {
 			{Name: ifacePlay, Methods: playerMethods(s), Properties: s.props.Introspection(ifacePlay)},
 		},
 	}
-	if err := conn.Export(introspect.NewIntrospectable(node), objectPath, "org.freedesktop.DBus.Introspectable"); err != nil {
+	if err := conn.Export(introspect.NewIntrospectable(node), path, "org.freedesktop.DBus.Introspectable"); err != nil {
 		return nil, err
 	}
 	go s.loop()
@@ -194,7 +207,7 @@ func (s *Server) Update() {
 	}
 	// Un salto grande de posición (seek) se anuncia con la señal Seeked.
 	if st.Track.Path == last.Track.Path && math.Abs(st.Position-last.Position) > 3 {
-		_ = s.conn.Emit(objectPath, ifacePlay+".Seeked", micros(st.Position))
+		_ = s.conn.Emit(s.path, ifacePlay+".Seeked", micros(st.Position))
 	}
 }
 
