@@ -4,7 +4,8 @@
 # 1. ebitenmobile desde el mismo commit del fork de Ebitengine que usa go.mod
 #    (el código que genera tiene que coincidir), en build/android/bin;
 # 2. audiofilus (mobile/) como biblioteca, android/app/libs/mobile.aar, para
-#    ARM64 (teléfonos y portátiles) y x86_64 (el emulador, Chromebooks);
+#    ARM64 (teléfonos y portátiles), ARM de 32 bits (los TV box y las teles
+#    con Android TV, casi todas de 32 bits) y x86_64 (el emulador, Chromebooks);
 # 3. el APK con Gradle: el de GitHub (con Ajustes → Actualizar), en
 #    android/app/build/outputs/apk/github/<tipo>/; "play" como segundo
 #    argumento hace el de Google Play (sin él).
@@ -37,7 +38,7 @@ mkdir -p android/app/libs
 pkg=github.com/juanvillacortac/audiofilus/internal
 version=${VERSION:+v$VERSION}
 ldflags="-X $pkg/version.Version=${version:-dev} -X $pkg/scrobble.DefaultLastFMKey=${LASTFM_KEY:-} -X $pkg/scrobble.DefaultLastFMSecret=${LASTFM_SECRET:-}"
-"$bin/ebitenmobile-$commit" bind -target android/arm64,android/amd64 -androidapi 24 \
+"$bin/ebitenmobile-$commit" bind -target android/arm,android/arm64,android/amd64 -androidapi 24 \
   -javapkg dev.audiofilus -trimpath -ldflags "$ldflags" -o android/app/libs/mobile.aar ./mobile
 rm -f android/app/libs/mobile-sources.jar
 

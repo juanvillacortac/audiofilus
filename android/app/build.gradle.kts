@@ -20,7 +20,7 @@ android {
         targetSdk = 36
         versionCode = versionCodeProp
         versionName = versionNameProp
-        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
 
     // La firma de la release: un almacén de claves que pasa CI por

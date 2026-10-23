@@ -22,7 +22,7 @@ src="$work/fdk-aac-$FDK_VERSION"
 # (log/log.h, que el NDK no trae): uno que no hace nada.
 mkdir -p "$work/stub/log"
 printf '#pragma once\n#define android_errorWriteLog(tag, sub) ((void)0)\n' >"$work/stub/log/log.h"
-for abi in arm64-v8a x86_64; do
+for abi in arm64-v8a armeabi-v7a x86_64; do
   b="$work/build-$abi"
   cmake -S "$src" -B "$b" -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" \
     -DANDROID_ABI="$abi" -DANDROID_PLATFORM=android-24 -DANDROID_STL=c++_shared \
@@ -36,7 +36,11 @@ for abi in arm64-v8a x86_64; do
   cp -L "$b/libfdk-aac.so" "$out/$abi/libfdk-aac.so"
   echo "$out/$abi/libfdk-aac.so"
   # Su libc++ (fdk-aac es C++), la del NDK, que va junto a ella en el APK.
-  case $abi in arm64-v8a) triple=aarch64-linux-android ;; x86_64) triple=x86_64-linux-android ;; esac
+  case $abi in
+  arm64-v8a) triple=aarch64-linux-android ;;
+  armeabi-v7a) triple=arm-linux-androideabi ;;
+  x86_64) triple=x86_64-linux-android ;;
+  esac
   cp "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/$triple/libc++_shared.so" "$out/$abi/"
   "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip" --strip-unneeded "$out/$abi/libc++_shared.so"
 done

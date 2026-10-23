@@ -1,6 +1,6 @@
 # Android
 
-audiofilus runs on Android phones, tablets and Android handhelds (Retroid, AYN, Anbernic's Android models) as an app built from the same Go code as the iOS one. Work in progress: tested on the emulator (Android 16, x86_64), not yet on a real device, and not published yet.
+audiofilus runs on Android phones, tablets, Android handhelds (Retroid, AYN, Anbernic's Android models) and Android TV boxes and TVs as an app built from the same Go code as the iOS one. Work in progress: tested on the emulator (Android 16, x86_64), not yet on a real device, and not published yet.
 
 ## How it's built
 
@@ -11,7 +11,9 @@ mise exec -- android/libs.sh       # the C decoders for the APK (android/app/src
 mise exec -- android/build.sh      # debug APK; "release" for the release one
 ```
 
-- `android/build.sh` builds `ebitenmobile` from the same commit of the Ebitengine fork that `go.mod` uses (like the iOS workflow), turns `mobile/` into `android/app/libs/mobile.aar` (`ebitenmobile bind -target android/arm64,android/amd64 -javapkg dev.audiofilus`) and runs Gradle. The app version comes from `VERSION` (`0.15.0`), and `versionCode` from it (`1500`).
+- `android/build.sh` builds `ebitenmobile` from the same commit of the Ebitengine fork that `go.mod` uses (like the iOS workflow), turns `mobile/` into `android/app/libs/mobile.aar` (`ebitenmobile bind -target android/arm,android/arm64,android/amd64 -javapkg dev.audiofilus`: 32-bit ARM for the TV boxes and Android TVs, almost all 32-bit; 64-bit ARM; x86_64 for the emulator and Chromebooks; one APK with the three, about 60 MB) and runs Gradle. The app version comes from `VERSION` (`0.15.0`), and `versionCode` from it (`1500`).
+- **32 bits.** `int` is 32 bits on `armeabi-v7a`: constants and sizes that only fit in 64 bits overflow there (an ID3 frame size past 2 GB made `tagwrite` panic). CI runs the tests with `GOARCH=386` to catch them. Running on 32-bit ARM hasn't been tested on a device: the emulator images here don't translate 32-bit ARM.
+- **Android TV.** The activity is also in the `LEANBACK_LAUNCHER` category, the app has a 320×180 `android:banner` (pixel art from `tools/android/icon.sh`: the background, the CD and the name in Jersey 10) and `android.software.leanback` isn't required, so it shows on the TV home screen and still installs on phones.
 - `android/libs.sh` compiles **libfdk-aac** (AAC: M4A, M4B, AAC radio) with the NDK and puts it, with the NDK's `libc++_shared.so`, in `jniLibs`. audiofilus loads it with purego by name (`libfdk-aac.so`), which works because the APK extracts its native libraries (`useLegacyPackaging`). fdk-aac's Android build includes the platform's private `log/log.h`, so the script gives it a stub. MP3, FLAC, Ogg Vorbis, WAV, AIFF and ALAC decode in Go; Opus, tracker modules and console music aren't there yet.
 - `android/app` is a plain Gradle project in Kotlin, with framework APIs only (no androidx).
 - Release signing: `AUDIOFILUS_KEYSTORE`, `AUDIOFILUS_KEYSTORE_PASSWORD`, `AUDIOFILUS_KEY_ALIAS` and `AUDIOFILUS_KEY_PASSWORD` in the environment; without them the release APK is signed with the debug key. The release key (alias `audiofilus`, certificate SHA-256 `16:6B:68:99:…:8B:85`) lives with the author, outside the repo, and in the repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`. Losing it means updates can't be installed over the existing app.

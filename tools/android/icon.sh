@@ -9,7 +9,9 @@
 #     centro que ningún recorte toca; los launchers muestran unos 72 dp;
 #   - monocromo: la silueta del CD, para los iconos temáticos (Android 13+);
 #   - ic_launcher.png: los tres juntos en un cuadrado redondeado, para
-#     Android 7 (sin iconos adaptativos).
+#     Android 7 (sin iconos adaptativos);
+#   - banner.png: el de Android TV (320×180), en 160×90 de arte ×2: el mismo
+#     fondo, el CD y "audiofilus" en Jersey 10 (la fuente de los títulos).
 #   tools/android/icon.sh
 set -eu
 cd "$(dirname "$0")/../.."
@@ -59,6 +61,25 @@ cat >"$res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
     <monochrome android:drawable="@mipmap/ic_launcher_mono" />
 </adaptive-icon>
 EOF
+# El banner de Android TV.
+magick -size 160x90 xc:'#150f22' \
+  \( -size 150x150 radial-gradient:'#2fbf9f'-black -geometry -60-10 \) -compose screen -composite \
+  \( -size 140x140 radial-gradient:'#e2589a'-black -geometry +80-75 \) -compose screen -composite \
+  -colorspace sRGB -ordered-dither o4x4,10 "$tmp/banner-bg.png"
+magick -background none +antialias -fill '#f2f0ea' -font internal/ui/assets/fonts/Jersey10-Regular.ttf \
+  -pointsize 18.667 -density 72 label:audiofilus -trim +repage "$tmp/title.png"
+tw=$(magick identify -format %w "$tmp/title.png")
+th=$(magick identify -format %h "$tmp/title.png")
+gap=6
+x0=$(( (160 - 32 - gap - tw) / 2 ))
+ty=$(( (90 - th) / 2 ))
+magick "$tmp/banner-bg.png" \
+  "$tmp/shadow.png" -geometry +$((x0 + 2))+31 -compose over -composite \
+  "$tmp/cd.png" -geometry +$x0+29 -compose over -composite \
+  \( "$tmp/title.png" -fill black -colorize 100 -channel A -evaluate multiply 0.55 +channel \) -geometry +$((x0 + 32 + gap + 1))+$((ty + 1)) -compose over -composite \
+  "$tmp/title.png" -geometry +$((x0 + 32 + gap))+$ty -compose over -composite \
+  -fill '#ffffff' -draw "rectangle $((x0 + 30)),24 $((x0 + 30)),28" -draw "rectangle $((x0 + 28)),26 $((x0 + 32)),26" \
+  -sample 200% -depth 8 "$res/drawable-xhdpi/banner.png"
 magick "$tmp/bg.png" "$tmp/fg.png" -compose over -composite -sample 600% "$tmp/preview.png"
-[ -n "${PREVIEW:-}" ] && cp "$tmp/preview.png" "$PREVIEW"
+[ -n "${PREVIEW:-}" ] && cp "$tmp/preview.png" "$PREVIEW" && cp "$res/drawable-xhdpi/banner.png" "${PREVIEW%.png}-banner.png"
 echo "$res/mipmap-anydpi-v26/ic_launcher.xml"
