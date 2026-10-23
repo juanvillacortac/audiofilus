@@ -50,6 +50,7 @@ While it lasts, these gestures are recognized (the buttons come from the SDL map
 | R1+R2 together, twice (≤ 600 ms) | A random song from the whole library (shuffle stays as it was) | 150 ms |
 | Start | Exits sleep | — |
 | Power button (tap) | Exits sleep, **except with the lid closed** (`hallkey` from the AXP: 0 closed) | — |
+| Opening the lid | Exits sleep, if it started with the lid closed: the service polls `hallkey` every 300 ms during that sleep (`Daemon.wakeOnLidOpen`). Knulli's `lid-control open` only turns the screen on in its `dispoff` mode, and the hall sensor can't wake the H700 from a real suspend (only the power key, the PMU and the RTC can), so without this the power button was needed | — |
 
 A single tap or chord does nothing. With the lid closed only L1, L2, R1 and R2 are reachable. Vibration writes to `/sys/class/power_supply/axp2202-battery/moto`.
 

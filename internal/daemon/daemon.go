@@ -549,9 +549,38 @@ func (d *Daemon) setSleep(on, screenOff bool) error {
 	defer control.Notify() // la interfaz despierta enseguida si fue por un gesto
 	defer d.updateSpectrum()
 	if on {
+		if d.plat.LidClosed() {
+			go d.wakeOnLidOpen()
+		}
 		return d.plat.EnterSleep(screenOff)
 	}
 	return d.plat.ExitSleep()
+}
+
+// lidEvery es cada cuánto se mira la tapa durante un sleep que empezó con
+// ella cerrada (leer el sensor es un archivo).
+const lidEvery = 300 * time.Millisecond
+
+// wakeOnLidOpen despierta la interfaz al abrir la tapa, como al cerrar un
+// teléfono plegable. Mientras suena, audiofilus le quita la tapa a Knulli (y
+// muOS no suspende), así que nadie más la atiende: sin esto había que pulsar
+// el botón de encendido. Termina al salir del sleep por otra vía.
+func (d *Daemon) wakeOnLidOpen() {
+	t := time.NewTicker(lidEvery)
+	defer t.Stop()
+	for range t.C {
+		d.mu.Lock()
+		sleeping := d.sleeping
+		d.mu.Unlock()
+		if !sleeping {
+			return
+		}
+		if !d.plat.LidClosed() {
+			log.Print("lid opened: waking up")
+			_ = d.setSleep(false, false)
+			return
+		}
+	}
 }
 
 func (d *Daemon) appOpenNow() bool {
@@ -978,7 +1007,9 @@ func (d *Daemon) updateSpectrum() {
 	d.mu.Lock()
 	on := d.appOpen && !d.sleeping
 	d.mu.Unlock()
-	d.eng.SetSpectrum(on)
+	if d.eng != nil { // sin motor todavía (al arrancar, en las pruebas)
+		d.eng.SetSpectrum(on)
+	}
 }
 
 // watchProfile graba un perfil de CPU de 20 s en data/daemon-cpu.prof si
