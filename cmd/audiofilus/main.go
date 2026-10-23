@@ -48,7 +48,7 @@ const usage = `usage:
   audiofilus awake on [s] | off   keep the console awake while playing (lease, default 60 s)
   audiofilus quit                 stop the service
   audiofilus pad                  show the gamepad and its SDL mapping
-  audiofilus ytm search|fetch|download <text>
+  audiofilus ytm search|fetch|download|download-mp3 <text>
                                   YouTube Music: search, get the first result to listen
                                   or save it to the library (needs yt-dlp next to the binary)
   audiofilus update [-check]      install the latest release (from GitHub) over this one

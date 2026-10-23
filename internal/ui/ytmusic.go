@@ -3,10 +3,11 @@ package ui
 import (
 	"context"
 	"errors"
-	"github.com/juanvillacortac/audiofilus/internal/radio"
+	"fmt"
 	"log"
 	"math"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
 	"github.com/juanvillacortac/audiofilus/internal/ytm"
 )
@@ -35,10 +37,19 @@ import (
 // en cola y de una en una, para no ahogar la consola.
 
 // ytCacheKeep son las canciones escuchadas que se guardan en la caché.
-const ytCacheKeep = 15
+const ytCacheKeep = ytm.CacheKeep
+
+// ytCache es la caché de lo que se escucha sin guardar (en data/, en la
+// tarjeta: ytm.CacheDir); la pone initYT.
+var ytCache string
 
 // ytCacheDir es la caché de lo que se escucha sin guardar.
-func ytCacheDir() string { return filepath.Join(os.TempDir(), "audiofilus-ytm") }
+func ytCacheDir() string {
+	if ytCache == "" {
+		return filepath.Join(os.TempDir(), "audiofilus-ytm") // las capturas, sin App
+	}
+	return ytCache
+}
 
 // streamTrack es la canción de YouTube Music que suena sin estar guardada (la
 // de la caché), si es eso lo que suena.
@@ -88,6 +99,7 @@ type ytJob struct {
 	// descarga de YouTube Music.
 	run         func(ctx context.Context, progress func(ytm.Progress)) (string, error)
 	podcast     bool              // un episodio de podcast (icono y sin reescanear la biblioteca)
+	mp3         bool              // convertir a MP3 (si no, el .m4a de YouTube tal cual)
 	after       func(path string) // lo que se hace al terminar bien (poner el episodio)
 	state       int
 	done, total int64
@@ -143,6 +155,7 @@ func (a *App) initYT() {
 	if a.offline {
 		return
 	}
+	ytCache = ytm.CacheDir(a.paths.Data)
 	a.yt.bin = ytm.Find(a.paths.Base)
 	if a.yt.bin != "" {
 		a.loadHaveIDs()
@@ -162,7 +175,7 @@ func (a *App) initYT() {
 			if j.run != nil {
 				path, err = j.run(ctx, a.ytReporter(j))
 			} else {
-				path, err = ytm.Download(ctx, bin, j.track, dir, ytCacheDir(), a.ytReporter(j))
+				path, err = ytm.Download(ctx, bin, j.track, dir, ytCacheDir(), j.mp3, a.ytReporter(j))
 			}
 			cancel()
 			a.yt.events <- ytEvent{job: j, fin: true, path: path, err: err}
@@ -320,7 +333,10 @@ func (a *App) ytPlay(t ytm.Track) {
 	}()
 }
 
-// ytDownload pone t en la cola de descargas.
+// ytDownload pone t en la cola de descargas. Con ffmpeg pregunta antes si
+// guardarla tal cual (el .m4a de YouTube) o pasarla a MP3; en una consola
+// con poca memoria recomienda no convertir (ffmpeg casi duplica lo que ocupa
+// la descarga, y es un minuto o dos de CPU por canción).
 func (a *App) ytDownload(t ytm.Track) {
 	if len(a.cfg.MusicDirs) == 0 {
 		return
@@ -331,7 +347,23 @@ func (a *App) ytDownload(t ytm.Track) {
 			return
 		}
 	}
-	j := &ytJob{track: t, state: jobWaiting}
+	if _, err := exec.LookPath("ffmpeg"); err != nil {
+		a.ytQueue(t, false) // sin ffmpeg no hay MP3
+		return
+	}
+	keepNote, mp3Note := T("ytm_fmt_quality"), ""
+	if lowMemory() {
+		keepNote, mp3Note = T("ytm_fmt_recommended"), T("ytm_fmt_memory")
+	}
+	a.menu = &menu{title: T("ytm_download"), subtitle: t.Title, cols: 1, items: []menuItem{
+		{label: T("ytm_fmt_keep"), icon: "download", note: keepNote, close: true, do: func() { a.ytQueue(t, false) }},
+		{label: T("ytm_fmt_mp3"), icon: "download", note: mp3Note, close: true, do: func() { a.ytQueue(t, true) }},
+	}}
+}
+
+// ytQueue pone la descarga de t en la cola, en .m4a o en MP3.
+func (a *App) ytQueue(t ytm.Track, mp3 bool) {
+	j := &ytJob{track: t, state: jobWaiting, mp3: mp3}
 	a.addJob(j)
 	a.yt.queue <- j
 	a.flash(T("ytm_queued", t.Title))
@@ -712,4 +744,21 @@ func ytErrText(err error) string {
 		return T("ytm_login")
 	}
 	return T("ytm_error", err)
+}
+
+// lowMemory dice si la consola tiene poca memoria (1 GB o menos, como las
+// H700): ahí convertir a MP3 al bajar puede dejarla sin ella.
+func lowMemory() bool {
+	b, err := os.ReadFile("/proc/meminfo")
+	if err != nil {
+		return false
+	}
+	var kb int64
+	for _, line := range strings.Split(string(b), "\n") {
+		if rest, ok := strings.CutPrefix(line, "MemTotal:"); ok {
+			fmt.Sscan(rest, &kb)
+			break
+		}
+	}
+	return kb > 0 && kb <= 1536*1024
 }

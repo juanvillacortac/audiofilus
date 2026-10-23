@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -17,7 +16,8 @@ import (
 //
 //	ytm search <texto>     las canciones que encuentra
 //	ytm fetch <texto>      baja la primera a la caché, para escucharla
-//	ytm download <texto>   la guarda en la primera carpeta de música
+//	ytm download <texto>   la guarda en la primera carpeta de música (.m4a)
+//	ytm download-mp3 <texto>  igual, pero convertida a MP3 (con ffmpeg)
 func runYTM(args []string) int {
 	if len(args) < 2 {
 		fmt.Fprint(os.Stderr, usage)
@@ -68,14 +68,14 @@ func runYTM(args []string) int {
 	var path string
 	switch args[0] {
 	case "fetch":
-		path, err = ytm.Fetch(ctx, bin, t, filepath.Join(os.TempDir(), "audiofilus-ytm"), 15, progress)
-	case "download":
+		path, err = ytm.Fetch(ctx, bin, t, ytm.CacheDir(paths.Data), ytm.CacheKeep, progress)
+	case "download", "download-mp3":
 		cfg, cerr := config.Load(paths)
 		if cerr != nil || len(cfg.MusicDirs) == 0 {
 			fmt.Fprintln(os.Stderr, "audiofilus: no music_dirs in audiofilus.json")
 			return 1
 		}
-		path, err = ytm.Download(ctx, bin, t, cfg.MusicDirs[0], filepath.Join(os.TempDir(), "audiofilus-ytm"), progress)
+		path, err = ytm.Download(ctx, bin, t, cfg.MusicDirs[0], ytm.CacheDir(paths.Data), args[0] == "download-mp3", progress)
 	default:
 		fmt.Fprint(os.Stderr, usage)
 		return 2

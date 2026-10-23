@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
+	"image/jpeg"
 	"io"
 	"net/http"
 	"os"
@@ -21,21 +23,23 @@ import (
 	"unicode/utf8"
 
 	"github.com/juanvillacortac/audiofilus/internal/proc"
+	"github.com/juanvillacortac/audiofilus/internal/tagwrite"
 )
 
 // Find busca el yt-dlp que el usuario puso junto a audiofilus (en base): la
 // versión desempaquetada en base/yt-dlp/ (arranca en ~3 s en vez de ~11 en la
 // consola), un solo archivo base/yt-dlp, o uno del PATH. "" si no hay.
+//
+// Si lo que hay es el zip de la versión desempaquetada, primero lo
+// desempaqueta en base/yt-dlp/ (unpackZip).
 func Find(base string) string {
+	unpackZip(base)
 	if fi, err := os.Stat(filepath.Join(base, "yt-dlp")); err == nil {
 		if !fi.IsDir() {
 			return filepath.Join(base, "yt-dlp")
 		}
-		entries, _ := os.ReadDir(filepath.Join(base, "yt-dlp"))
-		for _, e := range entries {
-			if !e.IsDir() && strings.HasPrefix(e.Name(), "yt-dlp") && !strings.HasSuffix(e.Name(), ".zip") {
-				return filepath.Join(base, "yt-dlp", e.Name())
-			}
+		if p := unpacked(filepath.Join(base, "yt-dlp")); p != "" {
+			return p
 		}
 	}
 	if p, err := exec.LookPath("yt-dlp"); err == nil {
@@ -134,6 +138,7 @@ func run(ctx context.Context, bin string, progress func(Progress), args ...strin
 		if err := cmd.Start(); err != nil {
 			return nil, err
 		}
+		proc.LowPriority(cmd.Process.Pid) // que la música y la interfaz vayan antes
 		var mu sync.Mutex
 		var out bytes.Buffer
 		var errLines []string
@@ -258,21 +263,44 @@ func prune(dir string, keep int) {
 	}
 }
 
-// Download guarda t en la biblioteca (musicDir) como lo hace ytm-gym:
-// Artista/Álbum (o Singles)/Título.mp3 a 192 kbps, con portada cuadrada,
-// etiquetas limpias y TXXX:youtube_id, y apunta su id en .library.json para
-// que ni ytm-gym ni audiofilus la vuelvan a bajar. Sin ffmpeg no se puede
-// pasar a MP3 ni poner portada: se guarda el .m4a tal cual. Devuelve la ruta.
+// Download guarda t en la biblioteca (musicDir) en Artista/Álbum (o
+// Singles)/Título, con portada cuadrada y etiquetas limpias, y apunta su id en
+// .library.json para que ni ytm-gym ni audiofilus la vuelvan a bajar.
+// Devuelve la ruta.
 //
-// Si la canción ya está en la caché de escuchar (cacheDir, de Fetch) y hay
-// ffmpeg, no se vuelve a pedir a YouTube: se convierte ese archivo
-// (fromCache), que es solo el paso de convertir.
-func Download(ctx context.Context, bin string, t Track, musicDir, cacheDir string, progress func(Progress)) (string, error) {
+// Sin mp3, el audio de YouTube tal cual (AAC en .m4a, sin recodificar): se
+// baja con Fetch a la caché de escuchar (cacheDir; si ya se escuchó, no se
+// vuelve a pedir) y las etiquetas y la portada se escriben en Go (saveM4A).
+// Sin ffmpeg, la mitad de memoria y nada de CPU para convertir, y sin perder
+// calidad (pasar de AAC a MP3 es comprimir dos veces).
+//
+// Con mp3, como ytm-gym: MP3 a 192 kbps con TXXX:youtube_id, con yt-dlp y
+// ffmpeg (o solo ffmpeg, desde la caché: fromCache). Sin ffmpeg no se puede:
+// se guarda el .m4a.
+func Download(ctx context.Context, bin string, t Track, musicDir, cacheDir string, mp3 bool, progress func(Progress)) (string, error) {
 	lib := LoadLibrary(musicDir)
 	if rel, ok := lib[t.ID]; ok {
 		if _, err := os.Stat(filepath.Join(musicDir, rel)); err == nil {
 			return filepath.Join(musicDir, rel), nil
 		}
+	}
+	if _, err := exec.LookPath("ffmpeg"); !mp3 || err != nil {
+		if cacheDir == "" {
+			return "", errors.New("no cache folder for the download")
+		}
+		cached, err := Fetch(ctx, bin, t, cacheDir, cacheKeep, progress)
+		if err != nil {
+			return "", err
+		}
+		path, err := saveM4A(t, cached, musicDir, progress)
+		if err != nil {
+			return "", err
+		}
+		if rel, err := filepath.Rel(musicDir, path); err == nil {
+			lib[t.ID] = rel
+			_ = SaveLibrary(musicDir, lib)
+		}
+		return path, nil
 	}
 	if cached := filepath.Join(cacheDir, t.ID+".m4a"); cacheDir != "" {
 		if _, err := os.Stat(cached); err == nil {
@@ -403,21 +431,114 @@ func fetchThumb(ctx context.Context, url, path string) error {
 	return os.WriteFile(path, b, 0o644)
 }
 
+// CacheDir es la caché de escuchar dentro de data/: en la tarjeta, no en
+// /tmp, que en las portátiles está en la RAM (15 canciones, unos 60 MB que la
+// consola no tenía para lo demás).
+func CacheDir(data string) string { return filepath.Join(data, "cache", "ytm") }
+
+// CacheKeep son las canciones que se guardan en la caché de escuchar.
+const CacheKeep = 15
+
+const cacheKeep = CacheKeep
+
+// saveM4A copia a la biblioteca el .m4a de la caché (de Fetch), con la misma
+// ruta que Download pero .m4a, y le escribe las etiquetas y la portada en Go
+// (tagwrite: sin ffmpeg). La portada, cuadrada (las miniaturas de los videos
+// son 16:9).
+func saveM4A(t Track, cached, musicDir string, progress func(Progress)) (string, error) {
+	if progress != nil {
+		progress(Progress{Stage: "convert"})
+	}
+	dir, first := libraryDir(t, musicDir)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", err
+	}
+	path := filepath.Join(dir, safeName(t.Title)+".m4a")
+	if _, err := os.Stat(path); err == nil {
+		return path, nil // ya estaba
+	}
+	tmp := path + ".part.m4a"
+	if err := copyFile(cached, tmp); err != nil {
+		_ = os.Remove(tmp)
+		return "", err
+	}
+	tags := tagwrite.Tags{Title: t.Title, Artist: t.Artist(), Album: t.Album, AlbumArtist: first}
+	if b, err := os.ReadFile(cached + ".jpg"); err == nil {
+		tags.Cover = &tagwrite.Cover{MIME: "image/jpeg", Data: squareJPEG(b)}
+	}
+	if err := tagwrite.Write(tmp, tags); err != nil {
+		_ = os.Remove(tmp)
+		return "", err
+	}
+	return path, os.Rename(tmp, path)
+}
+
+// libraryDir es la carpeta de t en la biblioteca (Artista/Álbum o Singles) y
+// su primer artista.
+func libraryDir(t Track, musicDir string) (dir, first string) {
+	album := t.Album
+	if album == "" {
+		album = "Singles"
+	}
+	first = "Desconocido"
+	if len(t.Artists) > 0 {
+		first = t.Artists[0]
+	}
+	return filepath.Join(musicDir, safeName(first), safeName(album)), first
+}
+
+// copyFile copia src a dst.
+func copyFile(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return err
+	}
+	return out.Close()
+}
+
+// squareJPEG recorta al centro una portada que no es cuadrada (si no se
+// puede leer, la deja como está).
+func squareJPEG(b []byte) []byte {
+	img, err := jpeg.Decode(bytes.NewReader(b))
+	if err != nil {
+		return b
+	}
+	r := img.Bounds()
+	w, h := r.Dx(), r.Dy()
+	if w == h {
+		return b
+	}
+	s := min(w, h)
+	x, y := r.Min.X+(w-s)/2, r.Min.Y+(h-s)/2
+	sub, ok := img.(interface {
+		SubImage(image.Rectangle) image.Image
+	})
+	if !ok {
+		return b
+	}
+	var out bytes.Buffer
+	if jpeg.Encode(&out, sub.SubImage(image.Rect(x, y, x+s, y+s)), &jpeg.Options{Quality: 90}) != nil {
+		return b
+	}
+	return out.Bytes()
+}
+
 // fromCache convierte a MP3 lo que ya se bajó para escuchar (el .m4a de la
 // caché y su miniatura), con la misma ruta, etiquetas y portada que Download.
 func fromCache(ctx context.Context, t Track, cached, musicDir string, progress func(Progress)) (string, error) {
 	if progress != nil {
 		progress(Progress{Stage: "convert"})
 	}
-	album := t.Album
-	if album == "" {
-		album = "Singles"
-	}
-	first := "Desconocido"
-	if len(t.Artists) > 0 {
-		first = t.Artists[0]
-	}
-	dir := filepath.Join(musicDir, safeName(first), safeName(album))
+	dir, first := libraryDir(t, musicDir)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
 	}
@@ -445,7 +566,12 @@ func fromCache(ctx context.Context, t Track, cached, musicDir string, progress f
 	cmd := proc.Hidden(exec.CommandContext(ctx, "ffmpeg", args...))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
+	err = cmd.Start()
+	if err == nil {
+		proc.LowPriority(cmd.Process.Pid)
+		err = cmd.Wait()
+	}
+	if err != nil {
 		_ = os.Remove(tmp)
 		return "", fmt.Errorf("ffmpeg: %v: %s", err, lastLine(stderr.String()+" "))
 	}
