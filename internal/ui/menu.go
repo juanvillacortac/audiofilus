@@ -239,6 +239,9 @@ func (a *App) openNowMenu() {
 		m.items = append(m.items, a.bookMenuItems()...) // capítulos, velocidad (books.go)
 	}
 	m.items = append(m.items, a.timerItem())
+	if it, ok := a.eqProfileItem(); ok {
+		m.items = append(m.items, it) // los perfiles de EQ de los audífonos
+	}
 	// El visualizador que se dejó puesto, de fondo (atenuado).
 	m.items = append(m.items, menuItem{label: T("vis_bg"), icon: visIcons[a.vis.kind],
 		do: func() {

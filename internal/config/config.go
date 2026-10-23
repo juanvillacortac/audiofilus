@@ -122,6 +122,9 @@ type UI struct {
 	// "low", "" (media) o "high". El motor solo se enciende o se apaga: la
 	// fuerza es cuánto dura (VibrationScale).
 	Vibration string `json:"vibration,omitempty"`
+	// EQProfile es el perfil de EQ de los audífonos puesto ahora (un
+	// ParametricEQ.txt de eq/, por su nombre); vacío, ninguno.
+	EQProfile string `json:"eq_profile,omitempty"`
 	// RadioCountry es el país de las emisoras populares: "" el de la zona
 	// horaria, "world" todo el mundo, o un código de dos letras ("VE").
 	RadioCountry string `json:"radio_country,omitempty"`

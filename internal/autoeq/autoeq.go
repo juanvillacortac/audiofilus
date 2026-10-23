@@ -157,6 +157,26 @@ var filterTypes = map[string]string{
 	"HP": "highpass", "HPQ": "highpass",
 }
 
+// filterCodes son los códigos con los que se escribe cada forma
+// (FormatParametric), los de AutoEq.
+var filterCodes = map[string]string{"peak": "PK", "lowshelf": "LSC", "highshelf": "HSC", "lowpass": "LP", "highpass": "HP"}
+
+// FormatParametric escribe un perfil como ParametricEQ.txt (el formato de
+// AutoEq y Equalizer APO), el que lee ParseParametric: así se guardan los
+// perfiles bajados para usarlos sin red.
+func FormatParametric(bands []engine.PEQBand, preamp float64) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Preamp: %.1f dB\n", preamp)
+	for i, f := range bands {
+		code, ok := filterCodes[f.Type]
+		if !ok {
+			continue
+		}
+		fmt.Fprintf(&b, "Filter %d: ON %s Fc %g Hz Gain %.1f dB Q %.2f\n", i+1, code, f.Freq, f.Gain, f.Q)
+	}
+	return b.String()
+}
+
 // filterLine es "Filter 1: ON PK Fc 105 Hz Gain 2.6 dB Q 0.70".
 var filterLine = regexp.MustCompile(`(?i)^Filter\s*\d*\s*:\s*ON\s+(\w+)\s+Fc\s+([\d.]+)\s*Hz(?:\s+Gain\s+(-?[\d.]+)\s*dB)?(?:\s+Q\s+([\d.]+))?`)
 

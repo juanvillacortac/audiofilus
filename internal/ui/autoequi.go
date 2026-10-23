@@ -25,7 +25,7 @@ func (a *App) openAutoEQ() {
 	items := []menuItem{{label: T("aeq_search"), icon: "search", do: a.autoEQSearch}}
 	files, _ := filepath.Glob(filepath.Join(a.eqDir(), "*.txt"))
 	for _, f := range files {
-		name := strings.TrimSuffix(strings.TrimSuffix(filepath.Base(f), ".txt"), " ParametricEQ")
+		name := eqProfileName(f)
 		items = append(items, menuItem{label: name, icon: "headphones", close: true, do: func() {
 			b, err := os.ReadFile(f)
 			if err != nil {
@@ -86,6 +86,7 @@ func (a *App) autoEQResults(q string, res []autoeq.Profile) {
 						a.flash(T("aeq_error", err))
 						return
 					}
+					a.saveEQProfile(p.Name, bands, pre) // para usarlo sin red (eqprofiles.go)
 					a.applyAutoEQ(p.Name, bands, pre)
 				}
 			}()
@@ -100,5 +101,7 @@ func (a *App) applyAutoEQ(name string, bands []engine.PEQBand, preamp float64) {
 	a.status.DSP.EQMode = "parametric"
 	a.peqEdit = &peqEditor{bands: bands, preamp: preamp, row: 1}
 	a.sendPEQ()
+	a.cfg.UI.EQProfile = name
+	a.saveConfig()
 	a.flash(T("aeq_applied", name))
 }

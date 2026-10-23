@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/juanvillacortac/audiofilus/internal/engine"
 )
 
 const hd650 = `Preamp: -6.1 dB
@@ -70,5 +72,27 @@ func TestIndexSearchFetch(t *testing.T) {
 	bands, pre, err := Fetch(context.Background(), res[0])
 	if err != nil || len(bands) != 3 || pre != -6.1 {
 		t.Errorf("fetch: %d bands, preamp %v, %v", len(bands), pre, err)
+	}
+}
+
+// Un perfil escrito con FormatParametric se vuelve a leer igual (así se
+// guardan los bajados, para usarlos sin red).
+func TestFormatParametricRoundTrip(t *testing.T) {
+	in := []engine.PEQBand{
+		{Type: "lowshelf", Freq: 105, Gain: 4.5, Q: 0.7},
+		{Type: "peak", Freq: 2500, Gain: -3.2, Q: 1.41},
+		{Type: "highshelf", Freq: 10000, Gain: -2, Q: 0.7},
+	}
+	bands, pre, err := ParseParametric(FormatParametric(in, -6.5))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pre != -6.5 || len(bands) != len(in) {
+		t.Fatalf("preamp %v, %d bands", pre, len(bands))
+	}
+	for i := range in {
+		if bands[i] != in[i] {
+			t.Errorf("band %d = %+v, want %+v", i, bands[i], in[i])
+		}
 	}
 }
