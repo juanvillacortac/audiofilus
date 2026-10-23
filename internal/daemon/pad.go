@@ -96,7 +96,7 @@ func (d *Daemon) readPad(r *input.Reader) {
 			case input.NoAction:
 			case input.Armed:
 				log.Print("hotkey armed (FN)")
-				d.plat.Rumble(armedRumble)
+				d.rumble(armedRumble)
 			default:
 				log.Printf("hotkey: %v", a)
 				d.act(a)
@@ -146,11 +146,21 @@ func (d *Daemon) do(a input.Action, rumbles bool) {
 		return
 	}
 	if rumbles {
-		d.plat.Rumble(rumble)
+		d.rumble(rumble)
 	}
 }
 
 func ms(n int) time.Duration { return time.Duration(n) * time.Millisecond }
+
+// rumble vibra dur, con la fuerza de Ajustes (config.VibrationScale).
+func (d *Daemon) rumble(dur time.Duration) {
+	d.mu.Lock()
+	k := config.VibrationScale(d.cfg.UI.Vibration)
+	d.mu.Unlock()
+	if k > 0 {
+		d.plat.Rumble(time.Duration(float64(dur) * k))
+	}
+}
 
 // playRandom pone una canción al azar de toda la biblioteca (las carpetas de
 // audiofilus.json), con el resto detrás; el aleatorio queda como estaba.

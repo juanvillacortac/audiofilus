@@ -53,6 +53,7 @@ const (
 	setThemeColor
 	setCrossfeed
 	setAlarm
+	setVibration
 	setCount
 )
 
@@ -133,6 +134,7 @@ var settingSections = []settingSection{
 		{setLanguage, "globe", tileChoice},
 		{setSounds, "speaker", tileChoice},
 		{setUISounds, "speaker", tileChoice},
+		{setVibration, "vibrate", tileChoice},
 		{setSwapAB, "pad", tileToggle},
 	}},
 	{"sec_about", []settingTile{
@@ -173,7 +175,9 @@ func (a *App) sections() []settingSection {
 		setRate: a.mobile(), setUpdate: a.mobile() && InstallPackage == nil, setResampler: a.mobile(),
 		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(),
 		// En el móvil no hay explorador de carpetas fuera de la app.
-		setMilkDir: a.mobile(), setRadioDir: a.mobile()}
+		setMilkDir: a.mobile(), setRadioDir: a.mobile(),
+		// La vibración, solo en las portátiles (el PC y el móvil no tienen motor).
+		setVibration: a.mobile() || a.status.Platform == "" || a.status.Platform == "desktop"}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -436,6 +440,11 @@ func (a *App) changeSetting(id, step int) {
 		a.cfg.UI.UISounds = soundLevels[cycle(n, i)]
 		a.saveConfig()
 		a.playSound(sfx.Confirm) // para oír el volumen nuevo
+	case setVibration:
+		n, i := a.settingChoice(id)
+		a.cfg.UI.Vibration = soundLevels[cycle(n, i)]
+		a.saveConfig()
+		a.send("vibration", orDefault(a.cfg.UI.Vibration, "mid")) // vibra con la nueva
 	case setSounds:
 		n, i := a.settingChoice(id)
 		a.cfg.UI.Sounds = soundLevels[cycle(n, i)]
@@ -474,6 +483,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.Sounds })
 	case setUISounds:
 		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.UISounds })
+	case setVibration:
+		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.Vibration })
 	case setReplayGain:
 		return find(len(rgModes), func(i int) bool { return rgModes[i] == a.dspOf().ReplayGain })
 	case setCrossfade:
@@ -586,6 +597,8 @@ func (a *App) settingValue(i int) string {
 		return T("snd_" + orDefault(a.cfg.UI.Sounds, "mid"))
 	case setUISounds:
 		return T("snd_" + orDefault(a.cfg.UI.UISounds, "mid"))
+	case setVibration:
+		return T("vib_" + orDefault(a.cfg.UI.Vibration, "mid"))
 	case setServers:
 		if len(a.cfg.Servers) == 0 {
 			return T("srv_none")
@@ -623,7 +636,7 @@ func settingNames() [setCount]string {
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
-		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"),
+		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"),
 	}
 }
 
@@ -845,6 +858,8 @@ func choiceLabel(id, i int) string {
 		return T("mode_" + sleepModes[i])
 	case setSounds, setUISounds:
 		return T("snd_" + orDefault(soundLevels[i], "mid"))
+	case setVibration:
+		return T("vib_" + orDefault(soundLevels[i], "mid"))
 	case setReplayGain:
 		return T("rg_" + rgModes[i])
 	case setResampler:

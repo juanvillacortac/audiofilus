@@ -47,3 +47,30 @@ func TestWakeOnLidOpen(t *testing.T) {
 		t.Error("a sleep started with the lid open ended by itself")
 	}
 }
+
+// rumblePlat anota las vibraciones que se piden.
+type rumblePlat struct {
+	platform.Platform
+	got []time.Duration
+}
+
+func (p *rumblePlat) Rumble(d time.Duration) { p.got = append(p.got, d) }
+
+// La fuerza de la vibración de Ajustes alarga, acorta o apaga cada una.
+func TestRumbleScale(t *testing.T) {
+	p := &rumblePlat{Platform: platform.Detect(platform.Options{})}
+	d := &Daemon{plat: p}
+	for _, v := range []string{"low", "", "high", "off"} {
+		d.cfg.UI.Vibration = v
+		d.rumble(100 * time.Millisecond)
+	}
+	want := []time.Duration{50 * time.Millisecond, 100 * time.Millisecond, 160 * time.Millisecond}
+	if len(p.got) != len(want) {
+		t.Fatalf("rumbles %v, want %v (none when off)", p.got, want)
+	}
+	for i := range want {
+		if p.got[i] != want[i] {
+			t.Errorf("rumble %d = %v, want %v", i, p.got[i], want[i])
+		}
+	}
+}

@@ -117,6 +117,11 @@ type UI struct {
 	// UISounds es el de los de la interfaz (moverse, aceptar, menús,
 	// pantallas, escribir, el splash), con los mismos valores.
 	UISounds string `json:"ui_sounds,omitempty"`
+	// Vibration es la fuerza de la vibración de las portátiles (la de los
+	// gestos del bolsillo, el atajo de FN, los topes del volumen): "off",
+	// "low", "" (media) o "high". El motor solo se enciende o se apaga: la
+	// fuerza es cuánto dura (VibrationScale).
+	Vibration string `json:"vibration,omitempty"`
 	// RadioCountry es el país de las emisoras populares: "" el de la zona
 	// horaria, "world" todo el mundo, o un código de dos letras ("VE").
 	RadioCountry string `json:"radio_country,omitempty"`
@@ -304,4 +309,18 @@ func writeJSON(path string, v any) error {
 		return err
 	}
 	return os.Rename(tmp, path)
+}
+
+// VibrationScale es por cuánto se multiplica la duración de cada vibración con
+// el nivel v (UI.Vibration): 0 la apaga.
+func VibrationScale(v string) float64 {
+	switch v {
+	case "off":
+		return 0
+	case "low":
+		return 0.5
+	case "high":
+		return 1.6
+	}
+	return 1
 }

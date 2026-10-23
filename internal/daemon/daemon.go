@@ -513,7 +513,7 @@ func (d *Daemon) volumeStep(delta int) {
 	// Una vibración corta al llegar a 0, a 100 (el tope del sistema) o a 200:
 	// se notan los límites sin mirar la pantalla (en el bolsillo, en sleep).
 	if total := d.totalVolume(); total != totalBefore && (total == 0 || total == 100 || total == 200) {
-		d.plat.Rumble(volumeMarkRumble)
+		d.rumble(volumeMarkRumble)
 	}
 	if sys != before {
 		// Solo vale el último: si hay uno esperando, se cambia por este.
@@ -825,6 +825,21 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 			e.Pause()
 			d.quitOnce.Do(func() { close(d.quit) })
 		}
+		return nil, nil
+	case "vibration":
+		// vibration <off|low|mid|high>: la fuerza de la vibración (Ajustes);
+		// vibra una vez para que se note la nueva.
+		if len(req.Args) != 1 {
+			return nil, errors.New("usage: vibration off|low|mid|high")
+		}
+		v := req.Args[0]
+		if v == "mid" {
+			v = ""
+		}
+		d.mu.Lock()
+		d.cfg.UI.Vibration = v
+		d.mu.Unlock()
+		d.rumble(150 * time.Millisecond)
 		return nil, nil
 	case "volstep":
 		// volstep <+N|-N>: los botones de volumen (y + y - de la interfaz).
