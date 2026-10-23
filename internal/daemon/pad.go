@@ -114,7 +114,12 @@ func (d *Daemon) readPad(r *input.Reader) {
 // act ejecuta una acción de un gesto o de un atajo, con su vibración y su
 // sonido (los de la interfaz los pone ella; estos son los que no pasan por
 // ella: el atajo de FN y los gestos del sleep).
-func (d *Daemon) act(a input.Action) {
+func (d *Daemon) act(a input.Action) { d.do(a, true) }
+
+// do es act con o sin vibración: los botones de los audífonos no hacen vibrar
+// la consola (se tocan los audífonos; la del pausar, más larga para el
+// bolsillo, sonaba fuerte con el doble toque de unos bluetooth).
+func (d *Daemon) do(a input.Action, rumbles bool) {
 	defer d.actSound(a)
 	rumble := ms(d.cfg.Sleep.RumbleMS)
 	seek := float64(d.cfg.Hotkeys.SeekSec)
@@ -140,7 +145,9 @@ func (d *Daemon) act(a input.Action) {
 		_ = d.setSleep(false, false)
 		return
 	}
-	d.plat.Rumble(rumble)
+	if rumbles {
+		d.plat.Rumble(rumble)
+	}
 }
 
 func ms(n int) time.Duration { return time.Duration(n) * time.Millisecond }
@@ -308,11 +315,11 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 		hook.Press(at, func(n int) {
 			switch n {
 			case 1:
-				d.act(input.TogglePause)
+				d.do(input.TogglePause, false)
 			case 2:
-				d.act(input.Next)
+				d.do(input.Next, false)
 			default:
-				d.act(input.Prev)
+				d.do(input.Prev, false)
 			}
 		})
 	case input.KeyPlayPause, input.KeyPlayCD, input.KeyPauseCD:
@@ -321,18 +328,18 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 		// no saben si audiofilus suena (sin MPRIS nadie se lo dice): tras
 		// pausar con los botones de la consola, su doble toque mandaba PAUSE
 		// otra vez y no hacía nada. Así que cualquiera de los tres alterna.
-		d.act(input.TogglePause)
+		d.do(input.TogglePause, false)
 	case input.KeyStopCD, input.KeyStop:
 		if d.eng.Playing() {
-			d.act(input.TogglePause)
+			d.do(input.TogglePause, false)
 		}
 	case input.KeyNextSong:
-		d.act(input.Next)
+		d.do(input.Next, false)
 	case input.KeyPreviousSong:
-		d.act(input.Prev)
+		d.do(input.Prev, false)
 	case input.KeyFastForward:
-		d.act(input.SeekForward)
+		d.do(input.SeekForward, false)
 	case input.KeyRewind:
-		d.act(input.SeekBack)
+		d.do(input.SeekBack, false)
 	}
 }
