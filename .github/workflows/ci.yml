@@ -21,6 +21,10 @@ jobs:
         run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
       - run: go vet ./...
       - run: go test ./...
+      # 32 bits (Android armeabi-v7a, armhf handhelds): int is 32 bits there,
+      # and sizes or constants that only fit in 64 overflow.
+      - name: Tests in 32 bits
+        run: GOARCH=386 CGO_ENABLED=0 go test ./internal/...
       - name: Build for arm64 without cgo
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o /dev/null ./cmd/audiofilus

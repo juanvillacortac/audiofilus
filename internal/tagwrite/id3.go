@@ -53,13 +53,15 @@ func parseMP3(data []byte) (*mp3File, error) {
 		if len(body) < 4 {
 			return nil, ErrCorrupt
 		}
-		var ext int
+		// Los tamaños se comparan en uint64: un int de 32 bits (Android
+		// armeabi-v7a) con un tamaño de 4 GB queda negativo y pasaría.
+		var ext uint64
 		if ver == 4 {
-			ext = synchsafe(body[:4])
+			ext = uint64(synchsafe(body[:4]))
 		} else {
-			ext = int(binary.BigEndian.Uint32(body[:4])) + 4
+			ext = uint64(binary.BigEndian.Uint32(body[:4])) + 4
 		}
-		if ext > len(body) {
+		if ext > uint64(len(body)) {
 			return nil, ErrCorrupt
 		}
 		body = body[ext:]
@@ -77,15 +79,16 @@ func parseMP3(data []byte) (*mp3File, error) {
 		if id[0] == 0 {
 			break // el relleno
 		}
-		var size int
+		var size64 uint64
 		if ver == 4 {
-			size = synchsafe(body[pos+4 : pos+8])
+			size64 = uint64(synchsafe(body[pos+4 : pos+8]))
 		} else {
-			size = int(binary.BigEndian.Uint32(body[pos+4 : pos+8]))
+			size64 = uint64(binary.BigEndian.Uint32(body[pos+4 : pos+8]))
 		}
-		if pos+10+size > len(body) || !validID(id) {
+		if uint64(pos)+10+size64 > uint64(len(body)) || !validID(id) {
 			return nil, ErrCorrupt
 		}
+		size := int(size64)
 		f.frames = append(f.frames, id3Frame{id: id, flags: [2]byte{body[pos+8], body[pos+9]}, data: body[pos+10 : pos+10+size]})
 		pos += 10 + size
 	}

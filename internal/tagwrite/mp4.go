@@ -112,7 +112,7 @@ func (a *atom) bytes() []byte {
 		content = a.data
 	}
 	n := 8 + len(content)
-	if n > 0xffffffff {
+	if int64(n) > 0xffffffff { // en int64: en 32 bits el int no llega
 		out := make([]byte, 16, 16+len(content))
 		binary.BigEndian.PutUint32(out, 1)
 		copy(out[4:], a.kind)

@@ -104,7 +104,7 @@ func NewRenderer(opt Options) *Renderer {
 	r.geo.whiteX, r.geo.whiteY = 1.5, 1.5 // el píxel del centro de gpuState.white
 	for c := range r.phase {
 		for b := range r.phase[c] {
-			r.phase[c][b] = uint32(b*2654435761 + c*40503)
+			r.phase[c][b] = uint32(b)*2654435761 + uint32(c)*40503 // en uint32: también en 32 bits
 		}
 	}
 	for i := range r.avg {

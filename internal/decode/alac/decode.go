@@ -353,8 +353,10 @@ func (alac *Alac) entropyRiceDecode(
 			k = int32(rice_kmodifier)
 		}
 
-		// note: don't use rice_kmodifier_mask here (set mask to 0xFFFFFFFF)
-		decodedValue = int32(alac.entropyDecodeValue(readSampleSize, int(k), 0xFFFFFFFF))
+		// note: don't use rice_kmodifier_mask here (set mask to all ones: -1,
+		// not 0xFFFFFFFF, which overflows int on 32-bit; the mask only meets
+		// (1<<k)-1 with k < 32, so the result is the same)
+		decodedValue = int32(alac.entropyDecodeValue(readSampleSize, int(k), -1))
 
 		decodedValue += int32(signModifier)
 		finalValue = (decodedValue + 1) / 2 // inc by 1 and shift out sign bit
