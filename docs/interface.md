@@ -157,7 +157,7 @@ The RG34XX-SP has 2 GB, but audiofilus must work on 512 MB handhelds, alongside 
 
 ## Smoothness
 
-- Covers are prepared by two workers (`covers.go`); the interface thread only uploads the ready ones to the GPU, and they appear with a fade. Doing it while drawing caused stutters when switching screens and scrolling.
+- Covers are prepared by two workers (`covers.go`); the interface thread only uploads the ready ones to the GPU, and they appear with a fade. Doing it while drawing caused stutters when switching screens and scrolling. Now Playing also requests, at its size, the covers of the next three songs in the queue from other albums (`prefetchCovers`), so the next one shows at once instead of after the placeholder (it took up to a second).
 - The row above and the row below in the grid are requested ahead of time.
 - Shaders are warmed up on the first frame (`warmUp`), as in Trancazo.
 - Truncations of long titles are cached (`fit`).

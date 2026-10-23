@@ -130,3 +130,23 @@ func (a *App) cover(al *Album, size int) (*ebiten.Image, float32) {
 	}
 	return nil, 0
 }
+
+// prefetchCovers es cuántas canciones de la cola se miran por delante.
+const prefetchAhead = 3
+
+// prefetchCovers pide, a size, las portadas de las próximas canciones de la
+// cola que son de otro disco que cur: al pasar a la siguiente, la suya ya está
+// lista y sale sin la de relleno (antes tardaba hasta un segundo). Se marcan
+// como vistas, así que no las libera evict mientras siguen por delante.
+func (a *App) prefetchCovers(cur *Album, size int) {
+	q := a.queue()
+	i := a.status.Index
+	if i < 0 || i >= len(q) {
+		return
+	}
+	for _, p := range q[i+1 : min(len(q), i+1+prefetchAhead)] {
+		if al, _ := a.albumOf(p); al != nil && al != cur {
+			a.cover(al, size)
+		}
+	}
+}

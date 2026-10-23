@@ -389,6 +389,7 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	if f := a.coverFlash(); f > 0 {
 		rect(dst, cx+ox, cy, size, size, withAlpha(th.Text, uint8(150*f)))
 	}
+	a.prefetchCovers(al, size)
 	frame(dst, cx-1+ox, cy-1, size+2, size+2, withAlpha(th.Text, 0x40))
 	// Lo de YouTube Music que suena sin guardar: su icono en la esquina de
 	// la portada.
