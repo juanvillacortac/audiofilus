@@ -12,6 +12,8 @@ ffmpeg -v error -y $S -c:a libvorbis -q:a 0 -metadata title="Tono vorbis" -metad
 ffmpeg -v error -y -f lavfi -i sine=frequency=440:duration=0.5:sample_rate=48000 -ac 1 -c:a libopus -b:a 16k -metadata title="Tono opus" -metadata artist=audiofilus tone.opus
 ffmpeg -v error -y $S -c:a aac -b:a 24k -metadata title="Tono m4a" -metadata artist=audiofilus -metadata track=4/10 -movflags +faststart front.m4a
 ffmpeg -v error -y $S -c:a aac -b:a 24k -metadata title="Tono m4a fin" -metadata artist=audiofilus back.m4a
+ffmpeg -v error -y $S -c:a aac -b:a 24k -map_metadata -1 -movflags +frag_keyframe+empty_moov+default_base_moof+skip_trailer -frag_duration 200000 dash.m4a
+ffmpeg -v error -y $S -c:a aac -b:a 24k -map_metadata -1 -movflags +frag_keyframe+empty_moov+skip_trailer -frag_duration 200000 fragabs.m4a
 ```
 
-`front.m4a` has the moov before the mdat (so growing the tags shifts the chunk offsets), `back.m4a` after it. The cover images in the tests are generated noise PNGs.
+`dash.m4a` is fragmented like YouTube's DASH audio (each `tfhd` has default-base-is-moof, no `mfra`), so it can be shifted as is; `fragabs.m4a` is fragmented with absolute base offsets, which tagwrite must refuse. `front.m4a` has the moov before the mdat (so growing the tags shifts the chunk offsets), `back.m4a` after it. The cover images in the tests are generated noise PNGs.

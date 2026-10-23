@@ -426,3 +426,57 @@ func TestSupported(t *testing.T) {
 		}
 	}
 }
+
+// samples cuenta las muestras que decodifica path (0 si este equipo no tiene
+// el decodificador).
+func samples(t *testing.T, path string) int {
+	t.Helper()
+	src, err := decode.Open(path)
+	if err != nil {
+		return 0
+	}
+	defer src.Close()
+	buf := make([]float32, 4096)
+	total := 0
+	for {
+		n, err := src.Read(buf)
+		total += n
+		if err != nil {
+			return total
+		}
+	}
+}
+
+// El audio DASH de YouTube (fragmentado, con cada fragmento contando desde sí
+// mismo) acepta etiquetas y portada aunque el moov crezca, y sigue sonando
+// entero; uno fragmentado con posiciones absolutas se rechaza sin tocarlo.
+func TestFragmentedMP4(t *testing.T) {
+	p := copyFixture(t, "dash.m4a")
+	before := samples(t, p)
+	want := Tags{Title: "Tono dash", Artist: "audiofilus", Album: "Singles", Cover: pngCover(t, 64, 64)}
+	if err := Write(p, want); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	f, _ := os.Open(p)
+	m, err := tag.ReadFrom(f)
+	f.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if m.Title() != want.Title || m.Artist() != want.Artist || m.Picture() == nil {
+		t.Errorf("read back %q / %q / cover %v", m.Title(), m.Artist(), m.Picture() != nil)
+	}
+	decodes(t, p)
+	if after := samples(t, p); after != before {
+		t.Errorf("decoded %d samples, %d before", after, before)
+	}
+
+	abs := copyFixture(t, "fragabs.m4a")
+	orig, _ := os.ReadFile(abs)
+	if err := Write(abs, want); err == nil {
+		t.Error("wrote a fragmented file with absolute offsets")
+	}
+	if now, _ := os.ReadFile(abs); !bytes.Equal(now, orig) {
+		t.Error("the rejected file was changed")
+	}
+}

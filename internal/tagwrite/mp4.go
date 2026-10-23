@@ -482,6 +482,11 @@ func (f *mp4File) write(w io.Writer) error {
 		out.Write(newMoov)
 		out.Write(freeAtom(-delta + freeAfter))
 		out.Write(f.orig[spans[j-1].end:])
+	case fragmented && relocatable(f.orig, spans[moovIdx].end):
+		// Fragmentado, pero cada fragmento cuenta desde sí mismo (el audio
+		// de YouTube): se puede correr entero sin tocar nada.
+		out.Write(newMoov)
+		out.Write(f.orig[spans[moovIdx].end:])
 	case fragmented:
 		return ErrUnsupported // con fragmentos no se corren las posiciones
 	default:
@@ -563,4 +568,48 @@ func shiftOffsets(a *atom, d int64) error {
 		}
 	}
 	return nil
+}
+
+// relocatable dice si los fragmentos que hay desde from (moof, sidx...) se
+// pueden mover sin cambiarlos: ningún tfhd con base-data-offset (una posición
+// absoluta en el archivo) y sin mfra (su índice también las usa). Es el caso
+// del audio DASH de YouTube: sus tfhd llevan default-base-is-moof y el sidx
+// cuenta desde sí mismo.
+func relocatable(data []byte, from int) bool {
+	ok := true
+	var walk func(start, end int, inMoof bool)
+	walk = func(start, end int, inMoof bool) {
+		for i := start; ok && i+8 <= end; {
+			n := int(binary.BigEndian.Uint32(data[i:]))
+			kind := string(data[i+4 : i+8])
+			h := 8
+			switch {
+			case n == 1 && i+16 <= end:
+				n, h = int(binary.BigEndian.Uint64(data[i+8:])), 16
+			case n == 0:
+				n = end - i
+			}
+			if n < h || i+n > end {
+				ok = false
+				return
+			}
+			switch kind {
+			case "mfra":
+				ok = false
+			case "moof":
+				walk(i+h, i+n, true)
+			case "traf":
+				if inMoof {
+					walk(i+h, i+n, true)
+				}
+			case "tfhd":
+				if inMoof && (n < h+4 || data[i+h+3]&1 != 0) {
+					ok = false // base-data-offset-present
+				}
+			}
+			i += n
+		}
+	}
+	walk(from, len(data), false)
+	return ok
 }
