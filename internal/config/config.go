@@ -301,17 +301,35 @@ func SaveState(p Paths, s State) error {
 }
 
 // writeJSON escribe v en path a través de un archivo temporal y un rename,
-// para no dejar el archivo a medias si se corta la corriente.
+// para no dejar el archivo a medias si se corta la corriente. El temporal es
+// propio de cada escritura: la interfaz y el servicio (o el servicio viejo y
+// el nuevo, al reiniciarse) guardan a la vez, y con un nombre fijo uno
+// renombraba el del otro y el suyo fallaba ("rename state.json.tmp: no such
+// file or directory").
 func writeJSON(path string, v any) error {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return err
 	}
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, append(b, '\n'), 0o644); err != nil {
+	f, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".*.tmp")
+	if err != nil {
 		return err
 	}
-	return os.Rename(tmp, path)
+	tmp := f.Name()
+	_, err = f.Write(append(b, '\n'))
+	if cerr := f.Close(); err == nil {
+		err = cerr
+	}
+	if err == nil {
+		err = os.Chmod(tmp, 0o644)
+	}
+	if err == nil {
+		err = os.Rename(tmp, path)
+	}
+	if err != nil {
+		os.Remove(tmp)
+	}
+	return err
 }
 
 // VibrationScale es por cuánto se multiplica la duración de cada vibración con
