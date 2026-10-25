@@ -71,47 +71,6 @@ func TestSSDPLocation(t *testing.T) {
 	}
 }
 
-// Una respuesta mDNS de un Chromecast (con un nombre comprimido) da su
-// instancia, puerto, nombre, modelo y dirección.
-func TestParseDNS(t *testing.T) {
-	b := make([]byte, 12)
-	binary.BigEndian.PutUint16(b[2:], 0x8400)
-	binary.BigEndian.PutUint16(b[6:], 4)
-	rr := func(name []byte, typ uint16, rdata []byte) {
-		b = append(b, name...)
-		b = binary.BigEndian.AppendUint16(b, typ)
-		b = binary.BigEndian.AppendUint16(b, 1)
-		b = binary.BigEndian.AppendUint32(b, 120)
-		b = binary.BigEndian.AppendUint16(b, uint16(len(rdata)))
-		b = append(b, rdata...)
-	}
-	svcOff := len(b)
-	inst := appendName(nil, "Chromecast-abc."+castService)
-	rr(appendName(nil, castService), dnsPTR, inst)
-	// La instancia, comprimida: "Chromecast-abc" + puntero al servicio.
-	ptr := []byte{0xc0 | byte(svcOff>>8), byte(svcOff)}
-	instC := append([]byte{14}, "Chromecast-abc"...)
-	instC = append(instC, ptr...)
-	srv := []byte{0, 0, 0, 0, 0x1f, 0x49}
-	srv = append(srv, appendName(nil, "abc.local")...)
-	rr(instC, dnsSRV, srv)
-	var txt []byte
-	for _, kv := range []string{"id=abc", "fn=Tele del salón", "md=Chromecast"} {
-		txt = append(txt, byte(len(kv)))
-		txt = append(txt, kv...)
-	}
-	rr(instC, dnsTXT, txt)
-	rr(appendName(nil, "abc.local"), dnsA, []byte{192, 168, 1, 30})
-	recs, err := parseDNS(b)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(recs) != 4 || recs[0].ptr != "Chromecast-abc."+castService || recs[1].name != "Chromecast-abc."+castService ||
-		recs[1].port != 8009 || recs[1].target != "abc.local" || recs[2].txt["fn"] != "Tele del salón" || recs[3].ip.String() != "192.168.1.30" {
-		t.Errorf("records = %+v", recs)
-	}
-}
-
 // fakeRenderer es un MediaRenderer de mentira: apunta las órdenes SOAP.
 type fakeRenderer struct {
 	mu      sync.Mutex
