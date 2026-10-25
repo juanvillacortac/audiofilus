@@ -26,11 +26,12 @@ import (
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/fetch"
+	"github.com/juanvillacortac/audiofilus/internal/platform"
 )
 
 // Options es lo que se enciende y con qué nombre.
 type Options struct {
-	Name     string // como se ve en la red; vacío: "audiofilus (<equipo>)"
+	Name     string // como se ve en la red; vacío: el del equipo o el modelo de la consola
 	Server   bool
 	Renderer bool
 	DataDir  string // data/: los UUID, la biblioteca y la caché del renderer
@@ -60,14 +61,9 @@ type Service struct {
 	mu       sync.Mutex
 }
 
-// DefaultName es el nombre de un equipo: "audiofilus (<equipo>)".
-func DefaultName() string {
-	h, err := os.Hostname()
-	if err != nil || h == "" {
-		h = "audiofilus"
-	}
-	return fmt.Sprintf("audiofilus (%s)", h)
-}
+// DefaultName es el nombre con el que se anuncia: el del equipo, o el modelo
+// de la consola (platform.DeviceName).
+func DefaultName() string { return platform.DeviceName() }
 
 // Start enciende lo que diga opts (al menos una de las dos cosas).
 func Start(opts Options) (*Service, error) {

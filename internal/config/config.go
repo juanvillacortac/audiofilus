@@ -51,7 +51,7 @@ type MPD struct {
 	// Password: vacía, cualquiera de la red puede controlarlo.
 	Password string `json:"password,omitempty"`
 	// Name es como se anuncia en la red (mDNS); vacío: el de DLNA,
-	// "audiofilus (<equipo>)".
+	// el del equipo o el modelo de la consola.
 	Name string `json:"name,omitempty"`
 }
 
@@ -70,7 +70,7 @@ type DLNA struct {
 	Server bool `json:"server,omitempty"`
 	// Renderer: otros (el móvil, BubbleUPnP...) mandan música que suena aquí.
 	Renderer bool `json:"renderer,omitempty"`
-	// Name es como se ve en la red; vacío: "audiofilus (<equipo>)".
+	// Name es como se ve en la red; vacío: el del equipo o el modelo de la consola.
 	Name string `json:"name,omitempty"`
 }
 
