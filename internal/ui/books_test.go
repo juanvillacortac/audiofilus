@@ -207,7 +207,9 @@ func TestMenuBackGoesUp(t *testing.T) {
 	}
 	// Una opción que vuelve a abrir su propio menú (al día).
 	var self func()
-	self = func() { a.menu = &menu{title: "Alarm", items: []menuItem{{label: "x", value: func() string { return "" }, do: self}}} }
+	self = func() {
+		a.menu = &menu{title: "Alarm", items: []menuItem{{label: "x", value: func() string { return "" }, do: self}}}
+	}
 	self()
 	press(a, ActConfirm)
 	press(a, ActBack)
