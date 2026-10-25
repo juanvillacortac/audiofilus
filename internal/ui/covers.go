@@ -141,6 +141,14 @@ const prefetchAhead = 3
 func (a *App) prefetchCovers(cur *Album, size int) {
 	q := a.queue()
 	i := a.status.Index
+	// La cola solo se pide en su pantalla: aquí, si falta o es de otra
+	// canción (otro largo, o cambió lo que suena), se pide (como mucho una
+	// vez por segundo); mientras llega, se mira la que hay.
+	if (len(q) != a.status.Count || a.prefetchFor != a.playingSong.Path) && a.t-a.queueAt > 1 {
+		a.queueAt = a.t
+		a.prefetchFor = a.playingSong.Path
+		a.send("queue")
+	}
 	if i < 0 || i >= len(q) {
 		return
 	}

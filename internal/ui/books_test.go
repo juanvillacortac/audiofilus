@@ -155,3 +155,24 @@ func TestShuffleStartsAnywhere(t *testing.T) {
 		t.Errorf("always started at %v", starts)
 	}
 }
+
+// Reproduciendo pide la cola al servicio para preparar las portadas de lo que
+// viene (antes solo se pedía en la pantalla de la cola, y no había qué
+// preparar); con la cola al día no la vuelve a pedir.
+func TestPrefetchAsksForQueue(t *testing.T) {
+	a := &App{offline: true, t: 10}
+	a.status.Count = 3
+	a.playingSong.Path = "a.mp3"
+	asked := 0
+	sendHook = func(cmd string, args []string) {
+		if cmd == "queue" {
+			asked++
+		}
+	}
+	defer func() { sendHook = nil }()
+	a.prefetchCovers(nil, 64)
+	a.prefetchCovers(nil, 64) // en el mismo segundo: no otra vez
+	if asked != 1 {
+		t.Errorf("asked for the queue %d times, want 1", asked)
+	}
+}

@@ -81,7 +81,8 @@ type App struct {
 	picker         *Picker
 	pickFor        pickTarget // para qué es la carpeta del explorador (folders.go)
 	firstRun       bool
-	refresh        *Scan // el escaneo de fondo al arrancar con caché (pollRefresh)
+	refresh        *Scan  // el escaneo de fondo al arrancar con caché (pollRefresh)
+	prefetchFor    string // la canción para la que se pidió la cola (prefetchCovers)
 	lib            *Library
 	covers         *covers
 	input          Input
