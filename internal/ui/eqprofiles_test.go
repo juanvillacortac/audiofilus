@@ -33,3 +33,22 @@ func TestEQProfiles(t *testing.T) {
 		t.Errorf("HD 650 not applied: %+v", a.status.DSP)
 	}
 }
+
+// Borrar el perfil puesto lo quita de eq/ y deja el ecualizador plano.
+func TestEQProfileDelete(t *testing.T) {
+	a := &App{offline: true}
+	a.paths.Base = t.TempDir()
+	a.saveEQProfile("HD 650", []engine.PEQBand{{Type: "peak", Freq: 100, Gain: 3, Q: 1}}, -3)
+	if err := a.useEQProfile("HD 650"); err != nil {
+		t.Fatal(err)
+	}
+	a.openEQDelete()
+	a.menu.items[0].do() // el perfil
+	a.menu.items[1].do() // "Borrar"
+	if len(a.eqProfiles()) != 0 {
+		t.Errorf("profiles left: %v", a.eqProfiles())
+	}
+	if a.cfg.UI.EQProfile != "" || len(a.status.DSP.PEQ) != 0 {
+		t.Errorf("still applied: %q %+v", a.cfg.UI.EQProfile, a.status.DSP.PEQ)
+	}
+}

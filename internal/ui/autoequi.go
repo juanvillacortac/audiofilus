@@ -40,6 +40,9 @@ func (a *App) openAutoEQ() {
 			a.applyAutoEQ(name, bands, pre)
 		}})
 	}
+	if len(files) > 0 {
+		items = append(items, menuItem{label: T("eqp_delete"), icon: "trash", danger: true, do: a.openEQDelete})
+	}
 	a.menu = &menu{title: "AutoEQ", subtitle: T("aeq_sub"), items: items}
 }
 

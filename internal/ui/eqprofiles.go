@@ -123,3 +123,27 @@ func safeFileName(s string) string {
 }
 
 func fileExists(p string) bool { _, err := os.Stat(p); return err == nil }
+
+// openEQDelete lista los perfiles guardados para borrar uno (con
+// confirmación). Si era el puesto, el ecualizador queda plano.
+func (a *App) openEQDelete() {
+	var items []menuItem
+	for _, name := range a.eqProfiles() {
+		items = append(items, menuItem{label: name, icon: "headphones", do: func() {
+			a.menu = &menu{title: T("eqp_delete_q", name), items: []menuItem{
+				{label: T("pl_keep"), icon: "arrow_l", do: func() {}},
+				{label: T("eqp_delete_yes"), icon: "trash", danger: true, do: func() {
+					if err := os.Remove(a.eqProfileFile(name)); err != nil && !os.IsNotExist(err) {
+						a.flash(T("aeq_error", err))
+						return
+					}
+					if a.cfg.UI.EQProfile == name {
+						_ = a.useEQProfile("")
+					}
+					a.flash(T("eqp_deleted", name))
+				}},
+			}}
+		}})
+	}
+	a.menu = &menu{title: T("eqp_delete"), items: items, cols: 1}
+}
