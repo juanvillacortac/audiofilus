@@ -430,7 +430,13 @@ func (a *App) Close() {
 }
 
 // send manda un comando al servicio (en la maqueta no hace nada).
+// sendHook, en las pruebas, ve cada orden que la interfaz manda al servicio.
+var sendHook func(cmd string, args []string)
+
 func (a *App) send(cmd string, args ...string) {
+	if sendHook != nil {
+		sendHook(cmd, args)
+	}
 	a.soundFromSend(cmd, args)
 	if a.castSend(cmd, args) { // mandando a un aparato: la orden va allí (castui.go)
 		return
@@ -920,6 +926,17 @@ func (a *App) playSongs(songs []Song, start int, shuffle bool) {
 	}
 	a.send("load", args...)
 	a.send("shuffle", onOffArg(shuffle))
+}
+
+// playShuffled pone songs en aleatorio empezando por una al azar: el
+// aleatorio deja la primera en su sitio y mezcla el resto, así que empezar
+// por la 0 hacía que siempre sonara primero la misma (la primera del álbum,
+// del artista o de la lista).
+func (a *App) playShuffled(songs []Song) {
+	if len(songs) == 0 {
+		return
+	}
+	a.playSongs(songs, rand.IntN(len(songs)), true)
 }
 
 // El volumen va en una escala de 0 a 200: el del sistema hasta 100 y, por

@@ -135,3 +135,23 @@ func TestNoAlbumLanguage(t *testing.T) {
 		t.Errorf("after relabel: %q %q", lib.Albums[0].Title, lib.Songs[0].Album)
 	}
 }
+
+// Poner en aleatorio un álbum (o una lista, o un artista) empieza por una
+// canción al azar, no siempre por la primera.
+func TestShuffleStartsAnywhere(t *testing.T) {
+	a := &App{offline: true}
+	songs := []Song{{Path: "1.mp3"}, {Path: "2.mp3"}, {Path: "3.mp3"}, {Path: "4.mp3"}, {Path: "5.mp3"}}
+	starts := map[string]bool{}
+	sendHook = func(cmd string, args []string) {
+		if cmd == "load" {
+			starts[args[0]] = true
+		}
+	}
+	defer func() { sendHook = nil }()
+	for range 40 {
+		a.playShuffled(songs)
+	}
+	if len(starts) < 2 {
+		t.Errorf("always started at %v", starts)
+	}
+}

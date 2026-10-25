@@ -140,7 +140,7 @@ func (a *App) songsMenu(title string, songs []Song, al *Album, artist string) *m
 	if len(songs) > 1 {
 		m.items = append(m.items,
 			menuItem{label: T("t_play"), icon: "play", do: func() { a.playSongs(songs, 0, false); a.screen = NowPlaying }},
-			menuItem{label: T("t_shuffle"), icon: "shuffle", do: func() { a.playSongs(songs, 0, true); a.screen = NowPlaying }})
+			menuItem{label: T("t_shuffle"), icon: "shuffle", do: func() { a.playShuffled(songs); a.screen = NowPlaying }})
 	}
 	m.items = append(m.items,
 		menuItem{label: T("t_next"), icon: "playnext", do: func() { a.send("playnext", paths(songs)...); a.flash(T("queued_next")) }},

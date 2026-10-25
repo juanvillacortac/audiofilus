@@ -370,7 +370,11 @@ func (a *App) playItem(v *view, shuffle bool) {
 	if len(songs) == 0 {
 		return
 	}
-	a.playSongs(songs, 0, shuffle)
+	if shuffle {
+		a.playShuffled(songs)
+	} else {
+		a.playSongs(songs, 0, false)
+	}
 	a.screen = NowPlaying
 }
 
