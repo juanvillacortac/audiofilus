@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/juanvillacortac/audiofilus/internal/fetch"
 )
 
 // El renderer: otros equipos (el móvil con BubbleUPnP, el "Transmitir a" de
@@ -133,7 +135,7 @@ func fmtTime(s float64) string {
 // renderer es el MediaRenderer.
 type renderer struct {
 	player  Player
-	fetch   *fetcher
+	fetch   *fetch.Fetcher[Meta]
 	mu      sync.Mutex
 	seq     int
 	cur     string // la ruta de lo puesto (dlna://r/<n>), o ""
@@ -146,7 +148,13 @@ type renderer struct {
 	lastRC  string
 }
 
-func newRenderer(p Player, f *fetcher) *renderer {
+// entry es la URL y los metadatos de una ruta ("" si no es del renderer).
+func (r *renderer) entry(p string) (string, Meta) {
+	uri, m, _ := r.fetch.Entry(p)
+	return uri, m
+}
+
+func newRenderer(p Player, f *fetch.Fetcher[Meta]) *renderer {
 	r := &renderer{player: p, fetch: f}
 	r.avt = newEvents(func() string { return propertySet([2]string{"LastChange", r.avtLastChange()}) })
 	r.rc = newEvents(func() string { return propertySet([2]string{"LastChange", r.rcLastChange()}) })
@@ -188,7 +196,7 @@ func (r *renderer) current(st PlayerStatus) (path, uri string, meta Meta) {
 		path = r.cur
 	}
 	r.mu.Unlock()
-	uri, meta = r.fetch.entry(path)
+	uri, meta = r.entry(path)
 	return
 }
 
@@ -203,7 +211,7 @@ func (r *renderer) avtLastChange() string {
 	r.mu.Lock()
 	next := r.next
 	r.mu.Unlock()
-	nextURI, nextMeta := r.fetch.entry(next)
+	nextURI, nextMeta := r.entry(next)
 	tracks := 0
 	if uri != "" {
 		tracks = 1
@@ -333,11 +341,11 @@ func (r *renderer) avTransport(a *action) ([]arg, error) {
 		}
 		state, _, _ := r.state()
 		path := r.newPath()
-		r.fetch.add(path, uri, parseMeta(a.Args["CurrentURIMetaData"]))
+		r.fetch.Add(path, uri, parseMeta(a.Args["CurrentURIMetaData"]))
 		r.mu.Lock()
 		r.cur, r.next = path, ""
 		r.mu.Unlock()
-		r.fetch.keep(path)
+		r.fetch.Keep(path)
 		// Si sonaba algo del renderer, la nueva sigue sonando (así cambian
 		// de canción la mayoría de los mandos); si no, espera a Play.
 		r.player.Load(path, state == "PLAYING" || state == "TRANSITIONING")
@@ -354,8 +362,8 @@ func (r *renderer) avTransport(a *action) ([]arg, error) {
 		}
 		r.next = path
 		r.mu.Unlock()
-		r.fetch.add(path, uri, parseMeta(a.Args["NextURIMetaData"]))
-		r.fetch.keep(cur, path)
+		r.fetch.Add(path, uri, parseMeta(a.Args["NextURIMetaData"]))
+		r.fetch.Keep(cur, path)
 		r.player.Append(path)
 		return nil, nil
 	case "Play":
@@ -422,7 +430,7 @@ func (r *renderer) avTransport(a *action) ([]arg, error) {
 		r.mu.Lock()
 		next := r.next
 		r.mu.Unlock()
-		nextURI, nextMeta := r.fetch.entry(next)
+		nextURI, nextMeta := r.entry(next)
 		n := "0"
 		if uri != "" {
 			n = "1"

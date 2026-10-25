@@ -16,6 +16,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/juanvillacortac/audiofilus/internal/fetch"
 )
 
 // writeWAV escribe un WAV de 16 bits estéreo con un tono de frames frames.
@@ -85,7 +87,7 @@ func testService(t *testing.T, dataDir string, p Player) (*Service, *httptest.Se
 	t.Helper()
 	s := &Service{opts: Options{Name: "test & co", Server: true, Renderer: p != nil, DataDir: dataDir, Player: p}}
 	s.serverID, s.rendID = "11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222"
-	s.fetch = newFetcher(filepath.Join(dataDir, "cache", "dlna"))
+	s.fetch = fetch.New[Meta](filepath.Join(dataDir, "cache", "dlna"), serverHeader)
 	s.media = &mediaServer{src: &libSource{dataDir: dataDir}}
 	if p != nil {
 		s.rend = newRenderer(p, s.fetch)
@@ -409,68 +411,6 @@ func TestRendererEvents(t *testing.T) {
 	soap(t, srv.URL+"/renderer/avt/control", svcAVT, "SetAVTransportURI", map[string]string{"InstanceID": "0", "CurrentURI": "http://x/a.mp3"})
 	soap(t, srv.URL+"/renderer/avt/control", svcAVT, "Play", map[string]string{"InstanceID": "0"})
 	wait(`TransportState val="PLAYING"`)
-}
-
-// Lo que manda un mando se baja entero antes de sonar (Open dice que no está
-// listo mientras tanto); el PCM crudo (audio/L16) se guarda como WAV.
-func TestFetch(t *testing.T) {
-	dir := t.TempDir()
-	p := filepath.Join(dir, "src.wav")
-	writeWAV(t, p, 8000, 8000)
-	wav, _ := os.ReadFile(p)
-	pcmBE := make([]byte, 8000*4)
-	for i := 0; i < len(pcmBE); i += 2 {
-		pcmBE[i], pcmBE[i+1] = wav[44+i+1], wav[44+i] // big endian
-	}
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/a.wav":
-			w.Header().Set("Content-Type", "audio/wav")
-			w.Header().Set("Content-Length", fmt.Sprint(len(wav)))
-			w.Write(wav)
-		case "/raw":
-			w.Header().Set("Content-Type", "audio/L16;rate=8000;channels=2")
-			w.Header().Set("Content-Length", fmt.Sprint(len(pcmBE)))
-			w.Write(pcmBE)
-		}
-	}))
-	defer srv.Close()
-	f := newFetcher(filepath.Join(dir, "cache"))
-	for _, path := range []string{"/a.wav", "/raw"} {
-		key := "dlna://r" + path
-		f.add(key, srv.URL+path, Meta{})
-		var ready bool
-		for i := 0; i < 100 && !ready; i++ {
-			src, ok, err := f.Open(key)
-			if err != nil {
-				t.Fatalf("%s: %v", path, err)
-			}
-			if ok {
-				ready = true
-				buf := make([]float32, 512)
-				n, _ := src.Read(buf)
-				if src.SampleRate() != 8000 || n == 0 {
-					t.Errorf("%s: rate %d, read %d", path, src.SampleRate(), n)
-				}
-				if src.Length() != 8000 {
-					t.Errorf("%s: length %d", path, src.Length())
-				}
-				src.Close()
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-		if !ready {
-			t.Fatalf("%s never got ready", path)
-		}
-		if m, ok := f.Track(key); !ok || m.Title == "" {
-			t.Errorf("%s: no fallback title", path)
-		}
-	}
-	// Olvidar algo borra su archivo.
-	f.keep()
-	if left, _ := filepath.Glob(filepath.Join(dir, "cache", "*")); len(left) != 0 {
-		t.Errorf("cache not cleaned: %v", left)
-	}
 }
 
 // Los metadatos DIDL de un mando se leen sin fiarse de los prefijos.

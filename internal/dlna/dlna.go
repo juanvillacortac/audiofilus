@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"github.com/juanvillacortac/audiofilus/internal/fetch"
 )
 
 // Options es lo que se enciende y con qué nombre.
@@ -53,7 +54,7 @@ type Service struct {
 	ssdp     *ssdp
 	media    *mediaServer
 	rend     *renderer
-	fetch    *fetcher
+	fetch    *fetch.Fetcher[Meta]
 	serverID string
 	rendID   string
 	mu       sync.Mutex
@@ -82,7 +83,7 @@ func Start(opts Options) (*Service, error) {
 	s := &Service{opts: opts}
 	s.serverID = persistentUUID(opts.DataDir, "dlna-server.uuid")
 	s.rendID = persistentUUID(opts.DataDir, "dlna-renderer.uuid")
-	s.fetch = newFetcher(filepath.Join(opts.DataDir, "cache", "dlna"))
+	s.fetch = fetch.New[Meta](filepath.Join(opts.DataDir, "cache", "dlna"), serverHeader)
 	if opts.Server {
 		s.media = &mediaServer{src: &libSource{dataDir: opts.DataDir}}
 	}
@@ -114,7 +115,7 @@ func Start(opts Options) (*Service, error) {
 func (s *Service) Close() {
 	s.ssdp.close()
 	_ = s.srv.Close()
-	s.fetch.keep()
+	s.fetch.Keep()
 }
 
 // Status es el estado para la interfaz.
@@ -143,7 +144,13 @@ func IsRendererPath(path string) bool { return strings.HasPrefix(path, "dlna://r
 func (s *Service) Open(path string) (decode.Source, bool, error) { return s.fetch.Open(path) }
 
 // Track son las etiquetas de una canción del renderer.
-func (s *Service) Track(path string) (Meta, bool) { return s.fetch.Track(path) }
+func (s *Service) Track(path string) (Meta, bool) {
+	uri, m, ok := s.fetch.Entry(path)
+	if ok && m.Title == "" {
+		m.Title = fetch.TitleFromURL(uri)
+	}
+	return m, ok
+}
 
 // devices son los dispositivos que se anuncian.
 func (s *Service) devices() []ssdpDevice {

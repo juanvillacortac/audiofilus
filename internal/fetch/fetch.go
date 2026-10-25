@@ -1,4 +1,10 @@
-package dlna
+// Package fetch baja las canciones que llegan como URL (las de un mando DLNA
+// o un cliente MPD). Cada una se baja entera a una carpeta de caché antes de
+// sonar (en la red de casa una canción tarda un momento, y los
+// decodificadores necesitan saltar por el archivo); lo que no tiene fin (una
+// radio, sin Content-Length) suena en directo, como las emisoras. Solo se
+// guarda lo que sigue apuntado (Keep).
+package fetch
 
 import (
 	"bytes"
@@ -25,12 +31,6 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 )
 
-// Lo que manda un mando se baja entero a data/cache/dlna antes de sonar (en
-// la red de casa una canción tarda un momento, y los decodificadores
-// necesitan saltar por el archivo); lo que no tiene fin (una radio por
-// DLNA, sin Content-Length) suena en directo, como las emisoras. Solo se
-// guarda lo que está puesto (la actual y la siguiente).
-
 // maxDownload es lo más que se baja de una URL.
 const maxDownload = 1 << 30
 
@@ -43,10 +43,10 @@ const (
 	fetchFailed
 )
 
-// fetchEntry es una URL del renderer.
-type fetchEntry struct {
+// entry es una URL apuntada.
+type entry[M any] struct {
 	uri    string
-	meta   Meta
+	meta   M
 	state  int
 	file   string
 	stream *radio.Stream
@@ -54,39 +54,42 @@ type fetchEntry struct {
 	cancel context.CancelFunc
 }
 
-// fetcher baja lo que mandan los mandos.
-type fetcher struct {
+// Fetcher baja las URLs que otro (un mando DLNA, un cliente MPD) pone en
+// la cola, cada una con sus metadatos M.
+type Fetcher[M any] struct {
 	dir     string
+	agent   string // el User-Agent
 	client  *http.Client
 	mu      sync.Mutex
-	entries map[string]*fetchEntry
+	entries map[string]*entry[M]
 }
 
-func newFetcher(dir string) *fetcher {
+func New[M any](dir, agent string) *Fetcher[M] {
 	// Lo de una ejecución anterior sobra.
 	_ = os.RemoveAll(dir)
-	return &fetcher{dir: dir, client: &http.Client{}, entries: map[string]*fetchEntry{}}
+	return &Fetcher[M]{dir: dir, agent: agent, client: &http.Client{}, entries: map[string]*entry[M]{}}
 }
 
-// add apunta una ruta de la cola con su URL.
-func (f *fetcher) add(p, uri string, meta Meta) {
+// Add apunta una ruta de la cola con su URL y sus metadatos.
+func (f *Fetcher[M]) Add(p, uri string, meta M) {
 	f.mu.Lock()
-	f.entries[p] = &fetchEntry{uri: uri, meta: meta}
+	f.entries[p] = &entry[M]{uri: uri, meta: meta}
 	f.mu.Unlock()
 }
 
-// entry es la URL y los metadatos de una ruta ("" si no es del renderer).
-func (f *fetcher) entry(p string) (string, Meta) {
+// Entry es la URL y los metadatos de una ruta (ok false si no está).
+func (f *Fetcher[M]) Entry(p string) (string, M, bool) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if e := f.entries[p]; e != nil {
-		return e.uri, e.meta
+		return e.uri, e.meta, true
 	}
-	return "", Meta{}
+	var zero M
+	return "", zero, false
 }
 
-// keep olvida (y borra) todo lo que no sea paths.
-func (f *fetcher) keep(paths ...string) {
+// Keep olvida (y borra) todo lo que no sea paths.
+func (f *Fetcher[M]) Keep(paths ...string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	for p, e := range f.entries {
@@ -112,15 +115,15 @@ func containsStr(list []string, s string) bool {
 	return false
 }
 
-// Open abre una ruta del renderer para el motor: ready es false mientras se
+// Open abre una ruta apuntada para el motor: ready es false mientras se
 // baja (el motor vuelve a preguntar). Se llama con el motor bloqueado: no
 // espera nada.
-func (f *fetcher) Open(p string) (decode.Source, bool, error) {
+func (f *Fetcher[M]) Open(p string) (decode.Source, bool, error) {
 	f.mu.Lock()
 	e := f.entries[p]
 	if e == nil {
 		f.mu.Unlock()
-		return nil, false, fmt.Errorf("dlna: %s is gone", p)
+		return nil, false, fmt.Errorf("%s is gone", p)
 	}
 	switch e.state {
 	case fetchIdle:
@@ -152,23 +155,8 @@ func (f *fetcher) Open(p string) (decode.Source, bool, error) {
 	return src, err == nil, err
 }
 
-// Track son las etiquetas de una ruta del renderer (las del mando).
-func (f *fetcher) Track(p string) (Meta, bool) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	e := f.entries[p]
-	if e == nil {
-		return Meta{}, false
-	}
-	m := e.meta
-	if m.Title == "" {
-		m.Title = titleFromURL(e.uri)
-	}
-	return m, true
-}
-
-// titleFromURL es un título de reserva: el nombre del archivo de la URL.
-func titleFromURL(u string) string {
+// TitleFromURL es un título de reserva: el nombre del archivo de la URL.
+func TitleFromURL(u string) string {
 	if pu, err := url.Parse(u); err == nil {
 		if b := path.Base(pu.Path); b != "" && b != "/" && b != "." {
 			if s, err := url.PathUnescape(b); err == nil {
@@ -213,9 +201,9 @@ func extFor(contentType, u string) string {
 }
 
 // download baja uri (o, si no tiene fin, la deja como emisora).
-func (f *fetcher) download(ctx context.Context, p, uri string) {
+func (f *Fetcher[M]) download(ctx context.Context, p, uri string) {
 	fail := func(err error) {
-		log.Printf("dlna: %s: %v", uri, err)
+		log.Printf("fetch: %s: %v", uri, err)
 		f.mu.Lock()
 		if e := f.entries[p]; e != nil {
 			e.state, e.err = fetchFailed, err
@@ -227,7 +215,7 @@ func (f *fetcher) download(ctx context.Context, p, uri string) {
 		fail(err)
 		return
 	}
-	req.Header.Set("User-Agent", serverHeader)
+	req.Header.Set("User-Agent", f.agent)
 	req.Header.Set("Icy-MetaData", "0")
 	resp, err := f.client.Do(req)
 	if err != nil {
@@ -295,7 +283,7 @@ func (f *fetcher) download(ctx context.Context, p, uri string) {
 		fail(err)
 		return
 	}
-	log.Printf("dlna: got %s (%d KB in %v)", uri, n/1024, time.Since(start).Round(time.Millisecond))
+	log.Printf("fetch: got %s (%d KB in %v)", uri, n/1024, time.Since(start).Round(time.Millisecond))
 	f.mu.Lock()
 	e := f.entries[p]
 	if e == nil {
