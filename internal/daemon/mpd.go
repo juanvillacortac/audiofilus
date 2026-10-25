@@ -99,6 +99,7 @@ func mpdName(c config.MPD) string {
 // applyMPD enciende, apaga o reinicia el servidor según c.
 func (d *Daemon) applyMPD(c config.MPD) {
 	d.mpdMu.Lock()
+	defer d.multicastChanged()
 	defer d.mpdMu.Unlock()
 	if d.mpd != nil {
 		if d.mpdCfg == c {
@@ -119,6 +120,7 @@ func (d *Daemon) applyMPD(c config.MPD) {
 	}
 	d.mpdErr = ""
 	d.mpd = s
+	d.mpdOn.Store(true)
 	txt := map[string]string{"app": "audiofilus"}
 	if c.Password != "" {
 		txt["password"] = "1"
@@ -139,12 +141,14 @@ func (d *Daemon) closeMPDLocked() {
 	if d.mpd != nil {
 		d.mpd.Close()
 		d.mpd = nil
+		d.mpdOn.Store(false)
 	}
 }
 
 // stopMPD apaga el servidor (al cerrar el servicio).
 func (d *Daemon) stopMPD() {
 	d.mpdMu.Lock()
+	defer d.multicastChanged()
 	defer d.mpdMu.Unlock()
 	d.closeMPDLocked()
 }

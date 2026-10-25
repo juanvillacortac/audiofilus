@@ -90,7 +90,7 @@
 <p><strong>Pengaturan → Terima musik (DLNA)</strong> mengubah handheld atau komputer menjadi speaker untuk aplikasi lain: dari ponsel dengan BubbleUPnP, <em>Cast to device</em> di Windows, atau titik kontrol UPnP mana pun, pilih <strong>&lt;nama perangkat&gt;</strong> dan kirim lagu. Lagu diputar lewat Audiofilus dengan judul dan artisnya, dan aplikasi pengirim mengendalikan putar, jeda, geser, dan volume. Setiap lagu diunduh dulu baru diputar, jadi lewat Wi-Fi perlu sebentar untuk mulai.</p>
 
 <h2 id="mpd">MPD</h2>
-<p><strong>Pengaturan → Server MPD</strong> membuat aplikasi MPD (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) dan Audiofilus lain bisa mengontrol musik di perangkat ini: antrean, pustaka beserta sampulnya, daftar putarmu, volume, dan lompatan. Bawaannya mati. Menunya menampilkan alamat untuk diketik di aplikasi (misalnya <code>192.168.1.5:6600</code>) dan bisa memasang kata sandi; aplikasi yang mencari di jaringan menemukannya sendiri. Tidak ada di aplikasi ponsel.</p>
+<p><strong>Pengaturan → Server MPD</strong> membuat aplikasi MPD (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) dan Audiofilus lain bisa mengontrol musik di perangkat ini: antrean, pustaka beserta sampulnya, daftar putarmu, volume, dan lompatan. Bawaannya mati. Menunya menampilkan alamat untuk diketik di aplikasi (misalnya <code>192.168.1.5:6600</code>) dan bisa memasang kata sandi; aplikasi yang mencari di jaringan menemukannya sendiri. Di aplikasi ponsel, server ini berjalan selama aplikasi terbuka atau sedang memutar.</p>
 <ul>
 <li><strong>Dari Audiofilus lain:</strong> di <strong>Sedang diputar</strong>, <kbd>START</kbd> → <strong>Kirim ke…</strong> juga menampilkan perangkat yang server MPD-nya menyala. Lagu berganti tanpa jeda di perangkat itu, dan <kbd>START</kbd> → <strong>Pustaka &lt;perangkat&gt;</strong> memungkinkanmu menjelajahi albumnya dan memutarnya di sana. Kalau ada kata sandi, ditanyakan pertama kali.</li>
 <li><strong>Di perangkat yang menerima:</strong> bilah atas menampilkan <strong>← &lt;alamat&gt;</strong> selama perangkat lain mengirim musik ke sana, dan <kbd>START</kbd> punya <strong>Berhenti menerima</strong> (musik berhenti di sini dan Audiofilus yang mengirim tetap memutar sendiri) serta <strong>Matikan server MPD</strong>. Hal yang sama berlaku untuk musik yang diterima lewat DLNA.</li>
@@ -105,7 +105,7 @@
 <li>Firewall di komputer harus mengizinkan perangkat menjangkau Audiofilus (port media dipilih acak setiap kali).</li>
 <li>Dari terminal: <code>audiofilus dlna</code> menampilkan statusnya, dan <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code>, serta <code>audiofilus dlna name &lt;nama&gt;</code> mengubahnya.</li>
 <li>Dari terminal: <code>audiofilus mpd</code> menampilkan status server MPD, dan <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;kata sandi&gt;]</code>, <code>audiofilus mpd port &lt;port&gt;</code>, serta <code>audiofilus mpd name &lt;nama&gt;</code> mengubahnya.</li>
-<li>Di iPhone dan iPad, pencarian pertama meminta izin memakai jaringan lokal.</li>
+<li>Di iPhone dan iPad, pencarian pertama meminta izin memakai jaringan lokal. iOS tidak mengizinkan aplikasi memakai DLNA: di sana Chromecast dan server MPD ditemukan, tetapi speaker DLNA tidak, dan tidak bisa menerima lewat DLNA.</li>
 </ul>
 
     <nav class="pager" aria-label="Halaman"><a href="modules.html">← Modul</a><a href="servers.html">Server →</a></nav>

@@ -90,7 +90,7 @@
 <p><strong>Ayarlar → Müzik al (DLNA)</strong> el konsolunu ya da bilgisayarı diğer uygulamalar için bir hoparlöre çevirir: BubbleUPnP'li bir telefondan, Windows'un <em>Cihaza yayınla</em> özelliğinden ya da herhangi bir UPnP kontrol noktasından <strong>&lt;cihaz adı&gt;</strong> adlı cihazı seç ve şarkı gönder. Şarkılar başlık ve sanatçılarıyla Audiofilus üzerinden çalar; gönderen uygulama çalmayı, duraklatmayı, sarmayı ve sesi kontrol eder. Her şarkı önce indirilir sonra çalar, bu yüzden Wi-Fi'de başlaması biraz sürer.</p>
 
 <h2 id="mpd">MPD</h2>
-<p><strong>Ayarlar → MPD sunucusu</strong>, MPD uygulamalarının (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) ve diğer Audiofilus'ların bu cihazdaki müziği kontrol etmesini sağlar: sıra, kapaklarıyla kütüphane, çalma listelerin, ses ve ileri-geri sarma. Varsayılan olarak kapalıdır. Menüsü bir uygulamaya yazılacak adresi gösterir (örneğin <code>192.168.1.5:6600</code>) ve parola koymanı sağlar; ağı tarayan uygulamalar onu kendiliğinden bulur. Telefon uygulamalarında yoktur.</p>
+<p><strong>Ayarlar → MPD sunucusu</strong>, MPD uygulamalarının (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) ve diğer Audiofilus'ların bu cihazdaki müziği kontrol etmesini sağlar: sıra, kapaklarıyla kütüphane, çalma listelerin, ses ve ileri-geri sarma. Varsayılan olarak kapalıdır. Menüsü bir uygulamaya yazılacak adresi gösterir (örneğin <code>192.168.1.5:6600</code>) ve parola koymanı sağlar; ağı tarayan uygulamalar onu kendiliğinden bulur. Telefon uygulamalarında, uygulama açıkken ya da çalarken çalışır.</p>
 <ul>
 <li><strong>Başka bir Audiofilus'tan:</strong> <strong>Şimdi çalıyor</strong> ekranında <kbd>START</kbd> → <strong>Şuraya gönder…</strong> MPD sunucusu açık cihazları da listeler. Şarkılar cihazda boşluksuz geçer ve <kbd>START</kbd> → <strong>&lt;cihaz&gt; kütüphanesi</strong> onun albümlerine göz atıp orada çalmanı sağlar. Parolası varsa ilk seferde sorulur.</li>
 <li><strong>Alan cihazda:</strong> başka bir cihaz ona müzik gönderirken üst çubukta <strong>← &lt;adres&gt;</strong> görünür ve <kbd>START</kbd> menüsünde <strong>Almayı durdur</strong> (müzik burada durur, gönderen Audiofilus kendi başına çalmaya devam eder) ve <strong>MPD sunucusunu kapat</strong> bulunur. DLNA ile gelen müzik için de aynısı geçerlidir.</li>
@@ -105,7 +105,7 @@
 <li>Bilgisayardaki güvenlik duvarı cihazların Audiofilus'a ulaşmasına izin vermeli (medya bağlantı noktası her seferinde rastgele seçilir).</li>
 <li>Terminalden: <code>audiofilus dlna</code> durumu gösterir; <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> ve <code>audiofilus dlna name &lt;ad&gt;</code> değiştirir.</li>
 <li>Terminalden: <code>audiofilus mpd</code> MPD sunucusunun durumunu gösterir; <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;parola&gt;]</code>, <code>audiofilus mpd port &lt;port&gt;</code> ve <code>audiofilus mpd name &lt;ad&gt;</code> değiştirir.</li>
-<li>iPhone ve iPad'de ilk arama yerel ağı kullanmak için izin ister.</li>
+<li>iPhone ve iPad'de ilk arama yerel ağı kullanmak için izin ister. iOS uygulamaların DLNA kullanmasına izin vermez: orada Chromecast'ler ve MPD sunucuları bulunur ama DLNA hoparlörleri bulunmaz, DLNA ile de alınamaz.</li>
 </ul>
 
     <nav class="pager" aria-label="Sayfalar"><a href="modules.html">← Modüller</a><a href="servers.html">Sunucular →</a></nav>

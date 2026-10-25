@@ -5,6 +5,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
 	"image"
 	"math"
+	"runtime"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -175,7 +176,9 @@ func (a *App) sections() []settingSection {
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
 		setRate: a.mobile(), setUpdate: a.mobile() && InstallPackage == nil, setResampler: a.mobile(),
-		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(), setMPD: a.mobile(),
+		// iOS no deja a la app usar multicast (SSDP) sin un permiso de Apple:
+		// DLNA no se encontraría. MPD sí, por Bonjour (mobile/network.go).
+		setDLNAServer: runtime.GOOS == "ios", setDLNARenderer: runtime.GOOS == "ios",
 		// En el móvil no hay explorador de carpetas fuera de la app.
 		setMilkDir: a.mobile(), setRadioDir: a.mobile(),
 		// La vibración, solo en las portátiles (el PC y el móvil no tienen motor).

@@ -188,10 +188,7 @@ const serverHeader = "Linux/1.0 UPnP/1.0 audiofilus/1.0"
 // lanIPs son las direcciones IPv4 de las interfaces de red activas (sin la
 // de bucle local).
 func lanIPs() []net.IP {
-	ifs, err := net.Interfaces()
-	if err != nil {
-		return nil
-	}
+	ifs, _ := net.Interfaces()
 	var out []net.IP
 	for _, ifi := range ifs {
 		if ifi.Flags&net.FlagUp == 0 || ifi.Flags&net.FlagLoopback != 0 || ifi.Flags&net.FlagMulticast == 0 {
@@ -204,6 +201,13 @@ func lanIPs() []net.IP {
 					out = append(out, ip4)
 				}
 			}
+		}
+	}
+	if len(out) == 0 {
+		// Android no deja leer las interfaces: la dirección por la que sale
+		// el multicast de SSDP.
+		if ip := localIPFor(ssdpAddr.IP); ip != nil && !ip.IsLoopback() {
+			out = append(out, ip.To4())
 		}
 	}
 	return out

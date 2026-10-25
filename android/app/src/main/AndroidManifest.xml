@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Oír las búsquedas de otros aparatos (DLNA, MPD) por multicast. -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <!-- Teléfonos, tablets y portátiles Android con mando: ninguno obligatorio. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />

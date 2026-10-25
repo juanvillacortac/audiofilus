@@ -7,7 +7,7 @@ The service (not the interface) can be an **MPD server** on the local network (`
 ```
 
 - `port` 0 or empty means 6600. `name` empty means the device name (see [DLNA](dlna.md)), plus ` :<port>` when the port isn't 6600, so two Audiofilus on one computer don't share a name.
-- The interface has a tile in Settings → Online (not on the phone apps). It opens a menu with the switch, the password (on-screen keyboard) and the address to type in an MPD app (`192.168.1.5:6600`).
+- The interface has a tile in Settings → Online (on the phones too: on iOS it is announced and found through the system's Bonjour, see [iOS](ios.md#local-network)). It opens a menu with the switch, the password (on-screen keyboard) and the address to type in an MPD app (`192.168.1.5:6600`).
 - The interface edits `audiofilus.json` and sends `mpd apply`. From a terminal, `audiofilus mpd on|off`, `audiofilus mpd port <n>`, `audiofilus mpd password [<password>]` and `audiofilus mpd name <name>` change the file and apply it. `audiofilus mpd` prints the state as JSON (`on`, `port`, `name`, `password`, `error`).
 
 ## Network

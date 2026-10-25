@@ -93,7 +93,7 @@
 <p><strong>設定 → 音楽を受信 (DLNA)</strong> をオンにすると、携帯ゲーム機やパソコンがほかのアプリのスピーカーになります。スマホの BubbleUPnP、Windows の<em>デバイスにキャスト</em>、そのほかの UPnP コントロールポイントから <strong>&lt;機器名&gt;</strong> を選んで曲を送ってください。曲はタイトルとアーティスト付きで Audiofilus から鳴り、再生・一時停止・シーク・音量は送った側のアプリで操作します。曲は先にダウンロードしてから再生するので、Wi-Fi では始まるまで少しかかります。</p>
 
 <h2 id="mpd">MPD</h2>
-<p><strong>設定 → MPDサーバー</strong> をオンにすると、MPD アプリ（ncmpcpp、Cantata、M.A.L.P.、Rigelian、MPDroid など）やほかの Audiofilus から、この機器の音楽を操作できます。キュー、カバー付きのライブラリ、プレイリスト、音量、シークまで扱えます。初期設定はオフです。メニューにはアプリに入力するアドレス（例：<code>192.168.1.5:6600</code>）が表示され、パスワードも設定できます。ネットワークを探すアプリなら自動で見つけます。スマホアプリにはありません。</p>
+<p><strong>設定 → MPDサーバー</strong> をオンにすると、MPD アプリ（ncmpcpp、Cantata、M.A.L.P.、Rigelian、MPDroid など）やほかの Audiofilus から、この機器の音楽を操作できます。キュー、カバー付きのライブラリ、プレイリスト、音量、シークまで扱えます。初期設定はオフです。メニューにはアプリに入力するアドレス（例：<code>192.168.1.5:6600</code>）が表示され、パスワードも設定できます。ネットワークを探すアプリなら自動で見つけます。スマホアプリでは、アプリを開いているか再生中のあいだ動きます。</p>
 <ul>
 <li><strong>ほかの Audiofilus から：</strong><strong>再生中</strong>で <kbd>START</kbd> → <strong>送信先…</strong> を開くと、MPDサーバーがオンの機器も一覧に出ます。曲は機器側で途切れずにつながり、<kbd>START</kbd> → <strong>&lt;機器&gt; のライブラリ</strong> でそのアルバムを見て、向こうで再生できます。パスワードがある場合は最初に聞かれます。</li>
 <li><strong>受け取る側の機器：</strong>ほかの機器から音楽が届いている間は上のバーに <strong>← &lt;アドレス&gt;</strong> が表示され、<kbd>START</kbd> に <strong>受信をやめる</strong>（ここでの再生が止まり、送っていた Audiofilus は自分で再生を続けます）と <strong>MPDサーバーをオフ</strong> が出ます。DLNA で届いた音楽にも使えます。</li>
@@ -108,7 +108,7 @@
 <li>パソコンのファイアウォールは、機器が Audiofilus に届くように許可する必要があります（メディア用のポートは毎回ランダムに選ばれます）。</li>
 <li>ターミナルからは、<code>audiofilus dlna</code> で状態を表示し、<code>audiofilus dlna server on|off</code>、<code>audiofilus dlna renderer on|off</code>、<code>audiofilus dlna name &lt;名前&gt;</code> で変更できます。</li>
 <li>ターミナルからは、<code>audiofilus mpd</code> で MPD サーバーの状態を表示し、<code>audiofilus mpd on|off</code>、<code>audiofilus mpd password [&lt;パスワード&gt;]</code>、<code>audiofilus mpd port &lt;ポート&gt;</code>、<code>audiofilus mpd name &lt;名前&gt;</code> で変更できます。</li>
-<li>iPhone と iPad では、最初の検索のときにローカルネットワークの利用許可を求められます。</li>
+<li>iPhone と iPad では、最初の検索のときにローカルネットワークの利用許可を求められます。iOS はアプリに DLNA を使わせないため、Chromecast と MPD サーバーは見つかりますが DLNA スピーカーは見つからず、DLNA での受信もできません。</li>
 </ul>
 
     <nav class="pager" aria-label="ページ"><a href="modules.html">← モジュール</a><a href="servers.html">サーバー →</a></nav>

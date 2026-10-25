@@ -13,6 +13,7 @@ import UniformTypeIdentifiers
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     private let root = RootViewController()
+    private let bonjour = Bonjour()
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -26,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // El nombre en la red: el del aparato (desde iOS 16, sin un permiso
         // especial, solo "iPhone" o "iPad").
         MobileSetDeviceName(UIDevice.current.name)
+        // Buscar y anunciar en la red con el Bonjour del sistema (Bonjour.swift).
+        MobileSetBonjour(bonjour)
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         MobileStart(docs.path, NSTemporaryDirectory(), Locale.preferredLanguages.joined(separator: ","))
         root.restoreFolder()

@@ -79,6 +79,7 @@ func (d *Daemon) dlnaService() *dlna.Service {
 // applyDLNA enciende, apaga o reinicia DLNA según c.
 func (d *Daemon) applyDLNA(c config.DLNA) {
 	d.dlnaMu.Lock()
+	defer d.multicastChanged()
 	defer d.dlnaMu.Unlock()
 	if d.dlna != nil {
 		if d.dlnaCfg == c {
@@ -86,6 +87,7 @@ func (d *Daemon) applyDLNA(c config.DLNA) {
 		}
 		d.dlna.Close()
 		d.dlna = nil
+		d.dlnaOn.Store(false)
 	}
 	d.dlnaCfg = c
 	if !c.Server && !c.Renderer {
@@ -100,15 +102,18 @@ func (d *Daemon) applyDLNA(c config.DLNA) {
 	}
 	d.dlnaErr = ""
 	d.dlna = s
+	d.dlnaOn.Store(true)
 }
 
 // stopDLNA apaga DLNA (al cerrar el servicio).
 func (d *Daemon) stopDLNA() {
 	d.dlnaMu.Lock()
+	defer d.multicastChanged()
 	defer d.dlnaMu.Unlock()
 	if d.dlna != nil {
 		d.dlna.Close()
 		d.dlna = nil
+		d.dlnaOn.Store(false)
 	}
 }
 

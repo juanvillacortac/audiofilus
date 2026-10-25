@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -104,6 +105,10 @@ type Daemon struct {
 	mpdAnnounce *mdns.Responder
 	mpdCfg      config.MPD
 	mpdErr      string
+	// Si DLNA y MPD están encendidos, para MulticastHook (multicast.go).
+	dlnaOn, mpdOn atomic.Bool
+	multicastMu   sync.Mutex
+	multicastOn   bool
 }
 
 // Run arranca el daemon y bloquea hasta recibir quit o una señal.

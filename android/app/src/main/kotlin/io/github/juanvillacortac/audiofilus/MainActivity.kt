@@ -54,6 +54,7 @@ class MainActivity : Activity(), Host {
         Media.init(applicationContext)
         Mobile.setHost(this)
         Mobile.setDeviceName(deviceName())
+        Mobile.setMulticast(MulticastHold(applicationContext))
         Store.setup(this)
         home = homeDir().path
         Mobile.start(home, cacheDir.path, languages())

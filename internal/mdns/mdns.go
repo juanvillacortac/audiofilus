@@ -44,6 +44,9 @@ type records struct {
 // el puerto y el host (SRV), el TXT y la dirección (la de quien contestó, o
 // el A).
 func Browse(ctx context.Context, service string) ([]Instance, error) {
+	if b := native.Load(); b != nil {
+		return browseNative(ctx, *b, service)
+	}
 	conn, err := net.ListenPacket("udp4", ":0")
 	if err != nil {
 		return nil, err
@@ -144,12 +147,16 @@ type Responder struct {
 	txt      map[string]string
 	stop     chan struct{}
 	wg       sync.WaitGroup
+	native   func() // retira el anuncio por Bonjour (entonces no hay conn)
 }
 
 // Announce anuncia name como instancia de service ("_mpd._tcp.local") en
 // port, con su TXT. Varios procesos del mismo equipo pueden anunciarse a la
 // vez (y con Avahi): el puerto 5353 se comparte.
 func Announce(name, service string, port int, txt map[string]string) (*Responder, error) {
+	if b := native.Load(); b != nil {
+		return &Responder{native: publishNative(*b, name, service, port, txt)}, nil
+	}
 	conn, err := net.ListenMulticastUDP("udp4", nil, groupAddr)
 	if err != nil {
 		return nil, err
@@ -184,6 +191,10 @@ func Announce(name, service string, port int, txt map[string]string) (*Responder
 
 // Close deja de anunciar (y avisa con un adiós: ttl 0).
 func (r *Responder) Close() {
+	if r.native != nil {
+		r.native()
+		return
+	}
 	close(r.stop)
 	_, _ = r.conn.WriteTo(r.response(0, nil, nil, 0), groupAddr)
 	r.conn.Close()
@@ -274,9 +285,6 @@ func (r *Responder) response(id uint16, qs []question, from net.IP, ttl uint32) 
 // máquinas virtuales), que desde otro equipo no se alcanzan.
 func lanNets() []*net.IPNet {
 	ifs, err := net.Interfaces()
-	if err != nil {
-		return nil
-	}
 	var out []*net.IPNet
 	for _, ifi := range ifs {
 		if ifi.Flags&net.FlagUp == 0 || ifi.Flags&net.FlagLoopback != 0 || ifi.Flags&net.FlagMulticast == 0 ||
@@ -292,7 +300,32 @@ func lanNets() []*net.IPNet {
 			}
 		}
 	}
+	if len(out) == 0 {
+		// Android (desde la 11) no deja leer las interfaces (err): la
+		// dirección por la que sale el multicast, con su red supuesta /24.
+		if ip := RouteIP(groupAddr.IP); ip != nil {
+			out = append(out, &net.IPNet{IP: ip, Mask: net.CIDRMask(24, 32)})
+		} else if err != nil {
+			log.Printf("mdns: interfaces: %v", err)
+		}
+	}
 	return out
+}
+
+// RouteIP es la dirección propia (IPv4) por la que se llega a remote, sin
+// mandar nada: lo que elige el sistema al "conectar" un socket UDP. Nil si
+// no hay red, o si es la del bucle local.
+func RouteIP(remote net.IP) net.IP {
+	c, err := net.DialUDP("udp4", nil, &net.UDPAddr{IP: remote, Port: 9})
+	if err != nil {
+		return nil
+	}
+	defer c.Close()
+	ip := c.LocalAddr().(*net.UDPAddr).IP.To4()
+	if ip == nil || ip.IsLoopback() || ip.IsUnspecified() {
+		return nil
+	}
+	return ip
 }
 
 // virtualIface dice si una interfaz es de Docker o de máquinas virtuales.

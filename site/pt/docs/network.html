@@ -90,7 +90,7 @@
 <p><strong>Ajustes → Receber música (DLNA)</strong> transforma o portátil ou o computador numa caixa de som para outros apps: de um celular com BubbleUPnP, do <em>Transmitir para dispositivo</em> do Windows ou de qualquer controle UPnP, escolha <strong>&lt;nome do aparelho&gt;</strong> e envie músicas. Elas tocam pelo Audiofilus com título e artista, e o app que envia controla tocar, pausar, avançar e volume. Cada música é baixada primeiro e depois toca, então pelo Wi-Fi demora um pouco para começar.</p>
 
 <h2 id="mpd">MPD</h2>
-<p><strong>Ajustes → Servidor MPD</strong> deixa apps de MPD (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) e outros Audiofilus controlarem a música deste aparelho: a fila, a biblioteca com capas, suas playlists, o volume e os avanços. Vem desligado. O menu mostra o endereço para digitar num app (por exemplo <code>192.168.1.5:6600</code>) e permite pôr senha; apps que procuram na rede o encontram sozinhos. Não está nos apps de celular.</p>
+<p><strong>Ajustes → Servidor MPD</strong> deixa apps de MPD (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) e outros Audiofilus controlarem a música deste aparelho: a fila, a biblioteca com capas, suas playlists, o volume e os avanços. Vem desligado. O menu mostra o endereço para digitar num app (por exemplo <code>192.168.1.5:6600</code>) e permite pôr senha; apps que procuram na rede o encontram sozinhos. Nos apps de celular, funciona enquanto o app está aberto ou tocando.</p>
 <ul>
 <li><strong>De outro Audiofilus:</strong> em <strong>Tocando agora</strong>, <kbd>START</kbd> → <strong>Enviar para…</strong> também mostra os aparelhos com o servidor MPD ligado. As músicas passam sem pausas no aparelho, e <kbd>START</kbd> → <strong>Biblioteca de &lt;aparelho&gt;</strong> deixa navegar pelos álbuns dele e tocá-los lá. Se tiver senha, ela é pedida na primeira vez.</li>
 <li><strong>No aparelho que recebe:</strong> a barra de cima mostra <strong>← &lt;endereço&gt;</strong> enquanto outro manda música para ele, e <kbd>START</kbd> tem <strong>Parar de receber</strong> (a música para aqui e o Audiofilus que enviava continua tocando sozinho) e <strong>Desligar servidor MPD</strong>. O mesmo vale para a música recebida por DLNA.</li>
@@ -105,7 +105,7 @@
 <li>Um firewall no computador precisa deixar os aparelhos chegarem ao Audiofilus (a porta dos arquivos é escolhida ao acaso a cada vez).</li>
 <li>No terminal: <code>audiofilus dlna</code> mostra o estado, e <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> e <code>audiofilus dlna name &lt;nome&gt;</code> mudam.</li>
 <li>No terminal: <code>audiofilus mpd</code> mostra o estado do servidor MPD, e <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;senha&gt;]</code>, <code>audiofilus mpd port &lt;porta&gt;</code> e <code>audiofilus mpd name &lt;nome&gt;</code> mudam.</li>
-<li>No iPhone e no iPad, a primeira busca pede permissão para usar a rede local.</li>
+<li>No iPhone e no iPad, a primeira busca pede permissão para usar a rede local. O iOS não deixa os apps usarem DLNA: lá aparecem Chromecasts e servidores MPD, mas não caixas DLNA, e não dá para receber por DLNA.</li>
 </ul>
 
     <nav class="pager" aria-label="Páginas"><a href="modules.html">← Módulos</a><a href="servers.html">Servidores →</a></nav>
