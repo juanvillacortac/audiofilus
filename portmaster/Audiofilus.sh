@@ -39,6 +39,9 @@ chmod +x "$BINARY" 2>/dev/null
 # The settings and the library cache live next to the binaries
 # (audiofilus.json and data/); the service logs to data/audiofilus.log.
 export AUDIOFILUS_HOME="$GAMEDIR"
+# The console model (PortMaster's DEVICE_NAME), the network name when the
+# system keeps its default hostname.
+export AUDIOFILUS_DEVICE="$DEVICE_NAME"
 
 # ArkOS and dArkOS have no PulseAudio: audio goes through ALSA, which takes the
 # output device from ~/.asoundrc, and some ports remove it.

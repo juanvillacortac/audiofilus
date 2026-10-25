@@ -22,12 +22,17 @@ var modelFiles = []string{
 
 // DeviceName es el nombre con el que el equipo se presenta en la red (MPD,
 // DLNA): el nombre del equipo tal cual; en una portátil que conserva el de
-// su sistema ("KNULLI", "ROCKNIX"), el modelo de la consola.
+// su sistema ("KNULLI", "ROCKNIX"), el modelo de la consola: el que dice
+// PortMaster (su DEVICE_NAME, que el lanzador pasa en AUDIOFILUS_DEVICE) o,
+// si no, el de modelFiles.
 func DeviceName() string {
 	h, _ := os.Hostname()
 	h = strings.TrimSpace(h)
 	if h != "" && !distroHosts[strings.ToLower(h)] {
 		return h
+	}
+	if m := cleanModel(strings.TrimSpace(os.Getenv("AUDIOFILUS_DEVICE"))); m != "" {
+		return m
 	}
 	for _, f := range modelFiles {
 		if m := readModel(f); m != "" {
