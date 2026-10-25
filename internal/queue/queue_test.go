@@ -84,3 +84,33 @@ func TestPlayNextSurvivesUnshuffle(t *testing.T) {
 		t.Fatalf("after shuffle on/off: %v", q.Tracks())
 	}
 }
+
+// Quitar y mover canciones mantiene la actual y los ids (los de MPD): quitar
+// una de antes corre la posición, quitar la actual pasa a la siguiente, y
+// mover deja la actual sonando aunque cambie de sitio.
+func TestRemoveMove(t *testing.T) {
+	q := New()
+	q.Set([]string{"a", "b", "c", "d"}, 2) // suena c
+	ids := q.IDs()
+	if q.Remove(0) {
+		t.Error("removing a reported the current one")
+	}
+	if q.Current() != "c" || q.Index() != 1 {
+		t.Fatalf("current %q at %d, want c at 1", q.Current(), q.Index())
+	}
+	if p, ok := q.Track(ids[2]); !ok || p != "c" {
+		t.Errorf("id of c now %q %v", p, ok)
+	}
+	q.Move(1, 2) // c al final: b d c
+	if q.Current() != "c" || q.Index() != 2 || q.Tracks()[1] != "d" {
+		t.Fatalf("after move: %v, current %q at %d", q.Tracks(), q.Current(), q.Index())
+	}
+	if !q.Remove(2) || q.Current() != "d" {
+		t.Errorf("removing the last (current) one: current %q", q.Current())
+	}
+	q.Remove(0)
+	q.Remove(0)
+	if q.Current() != "" || q.Index() != -1 {
+		t.Errorf("empty queue: %q %d", q.Current(), q.Index())
+	}
+}

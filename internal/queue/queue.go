@@ -255,3 +255,66 @@ func (q *Queue) Tracks() []string {
 	}
 	return out
 }
+
+// IDs son los ids de las canciones en orden de reproducción: cada una el
+// suyo, que no cambia mientras siga en la cola (su índice en tracks, que no
+// se reutiliza hasta un Set). Los usa MPD (songid).
+func (q *Queue) IDs() []int { return append([]int(nil), q.order...) }
+
+// Track es la canción de id (de IDs), y si está en la cola.
+func (q *Queue) Track(id int) (string, bool) {
+	for _, t := range q.order {
+		if t == id {
+			return q.tracks[t], true
+		}
+	}
+	return "", false
+}
+
+// Remove quita la canción de la posición pos del orden de reproducción y dice
+// si era la actual (entonces la actual pasa a ser la que la seguía, o la
+// anterior si era la última; -1 si la cola queda vacía).
+func (q *Queue) Remove(pos int) (wasCurrent bool) {
+	if pos < 0 || pos >= len(q.order) {
+		return false
+	}
+	t := q.order[pos]
+	q.order = append(q.order[:pos], q.order[pos+1:]...)
+	for i, x := range q.linear {
+		if x == t {
+			q.linear = append(q.linear[:i], q.linear[i+1:]...)
+			break
+		}
+	}
+	wasCurrent = pos == q.cur
+	switch {
+	case len(q.order) == 0:
+		q.cur = -1
+	case pos < q.cur:
+		q.cur--
+	case q.cur >= len(q.order):
+		q.cur = len(q.order) - 1
+	}
+	return wasCurrent
+}
+
+// Move lleva la canción de la posición from a la posición to del orden de
+// reproducción; la actual sigue siendo la misma canción.
+func (q *Queue) Move(from, to int) {
+	n := len(q.order)
+	if from < 0 || from >= n || to < 0 || to >= n || from == to {
+		return
+	}
+	cur := q.currentTrack()
+	t := q.order[from]
+	q.order = append(q.order[:from], q.order[from+1:]...)
+	q.order = append(q.order[:to], append([]int{t}, q.order[to:]...)...)
+	if !q.shuffle {
+		q.linear = append(q.linear[:0], q.order...)
+	}
+	for i, x := range q.order {
+		if x == cur {
+			q.cur = i
+		}
+	}
+}

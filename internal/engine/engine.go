@@ -53,6 +53,10 @@ type Status struct {
 	Resampler string `json:"resampler,omitempty"`
 	// Speed es la velocidad de reproducción (1: normal; ver SetSpeed).
 	Speed float64 `json:"speed,omitempty"`
+	// QueueVersion sube con cada cambio de la cola (cargar, añadir, quitar,
+	// mover, vaciar, aleatorio): quien la muestra sabe cuándo volver a
+	// pedirla (MPD, su "playlist version").
+	QueueVersion int `json:"queue_version"`
 }
 
 // Engine es seguro para uso concurrente. El hilo de audio de oto llama a Read;
@@ -64,6 +68,7 @@ type Engine struct {
 
 	mu      sync.Mutex
 	q       *queue.Queue
+	qver    int // sube con cada cambio de la cola (Status.QueueVersion)
 	src     decode.Source
 	rs      *resample.Reader
 	track   library.Track
@@ -472,6 +477,7 @@ func (e *Engine) setPlayingLocked(on bool) {
 func (e *Engine) Load(tracks []string, start int, at float64, play bool) {
 	e.apply(func() {
 		e.q.Set(tracks, start)
+		e.qver++
 		e.closeSourceLocked()
 		if !e.openLocked() {
 			e.setPlayingLocked(false)
@@ -502,6 +508,7 @@ func (e *Engine) Append(tracks []string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.q.Append(tracks)
+	e.qver++
 }
 
 // PlayNext encola una canción justo después de la actual.
@@ -509,6 +516,7 @@ func (e *Engine) PlayNext(track string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.q.PlayNext(track)
+	e.qver++
 }
 
 // Play reanuda (o empieza) la reproducción.
@@ -694,6 +702,63 @@ func (e *Engine) Jump(i int) {
 	})
 }
 
+// QueueIDs son los ids de las canciones de la cola, en orden de
+// reproducción (queue.IDs): no cambian mientras cada una siga en la cola.
+func (e *Engine) QueueIDs() []int {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.q.IDs()
+}
+
+// Remove quita la canción de la posición pos (en orden de reproducción). Si
+// era la que suena, pasa a la siguiente (sonando si sonaba); si la cola queda
+// vacía, para.
+func (e *Engine) Remove(pos int) {
+	e.mu.Lock()
+	if pos < 0 || pos >= e.q.Len() {
+		e.mu.Unlock()
+		return
+	}
+	if pos != e.q.Index() {
+		e.q.Remove(pos)
+		e.qver++
+		e.mu.Unlock()
+		return
+	}
+	e.mu.Unlock()
+	e.apply(func() {
+		was := e.playing
+		e.q.Remove(pos)
+		e.qver++
+		e.closeSourceLocked()
+		if e.q.Len() == 0 || !e.openLocked() {
+			e.setPlayingLocked(false)
+			return
+		}
+		e.setPlayingLocked(was)
+	})
+}
+
+// Move lleva la canción de la posición from a to (en orden de
+// reproducción); la que suena sigue sonando.
+func (e *Engine) Move(from, to int) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.q.Move(from, to)
+	e.qver++
+}
+
+// Clear vacía la cola y para.
+func (e *Engine) Clear() {
+	e.apply(func() {
+		e.q.Set(nil, 0)
+		e.qver++
+		e.closeSourceLocked()
+		e.setPlayingLocked(false)
+	})
+	e.player.Pause()
+}
+
 // SeekTo salta a seconds en la canción actual.
 func (e *Engine) SeekTo(seconds float64) {
 	e.apply(func() { e.seekLocked(math.Max(seconds, 0)) })
@@ -708,6 +773,9 @@ func (e *Engine) SeekBy(delta float64) {
 func (e *Engine) SetShuffle(on bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	if on != e.q.Shuffled() {
+		e.qver++
+	}
 	e.q.SetShuffle(on)
 	// En "auto", ReplayGain va por canción en aleatorio y por disco en orden.
 	e.gain = replayGain(e.dsp, e.gainTags, e.gainOK, on)
@@ -840,15 +908,16 @@ func (e *Engine) Status() Status {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	s := Status{
-		Index:     e.q.Index(),
-		Count:     e.q.Len(),
-		Shuffle:   e.q.Shuffled(),
-		Repeat:    e.q.Repeat.String(),
-		Volume:    e.vol * float64(e.boost),
-		Track:     e.track,
-		DSP:       e.dsp,
-		Resampler: e.resamplerName(),
-		StopAfter: e.stopAfter,
+		Index:        e.q.Index(),
+		Count:        e.q.Len(),
+		Shuffle:      e.q.Shuffled(),
+		Repeat:       e.q.Repeat.String(),
+		Volume:       e.vol * float64(e.boost),
+		Track:        e.track,
+		DSP:          e.dsp,
+		Resampler:    e.resamplerName(),
+		StopAfter:    e.stopAfter,
+		QueueVersion: e.qver,
 	}
 	if e.gain != 1 {
 		s.Gain = math.Round(20*math.Log10(float64(e.gain))*10) / 10
