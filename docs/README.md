@@ -20,5 +20,6 @@
 | [smart-playlists.md](smart-playlists.md) | Smart playlists: rules, sorting, limits |
 | [cast.md](cast.md) | Sending music to Chromecast and DLNA renderers |
 | [dlna.md](dlna.md) | The DLNA/UPnP server and renderer |
+| [mpd.md](mpd.md) | The MPD server, mDNS, and audiofilus as an MPD client (sending, remote library) |
 | [ios.md](ios.md) | The iPhone and iPad app |
 | [android.md](android.md) | The Android app (in progress) |

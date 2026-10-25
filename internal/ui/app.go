@@ -64,7 +64,8 @@ type App struct {
 	// mpdPasswords son las contraseñas de los servidores MPD a los que se
 	// mandó música (por host), para no volver a escribirlas (castui.go).
 	mpdPasswords map[string]string
-	meterTracker bool // el medidor que se mira es el del tracker (meter.go)
+	mpdSongs     mpdRemoteSongs // las canciones vistas de otras bibliotecas MPD (mpdremote.go)
+	meterTracker bool           // el medidor que se mira es el del tracker (meter.go)
 	marks        *history.Marks
 	hist         []history.Listen
 	histAt       time.Time
@@ -291,7 +292,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
 		lyrCh:  make(chan lyricsResult, 4),
-		acctCh: make(chan func(), 4), mpdPasswords: map[string]string{},
+		acctCh: make(chan func(), 4), mpdPasswords: map[string]string{}, mpdSongs: mpdRemoteSongs{},
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 		kbEvents: make(chan kbEvent, 64),
 	}

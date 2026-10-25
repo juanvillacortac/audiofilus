@@ -79,6 +79,9 @@ func (p *mpdPlayer) add(m media, pos string) (string, error) {
 		return "", err
 	}
 	id := mpd.Map(pairs)["Id"]
+	if !strings.Contains(m.URL, "://") {
+		return id, nil // de su biblioteca: ya tiene sus etiquetas
+	}
 	for _, t := range [][2]string{{"Title", m.Title}, {"Artist", m.Artist}, {"Album", m.Album}} {
 		if t[1] != "" {
 			_, _ = p.cmd("addtagid", id, t[0], t[1]) // un mpd puede no dejar

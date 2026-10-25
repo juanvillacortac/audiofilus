@@ -59,14 +59,17 @@ type Device struct {
 // Item es lo que se manda: un archivo local (o una ruta virtual de
 // audiofilus, como una pista de un CUE) o una dirección http(s).
 type Item struct {
-	Path     string  // archivo local (o ruta virtual de decode)
-	URL      string  // o una dirección http(s) (un servidor, una radio)
-	MIME     string  // el tipo de URL, si se sabe
-	Title    string  //
-	Artist   string  //
-	Album    string  //
-	Cover    string  // la portada: archivo local o http(s)
-	Duration float64 // en segundos, si se sabe
+	Path string // archivo local (o ruta virtual de decode)
+	URL  string // o una dirección http(s) (un servidor, una radio)
+	// RemoteURI es una canción de la biblioteca del propio aparato (un
+	// servidor MPD): se toca por su URI, sin servir nada.
+	RemoteURI string
+	MIME      string  // el tipo de URL, si se sabe
+	Title     string  //
+	Artist    string  //
+	Album     string  //
+	Cover     string  // la portada: archivo local o http(s)
+	Duration  float64 // en segundos, si se sabe
 }
 
 // State es en qué está el aparato.

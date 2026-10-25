@@ -101,6 +101,13 @@ var directTypes = map[string]string{
 // la de la portada. Lo que ya es http(s) pasa tal cual.
 func (s *Server) URLFor(d Device, it Item, forceTranscode bool) (media, error) {
 	m := media{Title: it.Title, Artist: it.Artist, Album: it.Album, Duration: it.Duration, MIME: it.MIME}
+	if it.RemoteURI != "" {
+		if d.Kind != MPD {
+			return m, fmt.Errorf("cast: %q is only on another device", it.RemoteURI)
+		}
+		m.URL = it.RemoteURI
+		return m, nil
+	}
 	ip, err := localIP(d.Host)
 	if err != nil {
 		return m, err

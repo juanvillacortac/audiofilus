@@ -71,7 +71,7 @@ func (a *App) castItems() []menuItem {
 	if !a.casting() {
 		return []menuItem{{label: T("cast_send"), icon: "speaker", do: a.castSearch}}
 	}
-	return []menuItem{
+	items := []menuItem{
 		{label: T("cast_stop", a.cast.dev.Name), icon: "power", do: func() { a.castEnd(true) }},
 		{label: T("cast_volume"), icon: "speaker",
 			do:    func() {},
@@ -79,6 +79,11 @@ func (a *App) castItems() []menuItem {
 		{label: T("cast_vol_up"), icon: "plus", do: func() { a.castVolume(0.1) }},
 		{label: T("cast_vol_down"), icon: "speaker", do: func() { a.castVolume(-0.1) }},
 	}
+	if a.cast.dev.Kind == cast.MPD {
+		// Su propia biblioteca (mpdremote.go).
+		items = append(items, menuItem{label: T("mpd_library", a.cast.dev.Name), icon: "folder", do: a.openMPDLibrary})
+	}
+	return items
 }
 
 // castVolText es el volumen del aparato en palabras.
@@ -217,6 +222,9 @@ type castPrep struct {
 // convirtiéndolo si hace falta) o una dirección http(s) (las canciones de un
 // servidor y las radios).
 func (a *App) castMeta(path string) castPrep {
+	if strings.HasPrefix(path, mpdLibScheme) {
+		return castPrep{item: a.mpdCastItem(path)} // mpdremote.go
+	}
 	it := cast.Item{Path: path}
 	if s, ok := a.lib.Song(path); ok {
 		it.Title, it.Artist, it.Album = s.Title, s.Artist, s.Album
@@ -415,6 +423,10 @@ func (a *App) castEnd(resume bool) {
 		defer cancel()
 		_ = sess.Close(ctx)
 	}()
+	// Lo de la biblioteca del aparato no está aquí: eso no sigue.
+	if slices.ContainsFunc(list, func(p string) bool { return strings.HasPrefix(p, mpdLibScheme) }) {
+		resume = false
+	}
 	if resume && a.client != nil && len(list) > 0 {
 		a.client.Send("load", append([]string{strconv.Itoa(idx)}, list...)...)
 		if pos > 1 {
