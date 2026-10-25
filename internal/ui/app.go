@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -80,6 +81,7 @@ type App struct {
 	picker         *Picker
 	pickFor        pickTarget // para qué es la carpeta del explorador (folders.go)
 	firstRun       bool
+	refresh        *Scan // el escaneo de fondo al arrancar con caché (pollRefresh)
 	lib            *Library
 	covers         *covers
 	input          Input
@@ -322,10 +324,52 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		a.firstRun = true
 		a.picker = newPicker("")
 		a.mode = modePicker
+	} else if lib := loadCachedLibrary(paths, cfg.MusicDirs); lib != nil && !offline {
+		// Con caché: la biblioteca ya, y el escaneo por detrás (refresh).
+		a.setLocal(lib)
+		a.mode = modeMain
+		a.refresh = StartScan(a.paths, a.cfg.MusicDirs)
 	} else {
 		a.startScan()
 	}
 	return a, nil
+}
+
+// pollRefresh recoge el escaneo de fondo del arranque (el que pone al día la
+// biblioteca de la caché) cuando termina.
+func (a *App) pollRefresh() {
+	if a.refresh == nil {
+		return
+	}
+	lib, err, ok := a.refresh.Result()
+	if !ok {
+		return
+	}
+	a.refresh = nil
+	if err != nil {
+		log.Printf("library refresh: %v", err)
+		return
+	}
+	// Lo normal es que no cambie nada: entonces no se toca (quien ya estaba
+	// navegando no pierde su sitio).
+	if lib != nil && !sameLibrary(a.local, lib) {
+		a.setLocal(lib)
+		a.search.lastQuery = "" // los resultados se vuelven a juntar
+	}
+}
+
+// sameLibrary dice si dos bibliotecas tienen las mismas canciones (con sus
+// datos) y las mismas listas.
+func sameLibrary(x, y *Library) bool {
+	if x == nil || y == nil || !slices.Equal(x.Songs, y.Songs) || len(x.Playlists) != len(y.Playlists) {
+		return false
+	}
+	for i := range x.Playlists {
+		if x.Playlists[i].Path != y.Playlists[i].Path || !slices.Equal(x.Playlists[i].Songs, y.Playlists[i].Songs) {
+			return false
+		}
+	}
+	return true
 }
 
 // hasMusicDir dice si alguna de las carpetas configuradas existe.
@@ -517,6 +561,7 @@ func (a *App) Update() error {
 		return nil
 	}
 	a.updateYT()
+	a.pollRefresh() // la biblioteca puesta al día tras arrancar con la caché
 	a.updateServers()
 	a.pollSrvPlaylists() // las listas de servidor editadas (serverplaylists.go)
 	a.updateRadioResults()

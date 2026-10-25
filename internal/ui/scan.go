@@ -128,6 +128,26 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 	s.finish(lib, nil)
 }
 
+// loadCachedLibrary arma la biblioteca de dirs solo con data/library.json,
+// sin mirar los archivos: al arrancar se enseña esta enseguida y el escaneo
+// (que en una portátil recién encendida, con la tarjeta por FUSE, tarda) la
+// pone al día por detrás. nil si no hay caché de esas carpetas. Las listas son
+// solo las propias (data/playlists); las de la música llegan con el escaneo.
+func loadCachedLibrary(paths config.Paths, dirs []string) *Library {
+	b, err := os.ReadFile(filepath.Join(paths.Data, "library.json"))
+	if err != nil {
+		return nil
+	}
+	var c libraryCache
+	if json.Unmarshal(b, &c) != nil || c.Version < cacheVersion || !slices.Equal(c.Dirs, dirs) || len(c.Entries) == 0 {
+		return nil
+	}
+	lib := buildLibrary(c.Entries)
+	lib.Roots = dirs
+	lib.addPlaylists(library.FindPlaylists([]string{filepath.Join(paths.Data, "playlists")}))
+	return lib
+}
+
 // readEntry lee las etiquetas de un archivo.
 func readEntry(p string, info os.FileInfo) (e entry) {
 	e = entry{Path: p, Size: info.Size(), ModTime: info.ModTime().Unix()}
