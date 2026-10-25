@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"image/png"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -176,25 +174,6 @@ func TestPrefetchAsksForQueue(t *testing.T) {
 	a.prefetchCovers(nil, 64) // en el mismo segundo: no otra vez
 	if asked != 1 {
 		t.Errorf("asked for the queue %d times, want 1", asked)
-	}
-}
-
-// Las emisoras sin logo usan el icono de audiofilus: radioDefaultLogo lo
-// deja una vez junto a los logos, como un PNG que se puede leer.
-func TestRadioDefaultLogo(t *testing.T) {
-	a := &App{offline: true}
-	a.paths.Data = t.TempDir()
-	p := a.radioDefaultLogo()
-	f, err := os.Open(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-	if _, err := png.Decode(f); err != nil {
-		t.Errorf("not a PNG: %v", err)
-	}
-	if a.radioDefaultLogo() != p {
-		t.Error("a second call gave another file")
 	}
 }
 

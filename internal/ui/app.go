@@ -1038,13 +1038,9 @@ func (a *App) syncStatus() {
 		// guardar), un álbum de paso: portada, vinilo y colores como siempre.
 		cover := st.Track.Path + ".jpg"
 		if radio.IsRadio(st.Track.Path) {
-			// Una emisora: su logo, si lo tiene (se baja la primera vez); si
-			// no (o mientras se baja), el CD de audiofilus, no la nota vacía.
+			// Una emisora: su logo, si lo tiene (se baja la primera vez).
 			cover = a.radioLogo(strings.TrimPrefix(st.Track.Path, radio.Scheme))
 			a.fetchRadioLogo(st.Track.Path)
-			if _, err := os.Stat(cover); err != nil {
-				cover = a.radioDefaultLogo()
-			}
 		}
 		if _, err := os.Stat(cover); err == nil {
 			al := &Album{Title: st.Track.Album, Artist: st.Track.Artist, Songs: []Song{a.playingSong}, coverPath: cover, stray: true, scaled: map[int]*coverImage{}}

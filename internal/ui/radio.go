@@ -15,7 +15,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/juanvillacortac/audiofilus/internal/desktop"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 )
 
@@ -594,17 +593,6 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 // radioLogo es el archivo del logo de una emisora (puede no estar aún).
 func (a *App) radioLogo(uuid string) string {
 	return filepath.Join(a.paths.Data, "cache", "radio", "logos", uuid+".img")
-}
-
-// radioDefaultLogo es la portada de las emisoras sin logo: el icono de
-// audiofilus (el CD del logo), guardado una vez junto a los logos.
-func (a *App) radioDefaultLogo() string {
-	p := filepath.Join(a.paths.Data, "cache", "radio", "logos", "_audiofilus.png")
-	if _, err := os.Stat(p); err != nil {
-		_ = os.MkdirAll(filepath.Dir(p), 0o755)
-		_ = os.WriteFile(p, desktop.Icon, 0o644)
-	}
-	return p
 }
 
 // fetchRadioLogo baja el logo de la emisora path, si tiene y no estaba.
