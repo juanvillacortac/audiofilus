@@ -73,6 +73,7 @@ type Daemon struct {
 	sysVolume    int        // último volumen del sistema leído (-1 si no se puede)
 	sysSetAt     time.Time  // cuándo se pidió cambiar el volumen del sistema
 	powerSeq     int        // toques del botón de encendido que piden sleep (FullStatus.PowerSeq)
+	wakeSeq      int        // salidas del sleep (FullStatus.WakeSeq)
 	sysSet       chan int   // los cambios de volumen del sistema, para applySystemVolume
 	sysKnown     bool       // sysVolume ya se leyó alguna vez
 	saveMu       sync.Mutex // un guardado de state.json a la vez (comparten el .tmp)
@@ -562,6 +563,9 @@ func (d *Daemon) setSleep(on, screenOff bool) error {
 		return nil
 	}
 	d.sleeping = on
+	if !on {
+		d.wakeSeq++
+	}
 	d.mu.Unlock()
 	log.Printf("sleep: %v (backlight off: %v)", on, screenOff && on)
 	defer control.Notify() // la interfaz despierta enseguida si fue por un gesto
@@ -919,6 +923,10 @@ type FullStatus struct {
 	// PowerSeq sube con cada toque del botón de encendido con la app abierta y
 	// despierta: la interfaz entra en sleep (con su fundido).
 	PowerSeq int `json:"power_seq"`
+	// WakeSeq sube cada vez que el servicio sale del sleep: la interfaz lo
+	// ve aunque el sleep durara menos que entre dos estados (abrir y cerrar
+	// la tapa enseguida) y nunca llegara a ver Sleep en true.
+	WakeSeq int `json:"wake_seq"`
 	// Lid: la tapa está cerrada (el sensor de la consola, en Knulli y muOS).
 	Lid bool `json:"lid,omitempty"`
 	// Docked: hay una pantalla externa (HDMI): la tapa no apaga la pantalla.
@@ -941,6 +949,7 @@ func (d *Daemon) status() FullStatus {
 	s := FullStatus{Status: d.eng.Status(), Platform: d.plat.Name(), VolumeTotal: d.totalVolume()}
 	d.mu.Lock()
 	s.Sleep, s.Awake, s.Pad, s.VolumeSeq, s.PowerSeq = d.sleeping, d.awakeApplied, d.pad, d.volumeSeq, d.powerSeq
+	s.WakeSeq = d.wakeSeq
 	if !d.timerAt.IsZero() {
 		s.TimerLeft = math.Max(0, time.Until(d.timerAt).Seconds())
 	}

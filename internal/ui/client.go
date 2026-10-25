@@ -270,7 +270,7 @@ func (c *Client) do(req control.Request) {
 	}
 	var st daemon.FullStatus
 	if json.Unmarshal(resp.Data, &st) == nil && st.Platform != "" {
-		woke := c.status.Sleep && !st.Sleep
+		woke := c.status.Sleep && !st.Sleep || st.WakeSeq != c.status.WakeSeq && c.status.Platform != ""
 		c.status, c.got = st, time.Now()
 		if woke && c.OnWake != nil {
 			c.OnWake() // después de guardar el estado: el fotograma ya lo ve

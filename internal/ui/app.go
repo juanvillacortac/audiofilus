@@ -139,6 +139,7 @@ type App struct {
 	powerSeq  int     // último PowerSeq del servicio (botón de encendido: sleep)
 	sleeping  bool    // la pantalla está apagada (en sleep)
 	sleepSeen bool    // el servicio ya confirmó que está en sleep
+	sleepWake int     // WakeSeq del servicio al entrar en sleep (updateSleep)
 	sleepFade float64 // segundos del fundido en curso
 	fadingOut bool    // disolviéndose hacia el sleep
 	fadingIn  bool    // volviendo del sleep
@@ -680,6 +681,7 @@ func (a *App) goToSleep() {
 	}
 	a.send("sleep", args...)
 	a.sleeping, a.sleepSeen = true, false
+	a.sleepWake = a.status.WakeSeq
 	ebiten.SetTPS(10)
 }
 
@@ -716,7 +718,10 @@ func (a *App) updateSleep() {
 		a.sleepSeen = true
 	}
 	switch {
-	case a.woke.Swap(false), a.sleepSeen && !a.status.Sleep:
+	case a.woke.Swap(false), a.sleepSeen && !a.status.Sleep,
+		// El servicio salió del sleep aunque no se le viera entrar (un sleep
+		// más corto que entre dos estados: la tapa abierta enseguida).
+		a.status.WakeSeq > a.sleepWake && !a.status.Sleep:
 		a.exitSleep(false)
 	case len(a.input.keys) > 0 && a.status.Platform == "desktop":
 		// El teclado despierta solo en el PC. En las portátiles hay "teclas"

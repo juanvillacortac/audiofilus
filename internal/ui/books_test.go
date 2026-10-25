@@ -217,3 +217,21 @@ func TestMenuBackGoesUp(t *testing.T) {
 		t.Error("a menu reopening itself made B loop")
 	}
 }
+
+// Si el servicio entra y sale del sleep entre dos estados (la tapa cerrada y
+// abierta enseguida), la interfaz nunca lo ve en sleep: despierta igual por
+// WakeSeq, en vez de quedarse pintando negro con la luz encendida.
+func TestWakeAfterShortSleep(t *testing.T) {
+	a := &App{offline: true}
+	a.status.WakeSeq = 2
+	a.goToSleep()
+	a.updateSleep() // el servicio aún no contestó: sigue en sleep
+	if !a.sleeping {
+		t.Fatal("woke up with nothing new")
+	}
+	a.status.WakeSeq = 3 // durmió y despertó sin que se viera
+	a.updateSleep()
+	if a.sleeping {
+		t.Error("stayed asleep after the service woke up")
+	}
+}
