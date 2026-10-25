@@ -197,3 +197,42 @@ func TestRadioDefaultLogo(t *testing.T) {
 		t.Error("a second call gave another file")
 	}
 }
+
+// press simula pulsar act en un fotograma del menú abierto.
+func press(a *App, act Action) {
+	a.input = Input{}
+	a.input.inject(act)
+	a.updateMenu()
+}
+
+// Un menú abierto desde otro vuelve a él con B (Ecualizador → AutoEQ → B, al
+// Ecualizador); el de arriba se cierra. Uno que se vuelve a abrir a sí mismo
+// para ponerse al día no deja un bucle.
+func TestMenuBackGoesUp(t *testing.T) {
+	a := &App{offline: true, w: 320, h: 240}
+	var eq, aeq *menu
+	aeq = &menu{title: "AutoEQ", items: []menuItem{{label: "x", do: func() {}}}}
+	eq = &menu{title: "EQ", items: []menuItem{{label: "AutoEQ", do: func() { a.menu = aeq }}}}
+	a.menu = eq
+	press(a, ActConfirm)
+	if a.menu != aeq {
+		t.Fatal("AutoEQ didn't open")
+	}
+	press(a, ActBack)
+	if a.menu != eq {
+		t.Fatalf("B went to %v, want the EQ menu", a.menu)
+	}
+	press(a, ActBack)
+	if a.menu != nil {
+		t.Error("B on the top menu didn't close it")
+	}
+	// Una opción que vuelve a abrir su propio menú (al día).
+	var self func()
+	self = func() { a.menu = &menu{title: "Alarm", items: []menuItem{{label: "x", value: func() string { return "" }, do: self}}} }
+	self()
+	press(a, ActConfirm)
+	press(a, ActBack)
+	if a.menu != nil {
+		t.Error("a menu reopening itself made B loop")
+	}
+}

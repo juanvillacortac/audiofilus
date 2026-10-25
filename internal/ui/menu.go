@@ -38,6 +38,9 @@ type menu struct {
 	// cols, si está, es cuántas columnas: menos y más anchas para nombres
 	// largos (la lista de letras).
 	cols int
+	// parent es el menú desde el que se abrió este (B vuelve a él); nil si
+	// se abrió desde una pantalla.
+	parent *menu
 }
 
 // Medidas del menú.
@@ -107,12 +110,34 @@ func (a *App) updateMenu() {
 			a.menu = nil
 		}
 		it.do()
+		a.linkMenu(m)
 	case in.Pressed(ActMenu) && a.t-a.startAt < doubleStart:
 		// Start dos veces seguidas: a dormir (la primera abrió el menú).
 		a.menu = nil
 		a.enterSleep()
+	case in.Pressed(ActBack) && m.parent != nil:
+		a.menu = m.parent // un menú abierto desde otro: se vuelve a ese
 	case in.Pressed(ActBack), in.Pressed(ActMenu):
 		a.menu = nil
+	}
+}
+
+// linkMenu apunta de dónde viene el menú que abrió una opción de from: B
+// vuelve a from (Ecualizador → AutoEQ → B, al Ecualizador) en vez de cerrar
+// todo. Si el nuevo es uno que ya estaba abierto más arriba (se vuelve a
+// abrir para ponerse al día, como la alarma tras elegir qué suena), ocupa su
+// sitio en la cadena.
+func (a *App) linkMenu(from *menu) {
+	m := a.menu
+	if m == nil || m == from || m.parent != nil {
+		return
+	}
+	m.parent = from
+	for p := from; p != nil; p = p.parent {
+		if p.title == m.title {
+			m.parent = p.parent
+			return
+		}
 	}
 }
 
