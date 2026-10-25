@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Netzwerk · audiofilus-Anleitung</title>
+<title>Netzwerk · Audiofilus-Anleitung</title>
 <meta name="description" content="Musik an Lautsprecher oder Fernseher schicken (DLNA/UPnP und Chromecast), die Bibliothek per DLNA teilen und Musik vom Handy empfangen.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Website">
       <a href="../index.html">Startseite</a>
       <a href="index.html" aria-current="page">Doku</a>
@@ -89,12 +89,22 @@
 <h2 id="dlna-renderer">Musik empfangen (DLNA-Renderer)</h2>
 <p><strong>Einstellungen → Musik empfangen (DLNA)</strong> macht den Handheld oder Computer zum Lautsprecher für andere Apps: Wähl auf einem Handy mit BubbleUPnP, mit <em>Auf Gerät übertragen</em> von Windows oder in einem beliebigen UPnP-Control-Point <strong>&lt;Gerätename&gt;</strong> aus und schick Songs. Sie laufen in Audiofilus mit Titel und Künstler, und die sendende App steuert Wiedergabe, Pause, Springen und Lautstärke. Jeder Song wird erst geladen und läuft dann, über WLAN dauert der Start also einen Moment.</p>
 
+<h2 id="mpd">MPD</h2>
+<p><strong>Einstellungen → MPD-Server</strong> lässt MPD-Apps (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) und andere Audiofilus die Musik auf diesem Gerät steuern: die Warteschlange, die Bibliothek mit Covern, deine Playlists, Lautstärke und Spulen. Standardmäßig ist er aus. Sein Menü zeigt die Adresse, die du in einer App eingibst (zum Beispiel <code>192.168.1.5:6600</code>), und kann ein Passwort setzen; Apps, die das Netz durchsuchen, finden ihn von selbst. In den Handy-Apps gibt es ihn nicht.</p>
+<ul>
+<li><strong>Von einem anderen Audiofilus:</strong> In <strong>Läuft gerade</strong> zeigt <kbd>START</kbd> → <strong>Senden an…</strong> auch die Geräte mit eingeschaltetem MPD-Server. Die Songs wechseln auf dem Gerät ohne Pause, und <kbd>START</kbd> → <strong>Bibliothek von &lt;Gerät&gt;</strong> lässt dich seine Alben durchsuchen und dort abspielen. Hat es ein Passwort, wird es beim ersten Mal abgefragt.</li>
+<li><strong>Auf dem Gerät, das empfängt:</strong> Die obere Leiste zeigt <strong>← &lt;Adresse&gt;</strong>, während ein anderes Gerät Musik schickt, und <kbd>START</kbd> hat <strong>Empfang beenden</strong> (die Musik stoppt hier, und das sendende Audiofilus spielt selbst weiter) und <strong>MPD-Server ausschalten</strong>. Das gilt auch für Musik, die per DLNA kommt.</li>
+<li>Startest du während des Empfangs neu, kommt deine eigene Warteschlange zurück.</li>
+</ul>
+<p>Zwischen zwei Audiofilus ist MPD die bessere Wahl: ohne Pausen, mit Passwort und mit der Bibliothek des anderen. DLNA ist für Fernseher, Lautsprecher und Apps, die kein MPD sprechen.</p>
+
 <h2 id="notes">Hinweise</h2>
 <ul>
 <li>Beide DLNA-Optionen sind <strong>standardmäßig aus</strong>. Ausgeschaltet lauscht nichts im Netz.</li>
 <li>Teilen und Empfangen halten den Handheld nicht von selbst wach: Geht er schlafen, antwortet er erst wieder, wenn er aufwacht.</li>
 <li>Eine Firewall auf dem Computer muss die Geräte zu Audiofilus durchlassen (der Medien-Port wird jedes Mal zufällig gewählt).</li>
 <li>Im Terminal: <code>audiofilus dlna</code> zeigt den Zustand, und <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> und <code>audiofilus dlna name &lt;Name&gt;</code> ändern ihn.</li>
+<li>Im Terminal: <code>audiofilus mpd</code> zeigt den Zustand des MPD-Servers, und <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;Passwort&gt;]</code>, <code>audiofilus mpd port &lt;Port&gt;</code> und <code>audiofilus mpd name &lt;Name&gt;</code> ändern ihn.</li>
 <li>Auf iPhone und iPad fragt die erste Suche nach der Erlaubnis, das lokale Netz zu nutzen.</li>
 </ul>
 

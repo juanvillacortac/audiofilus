@@ -89,12 +89,22 @@
 <h2 id="dlna-renderer">Odbieraj muzykę (renderer DLNA)</h2>
 <p><strong>Ustawienia → Odbieraj muzykę (DLNA)</strong> zmienia konsolę albo komputer w głośnik dla innych aplikacji: na telefonie z BubbleUPnP, w <em>Przesyłaj do urządzenia</em> w Windows albo w dowolnym punkcie sterowania UPnP wybierz <strong>&lt;nazwa urządzenia&gt;</strong> i wysyłaj utwory. Grają w Audiofilus z tytułem i wykonawcą, a aplikacja, która je wysyła, steruje odtwarzaniem, pauzą, przewijaniem i głośnością. Każdy utwór najpierw się pobiera, a potem gra, więc przez Wi-Fi start chwilę trwa.</p>
 
+<h2 id="mpd">MPD</h2>
+<p><strong>Ustawienia → Serwer MPD</strong> pozwala aplikacjom MPD (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) i innym Audiofilus sterować muzyką na tym urządzeniu: kolejką, biblioteką z okładkami, playlistami, głośnością i przewijaniem. Domyślnie jest wyłączony. Jego menu pokazuje adres do wpisania w aplikacji (na przykład <code>192.168.1.5:6600</code>) i pozwala ustawić hasło; aplikacje przeszukujące sieć znajdą go same. Nie ma go w aplikacjach na telefon.</p>
+<ul>
+<li><strong>Z innego Audiofilus:</strong> w <strong>Teraz gra</strong> <kbd>START</kbd> → <strong>Wyślij do…</strong> pokazuje też urządzenia z włączonym serwerem MPD. Utwory zmieniają się na urządzeniu bez przerw, a <kbd>START</kbd> → <strong>Biblioteka &lt;urządzenie&gt;</strong> pozwala przeglądać jego albumy i odtwarzać je tam. Jeśli ma hasło, pyta o nie za pierwszym razem.</li>
+<li><strong>Na urządzeniu, które odbiera:</strong> górny pasek pokazuje <strong>← &lt;adres&gt;</strong>, gdy inne urządzenie wysyła do niego muzykę, a <kbd>START</kbd> ma <strong>Przestań odbierać</strong> (muzyka zatrzymuje się tutaj, a wysyłający Audiofilus gra dalej sam) i <strong>Wyłącz serwer MPD</strong>. To samo działa dla muzyki odbieranej przez DLNA.</li>
+<li>Restart w trakcie odbierania przywraca twoją własną kolejkę.</li>
+</ul>
+<p>Między dwoma Audiofilus lepszy jest MPD: bez przerw, z hasłem i z biblioteką drugiego urządzenia. DLNA jest dla telewizorów, głośników i aplikacji, które nie znają MPD.</p>
+
 <h2 id="notes">Uwagi</h2>
 <ul>
 <li>Obie opcje DLNA są <strong>domyślnie wyłączone</strong>. Wyłączone, nic nie nasłuchuje w sieci.</li>
 <li>Udostępnianie i odbieranie same nie trzymają konsoli w stanie czuwania: jeśli zaśnie, przestaje odpowiadać, dopóki się nie obudzi.</li>
 <li>Zapora na komputerze musi przepuszczać urządzenia do Audiofilus (port multimediów jest za każdym razem losowy).</li>
 <li>W terminalu: <code>audiofilus dlna</code> pokazuje stan, a <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> i <code>audiofilus dlna name &lt;nazwa&gt;</code> go zmieniają.</li>
+<li>W terminalu: <code>audiofilus mpd</code> pokazuje stan serwera MPD, a <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;hasło&gt;]</code>, <code>audiofilus mpd port &lt;port&gt;</code> i <code>audiofilus mpd name &lt;nazwa&gt;</code> go zmieniają.</li>
 <li>Na iPhonie i iPadzie pierwsze wyszukiwanie prosi o zgodę na korzystanie z sieci lokalnej.</li>
 </ul>
 

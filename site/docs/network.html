@@ -89,12 +89,22 @@
 <h2 id="dlna-renderer">Receive music (DLNA renderer)</h2>
 <p><strong>Settings → Receive music (DLNA)</strong> turns the handheld or computer into a speaker for other apps: from a phone with BubbleUPnP, Windows' <em>Cast to device</em> or any UPnP control point, pick <strong>&lt;device name&gt;</strong> and send songs. They play through Audiofilus with their title and artist, and the sending app controls play, pause, seek and volume. Each song is downloaded first and then plays, so over Wi-Fi it takes a moment to start.</p>
 
+<h2 id="mpd">MPD</h2>
+<p><strong>Settings → MPD server</strong> lets MPD apps (ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) and other Audiofilus control the music on this device: the queue, the library with covers, your playlists, volume and seeking. It's off by default. Its menu shows the address to type in an app (for example <code>192.168.1.5:6600</code>) and can set a password; apps that browse the network find it by themselves. It isn't on the phone apps.</p>
+<ul>
+<li><strong>From another Audiofilus:</strong> in <strong>Now Playing</strong>, <kbd>START</kbd> → <strong>Send to…</strong> also lists the devices with the MPD server on. Songs change with no gap on the device, and <kbd>START</kbd> → <strong>Library of &lt;device&gt;</strong> lets you browse its albums and play them there. If it has a password, it's asked the first time.</li>
+<li><strong>On the device that receives:</strong> the top bar shows <strong>← &lt;address&gt;</strong> while another device sends music to it, and <kbd>START</kbd> has <strong>Stop receiving</strong> (the music stops here and the Audiofilus that was sending goes on playing by itself) and <strong>Turn off MPD server</strong>. The same works for music received through DLNA.</li>
+<li>Restarting while receiving brings back your own queue.</li>
+</ul>
+<p>Between two Audiofilus, MPD is the better choice: no gaps, a password, and the other device's library. DLNA is for TVs, speakers and apps that don't speak MPD.</p>
+
 <h2 id="notes">Notes</h2>
 <ul>
 <li>Both DLNA options are <strong>off by default</strong>. Turned off, nothing listens on the network.</li>
 <li>Sharing and receiving don't keep the handheld awake on their own: if it goes to sleep, it stops answering until it wakes up.</li>
 <li>A firewall on the computer must let the devices reach Audiofilus (the media port is chosen at random each time).</li>
 <li>From a terminal: <code>audiofilus dlna</code> shows the state, and <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> and <code>audiofilus dlna name &lt;name&gt;</code> change it.</li>
+<li>From a terminal: <code>audiofilus mpd</code> shows the MPD server's state, and <code>audiofilus mpd on|off</code>, <code>audiofilus mpd password [&lt;password&gt;]</code>, <code>audiofilus mpd port &lt;port&gt;</code> and <code>audiofilus mpd name &lt;name&gt;</code> change it.</li>
 <li>On iPhone and iPad the first search asks for permission to use the local network.</li>
 </ul>
 

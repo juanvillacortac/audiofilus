@@ -102,12 +102,22 @@ body { line-break: strict; }
 <h2 id="dlna-renderer">接收音乐（DLNA 渲染器）</h2>
 <p>打开<strong>设置 → 接收音乐 (DLNA)</strong>，掌机或电脑就成了其他应用的音箱：在手机上的 BubbleUPnP、Windows 的<em>投放到设备</em>或任何 UPnP 控制点里选择 <strong>&lt;设备名&gt;</strong>，然后发送歌曲。歌曲会带着标题和艺人在 Audiofilus 里播放，播放、暂停、快进和音量由发送的应用控制。每首歌会先下载再播放，所以在 Wi-Fi 上开始前要等一会儿。</p>
 
+<h2 id="mpd">MPD</h2>
+<p><strong>设置 → MPD 服务器</strong>让 MPD 应用（ncmpcpp、Cantata、M.A.L.P.、Rigelian、MPDroid 等）和其他 Audiofilus 控制这台设备上的音乐：播放队列、带封面的音乐库、你的播放列表、音量和快进快退。默认关闭。它的菜单会显示要在应用里填写的地址（例如 <code>192.168.1.5:6600</code>），也可以设置密码；会搜索网络的应用能自己找到它。手机应用里没有这个功能。</p>
+<ul>
+<li><strong>从另一台 Audiofilus：</strong>在<strong>正在播放</strong>中，<kbd>START</kbd> → <strong>发送到…</strong> 也会列出开着 MPD 服务器的设备。歌曲在那台设备上无缝衔接，<kbd>START</kbd> → <strong>&lt;设备&gt; 的音乐库</strong> 可以浏览它的专辑并在那里播放。如果设了密码，第一次会询问。</li>
+<li><strong>在接收的设备上：</strong>其他设备向它发送音乐时，顶部栏显示 <strong>← &lt;地址&gt;</strong>，<kbd>START</kbd> 里有<strong>停止接收</strong>（这里的音乐停下，发送的那台 Audiofilus 会自己继续播放）和<strong>关闭 MPD 服务器</strong>。通过 DLNA 收到的音乐也一样。</li>
+<li>接收时重启，会回到你自己的播放队列。</li>
+</ul>
+<p>两台 Audiofilus 之间，MPD 更好：无缝衔接、可设密码，还能用对方的音乐库。DLNA 适合电视、音箱和不支持 MPD 的应用。</p>
+
 <h2 id="notes">说明</h2>
 <ul>
 <li>两个 DLNA 选项<strong>默认都是关闭的</strong>。关闭时，不会在网络上监听任何东西。</li>
 <li>共享和接收本身不会让掌机保持唤醒：掌机休眠后，要等它醒来才会再响应。</li>
 <li>电脑上的防火墙需要允许设备连到 Audiofilus（媒体端口每次随机选择）。</li>
 <li>在终端里：<code>audiofilus dlna</code> 显示状态，<code>audiofilus dlna server on|off</code>、<code>audiofilus dlna renderer on|off</code> 和 <code>audiofilus dlna name &lt;名称&gt;</code> 可以修改。</li>
+<li>在终端里：<code>audiofilus mpd</code> 显示 MPD 服务器的状态，<code>audiofilus mpd on|off</code>、<code>audiofilus mpd password [&lt;密码&gt;]</code>、<code>audiofilus mpd port &lt;端口&gt;</code> 和 <code>audiofilus mpd name &lt;名称&gt;</code> 可以修改。</li>
 <li>在 iPhone 和 iPad 上，第一次查找时会请求使用本地网络的权限。</li>
 </ul>
 
