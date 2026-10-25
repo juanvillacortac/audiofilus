@@ -412,7 +412,7 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 		op.GeoM.Scale(2, 2)
 		op.GeoM.Translate(float64(t.x+t.w/2-7), float64(top))
 		op.ColorScale.ScaleWithColor(iconCol)
-		if it.cover != nil {
+		if it.cover != nil && !it.cover.missing {
 			a.drawCover(dst, it.cover, t.x+t.w/2-7, top, 14, 1)
 		} else {
 			dst.DrawImage(icon(it.icon), op)

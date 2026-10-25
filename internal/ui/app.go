@@ -1018,6 +1018,12 @@ func (a *App) syncStatus() {
 			a.position += since
 		}
 	}
+	if a.cast.sess != nil {
+		// Mandando a otro aparato: lo que suena es lo suyo, y lo pone
+		// pollCast. Lo del servicio (en pausa) se queda atrás; si se
+		// tomara aquí, cada estado cambiaría de canción y vuelta.
+		return
+	}
 	if st.Track.Path == a.lastTrack {
 		// La misma pista, pero una emisora anuncia otra canción (su título
 		// ICY): lo que suena se pone al día sin tratarla como pista nueva.
