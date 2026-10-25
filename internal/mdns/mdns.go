@@ -332,3 +332,8 @@ func ipsFor(from net.IP) []net.IP {
 	}
 	return out
 }
+
+// LANIPs son las direcciones IPv4 del equipo en la red local (sin bucle
+// local, VPN ni interfaces virtuales): las que se le pueden dar a otro
+// equipo para conectarse.
+func LANIPs() []net.IP { return lanIPs() }

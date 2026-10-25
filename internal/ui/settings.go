@@ -54,6 +54,7 @@ const (
 	setCrossfeed
 	setAlarm
 	setVibration
+	setMPD
 	setCount
 )
 
@@ -123,6 +124,7 @@ var settingSections = []settingSection{
 		{setLyricsWeb, "lyrics", tileToggle},
 		{setDLNAServer, "server", tileToggle},
 		{setDLNARenderer, "speaker", tileToggle},
+		{setMPD, "server", tileAction},
 	}},
 	{"sec_screen", []settingTile{
 		{setSleep, "moon", tileChoice},
@@ -173,7 +175,7 @@ func (a *App) sections() []settingSection {
 		setExitBg: a.mobile(), setCloseBg: a.mobile(),
 		// En el móvil el servicio va dentro de la app y no se puede reiniciar.
 		setRate: a.mobile(), setUpdate: a.mobile() && InstallPackage == nil, setResampler: a.mobile(),
-		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(),
+		setDLNAServer: a.mobile(), setDLNARenderer: a.mobile(), setMPD: a.mobile(),
 		// En el móvil no hay explorador de carpetas fuera de la app.
 		setMilkDir: a.mobile(), setRadioDir: a.mobile(),
 		// La vibración, solo en las portátiles (el PC y el móvil no tienen motor).
@@ -297,6 +299,8 @@ func (a *App) updateSettings() {
 			a.openEQMenu() // gráfico o paramétrico (peq.go)
 		case setScrobble:
 			a.openScrobbleMenu()
+		case setMPD:
+			a.openMPDMenu() // mpdui.go
 		}
 	}
 }
@@ -569,6 +573,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.cfg.DLNA.Server)
 	case setDLNARenderer:
 		return onOffLabel(a.cfg.DLNA.Renderer)
+	case setMPD:
+		return onOffLabel(a.cfg.MPD.On)
 	case setRate:
 		return rateLabel(a.cfg.SampleRate)
 	case setScrobble:
@@ -636,7 +642,7 @@ func settingNames() [setCount]string {
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
-		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"),
+		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"),
 	}
 }
 
