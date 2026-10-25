@@ -192,6 +192,9 @@ func (s *Server) Update() {
 	s.set(ifacePlay, "Position", micros(st.Position))
 	if st.State != last.State {
 		s.set(ifacePlay, "PlaybackStatus", playbackStatus(st))
+		if s.path == bluezPlayer {
+			log.Printf("bluetooth: status %s", playbackStatus(st))
+		}
 	}
 	if st.Track.Path != last.Track.Path || st.Duration != last.Duration {
 		s.set(ifacePlay, "Metadata", s.metadata(st))
@@ -340,12 +343,21 @@ type player struct{ s *Server }
 
 func (p player) after() *dbus.Error { go p.s.Update(); return nil }
 
-func (p player) Next() *dbus.Error      { p.s.eng.Next(); return p.after() }
-func (p player) Previous() *dbus.Error  { p.s.eng.Prev(); return p.after() }
-func (p player) Pause() *dbus.Error     { p.s.eng.Pause(); return p.after() }
-func (p player) Play() *dbus.Error      { p.s.eng.Play(); return p.after() }
-func (p player) PlayPause() *dbus.Error { p.s.eng.Toggle(); return p.after() }
-func (p player) Stop() *dbus.Error      { p.s.eng.Pause(); return p.after() }
+// note anota en el log las órdenes que llegan de los audífonos bluetooth
+// (por BlueZ), con si sonaba: para ver qué mandan cuando algo no responde.
+// Las del escritorio (MPRIS) no.
+func (p player) note(cmd string) {
+	if p.s.path == bluezPlayer {
+		log.Printf("bluetooth: %s (playing: %v)", cmd, p.s.eng.Playing())
+	}
+}
+
+func (p player) Next() *dbus.Error      { p.note("Next"); p.s.eng.Next(); return p.after() }
+func (p player) Previous() *dbus.Error  { p.note("Previous"); p.s.eng.Prev(); return p.after() }
+func (p player) Pause() *dbus.Error     { p.note("Pause"); p.s.eng.Pause(); return p.after() }
+func (p player) Play() *dbus.Error      { p.note("Play"); p.s.eng.Play(); return p.after() }
+func (p player) PlayPause() *dbus.Error { p.note("PlayPause"); p.s.eng.Toggle(); return p.after() }
+func (p player) Stop() *dbus.Error      { p.note("Stop"); p.s.eng.Pause(); return p.after() }
 
 // SeekBy es "Seek" de MPRIS (se exporta con ese nombre: en Go, Seek choca con
 // io.Seeker): mueve offset microsegundos desde la posición actual.
