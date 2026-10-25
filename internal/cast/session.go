@@ -59,6 +59,8 @@ func NewSession(srv *Server, d Device) (*Session, error) {
 	switch d.Kind {
 	case Chromecast:
 		s.p = newCastPlayer(d)
+	case MPD:
+		s.p = newMPDPlayer(d)
 	default:
 		s.p = newUPnPPlayer(d)
 	}

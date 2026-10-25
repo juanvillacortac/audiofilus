@@ -103,6 +103,10 @@ func (a *App) castSearch() {
 		if own := dlna.RendererUDN(a.paths.Data); own != "" {
 			devs = slices.DeleteFunc(devs, func(d cast.Device) bool { return strings.EqualFold(d.ID, own) })
 		}
+		// Y su servidor MPD.
+		if a.cfg.MPD.On {
+			devs = slices.DeleteFunc(devs, func(d cast.Device) bool { return cast.IsOwnMPD(d, a.cfg.MPD.MPDPort()) })
+		}
 		ch <- castEvent{devs: devs, found: true, err: err}
 		ebiten.ScheduleFrame()
 	}()
@@ -117,14 +121,29 @@ func (a *App) castPick(devs []cast.Device) {
 	var items []menuItem
 	for _, d := range devs {
 		icon := "speaker"
-		if d.Kind == cast.Chromecast {
+		switch d.Kind {
+		case cast.Chromecast:
 			icon = "screen"
+		case cast.MPD:
+			icon = "server"
 		}
 		label := d.Name
 		if d.Model != "" && d.Model != d.Name {
 			label += " · " + d.Model
 		}
-		items = append(items, menuItem{label: label, icon: icon, do: func() { a.castStart(d) }})
+		items = append(items, menuItem{label: label, icon: icon, do: func() {
+			if !d.NeedsPassword {
+				a.castStart(d)
+				return
+			}
+			// Un servidor MPD con contraseña: se pide (con la última que
+			// funcionó ya escrita).
+			a.openRawPrompt(T("mpd_password_for", d.Name), a.mpdPasswords[d.Host], true, func(pw string) {
+				d.Password = pw
+				a.mpdPasswords[d.Host] = pw
+				a.castStart(d)
+			})
+		}})
 	}
 	a.menu = &menu{title: T("cast_send"), subtitle: T("cast_found", len(devs)), items: items}
 }

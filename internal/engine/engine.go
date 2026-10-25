@@ -100,9 +100,11 @@ type Engine struct {
 	stopAfter bool
 	meter     meter // nivel y graves de lo que suena (meter.go)
 	// waiting es la canción remota que se está esperando (sin src); waitAt,
-	// cuándo se preguntó por última vez si ya llegó.
-	waiting string
-	waitAt  time.Time
+	// cuándo se preguntó por última vez si ya llegó; waitSeek, el segundo
+	// en el que empezar cuando llegue (un salto pedido mientras se bajaba).
+	waiting  string
+	waitAt   time.Time
+	waitSeek float64
 	// El scratch (scratch.go): hist guarda lo último que se generó (histN
 	// cuadros en total; vale desde histFrom) y scr es el scratch en curso.
 	hist     []float32
@@ -219,7 +221,8 @@ func (e *Engine) Read(p []byte) (int, error) {
 	}
 	if e.waiting != "" && !e.ended {
 		// Una canción remota que se está bajando: silencio hasta que llegue
-		// (se pregunta cada 200 ms), y entonces suena desde el principio.
+		// (se pregunta cada 200 ms), y entonces suena desde el principio (o
+		// desde donde se pidió saltar mientras tanto).
 		if time.Since(e.waitAt) >= 200*time.Millisecond {
 			e.waitAt = time.Now()
 			src, ready, err := e.OpenRemote(e.waiting)
@@ -232,7 +235,11 @@ func (e *Engine) Read(p []byte) (int, error) {
 					e.setPlayingLocked(false)
 				}
 			case ready:
+				at := e.waitSeek
 				e.setSourceLocked(e.waiting, "", src)
+				if at > 0 {
+					e.seekLocked(at)
+				}
 			}
 		}
 		if e.waiting != "" {
@@ -344,7 +351,7 @@ func (e *Engine) openLocked() bool {
 			if err == nil && !ready {
 				// Aún no está: se espera (en Read) con silencio.
 				e.closeSourceLocked()
-				e.waiting, e.waitAt, e.ended = path, time.Now(), false
+				e.waiting, e.waitAt, e.waitSeek, e.ended = path, time.Now(), 0, false
 				e.track = library.ReadTrack(path)
 				e.announceLocked()
 				return true
@@ -449,6 +456,9 @@ func (e *Engine) advanceLocked(auto bool) bool {
 func (e *Engine) seekLocked(seconds float64) {
 	e.stopCrossfadeLocked()
 	if e.src == nil {
+		if e.waiting != "" {
+			e.waitSeek = seconds // al llegar
+		}
 		return
 	}
 	frame := int64(seconds * float64(e.src.SampleRate()))

@@ -2,6 +2,7 @@ package engine
 
 import (
 	"testing"
+	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 )
@@ -49,3 +50,40 @@ func TestLiveNextPrevWrap(t *testing.T) {
 		t.Fatalf("prev after two minutes on a station: %s, want radio://b", got)
 	}
 }
+
+// Un salto pedido mientras una canción remota aún se baja no se pierde:
+// cuando llega, empieza en ese segundo (lo que hace MPD con seekid, y
+// reanudar una canción de un servidor).
+func TestSeekWhileLoading(t *testing.T) {
+	e := testEngine(48000, DSP{})
+	ready := false
+	src := &liveSource{}
+	var sought int64 = -1
+	seekSrc := &seekRecorder{liveSource: src, sought: &sought}
+	e.OpenRemote = func(path string) (decode.Source, bool, error) {
+		if !ready {
+			return nil, false, nil
+		}
+		return seekSrc, true, nil
+	}
+	e.mu.Lock()
+	e.q.Set([]string{"mpd://u/1"}, 0)
+	e.openLocked()
+	e.playing = true
+	e.seekLocked(5)
+	e.waitAt = time.Time{}
+	e.mu.Unlock()
+	ready = true
+	e.Read(make([]byte, 1024*bytesPerFrame))
+	if sought != 5*48000 {
+		t.Errorf("sought to frame %d, want %d", sought, 5*48000)
+	}
+}
+
+// seekRecorder apunta a qué cuadro se saltó.
+type seekRecorder struct {
+	*liveSource
+	sought *int64
+}
+
+func (s *seekRecorder) SeekFrame(f int64) error { *s.sought = f; return nil }

@@ -1,6 +1,6 @@
 // Package cast manda la música a otro aparato de la red: altavoces y teles
-// DLNA/UPnP (MediaRenderer) y Chromecast. Busca los aparatos (SSDP para UPnP,
-// mDNS para Chromecast), sirve los archivos por HTTP desde este equipo (con
+// DLNA/UPnP (MediaRenderer), Chromecast y servidores MPD (otro audiofilus,
+// mpd). Busca los aparatos (SSDP para UPnP, mDNS para Chromecast y MPD), sirve los archivos por HTTP desde este equipo (con
 // Range, para que el aparato pueda saltar; y convertidos a WAV los que el
 // aparato no sabría tocar: módulos, música de consola, DSD...) y los
 // controla: tocar, pausa, saltar, volumen y la siguiente canción.
@@ -32,6 +32,7 @@ type Kind string
 const (
 	UPnP       Kind = "upnp"
 	Chromecast Kind = "chromecast"
+	MPD        Kind = "mpd" // un servidor MPD (otro audiofilus, mpd...)
 )
 
 // Device es un aparato al que se puede mandar música.
@@ -43,6 +44,10 @@ type Device struct {
 	// Host es host:puerto: en UPnP el de la descripción del aparato, en
 	// Chromecast el del protocolo (8009).
 	Host string
+
+	// MPD: si pide contraseña (lo dice su anuncio) y la que se le da.
+	NeedsPassword bool
+	Password      string
 
 	// UPnP: dónde está su descripción y las URL de control.
 	Location    string
@@ -85,7 +90,7 @@ type Status struct {
 // ErrUnsupported es lo que devuelve una orden que el aparato no tiene.
 var ErrUnsupported = errors.New("cast: not supported by this device")
 
-// Discover busca aparatos durante timeout (UPnP y Chromecast a la vez). Lo
+// Discover busca aparatos durante timeout (UPnP, Chromecast y MPD a la vez). Lo
 // encontrado se guarda: Known devuelve lo último sin volver a buscar.
 func Discover(ctx context.Context, timeout time.Duration) ([]Device, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -96,7 +101,7 @@ func Discover(ctx context.Context, timeout time.Duration) ([]Device, error) {
 		errs []error
 		wg   sync.WaitGroup
 	)
-	for _, find := range []func(context.Context) ([]Device, error){discoverUPnP, discoverChromecast} {
+	for _, find := range []func(context.Context) ([]Device, error){discoverUPnP, discoverChromecast, discoverMPD} {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

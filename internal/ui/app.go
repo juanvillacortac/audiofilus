@@ -57,11 +57,14 @@ type App struct {
 	// Las favoritas y el historial (marks.go): marks se carga la primera
 	// vez; hist es el historial leído y histAt la fecha de su archivo
 	// entonces; timerChoice, la última opción del temporizador.
-	eqEdit       *eqEditor   // el editor del ecualizador abierto (sound.go)
-	peqEdit      *peqEditor  // el del paramétrico (peq.go)
-	rateDirty    bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
-	acctCh       chan func() // lo que vuelve de comprobar una cuenta (sound.go)
-	meterTracker bool        // el medidor que se mira es el del tracker (meter.go)
+	eqEdit    *eqEditor   // el editor del ecualizador abierto (sound.go)
+	peqEdit   *peqEditor  // el del paramétrico (peq.go)
+	rateDirty bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
+	acctCh    chan func() // lo que vuelve de comprobar una cuenta (sound.go)
+	// mpdPasswords son las contraseñas de los servidores MPD a los que se
+	// mandó música (por host), para no volver a escribirlas (castui.go).
+	mpdPasswords map[string]string
+	meterTracker bool // el medidor que se mira es el del tracker (meter.go)
 	marks        *history.Marks
 	hist         []history.Listen
 	histAt       time.Time
@@ -288,7 +291,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		libTab: tabSongs, // Buscar es la primera pestaña, pero se entra por Canciones
 		paths:  paths, cfg: cfg, offline: offline,
 		lyrCh:  make(chan lyricsResult, 4),
-		acctCh: make(chan func(), 4),
+		acctCh: make(chan func(), 4), mpdPasswords: map[string]string{},
 		covers: newCovers(2), theme: DefaultTheme, battery: -1, now: time.Now(), h: ScreenH,
 		kbEvents: make(chan kbEvent, 64),
 	}
