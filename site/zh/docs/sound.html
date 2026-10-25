@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>音质 · audiofilus 文档</title>
+<title>音质 · Audiofilus 文档</title>
 <meta name="description" content="ReplayGain、均衡器、淡入淡出和输出采样率。它们由服务应用，所以播放器关闭时也有效。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -43,7 +43,7 @@ body { line-break: strict; }
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus 首页"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="站点">
       <a href="../index.html">首页</a>
       <a href="index.html" aria-current="page">文档</a>
@@ -151,18 +151,18 @@ body { line-break: strict; }
 <p><strong>设置 → 输出采样率</strong>：44.1、48、96 或 192&nbsp;kHz。更改后会重启音频服务，并从原来的位置继续。当文件采样率相同且没有任何处理（音量 100&nbsp;%、没有 ReplayGain 或均衡器）时，采样会原样输出，不过 PipeWire 或 PulseAudio 仍可能重新采样。iPhone 上不可用。</p>
 
 <h2 id="volume">音量和增益</h2>
-<p>音量范围为 0 到 200&nbsp;%。100&nbsp;% 以内是系统音量；超过后，audiofilus 会借助限幅器提升信号，让响亮的母带不失真。</p>
+<p>音量范围为 0 到 200&nbsp;%。100&nbsp;% 以内是系统音量；超过后，Audiofilus 会借助限幅器提升信号，让响亮的母带不失真。</p>
 
 <h2 id="dsd">DSD</h2>
 <p>可以播放 DSF 和 DFF 文件，会转换为 PCM。DSD64 对掌机来说足够轻量；DSD256 在掌机上可能跟不上。</p>
-<p>DSD 无法以“原生”（DoP）方式输出到 DAC：那需要采样一位不差地送到 DAC，而 audiofilus 的输出和其他应用一样，以 PCM 形式经过系统混音器。转换做得很仔细，但它仍然是一次转换。</p>
+<p>DSD 无法以“原生”（DoP）方式输出到 DAC：那需要采样一位不差地送到 DAC，而 Audiofilus 的输出和其他应用一样，以 PCM 形式经过系统混音器。转换做得很仔细，但它仍然是一次转换。</p>
 
     <nav class="pager" aria-label="页面"><a href="playback.html">← 播放</a><a href="lyrics.html">歌词 →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>Audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
     <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
   </div>
 </footer>

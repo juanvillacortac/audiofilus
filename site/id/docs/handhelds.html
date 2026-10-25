@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sistem handheld · dokumentasi audiofilus</title>
-<meta name="description" content="Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.">
+<title>Sistem handheld · dokumentasi Audiofilus</title>
+<meta name="description" content="Apa yang dilakukan Audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Beranda audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Beranda Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Situs">
       <a href="../index.html">Beranda</a>
       <a href="index.html" aria-current="page">Dokumentasi</a>
@@ -72,9 +72,9 @@
   </aside>
   <article>
     <h1>Sistem handheld</h1>
-    <p class="lede">Apa yang dilakukan audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.</p>
+    <p class="lede">Apa yang dilakukan Audiofilus secara berbeda di Knulli, muOS, ROCKNIX, ArkOS, dArkOS, dan EmuELEC.</p>
 
-<p>audiofilus mendeteksi sistem saat mulai dan memakai alat bawaan sistem itu untuk lipatan, tombol power, volume, dan baterai. Diuji di Anbernic RG34XX-SP dengan Knulli.</p>
+<p>Audiofilus mendeteksi sistem saat mulai dan memakai alat bawaan sistem itu untuk lipatan, tombol power, volume, dan baterai. Diuji di Anbernic RG34XX-SP dengan Knulli.</p>
 
 <h2 id="files">Di mana file-filemu berada</h2>
 <p>Pengaturan (<code>audiofilus.json</code>) dan data (<code>data/</code>: cache pustaka, playlist, riwayat, lirik, podcast, log <code>audiofilus.log</code>) ada di samping program, di folder port-nya:</p>
@@ -88,15 +88,15 @@
 
 <h2 id="power">Tombol power</h2>
 <ul>
-<li><strong>Saat pemutar terbuka</strong>, menekan tombol power sebentar menidurkan audiofilus (layar mati, musik jalan) alih-alih membuat konsol suspend. Menahannya tetap mematikan konsol.</li>
+<li><strong>Saat pemutar terbuka</strong>, menekan tombol power sebentar menidurkan Audiofilus (layar mati, musik jalan) alih-alih membuat konsol suspend. Menahannya tetap mematikan konsol.</li>
 <li><strong>Setelah Ke latar belakang</strong>, konsol suspend seperti biasa saat kamu menekannya.</li>
 </ul>
 <p>Saat pemutar terbuka, suspend otomatis dan peredupan layar dari sistem juga ditahan.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>Tombol volume dikendalikan audiofilus saat pemutar terbuka, jadi kamu bisa melewati 100 %.</li>
-<li>Menutup lipatan menidurkan audiofilus; membukanya tidak membangunkannya: <kbd>START</kbd> yang membangunkan.</li>
+<li>Tombol volume dikendalikan Audiofilus saat pemutar terbuka, jadi kamu bisa melewati 100 %.</li>
+<li>Menutup lipatan menidurkan Audiofilus; membukanya tidak membangunkannya: <kbd>START</kbd> yang membangunkan.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -105,7 +105,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>Dengan “fake suspend” ROCKNIX (mode suspend dimatikan di pengaturannya), menekan tombol power membisukan dan membekukan semuanya, dan audiofilus tidak bisa mencegahnya. Dengan suspend normal (bawaan), tombol itu menidurkan audiofilus.</li>
+<li>Dengan “fake suspend” ROCKNIX (mode suspend dimatikan di pengaturannya), menekan tombol power membisukan dan membekukan semuanya, dan Audiofilus tidak bisa mencegahnya. Dengan suspend normal (bawaan), tombol itu menidurkan Audiofilus.</li>
 </ul>
 <h2 id="arkos">ArkOS dan dArkOS</h2>
 <ul>
@@ -115,19 +115,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Berjalan di Odroid Go Advance dan Super, GameForce Chi, serta TV box Amlogic. Belum dicoba di perangkat sungguhan.</li>
-<li>Di handheld, saat pemutar terbuka, tombol power menidurkan audiofilus alih-alih membuat konsol suspend. TV box tidak pernah suspend.</li>
+<li>Di handheld, saat pemutar terbuka, tombol power menidurkan Audiofilus alih-alih membuat konsol suspend. TV box tidak pernah suspend.</li>
 <li>Pasang PortMaster dulu dari menu EmuELEC. Untuk memasang manual, taruh <code>Audiofilus.sh</code> di <code>/storage/roms/ports_scripts</code> (tempat EmuELEC mencari port) dan folder <code>audiofilus</code> di <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Pemakaian baterai</h2>
-<p>Diukur di RG34XX-SP: dalam mode tidur audiofilus memakai sekitar 260&nbsp;mA, kira-kira 11 sampai 12 jam musik dengan baterai 3300&nbsp;mAh-nya.</p>
+<p>Diukur di RG34XX-SP: dalam mode tidur Audiofilus memakai sekitar 260&nbsp;mA, kira-kira 11 sampai 12 jam musik dengan baterai 3300&nbsp;mAh-nya.</p>
 
     <nav class="pager" aria-label="Halaman"><a href="settings.html">← Pengaturan</a><a href="faq.html">FAQ →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Beranda</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Rilis terbaru</a></span>
+    <span>Audiofilus · <a href="../index.html">Beranda</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Rilis terbaru</a></span>
     <span>Menemukan kesalahan di dokumentasi? <a href="https://github.com/juanvillacortac/audiofilus/issues">Buka issue</a>.</span>
   </div>
 </footer>

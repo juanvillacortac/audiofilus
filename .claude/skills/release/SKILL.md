@@ -1,6 +1,6 @@
 ---
 name: release
-description: Publish a new audiofilus release (tag, GitHub Actions build, PortMaster zip and Linux binaries). Use when the author asks to release, publish a version, or cut a tag.
+description: Publish a new Audiofilus release (tag, GitHub Actions build, PortMaster zip and Linux binaries). Use when the author asks to release, publish a version, or cut a tag.
 ---
 
 # Release

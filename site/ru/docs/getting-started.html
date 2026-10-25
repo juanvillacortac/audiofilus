@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Начало работы · документация audiofilus</title>
-<meta name="description" content="Установи audiofilus на устройство, открой его и укажи, где твоя музыка.">
+<title>Начало работы · документация Audiofilus</title>
+<meta name="description" content="Установи Audiofilus на устройство, открой его и укажи, где твоя музыка.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -32,7 +32,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Главная Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Сайт">
       <a href="../index.html">Главная</a>
       <a href="index.html" aria-current="page">Справка</a>
@@ -74,14 +74,14 @@
   </aside>
   <article>
     <h1>Начало работы</h1>
-    <p class="lede">Установи audiofilus на устройство, открой его и укажи, где твоя музыка.</p>
+    <p class="lede">Установи Audiofilus на устройство, открой его и укажи, где твоя музыка.</p>
 
 <h2 id="handhelds">Портативные консоли с PortMaster</h2>
 <p>Работает на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.</p>
 <ol>
 <li>Скачай <code>audiofilus-portmaster.zip</code> из <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">последнего релиза</a>.</li>
 <li>Установи его через PortMaster или распакуй в папку <code>ports</code>.</li>
-<li>Открой <strong>audiofilus</strong> в разделе Ports.</li>
+<li>Открой <strong>Audiofilus</strong> в разделе Ports.</li>
 </ol>
 <p>Порт приносит всё необходимое, включая библиотеку, которая играет музыку консолей (libgme).</p>
 
@@ -91,12 +91,12 @@
 <ol>
 <li>Скачай <code>audiofilus.muxapp</code> из <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">последнего релиза</a>.</li>
 <li>Скопируй его в папку <code>ARCHIVE</code> в корне SD-карты (или флешки).</li>
-<li>Открой <strong>Archive Manager</strong> в muOS и установи его. audiofilus появится в <strong>Applications</strong>.</li>
+<li>Открой <strong>Archive Manager</strong> в muOS и установи его. Audiofilus появится в <strong>Applications</strong>.</li>
 </ol>
 
 <h2 id="linux">Linux на компьютере</h2>
 <pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
-<p>Он ставит audiofilus в <code>~/.local/share/audiofilus</code>, создаёт ссылку <code>audiofilus</code> в <code>~/.local/bin</code> и добавляет его в меню приложений (с «Открыть с помощью» для аудиофайлов и папок). Запусти снова, чтобы обновить; настройки сохранятся.</p>
+<p>Он ставит Audiofilus в <code>~/.local/share/audiofilus</code>, создаёт ссылку <code>audiofilus</code> в <code>~/.local/bin</code> и добавляет его в меню приложений (с «Открыть с помощью» для аудиофайлов и папок). Запусти снова, чтобы обновить; настройки сохранятся.</p>
 <p>Вручную: распакуй <code>audiofilus-linux-amd64.tar.gz</code> (или <code>-arm64</code>) куда угодно и один раз выполни <code>./audiofilus desktop install</code>.</p>
 
 <h2 id="windows">Windows</h2>
@@ -107,8 +107,8 @@
 <p>Или добавь источник <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> в AltStore, SideStore или LiveContainer: новые релизы будут приходить туда как обновления.</p>
 
 <h2 id="first-run">Первый запуск: папка с музыкой</h2>
-<p>На портативной консоли или компьютере при первом открытии audiofilus показывает обзор папок. <kbd>A</kbd> открывает папку, <kbd>B</kbd> поднимается выше, а <kbd>X</kbd> выбирает текущую папку. Библиотека сканируется один раз, с полосой прогресса; при следующих запусках читаются только новые или изменённые файлы. Папку можно сменить позже в <strong>Настройки → Папка</strong>, а пересканировать — через <strong>Пересканировать</strong>.</p>
-<p>Своей музыки нет? audiofilus всё равно откроется с пустой библиотекой, и серверы, радио, подкасты и YouTube Music будут работать.</p>
+<p>На портативной консоли или компьютере при первом открытии Audiofilus показывает обзор папок. <kbd>A</kbd> открывает папку, <kbd>B</kbd> поднимается выше, а <kbd>X</kbd> выбирает текущую папку. Библиотека сканируется один раз, с полосой прогресса; при следующих запусках читаются только новые или изменённые файлы. Папку можно сменить позже в <strong>Настройки → Папка</strong>, а пересканировать — через <strong>Пересканировать</strong>.</p>
+<p>Своей музыки нет? Audiofilus всё равно откроется с пустой библиотекой, и серверы, радио, подкасты и YouTube Music будут работать.</p>
 <p>На iPhone скопируй песни в <em>На iPhone → Audiofilus</em> в приложении «Файлы» или выбери любую папку (iCloud Drive или другое приложение) в <strong>Настройки → Папка</strong>.</p>
 
 <h2 id="find-your-way">Как ориентироваться</h2>
@@ -127,7 +127,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
     <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
   </div>
 </footer>

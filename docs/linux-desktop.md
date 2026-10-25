@@ -1,6 +1,6 @@
 # Linux desktop and Omarchy
 
-On a Linux desktop audiofilus behaves like any other app: it shows up in the launcher with its icon, the window manager recognizes its window, and the desktop's media controls drive it. Everything below works on any freedesktop desktop (GNOME, KDE, Hyprland...); [Omarchy](https://omarchy.org) is the one it's tested on.
+On a Linux desktop Audiofilus behaves like any other app: it shows up in the launcher with its icon, the window manager recognizes its window, and the desktop's media controls drive it. Everything below works on any freedesktop desktop (GNOME, KDE, Hyprland...); [Omarchy](https://omarchy.org) is the one it's tested on.
 
 ## Installing
 
@@ -39,7 +39,7 @@ The window's class (X11 `WM_CLASS`, which Hyprland shows as `class`) is `audiofi
 
 ## Media controls (MPRIS)
 
-The service registers `org.mpris.MediaPlayer2.audiofilus` on the session bus (`internal/mpris`): Identity "Audiofilus", `DesktopEntry` "audiofilus" (so bars show the right name and icon), metadata with the cover, play/pause, next, previous, seek, shuffle, repeat and volume. On a desktop without a session bus (Windows, a bare console) it's skipped.
+The service registers `org.mpris.MediaPlayer2.audiofilus` on the session bus (`internal/mpris`): Identity "Audiofilus", `DesktopEntry` "Audiofilus" (so bars show the right name and icon), metadata with the cover, play/pause, next, previous, seek, shuffle, repeat and volume. On a desktop without a session bus (Windows, a bare console) it's skipped.
 
 ## System tray
 
@@ -56,8 +56,8 @@ On Windows the same icon, clicks and menu live in the notification area (`intern
 ## Omarchy
 
 - **Launcher:** after `audiofilus desktop install`, "Audiofilus" appears in the app launcher (Super + Space) with its icon.
-- **Media keys and the bar:** Omarchy's media keys call `omarchy-shell media playPause|next|previous`, which talks MPRIS, so the keyboard's play/pause/next/previous keys and the bar's media widget control audiofilus with nothing to configure.
-- **A shortcut to open it:** Omarchy binds Super + Shift + M to Spotify. To open (or focus) audiofilus instead, add to `~/.config/hypr/bindings.lua`:
+- **Media keys and the bar:** Omarchy's media keys call `omarchy-shell media playPause|next|previous`, which talks MPRIS, so the keyboard's play/pause/next/previous keys and the bar's media widget control Audiofilus with nothing to configure.
+- **A shortcut to open it:** Omarchy binds Super + Shift + M to Spotify. To open (or focus) Audiofilus instead, add to `~/.config/hypr/bindings.lua`:
 
   ```lua
   hl.unbind("SUPER + SHIFT + M")

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Сеть · документация audiofilus</title>
+<title>Сеть · документация Audiofilus</title>
 <meta name="description" content="Отправляй музыку на колонки и телевизоры (DLNA/UPnP и Chromecast), делись библиотекой по DLNA и принимай музыку с телефонов.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -32,7 +32,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Главная Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Сайт">
       <a href="../index.html">Главная</a>
       <a href="index.html" aria-current="page">Справка</a>
@@ -82,20 +82,20 @@
 <li>Выбери одно — песня продолжится там с той же секунды; консоль или компьютер встаёт на паузу и становится пультом. Следующая песня очереди отправляется заранее, так что устройство продолжает играть очередь.</li>
 <li>Во время отправки в верхней строке видно <strong>→ &lt;устройство&gt;</strong>, а пауза, следующая, предыдущая и перемотка управляют устройством; полоса прогресса показывает его позицию.</li>
 <li><kbd>START</kbd> → <strong>Громкость устройства</strong> делает его громче или тише. <strong>Остановить отправку на &lt;устройство&gt;</strong> останавливает его и продолжает здесь, с той же песни и секунды.</li>
-<li>Отправить можно всё, что играет audiofilus. MP3, FLAC, AAC/M4A, WAV и Ogg идут как есть; модули, музыка приставок, DSD и треки CUE на лету превращаются в WAV. Песни с сервера Subsonic/Jellyfin и радиостанции идут по своему адресу.</li>
+<li>Отправить можно всё, что играет Audiofilus. MP3, FLAC, AAC/M4A, WAV и Ogg идут как есть; модули, музыка приставок, DSD и треки CUE на лету превращаются в WAV. Песни с сервера Subsonic/Jellyfin и радиостанции идут по своему адресу.</li>
 </ul>
 
 <h2 id="dlna-server">Общая библиотека (DLNA-сервер)</h2>
-<p><strong>Настройки → Общая библиотека (DLNA)</strong> показывает твою библиотеку на телевизорах, приставках и в DLNA-приложениях той же сети как <strong>audiofilus (&lt;имя устройства&gt;)</strong>. Они могут просматривать <strong>Исполнителей</strong>, <strong>Альбомы</strong>, <strong>Песни</strong>, <strong>Плейлисты</strong> и <strong>Папки</strong> с обложками и играть оттуда. Форматы, которые телевизор не знает, превращаются для него в WAV. Делится той библиотекой, которую audiofilus уже просканировал; песни с серверов не раздаются.</p>
+<p><strong>Настройки → Общая библиотека (DLNA)</strong> показывает твою библиотеку на телевизорах, приставках и в DLNA-приложениях той же сети как <strong>Audiofilus (&lt;имя устройства&gt;)</strong>. Они могут просматривать <strong>Исполнителей</strong>, <strong>Альбомы</strong>, <strong>Песни</strong>, <strong>Плейлисты</strong> и <strong>Папки</strong> с обложками и играть оттуда. Форматы, которые телевизор не знает, превращаются для него в WAV. Делится той библиотекой, которую Audiofilus уже просканировал; песни с серверов не раздаются.</p>
 
 <h2 id="dlna-renderer">Приём музыки (DLNA-рендерер)</h2>
-<p><strong>Настройки → Приём музыки (DLNA)</strong> превращает консоль или компьютер в колонку для других приложений: с телефона с BubbleUPnP, через <em>Передать на устройство</em> в Windows или из любой точки управления UPnP выбери <strong>audiofilus</strong> и отправляй песни. Они играют через audiofilus с названием и исполнителем, а отправляющее приложение управляет воспроизведением, паузой, перемоткой и громкостью. Каждая песня сначала скачивается, а потом играет, поэтому по Wi-Fi старт занимает немного времени.</p>
+<p><strong>Настройки → Приём музыки (DLNA)</strong> превращает консоль или компьютер в колонку для других приложений: с телефона с BubbleUPnP, через <em>Передать на устройство</em> в Windows или из любой точки управления UPnP выбери <strong>Audiofilus</strong> и отправляй песни. Они играют через Audiofilus с названием и исполнителем, а отправляющее приложение управляет воспроизведением, паузой, перемоткой и громкостью. Каждая песня сначала скачивается, а потом играет, поэтому по Wi-Fi старт занимает немного времени.</p>
 
 <h2 id="notes">Заметки</h2>
 <ul>
 <li>Обе опции DLNA <strong>выключены по умолчанию</strong>. Когда они выключены, в сети ничего не слушает.</li>
 <li>Раздача и приём сами по себе не держат консоль включённой: если она засыпает, то перестаёт отвечать, пока не проснётся.</li>
-<li>Файрвол на компьютере должен пускать устройства к audiofilus (порт для медиа каждый раз выбирается случайно).</li>
+<li>Файрвол на компьютере должен пускать устройства к Audiofilus (порт для медиа каждый раз выбирается случайно).</li>
 <li>Из терминала: <code>audiofilus dlna</code> показывает состояние, а <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> и <code>audiofilus dlna name &lt;имя&gt;</code> меняют его.</li>
 <li>На iPhone и iPad первый поиск просит разрешения на локальную сеть.</li>
 </ul>
@@ -105,7 +105,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
     <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
   </div>
 </footer>

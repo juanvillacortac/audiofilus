@@ -1418,7 +1418,7 @@ func (a *App) drawScreen(dst *ebiten.Image, s Screen) {
 func (a *App) drawScan(dst *ebiten.Image) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	th := a.theme
-	title := "audiofilus"
+	title := "Audiofilus"
 	drawTextShadow(dst, title, BigFace, (w-textWidth(title, BigFace))/2, h/2-30, th.Text, th.Shadow)
 	msg := T("scanning")
 	drawText(dst, msg, SmallFace, (w-textWidth(msg, SmallFace))/2, h/2-8, th.Accent)

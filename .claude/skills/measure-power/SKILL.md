@@ -1,6 +1,6 @@
 ---
 name: measure-power
-description: Measure audiofilus CPU usage and the battery drain of the Knulli console (RG34XX-SP). Use it to compare pocket mode with Songo, verify an optimization, or answer "how much does it use".
+description: Measure Audiofilus CPU usage and the battery drain of the Knulli console (RG34XX-SP). Use it to compare pocket mode with Songo, verify an optimization, or answer "how much does it use".
 ---
 
 # Measuring power

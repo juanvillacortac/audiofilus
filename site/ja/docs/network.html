@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ネットワーク · audiofilus ドキュメント</title>
+<title>ネットワーク · Audiofilus ドキュメント</title>
 <meta name="description" content="スピーカーやテレビに音楽を送る（DLNA/UPnP と Chromecast）、DLNA でライブラリを共有する、スマホなどから音楽を受け取る。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -33,7 +33,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="サイト">
       <a href="../index.html">ホーム</a>
       <a href="index.html" aria-current="page">ドキュメント</a>
@@ -83,20 +83,20 @@
 <li>機器を選ぶと、同じ秒から曲がそちらで続きます。携帯ゲーム機やパソコンは一時停止してリモコンになります。キューの次の曲も先に送られるので、機器はそのままキューを進めます。</li>
 <li>送信中は上のバーに <strong>→ &lt;機器&gt;</strong> と表示され、一時停止・次へ・前へ・シークは機器を操作します。進行バーは機器の再生位置を示します。</li>
 <li><kbd>START</kbd> → <strong>機器の音量</strong>で機器の音量を上げ下げできます。<strong>&lt;機器&gt; への送信をやめる</strong>で機器を止め、同じ曲の同じ秒からこちらで再生を続けます。</li>
-<li>audiofilus で再生できるものは何でも送れます。MP3、FLAC、AAC/M4A、WAV、Ogg はそのまま送り、モジュール、ゲーム機の音楽、DSD、CUE のトラックはその場で WAV に変換します。Subsonic/Jellyfin サーバーの曲とラジオ局は、それぞれのアドレスで送ります。</li>
+<li>Audiofilus で再生できるものは何でも送れます。MP3、FLAC、AAC/M4A、WAV、Ogg はそのまま送り、モジュール、ゲーム機の音楽、DSD、CUE のトラックはその場で WAV に変換します。Subsonic/Jellyfin サーバーの曲とラジオ局は、それぞれのアドレスで送ります。</li>
 </ul>
 
 <h2 id="dlna-server">ライブラリを共有する（DLNA サーバー）</h2>
-<p><strong>設定 → ライブラリ共有 (DLNA)</strong> をオンにすると、同じネットワークのテレビ、ゲーム機、DLNA アプリにライブラリが <strong>audiofilus (&lt;機器名&gt;)</strong> として表示されます。<strong>アーティスト</strong>、<strong>アルバム</strong>、<strong>曲</strong>、<strong>プレイリスト</strong>、<strong>フォルダー</strong>をジャケット付きで見て、そこから再生できます。テレビが対応していない形式は WAV に変換して渡します。共有するのは audiofilus がスキャン済みのライブラリで、サーバーの曲は共有しません。</p>
+<p><strong>設定 → ライブラリ共有 (DLNA)</strong> をオンにすると、同じネットワークのテレビ、ゲーム機、DLNA アプリにライブラリが <strong>Audiofilus (&lt;機器名&gt;)</strong> として表示されます。<strong>アーティスト</strong>、<strong>アルバム</strong>、<strong>曲</strong>、<strong>プレイリスト</strong>、<strong>フォルダー</strong>をジャケット付きで見て、そこから再生できます。テレビが対応していない形式は WAV に変換して渡します。共有するのは Audiofilus がスキャン済みのライブラリで、サーバーの曲は共有しません。</p>
 
 <h2 id="dlna-renderer">音楽を受け取る（DLNA レンダラー）</h2>
-<p><strong>設定 → 音楽を受信 (DLNA)</strong> をオンにすると、携帯ゲーム機やパソコンがほかのアプリのスピーカーになります。スマホの BubbleUPnP、Windows の<em>デバイスにキャスト</em>、そのほかの UPnP コントロールポイントから <strong>audiofilus</strong> を選んで曲を送ってください。曲はタイトルとアーティスト付きで audiofilus から鳴り、再生・一時停止・シーク・音量は送った側のアプリで操作します。曲は先にダウンロードしてから再生するので、Wi-Fi では始まるまで少しかかります。</p>
+<p><strong>設定 → 音楽を受信 (DLNA)</strong> をオンにすると、携帯ゲーム機やパソコンがほかのアプリのスピーカーになります。スマホの BubbleUPnP、Windows の<em>デバイスにキャスト</em>、そのほかの UPnP コントロールポイントから <strong>Audiofilus</strong> を選んで曲を送ってください。曲はタイトルとアーティスト付きで Audiofilus から鳴り、再生・一時停止・シーク・音量は送った側のアプリで操作します。曲は先にダウンロードしてから再生するので、Wi-Fi では始まるまで少しかかります。</p>
 
 <h2 id="notes">注意</h2>
 <ul>
 <li>DLNA のふたつの設定は<strong>初期状態でオフ</strong>です。オフのときは、ネットワークで何も待ち受けません。</li>
 <li>共有や受信が、携帯ゲーム機をスリープさせないようにすることはありません。スリープすると、起きるまで応答しません。</li>
-<li>パソコンのファイアウォールは、機器が audiofilus に届くように許可する必要があります（メディア用のポートは毎回ランダムに選ばれます）。</li>
+<li>パソコンのファイアウォールは、機器が Audiofilus に届くように許可する必要があります（メディア用のポートは毎回ランダムに選ばれます）。</li>
 <li>ターミナルからは、<code>audiofilus dlna</code> で状態を表示し、<code>audiofilus dlna server on|off</code>、<code>audiofilus dlna renderer on|off</code>、<code>audiofilus dlna name &lt;名前&gt;</code> で変更できます。</li>
 <li>iPhone と iPad では、最初の検索のときにローカルネットワークの利用許可を求められます。</li>
 </ul>
@@ -106,7 +106,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
+    <span>Audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
     <span>ドキュメントに誤りを見つけましたか？ <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue を開いてください</a>。</span>
   </div>
 </footer>

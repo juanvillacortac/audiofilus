@@ -27,7 +27,7 @@ ContentDirectory with `Browse` (`BrowseMetadata`, `BrowseDirectChildren`, paging
 
 ## Media renderer
 
-AVTransport (`SetAVTransportURI`, `SetNextAVTransportURI`, `Play`, `Pause`, `Stop`, `Seek` by `REL_TIME`/`ABS_TIME`, `Next`, `Previous`, `GetPositionInfo`, `GetTransportInfo`, `GetMediaInfo`, …), RenderingControl (volume 0–100 and mute) and ConnectionManager (sink protocols for what audiofilus decodes, including `audio/L16`), with **LastChange** events over GENA, which most control points (BubbleUPnP, Windows' "Cast to device") rely on.
+AVTransport (`SetAVTransportURI`, `SetNextAVTransportURI`, `Play`, `Pause`, `Stop`, `Seek` by `REL_TIME`/`ABS_TIME`, `Next`, `Previous`, `GetPositionInfo`, `GetTransportInfo`, `GetMediaInfo`, …), RenderingControl (volume 0–100 and mute) and ConnectionManager (sink protocols for what Audiofilus decodes, including `audio/L16`), with **LastChange** events over GENA, which most control points (BubbleUPnP, Windows' "Cast to device") rely on.
 
 - A URL becomes the queue as `dlna://r/<n>`. The engine opens it through `OpenRemote`: the file is downloaded whole to `data/cache/dlna` first (it plays as soon as it's there; a song over home Wi-Fi takes a moment), because the decoders seek in the file. A URL without `Content-Length` (or with ICY headers) is treated as a live stream and played like a radio station. `audio/L16` is saved as WAV.
 - Title, artist and album come from the DIDL-Lite metadata the control point sends.

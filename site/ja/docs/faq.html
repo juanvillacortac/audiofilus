@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>よくある質問 · audiofilus ドキュメント</title>
+<title>よくある質問 · Audiofilus ドキュメント</title>
 <meta name="description" content="よくある質問への短い答え。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -33,7 +33,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="サイト">
       <a href="../index.html">ホーム</a>
       <a href="index.html" aria-current="page">ドキュメント</a>
@@ -85,24 +85,24 @@
 <details class="q" id="youtube"><summary>YouTube Music が表示されません。</summary><p>アプリの <code>yt-dlp</code> フォルダーに、ご自身で用意した <code>yt-dlp</code> が必要です。<a href="youtube-music.html#setup">YouTube Music</a> を参照してください。</p></details>
 <details class="q" id="lyrics-missing"><summary>歌詞が見つかりません。</summary><p><strong>設定 → ネットの歌詞</strong>がオンで、デバイスがオンラインか確認してください。LRCLIB にすべての曲があるわけではありません。曲と同じ名前の <code>.lrc</code> を曲の隣に置くか、歌詞 → <kbd>START</kbd> → 歌詞を選ぶで別のバージョンを選べます。見つからなかった検索は 1 週間後に再試行されます。</p></details>
 <details class="q" id="lyrics-timing"><summary>歌詞が早すぎる / 遅すぎる。</summary><p>歌詞の画面で <kbd>↑</kbd>/<kbd>↓</kbd> を押すと 0.5 秒ずつずらせます。オフセットはその曲について保存されます。</p></details>
-<details class="q" id="lastfm-key"><summary>Last.fm で「API キーなし」と表示されます。</summary><p>お使いのビルドには audiofilus の Last.fm アプリケーションキーが含まれていません。公式リリースには含まれているので、最新版をダウンロードしてください。</p></details>
-<details class="q" id="radio-wont-play"><summary>ラジオ局が再生されません。</summary><p>audiofilus が再生できるのは MP3 と AAC の局です。HLS ストリーム（<code>.m3u8</code> で終わるアドレス）も再生できます。ただし、珍しいコーデック（AAC LATM や fMP4 の Opus/AC-3）を使う一部の局は除きます。アドレスが <code>.pls</code> や <code>.m3u</code> の局は、たどってストリームにつなぎます。</p></details>
+<details class="q" id="lastfm-key"><summary>Last.fm で「API キーなし」と表示されます。</summary><p>お使いのビルドには Audiofilus の Last.fm アプリケーションキーが含まれていません。公式リリースには含まれているので、最新版をダウンロードしてください。</p></details>
+<details class="q" id="radio-wont-play"><summary>ラジオ局が再生されません。</summary><p>Audiofilus が再生できるのは MP3 と AAC の局です。HLS ストリーム（<code>.m3u8</code> で終わるアドレス）も再生できます。ただし、珍しいコーデック（AAC LATM や fMP4 の Opus/AC-3）を使う一部の局は除きます。アドレスが <code>.pls</code> や <code>.m3u</code> の局は、たどってストリームにつなぎます。</p></details>
 <details class="q" id="my-stations"><summary>自分のラジオ局を追加できますか？</summary><p>はい。<code>.m3u</code>/<code>.pls</code> のリストをアプリの <code>radio</code> フォルダーに置く（ラジオ → マイリストに表示されます）か、お気に入りかマイリストで <kbd>START</kbd> → <strong>アドレスで追加</strong>を使います。別のフォルダーは<strong>設定 → ラジオのリスト</strong>で選べます。</p></details>
-<details class="q" id="battery"><summary>バッテリー残量がおかしい。</summary><p>audiofilus はシステムのバッテリー情報を読みます。バッテリー残量が常に 0 % と表示されるゲーム機（dArkOS の RG353V など）では、充電量か電圧から残量を推定し、できなければ表示しません。</p></details>
+<details class="q" id="battery"><summary>バッテリー残量がおかしい。</summary><p>Audiofilus はシステムのバッテリー情報を読みます。バッテリー残量が常に 0 % と表示されるゲーム機（dArkOS の RG353V など）では、充電量か電圧から残量を推定し、できなければ表示しません。</p></details>
 <details class="q" id="darkos-log"><summary>dArkOS でアプリのフォルダーが見つかりません。</summary><p>ゲームが 2 枚目の SD カードにある場合、ポートは <code>/roms/ports</code> ではなく <code>/roms2/ports</code> にあります。ログは <code>/roms2/ports/audiofilus/data/audiofilus.log</code> です。</p></details>
 <details class="q" id="emuelec"><summary>EmuELEC で動きますか？</summary><p>はい。PortMaster 経由で、Odroid Go Advance／Super、GameForce Chi、Amlogic の TV ボックスで動きます。実機ではまだ試していないので、うまくいかない場合は <code>ports/audiofilus/log.txt</code> を添えて issue を立ててください。<a href="handhelds.html#emuelec">EmuELEC</a> を参照。</p></details>
-<details class="q" id="power-button"><summary>電源ボタンを押してもゲーム機がスリープしません。</summary><p>プレイヤーが開いているとき、電源ボタンは audiofilus をスリープ（画面オフ、音楽オン）させるためのもので、ゲーム機をスリープさせません。「バックグラウンドへ」の後は通常どおりスリープします。ROCKNIX の「疑似サスペンド」については <a href="handhelds.html#rocknix">ROCKNIX</a> を参照してください。</p></details>
+<details class="q" id="power-button"><summary>電源ボタンを押してもゲーム機がスリープしません。</summary><p>プレイヤーが開いているとき、電源ボタンは Audiofilus をスリープ（画面オフ、音楽オン）させるためのもので、ゲーム機をスリープさせません。「バックグラウンドへ」の後は通常どおりスリープします。ROCKNIX の「疑似サスペンド」については <a href="handhelds.html#rocknix">ROCKNIX</a> を参照してください。</p></details>
 <details class="q" id="battery-use"><summary>バッテリーはどれくらい使いますか？</summary><p>わずかです。RG34XX-SP では、スリープモードの消費電流は約 260 mA で、音楽を 11〜12 時間ほど再生できます。ビジュアライザーとイコライザーはもう少し使いますが、画面オフ中は何も描画しません。</p></details>
 <details class="q" id="update"><summary>アップデートするには？</summary><p>バージョン 0.9.1 からは <strong>設定 → アップデート</strong> で行えます。新しいバージョンが出るとアプリがお知らせし、<kbd>A</kbd> でインストールします。設定はそのままです。それより前のバージョンは一度だけ手動でアップデートしてください。最新リリースから新しいパッケージをダウンロードし、古いものに上書きします。</p></details>
 <details class="q" id="iphone-install"><summary>iPhone にインストールするには？</summary><p>最新リリースから <code>audiofilus-ios-unsigned.ipa</code> をダウンロードし、Sideloadly か AltStore でインストールすると、ご自身の Apple ID で署名されます。または、AltStore、SideStore、LiveContainer にソース <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> を追加すると、新しいリリースがアップデートとして表示されます。</p></details>
 <details class="q" id="iphone-music"><summary>iPhone で音楽を追加するには？</summary><p>ファイルアプリの <em>このiPhone内 → Audiofilus</em> に曲をコピーするか、設定 → フォルダで任意のフォルダーを選ぶか、ファイルアプリや他のアプリから曲を Audiofilus で開きます。サーバー、ラジオ、ポッドキャストはローカルの音楽がなくても使えます。</p></details>
-<details class="q" id="open-with"><summary>ファイルマネージャーからファイルを開くには？</summary><p>Linux では、右クリック → このアプリで開く → Audiofilus（インストーラーか <code>audiofilus desktop install</code> でインストールした後）。Windows では、audiofilus は初回起動時に自動で登録されるので、「プログラムから開く」か、フォルダーの「Play with Audiofilus」を使います。一時的なキューとして再生されます。</p></details>
+<details class="q" id="open-with"><summary>ファイルマネージャーからファイルを開くには？</summary><p>Linux では、右クリック → このアプリで開く → Audiofilus（インストーラーか <code>audiofilus desktop install</code> でインストールした後）。Windows では、Audiofilus は初回起動時に自動で登録されるので、「プログラムから開く」か、フォルダーの「Play with Audiofilus」を使います。一時的なキューとして再生されます。</p></details>
 <details class="q" id="server-offline"><summary>サーバーの曲はネットワークなしで使えますか？</summary><p>カタログは保存されるのでオフラインでも閲覧でき、一度再生した曲はキャッシュされます（デフォルトで 400 MB）。キャッシュされていない曲にはサーバーが必要です。ずっと残したい曲はライブラリにダウンロードしてください。</p></details>
-<details class="q" id="privacy"><summary>audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、モジュールのアーカイブ（モジュール）、GitHub のリリース（1 日 1 回のアップデート確認）、そして接続した場合のみ Last.fm や ListenBrainz。MusicBrainz、Cover Art Archive、iTunes には、<strong>カバーを探す</strong>や <strong>MusicBrainz で検索</strong>を使ったときだけ接続します。スピーカーへの送信と DLNA はローカルネットワーク内だけで、DLNA はオンにしない限りオフです。</p></details>
+<details class="q" id="privacy"><summary>Audiofilus はオンラインに何を送信しますか？</summary><p>使う機能に必要なものだけです：radio-browser（ラジオの画面）、Apple のポッドキャストディレクトリと RSS フィード（ポッドキャスト）、LRCLIB（歌詞。「ネットの歌詞」をオフにすれば送りません）、ご自身のサーバー、ご自身の yt-dlp 経由の YouTube、モジュールのアーカイブ（モジュール）、GitHub のリリース（1 日 1 回のアップデート確認）、そして接続した場合のみ Last.fm や ListenBrainz。MusicBrainz、Cover Art Archive、iTunes には、<strong>カバーを探す</strong>や <strong>MusicBrainz で検索</strong>を使ったときだけ接続します。スピーカーへの送信と DLNA はローカルネットワーク内だけで、DLNA はオンにしない限りオフです。</p></details>
 <details class="q" id="modules"><summary>モジュールはどこから来るのですか？</summary><p>4 つの無料オンラインアーカイブ、The Mod Archive、Modland、VGMRips、AMP からです（<a href="modules.html">モジュール</a>を参照）。聴くとファイルが <code>data/cache/modules</code> にダウンロードされるので、次からはすぐ再生されます。<strong>ライブラリに保存</strong>で、音楽フォルダーの <code>audiofilus modules</code> にコピーします。</p></details>
 <details class="q" id="midi"><summary>MIDI キーボードは使えますか？</summary><p>はい、トラッカーで使えます。USB MIDI キーボードを携帯機やパソコン（Linux、Windows、iPhone/iPad）につなぐと、ノートでいまのインストゥルメントが鳴り、フレーズに書き込むこともできます。MIDI クロックに従ったり、送ったりもできます。<a href="tracker.html#midi">MIDI</a> を参照してください。</p></details>
-<details class="q" id="cast"><summary>テレビやスピーカーで再生できますか？</summary><p>はい。再生中で <kbd>START</kbd> → <strong>送信先…</strong> を選ぶと、ネットワーク上の DLNA/UPnP のスピーカーやテレビ、Chromecast が一覧に出ます。音楽はそちらで続き、audiofilus はリモコンになります。<a href="network.html#send-to">ネットワーク</a>を参照してください。</p></details>
-<details class="q" id="dlna"><summary>テレビやスマホから自分の音楽を見られますか？</summary><p><strong>設定 → ライブラリ共有 (DLNA)</strong> をオンにすると、同じネットワークのテレビや DLNA アプリにライブラリが表示されます。<strong>音楽を受信 (DLNA)</strong> をオンにすると、BubbleUPnP などのアプリから audiofilus に音楽を送って再生できます。どちらも初期状態ではオフです。<a href="network.html">ネットワーク</a>を参照してください。</p></details>
+<details class="q" id="cast"><summary>テレビやスピーカーで再生できますか？</summary><p>はい。再生中で <kbd>START</kbd> → <strong>送信先…</strong> を選ぶと、ネットワーク上の DLNA/UPnP のスピーカーやテレビ、Chromecast が一覧に出ます。音楽はそちらで続き、Audiofilus はリモコンになります。<a href="network.html#send-to">ネットワーク</a>を参照してください。</p></details>
+<details class="q" id="dlna"><summary>テレビやスマホから自分の音楽を見られますか？</summary><p><strong>設定 → ライブラリ共有 (DLNA)</strong> をオンにすると、同じネットワークのテレビや DLNA アプリにライブラリが表示されます。<strong>音楽を受信 (DLNA)</strong> をオンにすると、BubbleUPnP などのアプリから Audiofilus に音楽を送って再生できます。どちらも初期状態ではオフです。<a href="network.html">ネットワーク</a>を参照してください。</p></details>
 <details class="q" id="edit-tags"><summary>間違ったタグや足りないジャケットを直せますか？</summary><p>はい、自分のライブラリのファイルなら。曲やアルバムの <kbd>START</kbd> メニューに<strong>タグを編集</strong>、<strong>アルバムのタグ</strong>、<strong>カバーを探す</strong>、<strong>MusicBrainz で検索</strong>があり、MusicBrainz からタイトル、番号、年、ジャンルを埋められます。<a href="library.html#edit-tags">ライブラリ</a>を参照してください。</p></details>
 <details class="q" id="replaygain-compute"><summary>曲によって音量が違います。どうすればいいですか？</summary><p><strong>設定 → ReplayGain</strong> をオンにし、ReplayGain タグのない曲にはアルバムやアーティストで <strong>ReplayGain を計算</strong>を使ってください。音の大きさを測ってタグを書き込みます。<a href="sound.html#replaygain-compute">サウンド</a>を参照してください。</p></details>
 <details class="q" id="arcade-vgm"><summary>アーケードの VGM は再生できますか？</summary><p>はい、携帯機と Linux 向けパッケージなら再生できます。VGM のほぼすべてのチップをエミュレートする libvgm を同梱しているので、アーケード基板（アウトラン、CPS1/2、System 16…）から NES、ゲームボーイ、OPL まで鳴ります。Windows と iPhone では VGM は libgme で再生され、こちらはメガドライブとマスターシステムのチップだけをエミュレートします。そこではほかのファイルは無音で再生する代わりに <em>VGM chips not emulated</em> と表示され、VGMRips でもそれらのパックは表示されません。</p></details>
@@ -116,7 +116,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
+    <span>Audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
     <span>ドキュメントに誤りを見つけましたか？ <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue を開いてください</a>。</span>
   </div>
 </footer>

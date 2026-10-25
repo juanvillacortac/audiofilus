@@ -1,5 +1,5 @@
 #!/bin/sh
-# HELP: audiofilus: a pixel-art music player that keeps playing in the background, with radio, podcasts, servers and games.
+# HELP: Audiofilus: a pixel-art music player that keeps playing in the background, with radio, podcasts, servers and games.
 # ICON: audiofilus
 # GRID: audiofilus
 

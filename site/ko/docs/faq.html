@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>자주 묻는 질문 · audiofilus 문서</title>
+<title>자주 묻는 질문 · Audiofilus 문서</title>
 <meta name="description" content="흔한 질문에 대한 빠른 답.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -34,7 +34,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus 홈"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="사이트">
       <a href="../index.html">홈</a>
       <a href="index.html" aria-current="page">문서</a>
@@ -86,24 +86,24 @@
 <details class="q" id="youtube"><summary>YouTube Music이 보이지 않아요.</summary><p>앱의 <code>yt-dlp</code> 폴더에 직접 준비한 <code>yt-dlp</code>가 있어야 해요. <a href="youtube-music.html#setup">YouTube Music</a>을 보세요.</p></details>
 <details class="q" id="lyrics-missing"><summary>가사를 찾지 못해요.</summary><p><strong>설정 → 웹 가사</strong>가 켜져 있고 기기가 온라인인지 확인하세요. LRCLIB에 모든 곡이 있는 건 아니에요. 곡 이름과 같은 <code>.lrc</code>를 곡 옆에 두거나, 가사 → <kbd>START</kbd> → 가사 선택에서 다른 버전을 고를 수 있어요. 아무것도 찾지 못한 검색은 일주일 뒤에 다시 시도해요.</p></details>
 <details class="q" id="lyrics-timing"><summary>가사가 빠르거나 늦어요.</summary><p>가사 화면에서 <kbd>↑</kbd>/<kbd>↓</kbd>로 0.5초씩 옮길 수 있어요. 조정 값은 그 곡에 저장돼요.</p></details>
-<details class="q" id="lastfm-key"><summary>Last.fm에서 “API 키 없음”이라고 나와요.</summary><p>그 빌드에 audiofilus의 Last.fm 애플리케이션 키가 없어서예요. 공식 릴리스에는 들어 있으니 최신 버전을 내려받으세요.</p></details>
-<details class="q" id="radio-wont-play"><summary>라디오 방송국이 재생되지 않아요.</summary><p>audiofilus는 MP3와 AAC 방송국을 재생해요. HLS 스트림(<code>.m3u8</code>로 끝나는 주소)도 재생돼요. 단, 드문 코덱(AAC LATM, fMP4 안의 Opus/AC-3)을 쓰는 일부 방송국은 안 돼요. 주소가 <code>.pls</code>나 <code>.m3u</code>인 방송국은 따라가서 스트림을 찾아요.</p></details>
+<details class="q" id="lastfm-key"><summary>Last.fm에서 “API 키 없음”이라고 나와요.</summary><p>그 빌드에 Audiofilus의 Last.fm 애플리케이션 키가 없어서예요. 공식 릴리스에는 들어 있으니 최신 버전을 내려받으세요.</p></details>
+<details class="q" id="radio-wont-play"><summary>라디오 방송국이 재생되지 않아요.</summary><p>Audiofilus는 MP3와 AAC 방송국을 재생해요. HLS 스트림(<code>.m3u8</code>로 끝나는 주소)도 재생돼요. 단, 드문 코덱(AAC LATM, fMP4 안의 Opus/AC-3)을 쓰는 일부 방송국은 안 돼요. 주소가 <code>.pls</code>나 <code>.m3u</code>인 방송국은 따라가서 스트림을 찾아요.</p></details>
 <details class="q" id="my-stations"><summary>내 라디오 방송국을 추가할 수 있나요?</summary><p>네. 앱의 <code>radio</code> 폴더에 <code>.m3u</code>/<code>.pls</code> 목록을 넣거나(라디오 → 내 목록에 나와요), 즐겨찾기나 내 목록에서 <kbd>START</kbd> → <strong>주소로 추가</strong>를 쓰세요. 다른 폴더는 <strong>설정 → 라디오 목록</strong>에서 고를 수 있습니다.</p></details>
-<details class="q" id="battery"><summary>배터리 잔량이 이상해요.</summary><p>audiofilus는 시스템의 배터리 정보를 읽어요. 어떤 게임기는 배터리 게이지가 항상 0 %로 나오는데(dArkOS를 설치한 RG353V 등), 그럴 땐 충전량이나 전압으로 잔량을 추정하고, 안 되면 숨겨요.</p></details>
+<details class="q" id="battery"><summary>배터리 잔량이 이상해요.</summary><p>Audiofilus는 시스템의 배터리 정보를 읽어요. 어떤 게임기는 배터리 게이지가 항상 0 %로 나오는데(dArkOS를 설치한 RG353V 등), 그럴 땐 충전량이나 전압으로 잔량을 추정하고, 안 되면 숨겨요.</p></details>
 <details class="q" id="darkos-log"><summary>dArkOS에서 앱 폴더를 못 찾겠어요.</summary><p>게임이 두 번째 SD 카드에 있으면 포트는 <code>/roms/ports</code>가 아니라 <code>/roms2/ports</code>에 있어서, 로그는 <code>/roms2/ports/audiofilus/data/audiofilus.log</code>에 있어요.</p></details>
 <details class="q" id="emuelec"><summary>EmuELEC에서도 돌아가나요?</summary><p>네, PortMaster로 Odroid Go Advance와 Super, GameForce Chi, Amlogic TV 박스에서 돌아가요. 아직 실제 기기에서는 테스트하지 않았으니, 문제가 있으면 <code>ports/audiofilus/log.txt</code>를 첨부해 issue를 열어 주세요. <a href="handhelds.html#emuelec">EmuELEC</a>를 보세요.</p></details>
-<details class="q" id="power-button"><summary>전원 버튼을 눌러도 게임기가 절전되지 않아요.</summary><p>플레이어가 열려 있을 때 전원 버튼은 절전이 아니라 audiofilus를 슬립에 넣는(화면은 끄고 음악은 켜고) 용도예요. 백그라운드로 나간 뒤에는 평소처럼 절전돼요. “가짜 절전”을 쓰는 ROCKNIX라면 <a href="handhelds.html#rocknix">ROCKNIX</a>를 보세요.</p></details>
+<details class="q" id="power-button"><summary>전원 버튼을 눌러도 게임기가 절전되지 않아요.</summary><p>플레이어가 열려 있을 때 전원 버튼은 절전이 아니라 Audiofilus를 슬립에 넣는(화면은 끄고 음악은 켜고) 용도예요. 백그라운드로 나간 뒤에는 평소처럼 절전돼요. “가짜 절전”을 쓰는 ROCKNIX라면 <a href="handhelds.html#rocknix">ROCKNIX</a>를 보세요.</p></details>
 <details class="q" id="battery-use"><summary>배터리는 얼마나 쓰나요?</summary><p>적게 써요. RG34XX-SP에서 슬립 모드는 약 260 mA를 써서, 음악을 11~12시간 정도 들을 수 있어요. 비주얼라이저와 이퀄라이저는 더 쓰지만, 화면이 꺼져 있으면 아무것도 그리지 않아요.</p></details>
 <details class="q" id="update"><summary>어떻게 업데이트하나요?</summary><p>0.9.1 버전부터는 <strong>설정 → 업데이트</strong>에서 할 수 있어요. 새 버전이 나오면 앱이 알려 주고 <kbd>A</kbd>로 설치해요. 설정은 그대로예요. 그 전 버전은 한 번만 직접 업데이트해 주세요. 최신 릴리스에서 새 패키지를 내려받아 예전 것 위에 복사하면 돼요.</p></details>
 <details class="q" id="iphone-install"><summary>iPhone에는 어떻게 설치하나요?</summary><p>최신 릴리스에서 <code>audiofilus-ios-unsigned.ipa</code>를 내려받아 본인의 Apple ID로 서명해 주는 Sideloadly나 AltStore로 설치하세요. 또는 AltStore, SideStore, LiveContainer에 소스 <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code>을 추가하면 새 릴리스가 업데이트로 나타나요.</p></details>
 <details class="q" id="iphone-music"><summary>iPhone에서 음악은 어떻게 넣나요?</summary><p>파일 앱의 <em>나의 iPhone → Audiofilus</em>에 곡을 복사하거나, 설정 → 폴더에서 아무 폴더나 고르거나, 파일 앱이나 다른 앱에서 곡을 Audiofilus로 여세요. 서버, 라디오, 팟캐스트는 로컬 음악 없이도 작동해요.</p></details>
-<details class="q" id="open-with"><summary>파일 관리자에서 파일을 열려면요?</summary><p>리눅스에서는 오른쪽 클릭 → 연결 프로그램 → Audiofilus(설치 프로그램이나 <code>audiofilus desktop install</code>로 설치한 뒤). 윈도우에서는 audiofilus를 처음 실행할 때 스스로 등록되니, 연결 프로그램을 쓰거나 폴더에서 Play with Audiofilus를 고르세요. 임시 대기열로 재생돼요.</p></details>
+<details class="q" id="open-with"><summary>파일 관리자에서 파일을 열려면요?</summary><p>리눅스에서는 오른쪽 클릭 → 연결 프로그램 → Audiofilus(설치 프로그램이나 <code>audiofilus desktop install</code>로 설치한 뒤). 윈도우에서는 Audiofilus를 처음 실행할 때 스스로 등록되니, 연결 프로그램을 쓰거나 폴더에서 Play with Audiofilus를 고르세요. 임시 대기열로 재생돼요.</p></details>
 <details class="q" id="server-offline"><summary>서버 곡은 네트워크 없이도 되나요?</summary><p>목록이 저장되어 있어서 오프라인에서도 둘러볼 수 있고, 이미 들은 곡은 캐시돼요(기본 400 MB). 캐시되지 않은 곡은 서버가 필요해요. 계속 보관하려면 곡을 보관함에 받으세요.</p></details>
-<details class="q" id="privacy"><summary>audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 모듈 아카이브(모듈), GitHub 릴리스(하루 한 번 업데이트 확인), 그리고 연결했을 때만 Last.fm이나 ListenBrainz.MusicBrainz, Cover Art Archive, iTunes에는 <strong>커버 찾기</strong>나 <strong>MusicBrainz에서 찾기</strong>를 쓸 때만 연결해요. 스피커로 보내기와 DLNA는 로컬 네트워크 안에서만 이뤄지고, DLNA는 켜지 않는 한 꺼져 있어요.</p></details>
+<details class="q" id="privacy"><summary>Audiofilus는 온라인으로 무엇을 보내나요?</summary><p>쓰는 것만 보내요: radio-browser(라디오 화면), Apple의 팟캐스트 디렉터리와 RSS 피드(팟캐스트), LRCLIB(가사, 웹 가사를 끄지 않았다면), 내 서버, 내 yt-dlp를 통한 YouTube, 모듈 아카이브(모듈), GitHub 릴리스(하루 한 번 업데이트 확인), 그리고 연결했을 때만 Last.fm이나 ListenBrainz.MusicBrainz, Cover Art Archive, iTunes에는 <strong>커버 찾기</strong>나 <strong>MusicBrainz에서 찾기</strong>를 쓸 때만 연결해요. 스피커로 보내기와 DLNA는 로컬 네트워크 안에서만 이뤄지고, DLNA는 켜지 않는 한 꺼져 있어요.</p></details>
 <details class="q" id="modules"><summary>모듈은 어디서 오나요?</summary><p>네 곳의 무료 온라인 아카이브, The Mod Archive, Modland, VGMRips, AMP에서 와요(<a href="modules.html">모듈</a>을 보세요). 들으면 파일이 <code>data/cache/modules</code>에 내려받아져서 다음에는 바로 재생돼요. <strong>보관함에 저장</strong>은 음악 폴더의 <code>audiofilus modules</code>로 복사해요.</p></details>
 <details class="q" id="midi"><summary>MIDI 키보드를 쓸 수 있나요?</summary><p>네, 트래커에서요. USB MIDI 키보드를 휴대용 기기나 컴퓨터(리눅스, Windows, iPhone/iPad)에 연결하면 노트가 지금 악기로 소리 나거나 프레이즈에 적혀요. 트래커는 MIDI 클럭을 따르거나 보낼 수도 있어요. <a href="tracker.html#midi">MIDI</a>를 보세요.</p></details>
-<details class="q" id="cast"><summary>TV나 스피커로 재생할 수 있나요?</summary><p>네. 재생 중에서 <kbd>START</kbd> → <strong>보내기…</strong>를 고르면 네트워크의 DLNA/UPnP 스피커와 TV, Chromecast가 목록에 나와요. 음악은 거기서 이어지고 audiofilus는 리모컨이 돼요. <a href="network.html#send-to">네트워크</a>를 보세요.</p></details>
-<details class="q" id="dlna"><summary>TV나 휴대폰에서 내 음악을 볼 수 있나요?</summary><p><strong>설정 → 보관함 공유 (DLNA)</strong>를 켜면 같은 네트워크의 TV와 DLNA 앱에 내 보관함이 나와요. <strong>음악 받기 (DLNA)</strong>를 켜면 BubbleUPnP 같은 앱이 audiofilus로 음악을 보내 재생할 수 있어요. 둘 다 처음에는 꺼져 있어요. <a href="network.html">네트워크</a>를 보세요.</p></details>
+<details class="q" id="cast"><summary>TV나 스피커로 재생할 수 있나요?</summary><p>네. 재생 중에서 <kbd>START</kbd> → <strong>보내기…</strong>를 고르면 네트워크의 DLNA/UPnP 스피커와 TV, Chromecast가 목록에 나와요. 음악은 거기서 이어지고 Audiofilus는 리모컨이 돼요. <a href="network.html#send-to">네트워크</a>를 보세요.</p></details>
+<details class="q" id="dlna"><summary>TV나 휴대폰에서 내 음악을 볼 수 있나요?</summary><p><strong>설정 → 보관함 공유 (DLNA)</strong>를 켜면 같은 네트워크의 TV와 DLNA 앱에 내 보관함이 나와요. <strong>음악 받기 (DLNA)</strong>를 켜면 BubbleUPnP 같은 앱이 Audiofilus로 음악을 보내 재생할 수 있어요. 둘 다 처음에는 꺼져 있어요. <a href="network.html">네트워크</a>를 보세요.</p></details>
 <details class="q" id="edit-tags"><summary>잘못된 태그나 빠진 커버를 고칠 수 있나요?</summary><p>네, 내 보관함의 파일이라면요. 곡이나 앨범의 <kbd>START</kbd> 메뉴에 <strong>태그 편집</strong>, <strong>앨범 태그</strong>, <strong>커버 찾기</strong>, <strong>MusicBrainz에서 찾기</strong>가 있고, MusicBrainz에서 제목, 번호, 연도, 장르를 채워 넣어요. <a href="library.html#edit-tags">보관함</a>을 보세요.</p></details>
 <details class="q" id="replaygain-compute"><summary>어떤 곡은 다른 곡보다 소리가 커요. 어떻게 하나요?</summary><p><strong>설정 → ReplayGain</strong>을 켜고, ReplayGain 태그가 없는 곡에는 앨범이나 아티스트에서 <strong>ReplayGain 계산</strong>을 쓰세요. 음량을 재서 태그를 써넣어요. <a href="sound.html#replaygain-compute">사운드</a>를 보세요.</p></details>
 <details class="q" id="arcade-vgm"><summary>아케이드 VGM도 재생되나요?</summary><p>네, 휴대용 기기와 Linux 패키지에서는 재생돼요. VGM 파일의 거의 모든 칩을 에뮬레이트하는 libvgm이 들어 있어서 아케이드 기판(아웃런, CPS1/2, System 16…)부터 NES, 게임보이, OPL까지 소리가 나요. Windows와 iPhone에서는 VGM을 libgme로 재생하는데, 이건 메가드라이브/제네시스와 마스터 시스템 칩만 에뮬레이트해요. 거기서는 다른 파일이 무음으로 재생되는 대신 <em>VGM chips not emulated</em>라고 알려 주고, VGMRips도 그런 팩을 숨겨요.</p></details>
@@ -117,7 +117,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>Audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
     <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
   </div>
 </footer>

@@ -1622,7 +1622,7 @@ func (c *conn) decoders(_ []string) error {
 
 func (c *conn) outputs(_ []string) error {
 	c.field("outputid", 0)
-	c.field("outputname", "audiofilus")
+	c.field("outputname", "Audiofilus")
 	c.field("plugin", "audiofilus")
 	c.field("outputenabled", 1)
 	return nil

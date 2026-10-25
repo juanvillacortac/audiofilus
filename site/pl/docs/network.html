@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sieć · przewodnik audiofilus</title>
+<title>Sieć · przewodnik Audiofilus</title>
 <meta name="description" content="Wysyłaj muzykę do głośnika lub telewizora (DLNA/UPnP i Chromecast), udostępniaj bibliotekę przez DLNA i odbieraj muzykę z telefonu.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Strona główna audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Strona główna Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Strona">
       <a href="../index.html">Start</a>
       <a href="index.html" aria-current="page">Dokumentacja</a>
@@ -80,20 +80,20 @@
 <li>Wybierz jedno, a utwór gra tam dalej od tej samej sekundy; konsola albo komputer się pauzuje i staje się pilotem. Następny utwór z kolejki jest wysyłany z wyprzedzeniem, więc urządzenie gra dalej przez kolejkę.</li>
 <li>Podczas wysyłania górny pasek pokazuje <strong>→ &lt;urządzenie&gt;</strong>, a pauza, następny, poprzedni i przewijanie sterują urządzeniem; pasek postępu pokazuje jego pozycję.</li>
 <li><kbd>START</kbd> → <strong>Głośność urządzenia</strong> robi głośniej albo ciszej na urządzeniu. <strong>Przestań wysyłać do &lt;urządzenie&gt;</strong> je zatrzymuje i wznawia tutaj, od tego samego utworu i sekundy.</li>
-<li>Wysłać można wszystko, co gra audiofilus. MP3, FLAC, AAC/M4A, WAV i Ogg idą tak, jak są; moduły, muzyka z konsol, DSD i ścieżki CUE są w locie zamieniane na WAV. Utwory z serwera Subsonic/Jellyfin i stacje radiowe idą przez własny adres.</li>
+<li>Wysłać można wszystko, co gra Audiofilus. MP3, FLAC, AAC/M4A, WAV i Ogg idą tak, jak są; moduły, muzyka z konsol, DSD i ścieżki CUE są w locie zamieniane na WAV. Utwory z serwera Subsonic/Jellyfin i stacje radiowe idą przez własny adres.</li>
 </ul>
 
 <h2 id="dlna-server">Udostępnij bibliotekę (serwer DLNA)</h2>
-<p><strong>Ustawienia → Udostępnij bibliotekę (DLNA)</strong> sprawia, że twoja biblioteka pojawia się na telewizorach, konsolach i w aplikacjach DLNA w tej samej sieci, jako <strong>audiofilus (&lt;nazwa urządzenia&gt;)</strong>. Można tam przeglądać <strong>Wykonawców</strong>, <strong>Albumy</strong>, <strong>Utwory</strong>, <strong>Playlisty</strong> i <strong>Foldery</strong>, z okładkami, i odtwarzać. Formaty, których telewizor nie zna, dostaje zamienione na WAV. Udostępniana jest biblioteka, którą audiofilus już przeskanował; utworów z serwerów się nie udostępnia.</p>
+<p><strong>Ustawienia → Udostępnij bibliotekę (DLNA)</strong> sprawia, że twoja biblioteka pojawia się na telewizorach, konsolach i w aplikacjach DLNA w tej samej sieci, jako <strong>Audiofilus (&lt;nazwa urządzenia&gt;)</strong>. Można tam przeglądać <strong>Wykonawców</strong>, <strong>Albumy</strong>, <strong>Utwory</strong>, <strong>Playlisty</strong> i <strong>Foldery</strong>, z okładkami, i odtwarzać. Formaty, których telewizor nie zna, dostaje zamienione na WAV. Udostępniana jest biblioteka, którą Audiofilus już przeskanował; utworów z serwerów się nie udostępnia.</p>
 
 <h2 id="dlna-renderer">Odbieraj muzykę (renderer DLNA)</h2>
-<p><strong>Ustawienia → Odbieraj muzykę (DLNA)</strong> zmienia konsolę albo komputer w głośnik dla innych aplikacji: na telefonie z BubbleUPnP, w <em>Przesyłaj do urządzenia</em> w Windows albo w dowolnym punkcie sterowania UPnP wybierz <strong>audiofilus</strong> i wysyłaj utwory. Grają w audiofilus z tytułem i wykonawcą, a aplikacja, która je wysyła, steruje odtwarzaniem, pauzą, przewijaniem i głośnością. Każdy utwór najpierw się pobiera, a potem gra, więc przez Wi-Fi start chwilę trwa.</p>
+<p><strong>Ustawienia → Odbieraj muzykę (DLNA)</strong> zmienia konsolę albo komputer w głośnik dla innych aplikacji: na telefonie z BubbleUPnP, w <em>Przesyłaj do urządzenia</em> w Windows albo w dowolnym punkcie sterowania UPnP wybierz <strong>Audiofilus</strong> i wysyłaj utwory. Grają w Audiofilus z tytułem i wykonawcą, a aplikacja, która je wysyła, steruje odtwarzaniem, pauzą, przewijaniem i głośnością. Każdy utwór najpierw się pobiera, a potem gra, więc przez Wi-Fi start chwilę trwa.</p>
 
 <h2 id="notes">Uwagi</h2>
 <ul>
 <li>Obie opcje DLNA są <strong>domyślnie wyłączone</strong>. Wyłączone, nic nie nasłuchuje w sieci.</li>
 <li>Udostępnianie i odbieranie same nie trzymają konsoli w stanie czuwania: jeśli zaśnie, przestaje odpowiadać, dopóki się nie obudzi.</li>
-<li>Zapora na komputerze musi przepuszczać urządzenia do audiofilus (port multimediów jest za każdym razem losowy).</li>
+<li>Zapora na komputerze musi przepuszczać urządzenia do Audiofilus (port multimediów jest za każdym razem losowy).</li>
 <li>W terminalu: <code>audiofilus dlna</code> pokazuje stan, a <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> i <code>audiofilus dlna name &lt;nazwa&gt;</code> go zmieniają.</li>
 <li>Na iPhonie i iPadzie pierwsze wyszukiwanie prosi o zgodę na korzystanie z sieci lokalnej.</li>
 </ul>
@@ -105,7 +105,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Start</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Najnowsze wydanie</a></span>
+    <span>Audiofilus · <a href="../index.html">Start</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Najnowsze wydanie</a></span>
     <span>Znalazłeś błąd w dokumentacji? <a href="https://github.com/juanvillacortac/audiofilus/issues">Zgłoś problem</a>.</span>
   </div>
 </footer>

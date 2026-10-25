@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sistemi delle console · guida di audiofilus</title>
-<meta name="description" content="Cosa fa di diverso audiofilus su Knulli, muOS, ROCKNIX, ArkOS, dArkOS e EmuELEC.">
+<title>Sistemi delle console · guida di Audiofilus</title>
+<meta name="description" content="Cosa fa di diverso Audiofilus su Knulli, muOS, ROCKNIX, ArkOS, dArkOS e EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Pagina principale di audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Pagina principale di Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Sito">
       <a href="../index.html">Home</a>
       <a href="index.html" aria-current="page">Guida</a>
@@ -72,9 +72,9 @@
   </aside>
   <article>
     <h1>Sistemi delle console</h1>
-    <p class="lede">Cosa fa di diverso audiofilus su Knulli, muOS, ROCKNIX, ArkOS, dArkOS e EmuELEC.</p>
+    <p class="lede">Cosa fa di diverso Audiofilus su Knulli, muOS, ROCKNIX, ArkOS, dArkOS e EmuELEC.</p>
 
-<p>audiofilus riconosce il sistema all'avvio e usa gli strumenti di quel sistema per il coperchio, il tasto di accensione, il volume e la batteria. Provato su una Anbernic RG34XX-SP con Knulli.</p>
+<p>Audiofilus riconosce il sistema all'avvio e usa gli strumenti di quel sistema per il coperchio, il tasto di accensione, il volume e la batteria. Provato su una Anbernic RG34XX-SP con Knulli.</p>
 
 <h2 id="files">Dove stanno i tuoi file</h2>
 <p>Le impostazioni (<code>audiofilus.json</code>) e i dati (<code>data/</code>: cache della libreria, playlist, cronologia, testi, podcast, il registro <code>audiofilus.log</code>) stanno accanto al programma, nella cartella del port:</p>
@@ -88,15 +88,15 @@
 
 <h2 id="power">Il tasto di accensione</h2>
 <ul>
-<li><strong>Con il lettore aperto</strong>, una pressione breve del tasto di accensione manda audiofilus in sleep (schermo spento, musica accesa) invece di sospendere la console. Tenendolo premuto si spegne comunque.</li>
+<li><strong>Con il lettore aperto</strong>, una pressione breve del tasto di accensione manda Audiofilus in sleep (schermo spento, musica accesa) invece di sospendere la console. Tenendolo premuto si spegne comunque.</li>
 <li><strong>Dopo Vai in sottofondo</strong>, quando lo premi la console si sospende come al solito.</li>
 </ul>
 <p>Con il lettore aperto vengono rimandati anche la sospensione per inattività e l'attenuazione dello schermo del sistema.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>I tasti del volume passano per audiofilus mentre il lettore è aperto, così puoi andare oltre il 100 %.</li>
-<li>Chiudere il coperchio manda audiofilus in sleep; aprirlo non lo risveglia: lo fa <kbd>START</kbd>.</li>
+<li>I tasti del volume passano per Audiofilus mentre il lettore è aperto, così puoi andare oltre il 100 %.</li>
+<li>Chiudere il coperchio manda Audiofilus in sleep; aprirlo non lo risveglia: lo fa <kbd>START</kbd>.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -105,7 +105,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>Con la “finta sospensione” di ROCKNIX (modalità di sospensione disattivata nelle sue impostazioni), premere il tasto di accensione silenzia e congela tutto, e audiofilus non può impedirlo. Con la sospensione normale (quella predefinita), il tasto manda audiofilus in sleep.</li>
+<li>Con la “finta sospensione” di ROCKNIX (modalità di sospensione disattivata nelle sue impostazioni), premere il tasto di accensione silenzia e congela tutto, e Audiofilus non può impedirlo. Con la sospensione normale (quella predefinita), il tasto manda Audiofilus in sleep.</li>
 </ul>
 <h2 id="arkos">ArkOS, dArkOS e EmuELEC</h2>
 <ul>
@@ -115,19 +115,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Funziona su Odroid Go Advance e Super, GameForce Chi e TV box Amlogic. Non è ancora stato provato su un dispositivo reale.</li>
-<li>Sulle console portatili, con il lettore aperto, il tasto di accensione manda audiofilus in sleep invece di sospendere la console. I TV box non si sospendono mai.</li>
+<li>Sulle console portatili, con il lettore aperto, il tasto di accensione manda Audiofilus in sleep invece di sospendere la console. I TV box non si sospendono mai.</li>
 <li>Installa prima PortMaster dal menu di EmuELEC. Per installarlo a mano, metti <code>Audiofilus.sh</code> in <code>/storage/roms/ports_scripts</code> (dove EmuELEC elenca i port) e la cartella <code>audiofilus</code> in <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Consumo della batteria</h2>
-<p>Misurato su una RG34XX-SP: in sleep audiofilus consuma circa 260&nbsp;mA, dalle 11 alle 12 ore di musica con la sua batteria da 3300&nbsp;mAh.</p>
+<p>Misurato su una RG34XX-SP: in sleep Audiofilus consuma circa 260&nbsp;mA, dalle 11 alle 12 ore di musica con la sua batteria da 3300&nbsp;mAh.</p>
 
     <nav class="pager" aria-label="Pagine"><a href="settings.html">← Impostazioni</a><a href="faq.html">FAQ →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Ultima release</a></span>
+    <span>Audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Ultima release</a></span>
     <span>Hai trovato un errore nella guida? <a href="https://github.com/juanvillacortac/audiofilus/issues">Apri una segnalazione</a>.</span>
   </div>
 </footer>

@@ -127,7 +127,7 @@ func didl(m media) string {
 	var b strings.Builder
 	b.WriteString(`<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">`)
 	b.WriteString(`<item id="0" parentID="-1" restricted="1">`)
-	fmt.Fprintf(&b, "<dc:title>%s</dc:title>", e(orStr(m.Title, "audiofilus")))
+	fmt.Fprintf(&b, "<dc:title>%s</dc:title>", e(orStr(m.Title, "Audiofilus")))
 	if m.Artist != "" {
 		fmt.Fprintf(&b, "<dc:creator>%s</dc:creator><upnp:artist>%s</upnp:artist>", e(m.Artist), e(m.Artist))
 	}

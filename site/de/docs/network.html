@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="audiofilus-Startseite"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Website">
       <a href="../index.html">Startseite</a>
       <a href="index.html" aria-current="page">Doku</a>
@@ -80,20 +80,20 @@
 <li>Wähl eins aus, und der Song läuft dort ab derselben Sekunde weiter; der Handheld oder Computer pausiert und wird zur Fernbedienung. Der nächste Song der Warteschlange wird vorab geschickt, damit das Gerät mit der Warteschlange weitermacht.</li>
 <li>Beim Senden zeigt die obere Leiste <strong>→ &lt;Gerät&gt;</strong>, und Pause, Weiter, Zurück und Springen steuern das Gerät; die Fortschrittsleiste zeigt seine Position.</li>
 <li><kbd>START</kbd> → <strong>Lautstärke am Gerät</strong> macht das Gerät lauter oder leiser. <strong>Senden an &lt;Gerät&gt; beenden</strong> stoppt es und macht hier weiter, beim selben Song und derselben Sekunde.</li>
-<li>Alles, was audiofilus abspielt, lässt sich senden. MP3, FLAC, AAC/M4A, WAV und Ogg gehen so, wie sie sind; Module, Konsolenmusik, DSD und CUE-Tracks werden unterwegs in WAV umgewandelt. Songs von einem Subsonic/Jellyfin-Server und Radiosender gehen über ihre eigene Adresse.</li>
+<li>Alles, was Audiofilus abspielt, lässt sich senden. MP3, FLAC, AAC/M4A, WAV und Ogg gehen so, wie sie sind; Module, Konsolenmusik, DSD und CUE-Tracks werden unterwegs in WAV umgewandelt. Songs von einem Subsonic/Jellyfin-Server und Radiosender gehen über ihre eigene Adresse.</li>
 </ul>
 
 <h2 id="dlna-server">Bibliothek teilen (DLNA-Server)</h2>
-<p><strong>Einstellungen → Bibliothek teilen (DLNA)</strong> lässt deine Bibliothek auf Fernsehern, Konsolen und DLNA-Apps im selben Netz erscheinen, als <strong>audiofilus (&lt;Gerätename&gt;)</strong>. Dort lassen sich <strong>Künstler</strong>, <strong>Alben</strong>, <strong>Songs</strong>, <strong>Playlists</strong> und <strong>Ordner</strong> mit Covern durchsuchen und abspielen. Formate, die ein Fernseher nicht kennt, kommen bei ihm als WAV an. Geteilt wird die Bibliothek, die audiofilus schon gescannt hat; Songs von Servern werden nicht geteilt.</p>
+<p><strong>Einstellungen → Bibliothek teilen (DLNA)</strong> lässt deine Bibliothek auf Fernsehern, Konsolen und DLNA-Apps im selben Netz erscheinen, als <strong>Audiofilus (&lt;Gerätename&gt;)</strong>. Dort lassen sich <strong>Künstler</strong>, <strong>Alben</strong>, <strong>Songs</strong>, <strong>Playlists</strong> und <strong>Ordner</strong> mit Covern durchsuchen und abspielen. Formate, die ein Fernseher nicht kennt, kommen bei ihm als WAV an. Geteilt wird die Bibliothek, die Audiofilus schon gescannt hat; Songs von Servern werden nicht geteilt.</p>
 
 <h2 id="dlna-renderer">Musik empfangen (DLNA-Renderer)</h2>
-<p><strong>Einstellungen → Musik empfangen (DLNA)</strong> macht den Handheld oder Computer zum Lautsprecher für andere Apps: Wähl auf einem Handy mit BubbleUPnP, mit <em>Auf Gerät übertragen</em> von Windows oder in einem beliebigen UPnP-Control-Point <strong>audiofilus</strong> aus und schick Songs. Sie laufen in audiofilus mit Titel und Künstler, und die sendende App steuert Wiedergabe, Pause, Springen und Lautstärke. Jeder Song wird erst geladen und läuft dann, über WLAN dauert der Start also einen Moment.</p>
+<p><strong>Einstellungen → Musik empfangen (DLNA)</strong> macht den Handheld oder Computer zum Lautsprecher für andere Apps: Wähl auf einem Handy mit BubbleUPnP, mit <em>Auf Gerät übertragen</em> von Windows oder in einem beliebigen UPnP-Control-Point <strong>Audiofilus</strong> aus und schick Songs. Sie laufen in Audiofilus mit Titel und Künstler, und die sendende App steuert Wiedergabe, Pause, Springen und Lautstärke. Jeder Song wird erst geladen und läuft dann, über WLAN dauert der Start also einen Moment.</p>
 
 <h2 id="notes">Hinweise</h2>
 <ul>
 <li>Beide DLNA-Optionen sind <strong>standardmäßig aus</strong>. Ausgeschaltet lauscht nichts im Netz.</li>
 <li>Teilen und Empfangen halten den Handheld nicht von selbst wach: Geht er schlafen, antwortet er erst wieder, wenn er aufwacht.</li>
-<li>Eine Firewall auf dem Computer muss die Geräte zu audiofilus durchlassen (der Medien-Port wird jedes Mal zufällig gewählt).</li>
+<li>Eine Firewall auf dem Computer muss die Geräte zu Audiofilus durchlassen (der Medien-Port wird jedes Mal zufällig gewählt).</li>
 <li>Im Terminal: <code>audiofilus dlna</code> zeigt den Zustand, und <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> und <code>audiofilus dlna name &lt;Name&gt;</code> ändern ihn.</li>
 <li>Auf iPhone und iPad fragt die erste Suche nach der Erlaubnis, das lokale Netz zu nutzen.</li>
 </ul>
@@ -105,7 +105,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Startseite</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Neuestes Release</a></span>
+    <span>Audiofilus · <a href="../index.html">Startseite</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Neuestes Release</a></span>
     <span>Einen Fehler in der Doku gefunden? <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue öffnen</a>.</span>
   </div>
 </footer>

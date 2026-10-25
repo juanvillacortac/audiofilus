@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Systèmes portables · documentation audiofilus</title>
-<meta name="description" content="Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.">
+<title>Systèmes portables · documentation Audiofilus</title>
+<meta name="description" content="Ce qu’Audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Accueil audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Accueil Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Site">
       <a href="../index.html">Accueil</a>
       <a href="index.html" aria-current="page">Docs</a>
@@ -72,9 +72,9 @@
   </aside>
   <article>
     <h1>Systèmes portables</h1>
-    <p class="lede">Ce qu’audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.</p>
+    <p class="lede">Ce qu’Audiofilus fait différemment sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.</p>
 
-<p>audiofilus détecte le système au démarrage et utilise ses propres outils pour le clapet, le bouton d’alimentation, le volume et la batterie. Testé sur une Anbernic RG34XX-SP avec Knulli.</p>
+<p>Audiofilus détecte le système au démarrage et utilise ses propres outils pour le clapet, le bouton d’alimentation, le volume et la batterie. Testé sur une Anbernic RG34XX-SP avec Knulli.</p>
 
 <h2 id="files">Où sont tes fichiers</h2>
 <p>Les réglages (<code>audiofilus.json</code>) et les données (<code>data/</code>&nbsp;: cache de la bibliothèque, playlists, historique, paroles, podcasts, le journal <code>audiofilus.log</code>) sont à côté du programme, dans le dossier du port&nbsp;:</p>
@@ -88,15 +88,15 @@
 
 <h2 id="power">Le bouton d’alimentation</h2>
 <ul>
-<li><strong>Lecteur ouvert</strong>, un appui sur le bouton d’alimentation met audiofilus en veille (écran éteint, musique allumée) au lieu de mettre la console en veille. Le maintenir éteint toujours la console.</li>
+<li><strong>Lecteur ouvert</strong>, un appui sur le bouton d’alimentation met Audiofilus en veille (écran éteint, musique allumée) au lieu de mettre la console en veille. Le maintenir éteint toujours la console.</li>
 <li><strong>Après Passer en arrière-plan</strong>, la console se met en veille comme d’habitude quand tu appuies dessus.</li>
 </ul>
 <p>Lecteur ouvert, la mise en veille automatique du système et l’atténuation de l’écran sont aussi suspendues.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>Les boutons de volume passent par audiofilus tant que le lecteur est ouvert, pour pouvoir dépasser 100&nbsp;%.</li>
-<li>Fermer le clapet met audiofilus en veille&#8239;; l’ouvrir ne le réveille pas&nbsp;: c’est <kbd>START</kbd> qui le fait.</li>
+<li>Les boutons de volume passent par Audiofilus tant que le lecteur est ouvert, pour pouvoir dépasser 100&nbsp;%.</li>
+<li>Fermer le clapet met Audiofilus en veille&#8239;; l’ouvrir ne le réveille pas&nbsp;: c’est <kbd>START</kbd> qui le fait.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -105,7 +105,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>Avec la «&nbsp;fausse veille&nbsp;» de ROCKNIX (mode de veille désactivé dans ses réglages), appuyer sur le bouton d’alimentation coupe le son et fige tout, et audiofilus ne peut pas l’empêcher. Avec la veille normale (par défaut), le bouton met audiofilus en veille.</li>
+<li>Avec la «&nbsp;fausse veille&nbsp;» de ROCKNIX (mode de veille désactivé dans ses réglages), appuyer sur le bouton d’alimentation coupe le son et fige tout, et Audiofilus ne peut pas l’empêcher. Avec la veille normale (par défaut), le bouton met Audiofilus en veille.</li>
 </ul>
 <h2 id="arkos">ArkOS, dArkOS et EmuELEC</h2>
 <ul>
@@ -115,19 +115,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Fonctionne sur les Odroid Go Advance et Super, la GameForce Chi et les box TV Amlogic. Pas encore testé sur un vrai appareil.</li>
-<li>Sur les consoles portables, lecteur ouvert, le bouton d’alimentation met audiofilus en veille au lieu de mettre la console en veille. Les box TV ne se mettent jamais en veille.</li>
+<li>Sur les consoles portables, lecteur ouvert, le bouton d’alimentation met Audiofilus en veille au lieu de mettre la console en veille. Les box TV ne se mettent jamais en veille.</li>
 <li>Installe d’abord PortMaster depuis le menu d’EmuELEC. Pour l’installer à la main, mets <code>Audiofilus.sh</code> dans <code>/storage/roms/ports_scripts</code> (là où EmuELEC liste les ports) et le dossier <code>audiofilus</code> dans <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Consommation de batterie</h2>
-<p>Mesuré sur une RG34XX-SP&nbsp;: en veille, audiofilus consomme environ 260&nbsp;mA, soit 11 à 12 heures de musique avec sa batterie de 3300&nbsp;mAh.</p>
+<p>Mesuré sur une RG34XX-SP&nbsp;: en veille, Audiofilus consomme environ 260&nbsp;mA, soit 11 à 12 heures de musique avec sa batterie de 3300&nbsp;mAh.</p>
 
     <nav class="pager" aria-label="Pages"><a href="settings.html">← Réglages</a><a href="faq.html">FAQ →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
+    <span>Audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
     <span>Une erreur dans la doc&#8239;? <a href="https://github.com/juanvillacortac/audiofilus/issues">Ouvre une issue</a>.</span>
   </div>
 </footer>

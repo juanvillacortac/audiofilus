@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bien démarrer · documentation audiofilus</title>
-<meta name="description" content="Installe audiofilus sur ton appareil, ouvre-le et indique-lui ta musique.">
+<title>Bien démarrer · documentation Audiofilus</title>
+<meta name="description" content="Installe Audiofilus sur ton appareil, ouvre-le et indique-lui ta musique.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Accueil audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Accueil Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Site">
       <a href="../index.html">Accueil</a>
       <a href="index.html" aria-current="page">Docs</a>
@@ -72,14 +72,14 @@
   </aside>
   <article>
     <h1>Bien démarrer</h1>
-    <p class="lede">Installe audiofilus sur ton appareil, ouvre-le et indique-lui ta musique.</p>
+    <p class="lede">Installe Audiofilus sur ton appareil, ouvre-le et indique-lui ta musique.</p>
 
 <h2 id="handhelds">Consoles portables avec PortMaster</h2>
 <p>Fonctionne sur Knulli, muOS, ROCKNIX, ArkOS, dArkOS et EmuELEC.</p>
 <ol>
 <li>Télécharge <code>audiofilus-portmaster.zip</code> depuis la <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">dernière version</a>.</li>
 <li>Installe-le avec PortMaster, ou décompresse-le dans ton dossier <code>ports</code>.</li>
-<li>Ouvre <strong>audiofilus</strong> depuis Ports.</li>
+<li>Ouvre <strong>Audiofilus</strong> depuis Ports.</li>
 </ol>
 <p>Le port apporte tout ce dont il a besoin, y compris la bibliothèque qui joue la musique de consoles (libgme).</p>
 
@@ -89,12 +89,12 @@
 <ol>
 <li>Télécharge <code>audiofilus.muxapp</code> depuis la <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">dernière version</a>.</li>
 <li>Copie-le dans le dossier <code>ARCHIVE</code> à la racine de ta carte SD (ou de ta clé USB).</li>
-<li>Ouvre l’<strong>Archive Manager</strong> de muOS et installe-le. audiofilus apparaît dans <strong>Applications</strong>.</li>
+<li>Ouvre l’<strong>Archive Manager</strong> de muOS et installe-le. Audiofilus apparaît dans <strong>Applications</strong>.</li>
 </ol>
 
 <h2 id="linux">Linux (ordinateur)</h2>
 <pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
-<p>Il installe audiofilus dans <code>~/.local/share/audiofilus</code>, crée un lien <code>audiofilus</code> dans <code>~/.local/bin</code> et l’ajoute à ton lanceur d’applis (avec «&nbsp;Ouvrir avec&nbsp;» pour les fichiers audio et les dossiers). Relance-le pour mettre à jour&#8239;; tes réglages restent.</p>
+<p>Il installe Audiofilus dans <code>~/.local/share/audiofilus</code>, crée un lien <code>audiofilus</code> dans <code>~/.local/bin</code> et l’ajoute à ton lanceur d’applis (avec «&nbsp;Ouvrir avec&nbsp;» pour les fichiers audio et les dossiers). Relance-le pour mettre à jour&#8239;; tes réglages restent.</p>
 <p>À la main&nbsp;: décompresse <code>audiofilus-linux-amd64.tar.gz</code> (ou <code>-arm64</code>) où tu veux et lance une fois <code>./audiofilus desktop install</code>.</p>
 
 <h2 id="windows">Windows</h2>
@@ -105,8 +105,8 @@
 <p>Ou ajoute la source <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> à AltStore, SideStore ou LiveContainer&nbsp;: les nouvelles versions y apparaissent comme des mises à jour.</p>
 
 <h2 id="first-run">Premier lancement&nbsp;: ton dossier de musique</h2>
-<p>Sur une console portable ou un ordinateur, la première fois que tu ouvres audiofilus, il affiche un explorateur de dossiers. <kbd>A</kbd> ouvre un dossier, <kbd>B</kbd> remonte et <kbd>X</kbd> choisit le dossier actuel. La bibliothèque est analysée une fois, avec une barre de progression&#8239;; les démarrages suivants ne lisent que les fichiers nouveaux ou modifiés. Tu peux changer de dossier plus tard dans <strong>Réglages → Dossier</strong>, et relancer l’analyse avec <strong>Réanalyser</strong>.</p>
-<p>Pas de musique à toi&#8239;? audiofilus s’ouvre quand même avec une bibliothèque vide&nbsp;: les serveurs, la radio, les podcasts et YouTube Music fonctionnent toujours.</p>
+<p>Sur une console portable ou un ordinateur, la première fois que tu ouvres Audiofilus, il affiche un explorateur de dossiers. <kbd>A</kbd> ouvre un dossier, <kbd>B</kbd> remonte et <kbd>X</kbd> choisit le dossier actuel. La bibliothèque est analysée une fois, avec une barre de progression&#8239;; les démarrages suivants ne lisent que les fichiers nouveaux ou modifiés. Tu peux changer de dossier plus tard dans <strong>Réglages → Dossier</strong>, et relancer l’analyse avec <strong>Réanalyser</strong>.</p>
+<p>Pas de musique à toi&#8239;? Audiofilus s’ouvre quand même avec une bibliothèque vide&nbsp;: les serveurs, la radio, les podcasts et YouTube Music fonctionnent toujours.</p>
 <p>Sur iPhone, copie des chansons dans <em>Sur mon iPhone → Audiofilus</em> dans l’app Fichiers, ou choisis n’importe quel dossier (iCloud Drive ou une autre app) dans <strong>Réglages → Dossier</strong>.</p>
 
 <h2 id="find-your-way">Se repérer</h2>
@@ -125,7 +125,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
+    <span>Audiofilus · <a href="../index.html">Accueil</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Dernière version</a></span>
     <span>Une erreur dans la doc&#8239;? <a href="https://github.com/juanvillacortac/audiofilus/issues">Ouvre une issue</a>.</span>
   </div>
 </footer>

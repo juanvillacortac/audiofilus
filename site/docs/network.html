@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Network · audiofilus docs</title>
+<title>Network · Audiofilus docs</title>
 <meta name="description" content="Send music to speakers and TVs (DLNA/UPnP and Chromecast), share your library with DLNA, and receive music from phones and other control points.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus home"><img class="px" src="../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Site">
       <a href="../index.html">Home</a>
       <a href="index.html" aria-current="page">Docs</a>
@@ -80,20 +80,20 @@
 <li>Pick one and the song goes on there from the same second; the handheld or computer pauses and becomes the remote. The next song of the queue is sent ahead, so the device keeps going through the queue.</li>
 <li>While sending, the top bar shows <strong>→ &lt;device&gt;</strong>, and pause, next, previous and seeking control the device; the progress bar shows its position.</li>
 <li><kbd>START</kbd> → <strong>Device volume</strong> turns the device up or down. <strong>Stop sending to &lt;device&gt;</strong> stops it and resumes here, at the same song and second.</li>
-<li>Anything audiofilus plays can be sent. MP3, FLAC, AAC/M4A, WAV and Ogg go as they are; modules, console music, DSD and CUE tracks are converted on the fly to WAV. Songs from a Subsonic/Jellyfin server and radio stations go by their own address.</li>
+<li>Anything Audiofilus plays can be sent. MP3, FLAC, AAC/M4A, WAV and Ogg go as they are; modules, console music, DSD and CUE tracks are converted on the fly to WAV. Songs from a Subsonic/Jellyfin server and radio stations go by their own address.</li>
 </ul>
 
 <h2 id="dlna-server">Share your library (DLNA server)</h2>
-<p><strong>Settings → Share library (DLNA)</strong> makes your library show up on TVs, consoles and DLNA apps of the same network, as <strong>audiofilus (&lt;device name&gt;)</strong>. They can browse <strong>Artists</strong>, <strong>Albums</strong>, <strong>Songs</strong>, <strong>Playlists</strong> and <strong>Folders</strong>, with covers, and play from there. Formats a TV doesn't know are converted to WAV for it. It shares the library audiofilus already scanned; songs from servers aren't shared.</p>
+<p><strong>Settings → Share library (DLNA)</strong> makes your library show up on TVs, consoles and DLNA apps of the same network, as <strong>Audiofilus (&lt;device name&gt;)</strong>. They can browse <strong>Artists</strong>, <strong>Albums</strong>, <strong>Songs</strong>, <strong>Playlists</strong> and <strong>Folders</strong>, with covers, and play from there. Formats a TV doesn't know are converted to WAV for it. It shares the library Audiofilus already scanned; songs from servers aren't shared.</p>
 
 <h2 id="dlna-renderer">Receive music (DLNA renderer)</h2>
-<p><strong>Settings → Receive music (DLNA)</strong> turns the handheld or computer into a speaker for other apps: from a phone with BubbleUPnP, Windows' <em>Cast to device</em> or any UPnP control point, pick <strong>audiofilus</strong> and send songs. They play through audiofilus with their title and artist, and the sending app controls play, pause, seek and volume. Each song is downloaded first and then plays, so over Wi-Fi it takes a moment to start.</p>
+<p><strong>Settings → Receive music (DLNA)</strong> turns the handheld or computer into a speaker for other apps: from a phone with BubbleUPnP, Windows' <em>Cast to device</em> or any UPnP control point, pick <strong>Audiofilus</strong> and send songs. They play through Audiofilus with their title and artist, and the sending app controls play, pause, seek and volume. Each song is downloaded first and then plays, so over Wi-Fi it takes a moment to start.</p>
 
 <h2 id="notes">Notes</h2>
 <ul>
 <li>Both DLNA options are <strong>off by default</strong>. Turned off, nothing listens on the network.</li>
 <li>Sharing and receiving don't keep the handheld awake on their own: if it goes to sleep, it stops answering until it wakes up.</li>
-<li>A firewall on the computer must let the devices reach audiofilus (the media port is chosen at random each time).</li>
+<li>A firewall on the computer must let the devices reach Audiofilus (the media port is chosen at random each time).</li>
 <li>From a terminal: <code>audiofilus dlna</code> shows the state, and <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> and <code>audiofilus dlna name &lt;name&gt;</code> change it.</li>
 <li>On iPhone and iPad the first search asks for permission to use the local network.</li>
 </ul>
@@ -103,7 +103,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
     <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
   </div>
 </footer>

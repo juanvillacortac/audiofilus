@@ -1,12 +1,12 @@
 # MPD
 
-The service (not the interface) can be an **MPD server** on the local network (`internal/mpd`, wired in `internal/daemon/mpd.go`). It's off by default. MPD clients (mpc, ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) and other audiofilus control the audiofilus that runs it. They see its queue and library, and can send it songs by URL. audiofilus is also an MPD **client**: "Send to" finds MPD servers next to Chromecasts and DLNA renderers, and while sending to one, its library can be browsed and played.
+The service (not the interface) can be an **MPD server** on the local network (`internal/mpd`, wired in `internal/daemon/mpd.go`). It's off by default. MPD clients (mpc, ncmpcpp, Cantata, M.A.L.P., Rigelian, MPDroid…) and other Audiofilus control the Audiofilus that runs it. They see its queue and library, and can send it songs by URL. Audiofilus is also an MPD **client**: "Send to" finds MPD servers next to Chromecasts and DLNA renderers, and while sending to one, its library can be browsed and played.
 
 ```json
 "mpd": { "on": true, "port": 6600, "password": "", "name": "audiofilus (living room)" }
 ```
 
-- `port` 0 or empty means 6600. `name` empty means the device name (see [DLNA](dlna.md)), plus ` :<port>` when the port isn't 6600, so two audiofilus on one computer don't share a name.
+- `port` 0 or empty means 6600. `name` empty means the device name (see [DLNA](dlna.md)), plus ` :<port>` when the port isn't 6600, so two Audiofilus on one computer don't share a name.
 - The interface has a tile in Settings → Online (not on the phone apps). It opens a menu with the switch, the password (on-screen keyboard) and the address to type in an MPD app (`192.168.1.5:6600`).
 - The interface edits `audiofilus.json` and sends `mpd apply`. From a terminal, `audiofilus mpd on|off`, `audiofilus mpd port <n>`, `audiofilus mpd password [<password>]` and `audiofilus mpd name <name>` change the file and apply it. `audiofilus mpd` prints the state as JSON (`on`, `port`, `name`, `password`, `error`).
 
@@ -14,7 +14,7 @@ The service (not the interface) can be an **MPD server** on the local network (`
 
 - **TCP** on the port, MPD's text protocol, announced as version 0.23.5. Without a password anyone on the network can control it; with one, only `password`, `ping`, `commands`, `tagtypes` and `binarylimit` work before it's given.
 - **mDNS** (`internal/mdns`): `_mpd._tcp` with TXT `app=audiofilus` (and `password=1` if it asks for one), announced at start (three times, 1, 2 and 4 s apart), with a goodbye (TTL 0) when turned off, and answers to queries: multicast ones, and legacy unicast ones (from a port other than 5353) straight to the asker. The SRV host is `<hostname>-audiofilus-<port>.local`, not the computer's own name (which Avahi already owns), and its A record is the address on the asker's network. Docker, VM bridges and point-to-point VPN interfaces are left out.
-- Port 5353 is shared (`SO_REUSEADDR`): several audiofilus on one computer, and Avahi, can listen at once. Two Go details matter here. `ListenMulticastUDP` turns off `IP_MULTICAST_LOOP`, so without turning it back on, programs on the same computer (Avahi, another audiofilus) never saw the answers. Avahi also drops mDNS packets whose IP TTL isn't 255.
+- Port 5353 is shared (`SO_REUSEADDR`): several Audiofilus on one computer, and Avahi, can listen at once. Two Go details matter here. `ListenMulticastUDP` turns off `IP_MULTICAST_LOOP`, so without turning it back on, programs on the same computer (Avahi, another Audiofilus) never saw the answers. Avahi also drops mDNS packets whose IP TTL isn't 255.
 - Battery: nothing polls while no client is connected. With clients connected, the server reads the engine's state every 400 ms (and right away when the engine reports a change) to answer `idle`.
 
 ## What the server does
@@ -58,14 +58,14 @@ The library is `data/library.json`, the one the interface scanned. It's re-read 
 
 The server remembers the client that last changed the queue or what plays (`add`, `addid`, `clear`, `play`…) and the queue version it left. While that client is still connected and the queue is still that one, the service reports `Receiving` (its address) in its status; a DLNA renderer song reports `DLNA`. Now Playing shows `← <address>` in its title, and its Start menu has:
 
-- **Stop receiving** (`audiofilus release`): empties the queue, so the music stops. An audiofilus that was sending sees the empty queue and goes on playing on its own.
+- **Stop receiving** (`audiofilus release`): empties the queue, so the music stops. An Audiofilus that was sending sees the empty queue and goes on playing on its own.
 - **Turn off MPD server**: the same, and the server goes off (it can be turned back on in Settings → Online → MPD server).
 
-## audiofilus as a client
+## Audiofilus as a client
 
 `internal/mpd` also has the client (`mpd.Dial`, `Cmd`, `Picture`, `Songs`, `Map`). The tests use it, and so does `cast`:
 
-- **Discovery:** `cast.Discover` also browses `_mpd._tcp` (`mdns.Browse`). It reports each server's name, `Model` "audiofilus" or "MPD", and whether it asks for a password. Its own server is left out of the list (`cast.IsOwnMPD`). For a server with a password, the interface asks for it before sending, and remembers it while the app runs.
+- **Discovery:** `cast.Discover` also browses `_mpd._tcp` (`mdns.Browse`). It reports each server's name, `Model` "Audiofilus" or "MPD", and whether it asks for a password. Its own server is left out of the list (`cast.IsOwnMPD`). For a server with a password, the interface asks for it before sending, and remembers it while the app runs.
 - **Sending** (`cast/mpd.go`):
   - Load is `clear`, then `addid <url>` with `addtagid` for title, artist and album, then `playid` (and `seekid` when resuming mid-song).
   - The next song is another `addid` after the current one. The server moves on by itself, gaplessly, and the session notices as it does with UPnP's `SetNext`.

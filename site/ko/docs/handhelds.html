@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>휴대용 게임기 시스템 · audiofilus 문서</title>
-<meta name="description" content="Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 audiofilus가 다르게 하는 일.">
+<title>휴대용 게임기 시스템 · Audiofilus 문서</title>
+<meta name="description" content="Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 Audiofilus가 다르게 하는 일.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -34,7 +34,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus 홈"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus 홈"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="사이트">
       <a href="../index.html">홈</a>
       <a href="index.html" aria-current="page">문서</a>
@@ -76,9 +76,9 @@
   </aside>
   <article>
     <h1>휴대용 게임기 시스템</h1>
-    <p class="lede">Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 audiofilus가 다르게 하는 일.</p>
+    <p class="lede">Knulli, muOS, ROCKNIX, ArkOS, dArkOS, EmuELEC에서 Audiofilus가 다르게 하는 일.</p>
 
-<p>audiofilus는 시작할 때 시스템을 감지해서, 덮개, 전원 버튼, 볼륨, 배터리에 그 시스템의 도구를 써요. Knulli를 설치한 Anbernic RG34XX-SP에서 테스트했어요.</p>
+<p>Audiofilus는 시작할 때 시스템을 감지해서, 덮개, 전원 버튼, 볼륨, 배터리에 그 시스템의 도구를 써요. Knulli를 설치한 Anbernic RG34XX-SP에서 테스트했어요.</p>
 
 <h2 id="files">파일이 있는 곳</h2>
 <p>설정(<code>audiofilus.json</code>)과 데이터(<code>data/</code>: 보관함 캐시, 재생목록, 기록, 가사, 팟캐스트, 로그 <code>audiofilus.log</code>)는 프로그램 옆, 포트 폴더에 있어요.</p>
@@ -92,15 +92,15 @@
 
 <h2 id="power">전원 버튼</h2>
 <ul>
-<li><strong>플레이어가 열려 있을 때</strong> 전원 버튼을 짧게 누르면 게임기를 절전시키는 대신 audiofilus가 슬립에 들어가요(화면은 끄고 음악은 켜고). 길게 누르면 여전히 전원이 꺼져요.</li>
+<li><strong>플레이어가 열려 있을 때</strong> 전원 버튼을 짧게 누르면 게임기를 절전시키는 대신 Audiofilus가 슬립에 들어가요(화면은 끄고 음악은 켜고). 길게 누르면 여전히 전원이 꺼져요.</li>
 <li><strong>백그라운드로 나간 뒤에는</strong> 누르면 게임기가 평소처럼 절전에 들어가요.</li>
 </ul>
 <p>플레이어가 열려 있는 동안에는 시스템의 자동 절전과 화면 어두워짐도 막아요.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>플레이어가 열려 있는 동안 볼륨 버튼은 audiofilus를 거치므로 100 %를 넘길 수 있어요.</li>
-<li>덮개를 닫으면 audiofilus가 슬립에 들어가요. 덮개를 열어도 깨어나지 않고, <kbd>START</kbd>로 깨워요.</li>
+<li>플레이어가 열려 있는 동안 볼륨 버튼은 Audiofilus를 거치므로 100 %를 넘길 수 있어요.</li>
+<li>덮개를 닫으면 Audiofilus가 슬립에 들어가요. 덮개를 열어도 깨어나지 않고, <kbd>START</kbd>로 깨워요.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -109,7 +109,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>ROCKNIX의 “가짜 절전”(설정에서 절전 모드 끔)에서는 전원 버튼을 누르면 모든 게 음소거되고 멈추며, audiofilus는 이를 막을 수 없어요. 보통 절전(기본값)에서는 버튼을 누르면 audiofilus가 슬립에 들어가요.</li>
+<li>ROCKNIX의 “가짜 절전”(설정에서 절전 모드 끔)에서는 전원 버튼을 누르면 모든 게 음소거되고 멈추며, Audiofilus는 이를 막을 수 없어요. 보통 절전(기본값)에서는 버튼을 누르면 Audiofilus가 슬립에 들어가요.</li>
 </ul>
 <h2 id="arkos">ArkOS와 dArkOS</h2>
 <ul>
@@ -119,19 +119,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Odroid Go Advance와 Super, GameForce Chi, Amlogic TV 박스에서 실행돼요. 아직 실제 기기에서는 테스트하지 않았어요.</li>
-<li>휴대용 게임기에서는 플레이어가 열려 있을 때 전원 버튼을 누르면 게임기가 절전되는 대신 audiofilus가 슬립에 들어가요. TV 박스는 절전되지 않아요.</li>
+<li>휴대용 게임기에서는 플레이어가 열려 있을 때 전원 버튼을 누르면 게임기가 절전되는 대신 Audiofilus가 슬립에 들어가요. TV 박스는 절전되지 않아요.</li>
 <li>먼저 EmuELEC 메뉴에서 PortMaster를 설치하세요. 직접 설치할 때는 <code>Audiofilus.sh</code>를 <code>/storage/roms/ports_scripts</code>(EmuELEC가 포트 목록을 읽는 곳)에, <code>audiofilus</code> 폴더를 <code>/storage/roms/ports</code>에 넣으세요.</li>
 </ul>
 
 <h2 id="power-use">배터리 사용량</h2>
-<p>RG34XX-SP에서 측정한 결과: 슬립 중 audiofilus는 약 260&nbsp;mA를 써서, 3300&nbsp;mAh 배터리로 음악을 11~12시간 정도 들을 수 있어요.</p>
+<p>RG34XX-SP에서 측정한 결과: 슬립 중 Audiofilus는 약 260&nbsp;mA를 써서, 3300&nbsp;mAh 배터리로 음악을 11~12시간 정도 들을 수 있어요.</p>
 
     <nav class="pager" aria-label="페이지"><a href="settings.html">← 설정</a><a href="faq.html">자주 묻는 질문 →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
+    <span>Audiofilus · <a href="../index.html">홈</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">최신 릴리스</a></span>
     <span>문서에서 틀린 곳을 찾으셨나요? <a href="https://github.com/juanvillacortac/audiofilus/issues">이슈를 열어 주세요</a>.</span>
   </div>
 </footer>

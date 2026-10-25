@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>はじめに · audiofilus ドキュメント</title>
-<meta name="description" content="デバイスに audiofilus をインストールして開き、音楽のフォルダーを指定します。">
+<title>はじめに · Audiofilus ドキュメント</title>
+<meta name="description" content="デバイスに Audiofilus をインストールして開き、音楽のフォルダーを指定します。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -33,7 +33,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="サイト">
       <a href="../index.html">ホーム</a>
       <a href="index.html" aria-current="page">ドキュメント</a>
@@ -75,14 +75,14 @@
   </aside>
   <article>
     <h1>はじめに</h1>
-    <p class="lede">デバイスに audiofilus をインストールして開き、音楽のフォルダーを指定します。</p>
+    <p class="lede">デバイスに Audiofilus をインストールして開き、音楽のフォルダーを指定します。</p>
 
 <h2 id="handhelds">PortMaster 対応の携帯ゲーム機</h2>
 <p>Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で動作します。</p>
 <ol>
 <li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a>から <code>audiofilus-portmaster.zip</code> をダウンロードします。</li>
 <li>PortMaster でインストールするか、<code>ports</code> フォルダーに展開します。</li>
-<li>Ports から <strong>audiofilus</strong> を開きます。</li>
+<li>Ports から <strong>Audiofilus</strong> を開きます。</li>
 </ol>
 <p>ポートには、ゲーム機の音楽を再生するライブラリ（libgme）を含め、必要なものがすべて入っています。</p>
 
@@ -92,12 +92,12 @@
 <ol>
 <li><a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a>から <code>audiofilus.muxapp</code> をダウンロードします。</li>
 <li>SD カード（または USB ドライブ）のルートにある <code>ARCHIVE</code> フォルダーにコピーします。</li>
-<li>muOS の <strong>Archive Manager</strong> を開いてインストールします。audiofilus は <strong>Applications</strong> に表示されます。</li>
+<li>muOS の <strong>Archive Manager</strong> を開いてインストールします。Audiofilus は <strong>Applications</strong> に表示されます。</li>
 </ol>
 
 <h2 id="linux">Linux デスクトップ</h2>
 <pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
-<p>audiofilus を <code>~/.local/share/audiofilus</code> にインストールし、<code>audiofilus</code> を <code>~/.local/bin</code> にリンクして、アプリランチャーに追加します（オーディオファイルとフォルダーの「このアプリで開く」付き）。もう一度実行すると更新され、設定はそのまま残ります。</p>
+<p>Audiofilus を <code>~/.local/share/audiofilus</code> にインストールし、<code>audiofilus</code> を <code>~/.local/bin</code> にリンクして、アプリランチャーに追加します（オーディオファイルとフォルダーの「このアプリで開く」付き）。もう一度実行すると更新され、設定はそのまま残ります。</p>
 <p>手動の場合：<code>audiofilus-linux-amd64.tar.gz</code>（または <code>-arm64</code>）を好きな場所に展開し、<code>./audiofilus desktop install</code> を一度実行します。</p>
 
 <h2 id="windows">Windows</h2>
@@ -108,8 +108,8 @@
 <p>または、AltStore、SideStore、LiveContainer にソース <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> を追加してください。新しいリリースがアップデートとして表示されます。</p>
 
 <h2 id="first-run">初回起動：音楽フォルダー</h2>
-<p>携帯ゲーム機やデスクトップでは、初めて audiofilus を開くとフォルダーブラウザーが表示されます。<kbd>A</kbd> でフォルダーを開き、<kbd>B</kbd> で上の階層へ、<kbd>X</kbd> で現在のフォルダーを使います。ライブラリのスキャンは一度だけで、プログレスバーが表示されます。次回以降の起動では、新しいファイルや変更されたファイルだけを読み込みます。フォルダーはあとから<strong>設定 → フォルダ</strong>で変更でき、<strong>再スキャン</strong>で再スキャンできます。</p>
-<p>自分の音楽がなくても大丈夫です。audiofilus は空のライブラリで起動するので、サーバー、ラジオ、ポッドキャスト、YouTube Music は使えます。</p>
+<p>携帯ゲーム機やデスクトップでは、初めて Audiofilus を開くとフォルダーブラウザーが表示されます。<kbd>A</kbd> でフォルダーを開き、<kbd>B</kbd> で上の階層へ、<kbd>X</kbd> で現在のフォルダーを使います。ライブラリのスキャンは一度だけで、プログレスバーが表示されます。次回以降の起動では、新しいファイルや変更されたファイルだけを読み込みます。フォルダーはあとから<strong>設定 → フォルダ</strong>で変更でき、<strong>再スキャン</strong>で再スキャンできます。</p>
+<p>自分の音楽がなくても大丈夫です。Audiofilus は空のライブラリで起動するので、サーバー、ラジオ、ポッドキャスト、YouTube Music は使えます。</p>
 <p>iPhone では、ファイルアプリの <em>このiPhone内 → Audiofilus</em> に曲をコピーするか、<strong>設定 → フォルダ</strong>で任意のフォルダー（iCloud Drive や他のアプリ）を選んでください。</p>
 
 <h2 id="find-your-way">画面の移動</h2>
@@ -128,7 +128,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
+    <span>Audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
     <span>ドキュメントに誤りを見つけましたか？ <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue を開いてください</a>。</span>
   </div>
 </footer>

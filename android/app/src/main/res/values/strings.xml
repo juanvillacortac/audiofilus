@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="channel_playback">Playback</string>
-    <string name="folder_unreadable">Can\'t read %1$s. Allow audiofilus to access music and audio, or pick another folder.</string>
-    <string name="need_audio_permission">audiofilus needs the music and audio permission to read that folder. You can allow it in the app\'s settings.</string>
+    <string name="folder_unreadable">Can\'t read %1$s. Allow Audiofilus to access music and audio, or pick another folder.</string>
+    <string name="need_audio_permission">Audiofilus needs the music and audio permission to read that folder. You can allow it in the app\'s settings.</string>
     <string name="folder_picked">Music folder: %1$s (%2$d items)</string>
 </resources>

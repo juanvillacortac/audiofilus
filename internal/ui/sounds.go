@@ -188,7 +188,7 @@ func (a *App) soundLoop() {
 		usePulseSocket()
 		c, ready, err := oto.NewContext(&oto.NewContextOptions{
 			SampleRate: sfx.Rate, ChannelCount: 2, Format: oto.FormatFloat32LE,
-			BufferSize: 50 * time.Millisecond, ApplicationName: "audiofilus",
+			BufferSize: 50 * time.Millisecond, ApplicationName: "Audiofilus",
 		})
 		if err != nil {
 			return

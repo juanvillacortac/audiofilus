@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Портативные системы · документация audiofilus</title>
-<meta name="description" content="Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.">
+<title>Портативные системы · документация Audiofilus</title>
+<meta name="description" content="Что Audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -32,7 +32,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Главная audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Главная Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Сайт">
       <a href="../index.html">Главная</a>
       <a href="index.html" aria-current="page">Справка</a>
@@ -74,9 +74,9 @@
   </aside>
   <article>
     <h1>Портативные системы</h1>
-    <p class="lede">Что audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.</p>
+    <p class="lede">Что Audiofilus делает по-особому на Knulli, muOS, ROCKNIX, ArkOS, dArkOS и EmuELEC.</p>
 
-<p>audiofilus определяет систему при запуске и использует её собственные инструменты для крышки, кнопки питания, громкости и батареи. Проверено на Anbernic RG34XX-SP с Knulli.</p>
+<p>Audiofilus определяет систему при запуске и использует её собственные инструменты для крышки, кнопки питания, громкости и батареи. Проверено на Anbernic RG34XX-SP с Knulli.</p>
 
 <h2 id="files">Где лежат твои файлы</h2>
 <p>Настройки (<code>audiofilus.json</code>) и данные (<code>data/</code>: кеш библиотеки, плейлисты, история, тексты, подкасты, лог <code>audiofilus.log</code>) лежат рядом с программой, в папке порта:</p>
@@ -90,15 +90,15 @@
 
 <h2 id="power">Кнопка питания</h2>
 <ul>
-<li><strong>При открытом плеере</strong> короткое нажатие кнопки питания переводит в сон audiofilus (экран выключен, музыка играет), а не консоль. Долгое нажатие по-прежнему выключает её.</li>
+<li><strong>При открытом плеере</strong> короткое нажатие кнопки питания переводит в сон Audiofilus (экран выключен, музыка играет), а не консоль. Долгое нажатие по-прежнему выключает её.</li>
 <li><strong>После «Уйти в фон»</strong> консоль засыпает по нажатию как обычно.</li>
 </ul>
 <p>При открытом плеере также откладываются засыпание системы по бездействию и затемнение экрана.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>Кнопки громкости при открытом плеере проходят через audiofilus, так что можно выйти за 100 %.</li>
-<li>Закрытие крышки переводит audiofilus в сон; открытие его не будит — будит <kbd>START</kbd>.</li>
+<li>Кнопки громкости при открытом плеере проходят через Audiofilus, так что можно выйти за 100 %.</li>
+<li>Закрытие крышки переводит Audiofilus в сон; открытие его не будит — будит <kbd>START</kbd>.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -107,7 +107,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>С «fake suspend» в ROCKNIX (режим сна выключен в её настройках) кнопка питания глушит и замораживает всё, и audiofilus не может этому помешать. С обычным сном (по умолчанию) кнопка переводит в сон audiofilus.</li>
+<li>С «fake suspend» в ROCKNIX (режим сна выключен в её настройках) кнопка питания глушит и замораживает всё, и Audiofilus не может этому помешать. С обычным сном (по умолчанию) кнопка переводит в сон Audiofilus.</li>
 </ul>
 <h2 id="arkos">ArkOS, dArkOS и EmuELEC</h2>
 <ul>
@@ -117,19 +117,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Работает на Odroid Go Advance и Super, GameForce Chi и ТВ-приставках на Amlogic. На реальном устройстве ещё не проверялся.</li>
-<li>На портативных консолях при открытом плеере кнопка питания переводит в сон audiofilus, а не консоль. ТВ-приставки в сон не уходят вообще.</li>
+<li>На портативных консолях при открытом плеере кнопка питания переводит в сон Audiofilus, а не консоль. ТВ-приставки в сон не уходят вообще.</li>
 <li>Сначала установи PortMaster из меню EmuELEC. При ручной установке положи <code>Audiofilus.sh</code> в <code>/storage/roms/ports_scripts</code> (оттуда EmuELEC берёт список портов), а папку <code>audiofilus</code> — в <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Расход батареи</h2>
-<p>Измерено на RG34XX-SP: во сне audiofilus потребляет около 260&nbsp;мА, это примерно 11–12 часов музыки от батареи на 3300&nbsp;мА·ч.</p>
+<p>Измерено на RG34XX-SP: во сне Audiofilus потребляет около 260&nbsp;мА, это примерно 11–12 часов музыки от батареи на 3300&nbsp;мА·ч.</p>
 
     <nav class="pager" aria-label="Страницы"><a href="settings.html">← Настройки</a><a href="faq.html">Вопросы →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
+    <span>Audiofilus · <a href="../index.html">Главная</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Последний релиз</a></span>
     <span>Нашёл ошибку в документации? <a href="https://github.com/juanvillacortac/audiofilus/issues">Открой issue</a>.</span>
   </div>
 </footer>

@@ -151,7 +151,7 @@ func New(sampleRate int, buffer time.Duration) (*Engine, error) {
 		ChannelCount:    2,
 		Format:          oto.FormatFloat32LE,
 		BufferSize:      buffer,
-		ApplicationName: "audiofilus",
+		ApplicationName: "Audiofilus",
 	})
 	if err != nil {
 		return nil, err

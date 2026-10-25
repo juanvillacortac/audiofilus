@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>掌机系统 · audiofilus 文档</title>
-<meta name="description" content="audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。">
+<title>掌机系统 · Audiofilus 文档</title>
+<meta name="description" content="Audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -43,7 +43,7 @@ body { line-break: strict; }
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus 首页"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="站点">
       <a href="../index.html">首页</a>
       <a href="index.html" aria-current="page">文档</a>
@@ -85,9 +85,9 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>掌机系统</h1>
-    <p class="lede">audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。</p>
+    <p class="lede">Audiofilus 在 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC 上的不同之处。</p>
 
-<p>audiofilus 启动时会识别系统，并使用该系统自带的工具来处理翻盖、电源键、音量和电池。已在运行 Knulli 的 Anbernic RG34XX-SP 上测试。</p>
+<p>Audiofilus 启动时会识别系统，并使用该系统自带的工具来处理翻盖、电源键、音量和电池。已在运行 Knulli 的 Anbernic RG34XX-SP 上测试。</p>
 
 <h2 id="files">文件存放位置</h2>
 <p>设置（<code>audiofilus.json</code>）和数据（<code>data/</code>：音乐库缓存、歌单、历史、歌词、播客、日志 <code>audiofilus.log</code>）存放在程序旁边，即 port 的文件夹中：</p>
@@ -101,15 +101,15 @@ body { line-break: strict; }
 
 <h2 id="power">电源键</h2>
 <ul>
-<li><strong>播放器打开时</strong>，轻按电源键会让 audiofilus 进入睡眠（关屏，音乐继续），而不是让掌机休眠。长按仍然会关机。</li>
+<li><strong>播放器打开时</strong>，轻按电源键会让 Audiofilus 进入睡眠（关屏，音乐继续），而不是让掌机休眠。长按仍然会关机。</li>
 <li><strong>转到后台之后</strong>，按电源键时掌机会像平常一样休眠。</li>
 </ul>
 <p>播放器打开时，系统的空闲休眠和屏幕变暗也会被暂停。</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>播放器打开时，音量键由 audiofilus 处理，因此音量可以超过 100 %。</li>
-<li>合上翻盖会让 audiofilus 进入睡眠；打开翻盖不会唤醒它：需要按 <kbd>START</kbd>。</li>
+<li>播放器打开时，音量键由 Audiofilus 处理，因此音量可以超过 100 %。</li>
+<li>合上翻盖会让 Audiofilus 进入睡眠；打开翻盖不会唤醒它：需要按 <kbd>START</kbd>。</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -118,7 +118,7 @@ body { line-break: strict; }
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>在 ROCKNIX 的“伪休眠”模式下（其设置中关闭了休眠模式），按电源键会静音并冻结一切，audiofilus 无法阻止。在普通休眠模式（默认）下，电源键会让 audiofilus 进入睡眠。</li>
+<li>在 ROCKNIX 的“伪休眠”模式下（其设置中关闭了休眠模式），按电源键会静音并冻结一切，Audiofilus 无法阻止。在普通休眠模式（默认）下，电源键会让 Audiofilus 进入睡眠。</li>
 </ul>
 <h2 id="arkos">ArkOS、dArkOS 和 EmuELEC</h2>
 <ul>
@@ -128,19 +128,19 @@ body { line-break: strict; }
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>支持 Odroid Go Advance 和 Super、GameForce Chi 以及 Amlogic 电视盒子。尚未在真机上测试。</li>
-<li>在掌机上，播放器打开时，电源键会让 audiofilus 进入睡眠，而不是让掌机休眠。电视盒子从不休眠。</li>
+<li>在掌机上，播放器打开时，电源键会让 Audiofilus 进入睡眠，而不是让掌机休眠。电视盒子从不休眠。</li>
 <li>请先从 EmuELEC 菜单安装 PortMaster。手动安装时，把 <code>Audiofilus.sh</code> 放进 <code>/storage/roms/ports_scripts</code>（EmuELEC 在这里列出移植游戏），把 <code>audiofilus</code> 文件夹放进 <code>/storage/roms/ports</code>。</li>
 </ul>
 
 <h2 id="power-use">耗电</h2>
-<p>在 RG34XX-SP 上实测：睡眠时 audiofilus 约 260&nbsp;mA，3300&nbsp;mAh 电池大约能放 11 到 12 小时音乐。</p>
+<p>在 RG34XX-SP 上实测：睡眠时 Audiofilus 约 260&nbsp;mA，3300&nbsp;mAh 电池大约能放 11 到 12 小时音乐。</p>
 
     <nav class="pager" aria-label="页面"><a href="settings.html">← 设置</a><a href="faq.html">常见问题 →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>Audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
     <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
   </div>
 </footer>

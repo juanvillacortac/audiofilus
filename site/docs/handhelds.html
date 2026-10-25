@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Handheld systems · audiofilus docs</title>
-<meta name="description" content="What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.">
+<title>Handheld systems · Audiofilus docs</title>
+<meta name="description" content="What Audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/icon-32.png">
 <link rel="apple-touch-icon" href="../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus home"><img class="px" src="../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus home"><img class="px" src="../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Site">
       <a href="../index.html">Home</a>
       <a href="index.html" aria-current="page">Docs</a>
@@ -72,9 +72,9 @@
   </aside>
   <article>
     <h1>Handheld systems</h1>
-    <p class="lede">What audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.</p>
+    <p class="lede">What Audiofilus does differently on Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC.</p>
 
-<p>audiofilus detects the system when it starts and uses that system's own tools for the lid, the power button, the volume and the battery. Tested on an Anbernic RG34XX-SP with Knulli.</p>
+<p>Audiofilus detects the system when it starts and uses that system's own tools for the lid, the power button, the volume and the battery. Tested on an Anbernic RG34XX-SP with Knulli.</p>
 
 <h2 id="files">Where your files live</h2>
 <p>Settings (<code>audiofilus.json</code>) and data (<code>data/</code>: library cache, playlists, history, lyrics, podcasts, the log <code>audiofilus.log</code>) sit next to the program, in the port's folder:</p>
@@ -88,15 +88,15 @@
 
 <h2 id="power">The power button</h2>
 <ul>
-<li><strong>With the player open</strong>, a tap of the power button puts audiofilus to sleep (screen off, music on) instead of suspending the console. Holding it still powers off.</li>
+<li><strong>With the player open</strong>, a tap of the power button puts Audiofilus to sleep (screen off, music on) instead of suspending the console. Holding it still powers off.</li>
 <li><strong>After Go to background</strong>, the console suspends as usual when you press it.</li>
 </ul>
 <p>With the player open, the system's idle suspend and screen dimming are also held off.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>The volume buttons go through audiofilus while the player is open, so you can go past 100 %.</li>
-<li>Closing the lid puts audiofilus to sleep; opening it doesn't wake it: <kbd>START</kbd> does.</li>
+<li>The volume buttons go through Audiofilus while the player is open, so you can go past 100 %.</li>
+<li>Closing the lid puts Audiofilus to sleep; opening it doesn't wake it: <kbd>START</kbd> does.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -105,7 +105,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>With ROCKNIX's “fake suspend” (suspend mode off in its settings), pressing the power button mutes and freezes everything, and audiofilus can't stop it. With normal suspend (the default), the button puts audiofilus to sleep.</li>
+<li>With ROCKNIX's “fake suspend” (suspend mode off in its settings), pressing the power button mutes and freezes everything, and Audiofilus can't stop it. With normal suspend (the default), the button puts Audiofilus to sleep.</li>
 </ul>
 <h2 id="arkos">ArkOS, dArkOS and EmuELEC</h2>
 <ul>
@@ -115,19 +115,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>It runs on the Odroid Go Advance and Super, the GameForce Chi and Amlogic TV boxes. It hasn't been tested on a real device yet.</li>
-<li>On the handhelds, with the player open, the power button puts audiofilus to sleep instead of suspending the console. TV boxes never suspend.</li>
+<li>On the handhelds, with the player open, the power button puts Audiofilus to sleep instead of suspending the console. TV boxes never suspend.</li>
 <li>Install PortMaster from the EmuELEC menu first. To install by hand, put <code>Audiofilus.sh</code> in <code>/storage/roms/ports_scripts</code> (where EmuELEC lists ports) and the <code>audiofilus</code> folder in <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Battery use</h2>
-<p>Measured on an RG34XX-SP: in sleep audiofilus draws about 260&nbsp;mA, around 11 to 12 hours of music on its 3300&nbsp;mAh battery.</p>
+<p>Measured on an RG34XX-SP: in sleep Audiofilus draws about 260&nbsp;mA, around 11 to 12 hours of music on its 3300&nbsp;mAh battery.</p>
 
     <nav class="pager" aria-label="Pages"><a href="settings.html">← Settings</a><a href="faq.html">FAQ →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
+    <span>Audiofilus · <a href="../index.html">Home</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Latest release</a></span>
     <span>Found a mistake in the docs? <a href="https://github.com/juanvillacortac/audiofilus/issues">Open an issue</a>.</span>
   </div>
 </footer>

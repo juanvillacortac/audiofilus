@@ -32,10 +32,10 @@ func deviceDesc(devType, name, uuid, prefix string, services []service) string {
 `)
 	fmt.Fprintf(&b, "<deviceType>%s</deviceType>\n", devType)
 	fmt.Fprintf(&b, "<friendlyName>%s</friendlyName>\n", xmlEscape(name))
-	b.WriteString(`<manufacturer>audiofilus</manufacturer>
+	b.WriteString(`<manufacturer>Audiofilus</manufacturer>
 <manufacturerURL>https://github.com/juanvillacortac/audiofilus</manufacturerURL>
 <modelDescription>audiofilus music player</modelDescription>
-<modelName>audiofilus</modelName>
+<modelName>Audiofilus</modelName>
 <modelNumber>1</modelNumber>
 <modelURL>https://github.com/juanvillacortac/audiofilus</modelURL>
 `)

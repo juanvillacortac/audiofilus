@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>入门 · audiofilus 文档</title>
-<meta name="description" content="在你的设备上安装 audiofilus，打开它，并指定你的音乐文件夹。">
+<title>入门 · Audiofilus 文档</title>
+<meta name="description" content="在你的设备上安装 Audiofilus，打开它，并指定你的音乐文件夹。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -43,7 +43,7 @@ body { line-break: strict; }
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus 首页"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus 首页"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="站点">
       <a href="../index.html">首页</a>
       <a href="index.html" aria-current="page">文档</a>
@@ -85,14 +85,14 @@ body { line-break: strict; }
   </aside>
   <article>
     <h1>入门</h1>
-    <p class="lede">在你的设备上安装 audiofilus，打开它，并指定你的音乐文件夹。</p>
+    <p class="lede">在你的设备上安装 Audiofilus，打开它，并指定你的音乐文件夹。</p>
 
 <h2 id="handhelds">使用 PortMaster 的掌机</h2>
 <p>支持 Knulli、muOS、ROCKNIX、ArkOS、dArkOS 和 EmuELEC。</p>
 <ol>
 <li>从<a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a>下载 <code>audiofilus-portmaster.zip</code>。</li>
 <li>用 PortMaster 安装，或解压到你的 <code>ports</code> 文件夹。</li>
-<li>在 Ports 中打开 <strong>audiofilus</strong>。</li>
+<li>在 Ports 中打开 <strong>Audiofilus</strong>。</li>
 </ol>
 <p>这个 port 自带所需的一切，包括播放游戏音乐的库（libgme）。</p>
 
@@ -102,12 +102,12 @@ body { line-break: strict; }
 <ol>
 <li>从<a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a>下载 <code>audiofilus.muxapp</code>。</li>
 <li>把它复制到 SD 卡（或 U 盘）根目录下的 <code>ARCHIVE</code> 文件夹。</li>
-<li>打开 muOS 的 <strong>Archive Manager</strong> 并安装。audiofilus 会出现在 <strong>应用程序</strong> 下。</li>
+<li>打开 muOS 的 <strong>Archive Manager</strong> 并安装。Audiofilus 会出现在 <strong>应用程序</strong> 下。</li>
 </ol>
 
 <h2 id="linux">Linux 桌面</h2>
 <pre><code>curl -fsSL https://juanvillacortac.github.io/audiofilus/install.sh | sh</code></pre>
-<p>它会把 audiofilus 安装到 <code>~/.local/share/audiofilus</code>，把 <code>audiofilus</code> 链接到 <code>~/.local/bin</code>，并添加到应用启动器（音频文件和文件夹支持“打开方式”）。再运行一次即可更新；你的设置会保留。</p>
+<p>它会把 Audiofilus 安装到 <code>~/.local/share/audiofilus</code>，把 <code>audiofilus</code> 链接到 <code>~/.local/bin</code>，并添加到应用启动器（音频文件和文件夹支持“打开方式”）。再运行一次即可更新；你的设置会保留。</p>
 <p>手动安装：把 <code>audiofilus-linux-amd64.tar.gz</code>（或 <code>-arm64</code>）解压到任意位置，然后运行一次 <code>./audiofilus desktop install</code>。</p>
 
 <h2 id="windows">Windows</h2>
@@ -118,8 +118,8 @@ body { line-break: strict; }
 <p>也可以把源 <code>https://juanvillacortac.github.io/audiofilus/altstore.json</code> 添加到 AltStore、SideStore 或 LiveContainer：新版本会以更新的形式出现。</p>
 
 <h2 id="first-run">首次运行：选择音乐文件夹</h2>
-<p>在掌机或桌面上，第一次打开 audiofilus 时会显示文件夹浏览器。<kbd>A</kbd> 打开文件夹，<kbd>B</kbd> 返回上一级，<kbd>X</kbd> 使用当前文件夹。音乐库只完整扫描一次，并显示进度条；之后启动只读取新增或修改过的文件。之后可以在 <strong>设置 → 文件夹</strong> 中更换文件夹，用 <strong>重新扫描</strong> 重新扫描。</p>
-<p>没有自己的音乐？audiofilus 照样会以空音乐库打开，服务器、电台、播客和 YouTube Music 依然可用。</p>
+<p>在掌机或桌面上，第一次打开 Audiofilus 时会显示文件夹浏览器。<kbd>A</kbd> 打开文件夹，<kbd>B</kbd> 返回上一级，<kbd>X</kbd> 使用当前文件夹。音乐库只完整扫描一次，并显示进度条；之后启动只读取新增或修改过的文件。之后可以在 <strong>设置 → 文件夹</strong> 中更换文件夹，用 <strong>重新扫描</strong> 重新扫描。</p>
+<p>没有自己的音乐？Audiofilus 照样会以空音乐库打开，服务器、电台、播客和 YouTube Music 依然可用。</p>
 <p>在 iPhone 上，在“文件”应用中把歌曲复制到 <em>我的 iPhone → Audiofilus</em>，或在 <strong>设置 → 文件夹</strong> 中选择任意文件夹（iCloud 云盘或其他应用）。</p>
 
 <h2 id="find-your-way">熟悉操作</h2>
@@ -138,7 +138,7 @@ body { line-break: strict; }
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
+    <span>Audiofilus · <a href="../index.html">首页</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新版本</a></span>
     <span>发现文档有误？<a href="https://github.com/juanvillacortac/audiofilus/issues">提交 issue</a>。</span>
   </div>
 </footer>

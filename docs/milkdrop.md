@@ -4,7 +4,7 @@ The **MilkDrop** visualizer, the last one on the Visualizer screen, plays MilkDr
 
 ## Opening it
 
-MilkDrop is in audiofilus 0.12.0 and newer.
+MilkDrop is in Audiofilus 0.12.0 and newer.
 
 1. Open the **Visualizer** screen from the screens dock (SELECT → Visualizer).
 2. Press ← or → until the name at the top says **MilkDrop**. It is the last visualizer, so from the first one a single ← gets there. You can also press START and pick it from the list of visualizers.
@@ -37,12 +37,12 @@ Switching modes fades over about half a second. When the album changes, the grad
 
 ## Presets
 
-- **Built-in:** eight original presets written for audiofilus, under the same MIT license as the rest of the project (`internal/milkdrop/presets/*.milk`): Aurora Curtain, Ember Tunnel, Kaleido Bloom, Liquid Chrome, Neon Grid, Ripple Pond, Spectrum Fountain and Starfield Pulse.
+- **Built-in:** eight original presets written for Audiofilus, under the same MIT license as the rest of the project (`internal/milkdrop/presets/*.milk`): Aurora Curtain, Ember Tunnel, Kaleido Bloom, Liquid Chrome, Neon Grid, Ripple Pond, Spectrum Fountain and Starfield Pulse.
 - **Yours:** put `.milk` files in a `milkdrop` folder next to the binary, or in `$AUDIOFILUS_HOME/milkdrop` if that variable is set. Subfolders are fine, so a whole pack can be unzipped there as it is. Another folder can be picked in Settings → **MilkDrop presets** (the same folder browser as the music folder; saved as `ui.milkdrop_dir` in `audiofilus.json`, empty for the default; not on iPhone). Picking it while MilkDrop is open rescans at once.
 
 The folder is scanned the first time the visualizer opens, not at startup. After adding files, use START → *Rescan presets*.
 
-audiofilus doesn't bundle third-party presets, because their licenses vary. The classic packs are easy to find:
+Audiofilus doesn't bundle third-party presets, because their licenses vary. The classic packs are easy to find:
 
 - The presets that came with Winamp's MilkDrop 1.04.
 - The *projectM* preset collections (`projectM-presets-cream-of-the-crop` and the classic packs on GitHub).
@@ -92,7 +92,7 @@ audiofilus doesn't bundle third-party presets, because their licenses vary. The 
   - warp animation: `warpanimspeed warpscale`.
 - The header values are read too: `fDecay`, `fGammaAdj`, `fVideoEcho*`, `nWaveMode`, `b*` flags, `fWaveScale`, `fModWaveAlpha*`, `fWarp*`, `fZoomExponent`, `fShader`, `nMotionVectors*`, and the others.
 - Output variables start each frame at the preset's value, or MilkDrop's default when the preset doesn't set one.
-- `bass`, `mid` and `treb` come from audiofilus's 16-band spectrum:
+- `bass`, `mid` and `treb` come from Audiofilus's 16-band spectrum:
   - bass is 40–180 Hz, mid is 180 Hz–1.7 kHz and treble is above that;
   - each is divided by its own average over the last few seconds, so it hovers around 1 with steady music and is 0 in silence;
   - the `_att` versions are smoothed over about 0.35 s.
@@ -117,7 +117,7 @@ audiofilus doesn't bundle third-party presets, because their licenses vary. The 
 
 ## Fidelity limits
 
-- **No real waveform.** The audiofilus service sends the UI a 16-band spectrum, not audio samples. The waves (main and custom, `value1`/`value2`) are therefore a sum of sines, one per band, each with its band's strength. They react to the music like an oscilloscope, but they are not the actual waveform. Spectrum waves (`bSpectrum=1`) use the real bands.
+- **No real waveform.** The Audiofilus service sends the UI a 16-band spectrum, not audio samples. The waves (main and custom, `value1`/`value2`) are therefore a sum of sines, one per band, each with its band's strength. They react to the music like an oscilloscope, but they are not the actual waveform. Spectrum waves (`bSpectrum=1`) use the real bands.
 - **Main wave modes 0–7 are approximations** of MilkDrop 1's shapes (circle, x-y spirals, the horizontal scope, the rotating "explosive" pattern, the angled line, two lines). Wave smoothing is not applied.
 - **No MilkDrop 2 shaders.** `warp_`/`comp_` HLSL is skipped, and so is the blur variables' effect (`b1n`, `blur1` and so on): MilkDrop 2's own shaders aren't run.
 - **No sprites, no custom textures, no `.jpg`/`.png` from preset folders, and no text or titles.**

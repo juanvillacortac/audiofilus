@@ -217,7 +217,7 @@ func logindInhibit() (*os.File, error) {
 	var fd dbus.UnixFD
 	obj := conn.Object("org.freedesktop.login1", "/org/freedesktop/login1")
 	err = obj.Call("org.freedesktop.login1.Manager.Inhibit", 0,
-		"sleep:idle:handle-power-key:handle-suspend-key:handle-lid-switch", "audiofilus", "Music playing with the app open", "block").Store(&fd)
+		"sleep:idle:handle-power-key:handle-suspend-key:handle-lid-switch", "Audiofilus", "Music playing with the app open", "block").Store(&fd)
 	if err != nil {
 		return nil, err
 	}

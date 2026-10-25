@@ -16,7 +16,7 @@ The battery is 3000 mAh. "Time remaining" is `time_to_empty_now` from the batter
 
 What was left of Songo in sleep: ~38 % of one core (drawing at 10 FPS 16 %, SDL audio 11 %, decoding 7 %).
 
-## audiofilus on the PC (Ryzen 7 5700U)
+## Audiofilus on the PC (Ryzen 7 5700U)
 
 | Measurement | CPU of one core |
 |---|---|
@@ -26,7 +26,7 @@ What was left of Songo in sleep: ~38 % of one core (drawing at 10 FPS 16 %, SDL 
 
 Almost all the cost is `go-mp3`; the rest (~1 %) is the `oto` mixer and sending to PulseAudio.
 
-## audiofilus on the console (RG34XX-SP, `schedutil` at 1.5 GHz)
+## Audiofilus on the console (RG34XX-SP, `schedutil` at 1.5 GHz)
 
 | Measurement | CPU of one core |
 |---|---|
@@ -35,7 +35,7 @@ Almost all the cost is `go-mp3`; the rest (~1 %) is the `oto` mixer and sending 
 
 `go-mp3` costs ~2.5 times what FFmpeg cost in Songo (7 %): that is the thing to optimize. At 480 MHz (`powersave`) it would be ~55 % of one core. Battery draw in pocket mode was not measured (the test was cut short).
 
-## audiofilus on the console with libmpg123 (October 18, 2026)
+## Audiofilus on the console with libmpg123 (October 18, 2026)
 
 Decoding MP3 with libmpg123 costs 0.6 % of one core at 1.5 GHz (go-mp3: 18 %); see the formats table in [architecture.md](architecture.md#formats).
 
@@ -46,7 +46,7 @@ App sleep with the music **paused**, screen off (`backlight(0)`), wifi on (conne
 | `performance` (fixed 1.5 GHz) | ~295 mA | ~1 % + 0.4 % of one core |
 | `powersave` (480 MHz) | **~270 mA** | |
 
-Since then, sleep sets `powersave` by default (`sleep.governor`). audiofilus's CPU barely matters anymore: what's left is the system baseline with the screen off (the Knulli menu in that situation draws ~300–330 mA with `performance`) and the wifi. Still to measure: playing and without wifi, with the reliable method (`capacity` drop).
+Since then, sleep sets `powersave` by default (`sleep.governor`). Audiofilus's CPU barely matters anymore: what's left is the system baseline with the screen off (the Knulli menu in that situation draws ~300–330 mA with `performance`) and the wifi. Still to measure: playing and without wifi, with the reliable method (`capacity` drop).
 
 ### Playing in sleep (October 18, 2026)
 

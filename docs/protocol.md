@@ -43,8 +43,8 @@ Almost every command responds with the full state (`daemon.FullStatus`):
 | `alarm` | `[set <json>` · `off` · `test]` | With no arguments returns the alarm; `set` replaces it (`{"on":true,"hour":7,"min":30,"days":[1,2,3,4,5],"once":false,"source":"","fade":60}`; days 0 = Sunday, empty = every day; source empty = the last queue, or a playlist, folder, file or `radio://` station), `off` turns it off, `test` rings it now. The status carries it as `alarm`, with `next` |
 | `shuffle` | `[on\|off\|toggle]` | With no argument, toggles |
 | `repeat` | `off\|all\|one` | |
-| `volume` | `0..2` | The audiofilus volume (1 is the original); the UI uses `volstep` |
-| `volstep` | `+N` · `-N` | Raises or lowers N points on the single 0 to 200 scale: the system volume up to 100 and the audiofilus boost above that (when lowering, the boost goes first). Called by the volume buttons (through the `knulli-audio` wrapper) and by + and − in the UI |
+| `volume` | `0..2` | The Audiofilus volume (1 is the original); the UI uses `volstep` |
+| `volstep` | `+N` · `-N` | Raises or lowers N points on the single 0 to 200 scale: the system volume up to 100 and the Audiofilus boost above that (when lowering, the boost goes first). Called by the volume buttons (through the `knulli-audio` wrapper) and by + and − in the UI |
 | `queue` | — | Returns the list of paths in playback order (not the state) |
 | `sleep` | `[on\|off\|toggle] [oled]` | The app's pseudo-sleep: gestures and, without `oled`, backlight off (see [knulli.md](knulli.md)) |
 | `awake` | `on [seconds]` · `off` | The app's permission to prevent suspend while it is open (playing or not); it expires after 60 s if not renewed |

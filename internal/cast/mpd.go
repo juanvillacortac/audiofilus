@@ -30,7 +30,7 @@ func discoverMPD(ctx context.Context) ([]Device, error) {
 		d := Device{Kind: MPD, ID: "mpd:" + in.Host(), Name: in.Name, Model: "MPD", Host: in.Host(),
 			NeedsPassword: in.TXT["password"] == "1"}
 		if in.TXT["app"] == "audiofilus" {
-			d.Model = "audiofilus"
+			d.Model = "Audiofilus"
 		}
 		out = append(out, d)
 	}

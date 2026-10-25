@@ -1,6 +1,6 @@
 # muOS
 
-audiofilus also runs on **muOS** (MustardOS), which works on the same Anbernic H700 devices as Knulli (the RG34XX-SP among them). It is installed the same way, through PortMaster. Everything that is special on Knulli has its equivalent here, taken from the muOS code ([MustardOS/internal](https://github.com/MustardOS/internal)); the implementation is in `internal/platform/muos.go` and activates on its own if its scripts exist (`/opt/muos/script/device/bright.sh`).
+Audiofilus also runs on **muOS** (MustardOS), which works on the same Anbernic H700 devices as Knulli (the RG34XX-SP among them). It is installed the same way, through PortMaster. Everything that is special on Knulli has its equivalent here, taken from the muOS code ([MustardOS/internal](https://github.com/MustardOS/internal)); the implementation is in `internal/platform/muos.go` and activates on its own if its scripts exist (`/opt/muos/script/device/bright.sh`).
 
 **Not yet tested on a console running muOS** (the author doesn't have one). What follows is what its code says.
 
@@ -10,18 +10,18 @@ audiofilus also runs on **muOS** (MustardOS), which works on the same Anbernic H
 | Not dimming the screen or **muting** the music on inactivity | Stopping idlewatcher during sleep | Changing the `/run/muos/input_activity` counter every 3 s: its watcher (`script/mux/idle.sh`) checks it every 5 s and, if it changed, inhibits dimming and sleep. This is what games use. Without it, with `idle_mute` on, the music would go silent in the pocket |
 | Turning the screen off and on in sleep | `knulli-brightness dispoff/dispon` | `script/device/bright.sh 0` (backlight to 0 and screen black, without saving it) and, to wake, `bright.sh <saved brightness ± 1>` then `bright.sh <saved brightness>` (`/opt/muos/config/settings/general/brightness`): on Jacaranda, bright.sh only writes the backlight when the value differs from the saved one, so the saved value alone unblanked the screen but left it dark (muOS's own resume does the same two-step nudge) |
 | System volume | `knulli-audio getSystemVolume/setSystemVolume` | `script/device/audio.sh I` (prints "75%") and `audio.sh 75` (like its buttons; it saves it) |
-| Volume buttons handled by audiofilus (to go past 100 %) | A wrapped `knulli-audio` | No: its `muhotkey` handles them. The service reads the volume every few seconds and the interface shows it; above 100 % it is raised from the app |
+| Volume buttons handled by Audiofilus (to go past 100 %) | A wrapped `knulli-audio` | No: its `muhotkey` handles them. The service reads the volume every few seconds and the interface shows it; above 100 % it is raised from the app |
 | Vibration | `/sys/class/power_supply/axp2202-battery/moto` | The path in `/opt/muos/device/config/board/rumble` (on the RG34XX-SP, the same one) |
 | Lid | The controller sends Insert; and `hallkey` | The path in `board/hall` (the same `hallkey`). The service reads it and sends it in the state (`lid`): the interface enters sleep when it is closed, same as on Knulli |
 | Headphones | pactl and the debugfs pin | `/run/muos/headphones` (its scripts create it when they are plugged in); bluetooth, if the PipeWire output is from bluez (`wpctl inspect`) |
-| Audio | PulseAudio | PipeWire **without** the PulseAudio protocol: oto tries Pulse and falls back to ALSA, whose default output (muOS's `/etc/asound.conf`) goes to PipeWire. It needs `XDG_RUNTIME_DIR=/run`, which audiofilus sets if missing |
+| Audio | PulseAudio | PipeWire **without** the PulseAudio protocol: oto tries Pulse and falls back to ALSA, whose default output (muOS's `/etc/asound.conf`) goes to PipeWire. It needs `XDG_RUNTIME_DIR=/run`, which Audiofilus sets if missing |
 | Governor in sleep, frozen `gptokeyb`, power button (`KEY_POWER`) | — | Same as on Knulli (it's sysfs and evdev) |
 
 If something doesn't work on muOS, the most likely causes: its `muhotkey` grabbing the power button (then a tap wouldn't trigger the app's sleep, but it wouldn't suspend either, because of `caffeine`) or the controller (the sleep gestures arrive through the device SDL sees, which on muOS may be its "muOS-Keys" virtual controller). The first thing to check is `data/audiofilus.log` (it says which controller and which power button it found).
 
 ## As a muOS application (no PortMaster)
 
-Releases also ship `audiofilus.muxapp` (built by `build.sh`): a zip with an `audiofilus/` folder that muOS's Archive Manager extracts into its applications folder (`MUOS/application`), so audiofilus shows up in **Applications** instead of Ports. The folder holds `mux_launch.sh` (from `muos/audiofilus/`), the `glyph/audiofilus.png` icon its `ICON` header names, the arm64 binary and the licenses; settings and `data/` live in that same folder (`AUDIOFILUS_HOME`).
+Releases also ship `audiofilus.muxapp` (built by `build.sh`): a zip with an `audiofilus/` folder that muOS's Archive Manager extracts into its applications folder (`MUOS/application`), so Audiofilus shows up in **Applications** instead of Ports. The folder holds `mux_launch.sh` (from `muos/audiofilus/`), the `glyph/audiofilus.png` icon its `ICON` header names, the arm64 binary and the licenses; settings and `data/` live in that same folder (`AUDIOFILUS_HOME`).
 
 muOS runs `mux_launch.sh <app folder>`. The launcher works with both launcher generations, Jacaranda and later (`SETUP_APP`) and the older ones (`SETUP_SDL_ENVIRONMENT`), sourcing whichever of `func.sh`, `stage.sh` and `retro.sh` exist. It needs nothing from PortMaster: the gamepad mapping comes from the system's SDL, and there is no `gptokeyb`. muOS closes an application with `pgrep -f <foreground_process>`, which would also match the music service (`audiofilusd daemon`). So the launcher starts the UI in the background and registers its **PID** as the foreground process, which muOS kills directly, and the music keeps playing only if "Background" was chosen, as with the port. Not tested on a muOS device yet.
 
@@ -29,7 +29,7 @@ muOS runs `mux_launch.sh <app folder>`. The launcher works with both launcher ge
 
 The alarm (`daemon/alarm.go`) rings whenever the service runs and the console is awake. Waking a suspended console is best effort on muOS (from its source, not tested on a device):
 
-- **What suspends:** `script/system/suspend.sh` runs `mususpend --state mem`. There is no pre-suspend hook directory, so audiofilus can't re-arm the alarm right before sleeping as it does on Knulli; it writes it to the wake-capable RTC (on the H700 boards `rtc1`, relative to that clock's own time) when the alarm is set.
+- **What suspends:** `script/system/suspend.sh` runs `mususpend --state mem`. There is no pre-suspend hook directory, so Audiofilus can't re-arm the alarm right before sleeping as it does on Knulli; it writes it to the wake-capable RTC (on the H700 boards `rtc1`, relative to that clock's own time) when the alarm is set.
 - **Auto shutdown:** muOS writes its own shutdown timer to the RTC before suspending (default 600 s) and powers off when a wake comes after that deadline. So the alarm only wakes the console if it has been asleep for less than that timer, or if the timer is set to never.
 - **Sleep until wake:** with that option muOS writes `0` to the RTC to get its deepest standby, which clears the alarm.
 

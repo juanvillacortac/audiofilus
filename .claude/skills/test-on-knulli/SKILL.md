@@ -1,9 +1,9 @@
 ---
 name: test-on-knulli
-description: Install and test audiofilus on the author's Knulli console (RG34XX-SP) over SSH with a password. Use it to upload a binary, start or stop the service on the console, read its log, or check that no mounts were left behind.
+description: Install and test Audiofilus on the author's Knulli console (RG34XX-SP) over SSH with a password. Use it to upload a binary, start or stop the service on the console, read its log, or check that no mounts were left behind.
 ---
 
-# Testing audiofilus on the Knulli console
+# Testing Audiofilus on the Knulli console
 
 The console is `root@knulli.local`. **It only accepts a password** (the Knulli default) and `ssh-copy-id` has no effect. There is no `sshpass`.
 

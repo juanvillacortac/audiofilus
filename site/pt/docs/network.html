@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rede · Documentação do audiofilus</title>
+<title>Rede · Documentação do Audiofilus</title>
 <meta name="description" content="Enviar música para caixas de som e TVs (DLNA/UPnP e Chromecast), compartilhar sua biblioteca com DLNA e receber música do celular e de outros controles.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Início do audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Início do Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Site">
       <a href="../index.html">Início</a>
       <a href="index.html" aria-current="page">Docs</a>
@@ -80,20 +80,20 @@
 <li>Escolha um e a música continua lá do mesmo segundo; o portátil ou o computador pausa e vira o controle. A próxima música da fila é enviada antes, então o aparelho segue pela fila.</li>
 <li>Enquanto envia, a barra de cima mostra <strong>→ &lt;aparelho&gt;</strong>, e pausar, próxima, anterior e avançar controlam o aparelho; a barra de progresso mostra a posição dele.</li>
 <li><kbd>START</kbd> → <strong>Volume do aparelho</strong> aumenta ou diminui o volume dele. <strong>Parar de enviar para &lt;aparelho&gt;</strong> para e continua aqui, na mesma música e no mesmo segundo.</li>
-<li>Dá para enviar tudo o que o audiofilus toca. MP3, FLAC, AAC/M4A, WAV e Ogg vão como estão; módulos, música de console, DSD e faixas de CUE são convertidos na hora para WAV. Músicas de um servidor Subsonic/Jellyfin e rádios vão pelo próprio endereço.</li>
+<li>Dá para enviar tudo o que o Audiofilus toca. MP3, FLAC, AAC/M4A, WAV e Ogg vão como estão; módulos, música de console, DSD e faixas de CUE são convertidos na hora para WAV. Músicas de um servidor Subsonic/Jellyfin e rádios vão pelo próprio endereço.</li>
 </ul>
 
 <h2 id="dlna-server">Compartilhar sua biblioteca (servidor DLNA)</h2>
-<p><strong>Ajustes → Compartilhar biblioteca (DLNA)</strong> faz sua biblioteca aparecer nas TVs, consoles e apps DLNA da mesma rede, como <strong>audiofilus (&lt;nome do aparelho&gt;)</strong>. Eles podem navegar por <strong>Artistas</strong>, <strong>Álbuns</strong>, <strong>Músicas</strong>, <strong>Playlists</strong> e <strong>Pastas</strong>, com capas, e tocar dali. Formatos que uma TV não conhece são convertidos para WAV para ela. Compartilha a biblioteca que o audiofilus já escaneou; músicas de servidores não são compartilhadas.</p>
+<p><strong>Ajustes → Compartilhar biblioteca (DLNA)</strong> faz sua biblioteca aparecer nas TVs, consoles e apps DLNA da mesma rede, como <strong>Audiofilus (&lt;nome do aparelho&gt;)</strong>. Eles podem navegar por <strong>Artistas</strong>, <strong>Álbuns</strong>, <strong>Músicas</strong>, <strong>Playlists</strong> e <strong>Pastas</strong>, com capas, e tocar dali. Formatos que uma TV não conhece são convertidos para WAV para ela. Compartilha a biblioteca que o Audiofilus já escaneou; músicas de servidores não são compartilhadas.</p>
 
 <h2 id="dlna-renderer">Receber música (renderer DLNA)</h2>
-<p><strong>Ajustes → Receber música (DLNA)</strong> transforma o portátil ou o computador numa caixa de som para outros apps: de um celular com BubbleUPnP, do <em>Transmitir para dispositivo</em> do Windows ou de qualquer controle UPnP, escolha <strong>audiofilus</strong> e envie músicas. Elas tocam pelo audiofilus com título e artista, e o app que envia controla tocar, pausar, avançar e volume. Cada música é baixada primeiro e depois toca, então pelo Wi-Fi demora um pouco para começar.</p>
+<p><strong>Ajustes → Receber música (DLNA)</strong> transforma o portátil ou o computador numa caixa de som para outros apps: de um celular com BubbleUPnP, do <em>Transmitir para dispositivo</em> do Windows ou de qualquer controle UPnP, escolha <strong>Audiofilus</strong> e envie músicas. Elas tocam pelo Audiofilus com título e artista, e o app que envia controla tocar, pausar, avançar e volume. Cada música é baixada primeiro e depois toca, então pelo Wi-Fi demora um pouco para começar.</p>
 
 <h2 id="notes">Observações</h2>
 <ul>
 <li>As duas opções DLNA vêm <strong>desligadas</strong>. Desligadas, nada fica escutando na rede.</li>
 <li>Compartilhar e receber não mantêm o portátil acordado sozinhos: se ele dormir, para de responder até acordar.</li>
-<li>Um firewall no computador precisa deixar os aparelhos chegarem ao audiofilus (a porta dos arquivos é escolhida ao acaso a cada vez).</li>
+<li>Um firewall no computador precisa deixar os aparelhos chegarem ao Audiofilus (a porta dos arquivos é escolhida ao acaso a cada vez).</li>
 <li>No terminal: <code>audiofilus dlna</code> mostra o estado, e <code>audiofilus dlna server on|off</code>, <code>audiofilus dlna renderer on|off</code> e <code>audiofilus dlna name &lt;nome&gt;</code> mudam.</li>
 <li>No iPhone e no iPad, a primeira busca pede permissão para usar a rede local.</li>
 </ul>
@@ -103,7 +103,7 @@
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Início</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Versão mais recente</a></span>
+    <span>Audiofilus · <a href="../index.html">Início</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Versão mais recente</a></span>
     <span>Achou um erro na documentação? <a href="https://github.com/juanvillacortac/audiofilus/issues">Abra uma issue</a>.</span>
   </div>
 </footer>

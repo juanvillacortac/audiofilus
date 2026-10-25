@@ -173,7 +173,7 @@ On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy]
 - **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch) and from the Files app on iPhone.
 - **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
 - **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
-- **System tray** (also on Windows): the audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit.
+- **System tray** (also on Windows): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit.
 - **Closing the window keeps the music playing** (a setting, on by default on the desktop); Quit stops everything.
 
 Details in [docs/linux-desktop.md](docs/linux-desktop.md).
@@ -198,13 +198,13 @@ The same player on iOS, touch first: every row, cover, tab and button is tappabl
 
 1. Download `audiofilus-portmaster.zip` from the [latest release](https://github.com/juanvillacortac/audiofilus/releases/latest).
 2. Install it with PortMaster, or unzip it into your `ports` folder.
-3. Open **audiofilus** from Ports and pick your music folder.
+3. Open **Audiofilus** from Ports and pick your music folder.
 
 Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
-**On muOS, without PortMaster:** download `audiofilus.muxapp`, copy it to the `ARCHIVE` folder on your SD card, and install it from muOS's Archive Manager. audiofilus then shows up in **Applications**.
+**On muOS, without PortMaster:** download `audiofilus.muxapp`, copy it to the `ARCHIVE` folder on your SD card, and install it from muOS's Archive Manager. Audiofilus then shows up in **Applications**.
 
-**YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds. Songs that need a signed-in account (age-restricted) are played from another upload of the same song when there is one. If YouTube asks your network to confirm it's not a bot, or you want signed-in access, put a `cookies.txt` exported from your browser in that `yt-dlp/` folder ([how](https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies)).
+**YouTube Music** shows up only if there is a `yt-dlp` binary in the app's `yt-dlp/` folder (or on `PATH`). Audiofilus doesn't ship or download it; get the `yt-dlp_linux_aarch64` build from the [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) for handhelds. Songs that need a signed-in account (age-restricted) are played from another upload of the same song when there is one. If YouTube asks your network to confirm it's not a bot, or you want signed-in access, put a `cookies.txt` exported from your browser in that `yt-dlp/` folder ([how](https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies)).
 
 ### Linux desktop
 
@@ -282,13 +282,13 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 
 ## Support
 
-audiofilus is free and made in my spare time. If you enjoy it, you can buy me a coffee:
+Audiofilus is free and made in my spare time. If you enjoy it, you can buy me a coffee:
 
 <a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 
 ## License
 
-[MIT](LICENSE). The bundled fonts, Jersey 10, Tiny5 and Fusion Pixel, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`). The packages also ship two libraries loaded at runtime, each under its own license: libgme (LGPL) and libvgmshim, built from [libvgm](https://github.com/ValleyBell/libvgm) plus `tools/libvgm/shim.cpp`, which as a whole is **GPL-2.0** (`tools/libvgm/GPL-2.0.txt`; the list of each source file's license and the exact libvgm commit go in `licenses/` of every package). audiofilus itself stays MIT and doesn't link them at build time.
+[MIT](LICENSE). The bundled fonts, Jersey 10, Tiny5 and Fusion Pixel, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`). The packages also ship two libraries loaded at runtime, each under its own license: libgme (LGPL) and libvgmshim, built from [libvgm](https://github.com/ValleyBell/libvgm) plus `tools/libvgm/shim.cpp`, which as a whole is **GPL-2.0** (`tools/libvgm/GPL-2.0.txt`; the list of each source file's license and the exact libvgm commit go in `licenses/` of every package). Audiofilus itself stays MIT and doesn't link them at build time.
 
 ## Docs
 

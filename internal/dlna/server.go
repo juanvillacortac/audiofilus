@@ -174,7 +174,7 @@ func (m *mediaServer) item(base string, s *song, parent string) string {
 // metadata es el propio objeto id (BrowseMetadata).
 func (m *mediaServer) metadata(base string, l *library, id string) (string, error) {
 	if id == "0" {
-		return container("0", "-1", "audiofilus", "object.container", len(rootContainers)), nil
+		return container("0", "-1", "Audiofilus", "object.container", len(rootContainers)), nil
 	}
 	for _, c := range rootContainers {
 		if c.id == id {

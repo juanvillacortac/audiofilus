@@ -1,6 +1,6 @@
 # AGENTS.md
 
-A guide for coding agents (Claude Code, Codex, etc.) working on **audiofilus**: a Go music player for desktops and Linux handhelds (tested on an Anbernic RG34XX-SP with Knulli). What sets it apart from other players is that **the music keeps playing in the background**, even when the interface is closed or a game is running, and that it has a **pocket mode** that uses very little battery. How it is built is documented in [`docs/`](docs/README.md); this file covers what you need to know before touching anything.
+A guide for coding agents (Claude Code, Codex, etc.) working on **Audiofilus**: a Go music player for desktops and Linux handhelds (tested on an Anbernic RG34XX-SP with Knulli). What sets it apart from other players is that **the music keeps playing in the background**, even when the interface is closed or a game is running, and that it has a **pocket mode** that uses very little battery. How it is built is documented in [`docs/`](docs/README.md); this file covers what you need to know before touching anything.
 
 ## Status
 
@@ -67,7 +67,7 @@ GOOS=windows go vet ./...
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
-| `mobile/`, `ios/`, `android/` | The phone apps: `mobile/` is audiofilus as a package for ebitenmobile; `ios/` the iOS app ([docs/ios.md](docs/ios.md)); `android/` the Android app, its build scripts and Gradle project ([docs/android.md](docs/android.md)) |
+| `mobile/`, `ios/`, `android/` | The phone apps: `mobile/` is Audiofilus as a package for ebitenmobile; `ios/` the iOS app ([docs/ios.md](docs/ios.md)); `android/` the Android app, its build scripts and Gradle project ([docs/android.md](docs/android.md)) |
 | `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
 | `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/fdk-aac/` | `build.sh`: the same for libfdk-aac (M4A, M4B, AAC radio), which muOS and others don't ship |

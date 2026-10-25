@@ -29,7 +29,7 @@
          gesto Atrás llega a MainActivity (OnBackInvokedCallback) también en
          Android 13 a 15; sin esto solo en Android 16, y antes cerraba la app. -->
     <application
-        android:label="audiofilus"
+        android:label="Audiofilus"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
         android:theme="@style/Theme.Audiofilus"

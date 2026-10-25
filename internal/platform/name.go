@@ -54,7 +54,7 @@ func DeviceName() string {
 	if h != "" {
 		return h
 	}
-	return "audiofilus"
+	return "Audiofilus"
 }
 
 // readModel lee un modelo de f, o "" si no hay o es el del chip (los

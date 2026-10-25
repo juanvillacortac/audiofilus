@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="channel_playback">Lecture</string>
-    <string name="folder_unreadable">Impossible de lire %1$s. Autorisez audiofilus à accéder à la musique et à l\'audio, ou choisissez un autre dossier.</string>
-    <string name="need_audio_permission">audiofilus a besoin de l\'autorisation musique et audio pour lire ce dossier. Vous pouvez l\'accorder dans les paramètres de l\'application.</string>
+    <string name="folder_unreadable">Impossible de lire %1$s. Autorisez Audiofilus à accéder à la musique et à l\'audio, ou choisissez un autre dossier.</string>
+    <string name="need_audio_permission">Audiofilus a besoin de l\'autorisation musique et audio pour lire ce dossier. Vous pouvez l\'accorder dans les paramètres de l\'application.</string>
     <string name="folder_picked">Dossier de musique : %1$s (%2$d éléments)</string>
 </resources>

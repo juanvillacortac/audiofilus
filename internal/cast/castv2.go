@@ -371,7 +371,7 @@ func (p *castPlayer) Load(ctx context.Context, m media, start float64) error {
 	if err != nil {
 		return err
 	}
-	meta := map[string]any{"metadataType": 3, "title": orStr(m.Title, "audiofilus")}
+	meta := map[string]any{"metadataType": 3, "title": orStr(m.Title, "Audiofilus")}
 	if m.Artist != "" {
 		meta["artist"] = m.Artist
 	}

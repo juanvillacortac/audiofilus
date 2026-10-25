@@ -46,7 +46,7 @@ func (j *jellyfin) deviceID() string {
 // auth es la cabecera con que Jellyfin identifica al cliente (y el token,
 // si ya hay sesión).
 func (j *jellyfin) auth() string {
-	h := fmt.Sprintf(`MediaBrowser Client="audiofilus", Device="audiofilus", DeviceId="%s", Version="1.0"`, j.deviceID())
+	h := fmt.Sprintf(`MediaBrowser Client="Audiofilus", Device="Audiofilus", DeviceId="%s", Version="1.0"`, j.deviceID())
 	j.mu.Lock()
 	defer j.mu.Unlock()
 	if j.token != "" {

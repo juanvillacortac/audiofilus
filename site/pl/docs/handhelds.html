@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Systemy konsol · dokumentacja audiofilus</title>
-<meta name="description" content="Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.">
+<title>Systemy konsol · dokumentacja Audiofilus</title>
+<meta name="description" content="Co Audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -30,7 +30,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="Strona główna audiofilus"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Strona główna Audiofilus"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="Strona">
       <a href="../index.html">Start</a>
       <a href="index.html" aria-current="page">Dokumentacja</a>
@@ -72,9 +72,9 @@
   </aside>
   <article>
     <h1>Systemy konsol</h1>
-    <p class="lede">Co audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.</p>
+    <p class="lede">Co Audiofilus robi inaczej na Knulli, muOS, ROCKNIX, ArkOS, dArkOS i EmuELEC.</p>
 
-<p>audiofilus wykrywa system przy starcie i używa jego własnych narzędzi do klapki, przycisku zasilania, głośności i baterii. Testowany na Anbernic RG34XX-SP z Knulli.</p>
+<p>Audiofilus wykrywa system przy starcie i używa jego własnych narzędzi do klapki, przycisku zasilania, głośności i baterii. Testowany na Anbernic RG34XX-SP z Knulli.</p>
 
 <h2 id="files">Gdzie są twoje pliki</h2>
 <p>Ustawienia (<code>audiofilus.json</code>) i dane (<code>data/</code>: pamięć biblioteki, playlisty, historia, teksty, podcasty, log <code>audiofilus.log</code>) leżą obok programu, w folderze portu:</p>
@@ -88,15 +88,15 @@
 
 <h2 id="power">Przycisk zasilania</h2>
 <ul>
-<li><strong>Przy otwartym odtwarzaczu</strong> krótkie naciśnięcie przycisku zasilania usypia audiofilus (ekran wył., muzyka gra) zamiast usypiać konsolę. Przytrzymanie nadal ją wyłącza.</li>
+<li><strong>Przy otwartym odtwarzaczu</strong> krótkie naciśnięcie przycisku zasilania usypia Audiofilus (ekran wył., muzyka gra) zamiast usypiać konsolę. Przytrzymanie nadal ją wyłącza.</li>
 <li><strong>Po Przejdź w tło</strong> konsola usypia się po naciśnięciu jak zwykle.</li>
 </ul>
 <p>Przy otwartym odtwarzaczu wstrzymane są też automatyczne usypianie systemu i przyciemnianie ekranu.</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>Przyciski głośności przechodzą przez audiofilus, gdy odtwarzacz jest otwarty, więc możesz przekroczyć 100 %.</li>
-<li>Zamknięcie klapki usypia audiofilus; otwarcie go nie budzi: robi to <kbd>START</kbd>.</li>
+<li>Przyciski głośności przechodzą przez Audiofilus, gdy odtwarzacz jest otwarty, więc możesz przekroczyć 100 %.</li>
+<li>Zamknięcie klapki usypia Audiofilus; otwarcie go nie budzi: robi to <kbd>START</kbd>.</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -105,7 +105,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>Z „fake suspend” w ROCKNIX (tryb usypiania wyłączony w jego ustawieniach) naciśnięcie przycisku zasilania wycisza i zamraża wszystko, a audiofilus nie może temu zapobiec. Przy zwykłym usypianiu (domyślnym) przycisk usypia audiofilus.</li>
+<li>Z „fake suspend” w ROCKNIX (tryb usypiania wyłączony w jego ustawieniach) naciśnięcie przycisku zasilania wycisza i zamraża wszystko, a Audiofilus nie może temu zapobiec. Przy zwykłym usypianiu (domyślnym) przycisk usypia Audiofilus.</li>
 </ul>
 <h2 id="arkos">ArkOS, dArkOS i EmuELEC</h2>
 <ul>
@@ -115,19 +115,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Działa na Odroid Go Advance i Super, GameForce Chi oraz przystawkach TV z Amlogic. Nie był jeszcze testowany na prawdziwym urządzeniu.</li>
-<li>Na konsolach przenośnych przy otwartym odtwarzaczu przycisk zasilania usypia audiofilus zamiast konsoli. Przystawki TV nigdy się nie usypiają.</li>
+<li>Na konsolach przenośnych przy otwartym odtwarzaczu przycisk zasilania usypia Audiofilus zamiast konsoli. Przystawki TV nigdy się nie usypiają.</li>
 <li>Najpierw zainstaluj PortMaster z menu EmuELEC. Przy ręcznej instalacji wrzuć <code>Audiofilus.sh</code> do <code>/storage/roms/ports_scripts</code> (stąd EmuELEC bierze listę portów), a folder <code>audiofilus</code> do <code>/storage/roms/ports</code>.</li>
 </ul>
 
 <h2 id="power-use">Zużycie baterii</h2>
-<p>Zmierzone na RG34XX-SP: w uśpieniu audiofilus pobiera około 260&nbsp;mA, to około 11–12 godzin muzyki na baterii 3300&nbsp;mAh.</p>
+<p>Zmierzone na RG34XX-SP: w uśpieniu Audiofilus pobiera około 260&nbsp;mA, to około 11–12 godzin muzyki na baterii 3300&nbsp;mAh.</p>
 
     <nav class="pager" aria-label="Strony"><a href="settings.html">← Ustawienia</a><a href="faq.html">FAQ →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">Start</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Najnowsze wydanie</a></span>
+    <span>Audiofilus · <a href="../index.html">Start</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Najnowsze wydanie</a></span>
     <span>Znalazłeś błąd w dokumentacji? <a href="https://github.com/juanvillacortac/audiofilus/issues">Zgłoś problem</a>.</span>
   </div>
 </footer>

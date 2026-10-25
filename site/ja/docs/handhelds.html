@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>携帯ゲーム機 · audiofilus ドキュメント</title>
-<meta name="description" content="Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で audiofilus が何を変えるか。">
+<title>携帯ゲーム機 · Audiofilus ドキュメント</title>
+<meta name="description" content="Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で Audiofilus が何を変えるか。">
 <meta name="theme-color" content="#0d0b15">
 <link rel="icon" type="image/png" sizes="32x32" href="../../img/icon-32.png">
 <link rel="apple-touch-icon" href="../../img/icon-256.png">
@@ -33,7 +33,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a href="../index.html" aria-label="audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="audiofilus" width="230" height="56"></a>
+    <a href="../index.html" aria-label="Audiofilus ホーム"><img class="px" src="../../img/logo.png" alt="Audiofilus" width="230" height="56"></a>
     <nav aria-label="サイト">
       <a href="../index.html">ホーム</a>
       <a href="index.html" aria-current="page">ドキュメント</a>
@@ -75,9 +75,9 @@
   </aside>
   <article>
     <h1>携帯ゲーム機</h1>
-    <p class="lede">Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で audiofilus が何を変えるか。</p>
+    <p class="lede">Knulli、muOS、ROCKNIX、ArkOS、dArkOS、EmuELEC で Audiofilus が何を変えるか。</p>
 
-<p>audiofilus は起動時にシステムを検出し、ふた、電源ボタン、音量、バッテリーにそのシステム自身の仕組みを使います。Knulli を入れた Anbernic RG34XX-SP でテストしています。</p>
+<p>Audiofilus は起動時にシステムを検出し、ふた、電源ボタン、音量、バッテリーにそのシステム自身の仕組みを使います。Knulli を入れた Anbernic RG34XX-SP でテストしています。</p>
 
 <h2 id="files">ファイルの場所</h2>
 <p>設定（<code>audiofilus.json</code>）とデータ（<code>data/</code>：ライブラリのキャッシュ、プレイリスト、履歴、歌詞、ポッドキャスト、ログ <code>audiofilus.log</code>）はプログラムの隣、ポートのフォルダーにあります：</p>
@@ -91,15 +91,15 @@
 
 <h2 id="power">電源ボタン</h2>
 <ul>
-<li><strong>プレイヤーが開いているとき</strong>、電源ボタンを軽く押すと、ゲーム機をスリープさせる代わりに audiofilus がスリープ（画面オフ、音楽オン）します。長押しすれば電源は切れます。</li>
+<li><strong>プレイヤーが開いているとき</strong>、電源ボタンを軽く押すと、ゲーム機をスリープさせる代わりに Audiofilus がスリープ（画面オフ、音楽オン）します。長押しすれば電源は切れます。</li>
 <li><strong>バックグラウンドへの後</strong>は、押すとゲーム機は通常どおりスリープします。</li>
 </ul>
 <p>プレイヤーが開いている間は、システムのアイドル時のスリープと画面の減光も止めます。</p>
 
 <h2 id="knulli">Knulli</h2>
 <ul>
-<li>プレイヤーが開いている間、音量ボタンは audiofilus を通るので、100 % を超えて上げられます。</li>
-<li>ふたを閉じると audiofilus はスリープします。ふたを開けても復帰せず、<kbd>START</kbd> で復帰します。</li>
+<li>プレイヤーが開いている間、音量ボタンは Audiofilus を通るので、100 % を超えて上げられます。</li>
+<li>ふたを閉じると Audiofilus はスリープします。ふたを開けても復帰せず、<kbd>START</kbd> で復帰します。</li>
 </ul>
 <h2 id="muos">muOS</h2>
 <ul>
@@ -108,7 +108,7 @@
 </ul>
 <h2 id="rocknix">ROCKNIX</h2>
 <ul>
-<li>ROCKNIX の「疑似サスペンド」（設定でサスペンドモードをオフ）では、電源ボタンを押すとすべてがミュートされて止まり、audiofilus には止められません。通常のサスペンド（デフォルト）では、ボタンで audiofilus がスリープします。</li>
+<li>ROCKNIX の「疑似サスペンド」（設定でサスペンドモードをオフ）では、電源ボタンを押すとすべてがミュートされて止まり、Audiofilus には止められません。通常のサスペンド（デフォルト）では、ボタンで Audiofilus がスリープします。</li>
 </ul>
 <h2 id="arkos">ArkOS と dArkOS</h2>
 <ul>
@@ -118,19 +118,19 @@
 <h2 id="emuelec">EmuELEC</h2>
 <ul>
 <li>Odroid Go Advance／Super、GameForce Chi、Amlogic の TV ボックスで動作します。実機ではまだ試していません。</li>
-<li>携帯ゲーム機では、プレイヤーが開いているとき、電源ボタンはゲーム機をスリープさせずに audiofilus をスリープさせます。TV ボックスはスリープしません。</li>
+<li>携帯ゲーム機では、プレイヤーが開いているとき、電源ボタンはゲーム機をスリープさせずに Audiofilus をスリープさせます。TV ボックスはスリープしません。</li>
 <li>先に EmuELEC のメニューから PortMaster をインストールしてください。手動でインストールする場合は、<code>Audiofilus.sh</code> を <code>/storage/roms/ports_scripts</code>（EmuELEC がポートを一覧表示する場所）に、<code>audiofilus</code> フォルダーを <code>/storage/roms/ports</code> に置きます。</li>
 </ul>
 
 <h2 id="power-use">バッテリーの消費</h2>
-<p>RG34XX-SP での測定：スリープ中の audiofilus の消費電流は約 260&nbsp;mA で、3300&nbsp;mAh のバッテリーで音楽を 11〜12 時間ほど再生できます。</p>
+<p>RG34XX-SP での測定：スリープ中の Audiofilus の消費電流は約 260&nbsp;mA で、3300&nbsp;mAh のバッテリーで音楽を 11〜12 時間ほど再生できます。</p>
 
     <nav class="pager" aria-label="ページ"><a href="settings.html">← 設定</a><a href="faq.html">よくある質問 →</a></nav>
   </article>
 </div>
 <footer>
   <div class="wrap">
-    <span>audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
+    <span>Audiofilus · <a href="../index.html">ホーム</a> · <a href="https://github.com/juanvillacortac/audiofilus">GitHub</a> · <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">最新リリース</a></span>
     <span>ドキュメントに誤りを見つけましたか？ <a href="https://github.com/juanvillacortac/audiofilus/issues">Issue を開いてください</a>。</span>
   </div>
 </footer>
