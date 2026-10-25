@@ -78,4 +78,3 @@ func TestFetch(t *testing.T) {
 		t.Errorf("cache not cleaned: %v", left)
 	}
 }
-
