@@ -19,6 +19,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime/pprof"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -393,6 +394,11 @@ func (d *Daemon) restore() {
 		_ = json.Unmarshal(st.DSP, &dsp)
 	}
 	d.eng.SetDSP(dsp)
+	// Un state.json de antes de que se guardara la cola propia al recibir.
+	if slices.ContainsFunc(st.Queue, received) {
+		st.Queue = slices.DeleteFunc(st.Queue, received)
+		st.Index, st.Position = 0, 0
+	}
 	if len(st.Queue) > 0 {
 		d.eng.Load(st.Queue, st.Index, st.Position, st.Resume)
 	}
@@ -416,6 +422,13 @@ func (d *Daemon) saveState() {
 		Volume:   s.Volume,
 	}
 	st.DSP, _ = json.Marshal(d.eng.DSPConfig())
+	if slices.ContainsFunc(st.Queue, received) {
+		// Lo que manda otro aparato (MPD, DLNA) no sobrevive a un reinicio:
+		// sus canciones se bajan a una caché que se borra al arrancar. Se
+		// queda la cola propia de antes, que es la que vuelve.
+		old := config.LoadState(d.paths)
+		st.Queue, st.Index, st.Position = old.Queue, old.Index, old.Position
+	}
 	if err := config.SaveState(d.paths, st); err != nil {
 		log.Printf("saving state: %v", err)
 	}

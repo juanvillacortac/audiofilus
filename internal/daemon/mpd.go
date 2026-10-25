@@ -149,6 +149,10 @@ func (d *Daemon) stopMPD() {
 	d.closeMPDLocked()
 }
 
+// received dice si path es una canción que mandó otro aparato (por URL, a
+// MPD o al renderizador DLNA): solo existe mientras corre el servicio.
+func received(path string) bool { return mpd.IsPath(path) || dlna.IsRendererPath(path) }
+
 // receiving dice quién le manda música a este aparato (FullStatus.Receiving),
 // con path lo que suena.
 func (d *Daemon) receiving(path string) string {
