@@ -2,9 +2,12 @@ package mpd
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"slices"
@@ -417,6 +420,29 @@ func TestAddURL(t *testing.T) {
 	}
 	if _, err := c.Cmd("addtagid", Map(must(t, c, "addid", "solo.wav"))["Id"], "title", "x"); err == nil {
 		t.Error("addtagid on a library song worked")
+	}
+}
+
+// La etiqueta propia AudiofilusCover pone la URL de la portada de una
+// canción por URL: Server.Cover la baja (y no es una etiqueta más).
+func TestAddURLCover(t *testing.T) {
+	png := []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\x0dIHDR")
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write(png) }))
+	defer srv.Close()
+	s, f, c, _ := start(t, "")
+	id := Map(must(t, c, "addid", srv.URL+"/song.mp3"))["Id"]
+	must(t, c, "addtagid", id, "audiofiluscover", srv.URL+"/cover.png")
+	p := f.Queue()[0]
+	var cover string
+	for i := 0; i < 200 && cover == ""; i++ {
+		cover = s.Cover(p)
+		time.Sleep(10 * time.Millisecond)
+	}
+	if b, err := os.ReadFile(cover); err != nil || !bytes.Equal(b, png) {
+		t.Errorf("cover %q: %q %v", cover, b, err)
+	}
+	if tg, _ := s.Tags(p); tg != (Tags{Title: "song"}) {
+		t.Errorf("the cover became a tag: %+v", tg)
 	}
 }
 

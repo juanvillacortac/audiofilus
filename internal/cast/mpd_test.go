@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -64,13 +65,14 @@ func (f *fakeMPD) serve(t *testing.T) string {
 
 // Mandar a un MPD: vacía su cola, añade la URL con sus etiquetas, la toca
 // desde el segundo pedido; la siguiente va detrás (quitando la que había);
-// el estado y el volumen se leen de status.
+// el estado y el volumen se leen de status. A un mpd no se le manda la
+// portada (no conoce CoverTag).
 func TestMPDPlayer(t *testing.T) {
 	f := &fakeMPD{}
 	p := newMPDPlayer(Device{Kind: MPD, Host: f.serve(t)})
 	defer p.Close()
 	ctx := context.Background()
-	if err := p.Load(ctx, media{URL: "http://pc/m/a.flac", Title: "Song", Artist: "Band"}, 30); err != nil {
+	if err := p.Load(ctx, media{URL: "http://pc/m/a.flac", Title: "Song", Artist: "Band", Cover: "http://pc/c/a.jpg"}, 30); err != nil {
 		t.Fatal(err)
 	}
 	if err := p.SetNext(ctx, media{URL: "http://pc/m/b.flac"}); err != nil {
@@ -89,6 +91,21 @@ func TestMPDPlayer(t *testing.T) {
 	defer f.mu.Unlock()
 	if strings.Join(f.cmds, "\n") != strings.Join(want, "\n") {
 		t.Errorf("commands:\n%s\nwant:\n%s", strings.Join(f.cmds, "\n"), strings.Join(want, "\n"))
+	}
+}
+
+// A otro audiofilus, la portada va con la etiqueta propia (CoverTag).
+func TestMPDPlayerCover(t *testing.T) {
+	f := &fakeMPD{}
+	p := newMPDPlayer(Device{Kind: MPD, Model: "Audiofilus", Host: f.serve(t)})
+	defer p.Close()
+	if err := p.Load(context.Background(), media{URL: "http://pc/m/a.flac", Cover: "http://pc/c/a.jpg"}, 0); err != nil {
+		t.Fatal(err)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if !slices.Contains(f.cmds, `addtagid "7" "AudiofilusCover" "http://pc/c/a.jpg"`) {
+		t.Errorf("commands: %q", f.cmds)
 	}
 }
 

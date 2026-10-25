@@ -100,12 +100,19 @@ type Server struct {
 	wg     sync.WaitGroup
 }
 
-// urlSong es una canción añadida por URL: la URL y sus etiquetas (las de
-// addtagid).
+// urlSong es una canción añadida por URL: la URL, sus etiquetas (las de
+// addtagid) y la URL de su portada (CoverTag).
 type urlSong struct {
-	uri  string
-	tags Tags
+	uri   string
+	tags  Tags
+	cover string
 }
+
+// CoverTag es una etiqueta propia de audiofilus para addtagid: la URL de la
+// portada. MPD no tiene cómo pasarla con una canción por URL, y la incrustada
+// no basta (una portada suelta, cover.jpg, no va en el archivo); un mpd de
+// verdad no la conoce, así que solo se le manda a otro audiofilus.
+const CoverTag = "AudiofilusCover"
 
 // urlPrefix es el de las rutas de las canciones añadidas por URL en la cola
 // del motor.
@@ -344,17 +351,29 @@ func (s *Server) addURL(uri string) string {
 
 // setURLTag pone una etiqueta a una canción añadida por URL.
 func (s *Server) setURLTag(path, tag, value string, clear bool) bool {
-	uri, u, ok := s.fetch.Entry(path)
+	_, u, ok := s.fetch.Entry(path)
 	if !ok {
 		return false
 	}
-	if clear {
-		u.tags = Tags{}
-	} else {
+	switch {
+	case clear:
+		u.tags, u.cover = Tags{}, ""
+	case tag == CoverTag:
+		u.cover = value
+	default:
 		u.tags.set(tag, value)
 	}
-	s.fetch.Add(path, uri, u)
-	return true
+	return s.fetch.Update(path, u)
+}
+
+// Cover es la portada de una canción añadida por URL, como archivo (ver
+// fetch.Cover; "" mientras no hay).
+func (s *Server) Cover(path string) string {
+	_, u, ok := s.fetch.Entry(path)
+	if !ok {
+		return ""
+	}
+	return s.fetch.Cover(path, u.cover)
 }
 
 // ack es un error del protocolo ("ACK [code@n] {cmd} msg").

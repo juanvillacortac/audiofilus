@@ -91,6 +91,11 @@ func (p *mpdPlayer) add(m media, pos string) (string, error) {
 			_, _ = p.cmd("addtagid", id, t[0], t[1]) // un mpd puede no dejar
 		}
 	}
+	if m.Cover != "" && p.dev.Model == "Audiofilus" {
+		// La portada, con la etiqueta propia de audiofilus (un mpd no la
+		// conoce).
+		_, _ = p.cmd("addtagid", id, mpd.CoverTag, m.Cover)
+	}
 	return id, nil
 }
 

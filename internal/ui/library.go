@@ -252,6 +252,19 @@ func (a *Album) decodeCover() image.Image {
 	if remote.IsRemote(a.coverPath) {
 		return a.decodeRemoteCover()
 	}
+	if strings.HasPrefix(a.coverPath, mpdLibScheme) {
+		img := decodeMPDCover(a.coverPath) // mpdcover.go
+		a.mu.Lock()
+		if !a.decoded {
+			a.decoded = true
+			if img != nil {
+				a.accent = accentColors(img)
+				a.hasColor = true
+			}
+		}
+		a.mu.Unlock()
+		return img
+	}
 	f, err := os.Open(a.coverPath)
 	if err != nil {
 		return nil

@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -76,5 +77,55 @@ func TestFetch(t *testing.T) {
 	f.Keep()
 	if left, _ := filepath.Glob(filepath.Join(dir, "cache", "*")); len(left) != 0 {
 		t.Errorf("cache not cleaned: %v", left)
+	}
+}
+
+// La portada de una ruta es la de su URL, bajada aparte (.img); si esa URL
+// no es una imagen, o no hay, el archivo de la canción ya bajado (que la
+// trae incrustada). Mientras nada está listo, "".
+func TestCover(t *testing.T) {
+	png := []byte("\x89PNG\r\n\x1a\n" + "\x00\x00\x00\x0dIHDR")
+	song := []byte("RIFF....WAVEfmt ")
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/c.png":
+			w.Write(png)
+		case "/s.wav":
+			w.Header().Set("Content-Length", fmt.Sprint(len(song)))
+			w.Write(song)
+		default:
+			w.Write([]byte("<html>no</html>"))
+		}
+	}))
+	defer srv.Close()
+	f := New[string](filepath.Join(t.TempDir(), "cache"), "test")
+	wait := func(p, art string) string {
+		for i := 0; i < 200; i++ {
+			_, _, _ = f.Open(p) // que se baje la canción
+			if c := f.Cover(p, art); c != "" {
+				return c
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+		return ""
+	}
+	f.Add("a", srv.URL+"/s.wav", "")
+	if c := wait("a", srv.URL+"/c.png"); filepath.Ext(c) != ".img" {
+		t.Errorf("cover from its URL: %q", c)
+	} else if b, _ := os.ReadFile(c); !bytes.Equal(b, png) {
+		t.Errorf("cover content: %q", b)
+	}
+	f.Add("b", srv.URL+"/s.wav", "")
+	if c := wait("b", srv.URL+"/not-image"); filepath.Ext(c) != ".wav" {
+		t.Errorf("fallback to the song: %q", c)
+	}
+	f.Add("c", srv.URL+"/s.wav", "")
+	if c := wait("c", ""); filepath.Ext(c) != ".wav" {
+		t.Errorf("no URL: %q", c)
+	}
+	img := f.Cover("a", srv.URL+"/c.png")
+	f.Keep()
+	if _, err := os.Stat(img); err == nil {
+		t.Error("cover kept after Keep")
 	}
 }

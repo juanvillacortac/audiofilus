@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dhowden/tag"
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/resample"
 )
@@ -40,6 +41,7 @@ type Server struct {
 type published struct {
 	path      string
 	transcode bool
+	embedded  bool // una portada: la incrustada en path (una canción)
 	created   time.Time
 }
 
@@ -119,7 +121,17 @@ func (s *Server) URLFor(d Device, it Item, forceTranscode bool) (media, error) {
 	case it.Cover != "":
 		if _, err := os.Stat(it.Cover); err == nil {
 			tok := s.publish(it.Cover, false)
-			m.Cover = base + "/c/" + tok + strings.ToLower(filepath.Ext(it.Cover))
+			ext := strings.ToLower(filepath.Ext(it.Cover))
+			switch ext {
+			case ".jpg", ".jpeg", ".png", ".webp", ".gif", ".img":
+			default:
+				// Una canción: se sirve la portada que trae incrustada.
+				s.mu.Lock()
+				s.pubs[tok].embedded = true
+				s.mu.Unlock()
+				ext = ".jpg"
+			}
+			m.Cover = base + "/c/" + tok + ext
 		}
 	}
 	if it.URL != "" {
@@ -176,6 +188,19 @@ func (s *Server) serveCover(w http.ResponseWriter, r *http.Request) {
 	p := s.lookup(r.URL.Path, "/c/")
 	if p == nil {
 		http.NotFound(w, r)
+		return
+	}
+	if p.embedded {
+		pic := embeddedPicture(p.path)
+		if pic == nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", http.DetectContentType(pic))
+		w.Header().Set("Content-Length", strconv.Itoa(len(pic)))
+		if r.Method != http.MethodHead {
+			_, _ = w.Write(pic)
+		}
 		return
 	}
 	http.ServeFile(w, r, p.path)
@@ -399,4 +424,19 @@ func parseRange(h string, size int64) (start, end int64, ok bool) {
 		return 0, 0, false
 	}
 	return start, end, true
+}
+
+// embeddedPicture es la portada incrustada en la canción path (nil si no
+// tiene).
+func embeddedPicture(path string) []byte {
+	f, err := os.Open(decode.FileOf(path))
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	m, err := tag.ReadFrom(f)
+	if err != nil || m.Picture() == nil {
+		return nil
+	}
+	return m.Picture().Data
 }

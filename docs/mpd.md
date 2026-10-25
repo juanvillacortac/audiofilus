@@ -52,6 +52,7 @@ The library is `data/library.json`, the one the interface scanned. It's re-read 
 - The file is downloaded whole to `data/cache/mpd` before it plays, so it can seek.
 - Something without a length (a radio) plays live.
 - Files are deleted when their song leaves the queue.
+- **Cover:** `addtagid <id> AudiofilusCover <url>` (`mpd.CoverTag`, an Audiofilus-only tag; a real mpd rejects it, so Audiofilus only sends it to another Audiofilus) gives the URL of the song's cover, which is downloaded next to it (`fetch.Cover`). Without one, the cover embedded in the downloaded song is used. Either way the service reports it as `FullStatus.Cover`, and Now Playing shows it with its colors.
 - A seek sent while the song is still downloading is remembered by the engine (`waitSeek`) and applied when the song arrives.
 
 ### Receiving
@@ -68,9 +69,11 @@ The server remembers the client that last changed the queue or what plays (`add`
 - **Discovery:** `cast.Discover` also browses `_mpd._tcp` (`mdns.Browse`). It reports each server's name, `Model` "Audiofilus" or "MPD", and whether it asks for a password. Its own server is left out of the list (`cast.IsOwnMPD`). For a server with a password, the interface asks for it before sending, and remembers it while the app runs.
 - **Sending** (`cast/mpd.go`):
   - Load is `clear`, then `addid <url>` with `addtagid` for title, artist and album, then `playid` (and `seekid` when resuming mid-song).
+  - To another Audiofilus (`Model` "Audiofilus"), the cover URL goes with `addtagid` too (`mpd.CoverTag`): the loose image (`cover.jpg`) or the embedded one, both served by the sending server. A real mpd only gets the tags it knows.
   - The next song is another `addid` after the current one. The server moves on by itself, gaplessly, and the session notices as it does with UPnP's `SetNext`.
   - State, position and volume come from `status`. The connection reconnects once if it drops.
 - **Its library:** while sending to an MPD server, Now Playing → Start has "Library of <device>". It shows the server's albums (`list album group albumartist`), then an album's songs (`find` by album and album artist, or by album alone for an mpd without album artists).
+  - Covers come from the server (`albumart`, then `readpicture`; `internal/ui/mpdcover.go`): an album's is the one of its first song (`find … window 0:1`). They show on each album's button, in the album's header and in Now Playing. The last 64 downloaded are kept in memory.
   - Picking a song plays that album on the device from that song.
   - These songs are `mpdlib://<host>/<uri>` in the send queue and go to the device by URI (`cast.Item.RemoteURI`), with nothing served from here.
   - Next, previous, seeking and the queue work as with local songs.

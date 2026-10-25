@@ -157,6 +157,22 @@ func (d *Daemon) stopMPD() {
 // MPD o al renderizador DLNA): solo existe mientras corre el servicio.
 func received(path string) bool { return mpd.IsPath(path) || dlna.IsRendererPath(path) }
 
+// receivedCover es la portada de path si llegó de otro aparato
+// (FullStatus.Cover).
+func (d *Daemon) receivedCover(path string) string {
+	switch {
+	case mpd.IsPath(path):
+		if s := d.mpdServer(); s != nil {
+			return s.Cover(path)
+		}
+	case dlna.IsRendererPath(path):
+		if s := d.dlnaService(); s != nil {
+			return s.Cover(path)
+		}
+	}
+	return ""
+}
+
 // receiving dice quién le manda música a este aparato (FullStatus.Receiving),
 // con path lo que suena.
 func (d *Daemon) receiving(path string) string {

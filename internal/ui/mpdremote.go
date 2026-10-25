@@ -85,7 +85,8 @@ type mpdAlbum struct{ artist, title string }
 // openMPDLibrary abre la lista de álbumes del aparato al que se manda.
 func (a *App) openMPDLibrary() {
 	from := a.menu
-	name := a.cast.dev.Name
+	name, host := a.cast.dev.Name, a.cast.dev.Host
+	setMPDPassword(host, a.cast.dev.Password)
 	a.mpdQuery(func(c *mpd.Client) (any, error) {
 		pairs, err := c.Cmd("list", "album", "group", "albumartist")
 		if err != nil {
@@ -107,13 +108,28 @@ func (a *App) openMPDLibrary() {
 		m := &menu{title: T("mpd_library", name), subtitle: N("n_albums", len(albums)), cols: 2, parent: from}
 		for _, al := range albums {
 			m.items = append(m.items, menuItem{label: al.title, icon: "disc", value: func() string { return al.artist },
-				do: func() { a.openMPDAlbum(al) }})
+				cover: a.mpdAlbumOf(host, al), do: func() { a.openMPDAlbum(al) }})
 		}
 		if len(albums) == 0 {
 			m.items = append(m.items, menuItem{label: T("mpd_empty"), icon: "disc", do: func() {}})
 		}
 		a.menu = m
 	})
+}
+
+// mpdAlbumOf es el álbum remoto al como Album, para su portada (el mismo
+// cada vez, para que el cargador no la vuelva a pedir).
+func (a *App) mpdAlbumOf(host string, al mpdAlbum) *Album {
+	key := mpdAlbumCover(host, al)
+	if b := a.mpdAlbums[key]; b != nil {
+		return b
+	}
+	if a.mpdAlbums == nil {
+		a.mpdAlbums = map[string]*Album{}
+	}
+	b := &Album{Title: al.title, Artist: al.artist, coverPath: key, stray: true, scaled: map[int]*coverImage{}}
+	a.mpdAlbums[key] = b
+	return b
 }
 
 // openMPDAlbum abre las canciones de un álbum remoto.
@@ -129,17 +145,19 @@ func (a *App) openMPDAlbum(al mpdAlbum) {
 		return mpd.Songs(pairs), err
 	}, func(res any) {
 		songs := res.([]mpd.Song)
+		album := a.mpdAlbumOf(host, al)
 		var paths []string
 		for _, s := range songs {
 			p := mpdLibPath(host, s.File)
 			a.mpdSongs[p] = s
+			a.mpdAlbums[p] = album // Reproduciendo, con su portada
 			paths = append(paths, p)
 		}
 		play := func(i int) {
 			a.menu = nil
 			a.send("load", append([]string{fmt.Sprint(i)}, paths...)...)
 		}
-		m := &menu{title: al.title, subtitle: al.artist, cols: 2, parent: from}
+		m := &menu{title: al.title, subtitle: al.artist, cols: 2, parent: from, album: a.mpdAlbumOf(host, al)}
 		m.items = append(m.items, menuItem{label: T("mpd_play_all"), icon: "play", close: true, do: func() { play(0) }})
 		for i, s := range songs {
 			label := s.Tags.Title

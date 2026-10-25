@@ -1,6 +1,7 @@
 package cast
 
 import (
+	"bytes"
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
@@ -425,5 +426,44 @@ func TestSessionAdvance(t *testing.T) {
 	}
 	if !finished {
 		t.Errorf("no Finished event at the end")
+	}
+}
+
+// Una canción como portada (la del álbum es la incrustada) se sirve como su
+// imagen: la saca de las etiquetas.
+func TestServeEmbeddedCover(t *testing.T) {
+	png := []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\x0dIHDR")
+	frame := append([]byte("\x00image/png\x00\x03\x00"), png...)
+	var id3 bytes.Buffer
+	id3.WriteString("ID3\x03\x00\x00")
+	size := 10 + len(frame)
+	id3.Write([]byte{byte(size >> 21 & 0x7f), byte(size >> 14 & 0x7f), byte(size >> 7 & 0x7f), byte(size & 0x7f)})
+	id3.WriteString("APIC")
+	_ = binary.Write(&id3, binary.BigEndian, uint32(len(frame)))
+	id3.Write([]byte{0, 0})
+	id3.Write(frame)
+	tone, _ := os.ReadFile(filepath.Join("..", "decode", "testdata", "tone.mp3"))
+	id3.Write(tone)
+	song := filepath.Join(t.TempDir(), "song.mp3")
+	if err := os.WriteFile(song, id3.Bytes(), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	srv, err := NewServer("127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+	m, err := srv.URLFor(Device{Host: "127.0.0.1:9"}, Item{Path: song, Cover: song}, false)
+	if err != nil || !strings.Contains(m.Cover, "/c/") {
+		t.Fatalf("cover url %q: %v", m.Cover, err)
+	}
+	resp, err := http.Get(m.Cover)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	b, _ := io.ReadAll(resp.Body)
+	if !bytes.Equal(b, png) || resp.Header.Get("Content-Type") != "image/png" {
+		t.Errorf("embedded cover: %q %q", b, resp.Header.Get("Content-Type"))
 	}
 }

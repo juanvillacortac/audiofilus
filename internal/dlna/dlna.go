@@ -146,6 +146,16 @@ func (s *Service) Release() {
 	go s.rend.changed()
 }
 
+// Cover es la portada de una canción del renderer, como archivo: la de su
+// albumArtURI, o la incrustada en la canción bajada ("" mientras no hay).
+func (s *Service) Cover(path string) string {
+	_, m, ok := s.fetch.Entry(path)
+	if !ok {
+		return ""
+	}
+	return s.fetch.Cover(path, m.Art)
+}
+
 // IsRendererPath dice si path es una canción que mandó un mando.
 func IsRendererPath(path string) bool { return strings.HasPrefix(path, "dlna://r/") }
 

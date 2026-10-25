@@ -31,6 +31,7 @@ AVTransport (`SetAVTransportURI`, `SetNextAVTransportURI`, `Play`, `Pause`, `Sto
 
 - A URL becomes the queue as `dlna://r/<n>`. The engine opens it through `OpenRemote`: the file is downloaded whole to `data/cache/dlna` first (it plays as soon as it's there; a song over home Wi-Fi takes a moment), because the decoders seek in the file. A URL without `Content-Length` (or with ICY headers) is treated as a live stream and played like a radio station. `audio/L16` is saved as WAV.
 - Title, artist and album come from the DIDL-Lite metadata the control point sends.
+- **Cover:** the `albumArtURI` of the DIDL-Lite is downloaded next to the song (`fetch.Cover`, at most 10 MB, only if it is an image); without one, or if it fails, the cover embedded in the downloaded song is used. The service reports it as `FullStatus.Cover` (a cache file), and Now Playing shows it like any other.
 - Only the current and next URLs are kept in the cache; everything is deleted when the renderer stops or the service starts.
 - If music from the interface replaced the renderer's, the renderer reports `STOPPED`; `Play` brings its URL back.
 

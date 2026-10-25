@@ -660,7 +660,9 @@ func (c *conn) addTagID(args []string) error {
 		return err
 	}
 	tag := canonTag(args[1])
-	if tag == "" || tag == "file" || tag == "base" || tag == "any" || tag == "modified-since" {
+	if strings.EqualFold(args[1], CoverTag) {
+		tag = CoverTag
+	} else if tag == "" || tag == "file" || tag == "base" || tag == "any" || tag == "modified-since" {
 		return errArg("Unknown tag type: %s", args[1])
 	}
 	if !c.s.setURLTag(p, tag, args[2], false) {

@@ -52,6 +52,9 @@ type entry[M any] struct {
 	stream *radio.Stream
 	err    error
 	cancel context.CancelFunc
+	// La portada de su URL (Cover): cómo va y dónde quedó.
+	art     int
+	artFile string
 }
 
 // Fetcher baja las URLs que otro (un mando DLNA, un cliente MPD) pone en
@@ -75,6 +78,19 @@ func (f *Fetcher[M]) Add(p, uri string, meta M) {
 	f.mu.Lock()
 	f.entries[p] = &entry[M]{uri: uri, meta: meta}
 	f.mu.Unlock()
+}
+
+// Update cambia los metadatos de una ruta sin tocar su descarga (false si
+// no está).
+func (f *Fetcher[M]) Update(p string, meta M) bool {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	e := f.entries[p]
+	if e == nil {
+		return false
+	}
+	e.meta = meta
+	return true
 }
 
 // Entry es la URL y los metadatos de una ruta (ok false si no está).
@@ -101,6 +117,9 @@ func (f *Fetcher[M]) Keep(paths ...string) {
 		}
 		if e.file != "" {
 			_ = os.Remove(e.file)
+		}
+		if e.artFile != "" {
+			_ = os.Remove(e.artFile)
 		}
 		delete(f.entries, p)
 	}

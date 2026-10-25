@@ -25,6 +25,7 @@ type menuItem struct {
 	danger bool   // Salir: en otro color
 	close  bool   // cierra el menú aunque tenga active (p. ej. el de pantallas)
 	note   string // un texto debajo, sin más (a diferencia de value, cierra el menú)
+	cover  *Album // si está, su portada va en lugar del icono (un álbum)
 }
 
 // menu es el menú abierto.
@@ -411,7 +412,11 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 		op.GeoM.Scale(2, 2)
 		op.GeoM.Translate(float64(t.x+t.w/2-7), float64(top))
 		op.ColorScale.ScaleWithColor(iconCol)
-		dst.DrawImage(icon(it.icon), op)
+		if it.cover != nil {
+			a.drawCover(dst, it.cover, t.x+t.w/2-7, top, 14, 1)
+		} else {
+			dst.DrawImage(icon(it.icon), op)
+		}
 		label := it.label
 		ly := top + 14 + 5
 		if sub {

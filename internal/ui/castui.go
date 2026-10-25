@@ -273,11 +273,10 @@ func (a *App) castMeta(path string) castPrep {
 			}
 		}
 	default:
-		if al, _ := a.lib.AlbumOf(path); al != nil {
-			switch strings.ToLower(filepath.Ext(al.coverPath)) {
-			case ".jpg", ".jpeg", ".png", ".webp":
-				p.item.Cover = al.coverPath
-			}
+		if al, _ := a.lib.AlbumOf(path); al != nil && !remote.IsRemote(al.coverPath) {
+			// Una imagen, o la canción con la portada incrustada (el
+			// servidor de envío la saca de sus etiquetas).
+			p.item.Cover = al.coverPath
 		}
 	}
 	return p
@@ -512,6 +511,15 @@ func (a *App) pollCast() {
 		} else {
 			it := a.castMeta(p).item
 			a.playingSong = Song{Path: p, Title: it.Title, Artist: it.Artist, Album: it.Album}
+			a.playing = nil
+			if al := a.mpdAlbums[p]; al != nil {
+				// De la biblioteca del aparato: un álbum de paso con esta
+				// canción, y la portada se le pide a él (la misma ruta: ya
+				// bajada).
+				b := &Album{Title: al.Title, Artist: al.Artist, Songs: []Song{a.playingSong}, coverPath: al.coverPath,
+					stray: true, scaled: map[int]*coverImage{}}
+				a.playing, a.playingIdx, a.themeFor = b, 0, b
+			}
 		}
 		a.lastTrack = p
 	}

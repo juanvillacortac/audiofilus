@@ -976,11 +976,15 @@ type FullStatus struct {
 	// mientras la interfaz manda la música a otro aparato; RemoteActs son las
 	// últimas ("toggle", "next", "seek -10"…), la última con el número
 	// RemoteSeq (remote.go).
-	RemoteSeq int `json:"remote_seq,omitempty"`
+	RemoteSeq  int      `json:"remote_seq,omitempty"`
+	RemoteActs []string `json:"remote_acts,omitempty"`
 	// Receiving: otro aparato le está mandando música a este (por MPD, su
 	// dirección; por DLNA, "DLNA"). La interfaz ofrece dejar de recibir.
-	Receiving  string   `json:"receiving,omitempty"`
-	RemoteActs []string `json:"remote_acts,omitempty"`
+	Receiving string `json:"receiving,omitempty"`
+	// Cover es la portada de lo que suena si llegó de otro aparato (MPD,
+	// DLNA): un archivo de la caché, una imagen (.img) o la canción bajada
+	// con la suya incrustada. Vacía mientras no hay.
+	Cover string `json:"cover,omitempty"`
 	// Lid: la tapa está cerrada (el sensor de la consola, en Knulli y muOS).
 	Lid bool `json:"lid,omitempty"`
 	// Docked: hay una pantalla externa (HDMI): la tapa no apaga la pantalla.
@@ -1010,6 +1014,7 @@ func (d *Daemon) status() FullStatus {
 	}
 	d.mu.Unlock()
 	s.Receiving = d.receiving(s.Track.Path)
+	s.Cover = d.receivedCover(s.Track.Path)
 	s.Lid = d.plat.LidClosed()
 	d.mu.Lock()
 	s.Alarm = d.alarm

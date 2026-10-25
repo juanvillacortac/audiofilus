@@ -65,7 +65,10 @@ type App struct {
 	// mandó música (por host), para no volver a escribirlas (castui.go).
 	mpdPasswords map[string]string
 	mpdSongs     mpdRemoteSongs // las canciones vistas de otras bibliotecas MPD (mpdremote.go)
-	meterTracker bool           // el medidor que se mira es el del tracker (meter.go)
+	// mpdAlbums son los álbumes de otras bibliotecas MPD (por la ruta de su
+	// portada, y por la de cada canción vista), para sus portadas.
+	mpdAlbums    map[string]*Album
+	meterTracker bool // el medidor que se mira es el del tracker (meter.go)
 	marks        *history.Marks
 	hist         []history.Listen
 	histAt       time.Time
@@ -1025,6 +1028,11 @@ func (a *App) syncStatus() {
 				a.playing.Songs[0] = a.playingSong
 			}
 		}
+		// Lo que mandó otro aparato: su portada llega cuando se baja.
+		if st.Cover != "" && (a.playing == nil || a.playing.stray && a.playing.coverPath != st.Cover) {
+			a.playingSong = Song{Path: st.Track.Path, Title: st.Track.Title, Artist: st.Track.Artist, Album: st.Track.Album}
+			a.strayPlaying(st.Cover)
+		}
 		return
 	}
 	a.shownPos, a.seekAt = st.Position, -1 // canción nueva: la barra no viaja hacia atrás
@@ -1048,16 +1056,29 @@ func (a *App) syncStatus() {
 		// Con su portada al lado (lo de YouTube Music que se escucha sin
 		// guardar), un álbum de paso: portada, vinilo y colores como siempre.
 		cover := st.Track.Path + ".jpg"
-		if radio.IsRadio(st.Track.Path) {
+		if st.Cover != "" {
+			// Lo que mandó otro aparato (MPD, DLNA): la portada que bajó el
+			// servicio.
+			cover = st.Cover
+		} else if radio.IsRadio(st.Track.Path) {
 			// Una emisora: su logo, si lo tiene (se baja la primera vez).
 			cover = a.radioLogo(strings.TrimPrefix(st.Track.Path, radio.Scheme))
 			a.fetchRadioLogo(st.Track.Path)
 		}
-		if _, err := os.Stat(cover); err == nil {
-			al := &Album{Title: st.Track.Album, Artist: st.Track.Artist, Songs: []Song{a.playingSong}, coverPath: cover, stray: true, scaled: map[int]*coverImage{}}
-			a.playing, a.playingIdx, a.themeFor = al, 0, al
-		}
+		a.strayPlaying(cover)
 	}
+}
+
+// strayPlaying hace de lo que suena (playingSong, que no está en la
+// biblioteca) un álbum de paso con la portada cover, si existe: portada,
+// vinilo y colores como siempre.
+func (a *App) strayPlaying(cover string) {
+	if _, err := os.Stat(cover); err != nil {
+		return
+	}
+	s := a.playingSong
+	al := &Album{Title: s.Album, Artist: s.Artist, Songs: []Song{s}, coverPath: cover, stray: true, scaled: map[int]*coverImage{}}
+	a.playing, a.playingIdx, a.themeFor = al, 0, al
 }
 
 // simulatePlaying hace que "suene" un álbum, para la maqueta sin servicio.
