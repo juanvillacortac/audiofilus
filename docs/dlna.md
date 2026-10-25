@@ -6,7 +6,7 @@ The service (not the interface) can be a **DLNA media server** and a **DLNA medi
 "dlna": { "server": true, "renderer": true, "name": "audiofilus (living room)" }
 ```
 
-- `name` empty means the device name (`platform.DeviceName`): the hostname as it is, or, on a handheld that keeps its system's default hostname (`KNULLI`, `ROCKNIX`, `muos`…), the console model: PortMaster's `DEVICE_NAME` (the launcher passes it as `AUDIOFILUS_DEVICE`), muOS's `board/name`, Knulli's `batocera.board` or the device tree model, skipping generic SoC names like `sun50iw9`.
+- `name` empty means the device name (`platform.DeviceName`): the hostname as it is, or, on a handheld that keeps its system's default hostname (`KNULLI`, `ROCKNIX`, `muos`…), the console model: PortMaster's `DEVICE_NAME` (the launcher passes it as `AUDIOFILUS_DEVICE`), muOS's `board/name`, Knulli's `batocera.board` or the device tree model, skipping generic SoC names like `sun50iw9`. The phone apps pass their own (`mobile.SetDeviceName`): on Android the name given in the phone's settings, or the model; on iOS `UIDevice.name`.
 - The interface edits `audiofilus.json` and sends `dlna apply` so the service re-reads it. From a terminal, `audiofilus dlna server on|off`, `audiofilus dlna renderer on|off` and `audiofilus dlna name <name>` change the file and apply it; `audiofilus dlna` prints the state as JSON (`server`, `renderer`, `name`, `url`, `subscribers`, `error`).
 
 ## Network
