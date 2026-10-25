@@ -2,6 +2,7 @@ package cast
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 )
@@ -21,7 +22,12 @@ const (
 	Advanced                      // empezó la siguiente (Item)
 	Finished                      // la canción acabó y no había siguiente
 	Failed                        // el aparato dejó de contestar (Err)
+	Released                      // el aparato dejó de recibir (ErrReleased)
 )
+
+// ErrReleased es el Status de un aparato que dejó de recibir lo que se le
+// manda (en otro audiofilus, "Dejar de recibir": su cola se vació).
+var ErrReleased = errors.New("the device stopped receiving")
 
 // Event es un aviso de la sesión.
 type Event struct {
@@ -169,6 +175,10 @@ func (s *Session) watch() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		st, err := s.p.Status(ctx)
 		cancel()
+		if errors.Is(err, ErrReleased) {
+			s.emit(Event{Kind: Released, Err: err})
+			return
+		}
 		if err != nil {
 			s.mu.Lock()
 			s.fails++

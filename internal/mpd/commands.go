@@ -142,6 +142,12 @@ func init() {
 func ok(*conn, []string) error { return nil }
 
 // open son los comandos que valen sin contraseña.
+// queueCmds son los comandos que cambian la cola o lo que suena: quien los
+// manda pasa a ser el que le manda música (Server.Receiving).
+var queueCmds = map[string]bool{"add": true, "addid": true, "addtagid": true, "cleartagid": true, "clear": true,
+	"delete": true, "deleteid": true, "move": true, "moveid": true, "swap": true, "swapid": true, "shuffle": true,
+	"load": true, "findadd": true, "searchadd": true, "play": true, "playid": true}
+
 var open = map[string]bool{"password": true, "ping": true, "commands": true, "notcommands": true, "tagtypes": true, "binarylimit": true}
 
 // run ejecuta un comando.
@@ -157,7 +163,13 @@ func (c *conn) run(args []string) error {
 	if !c.authed && !open[name] {
 		return &ack{ackPermission, fmt.Sprintf("you don't have permission for %q", name)}
 	}
-	return h(c, args[1:])
+	if err := h(c, args[1:]); err != nil {
+		return err
+	}
+	if queueCmds[name] {
+		c.s.owned(c)
+	}
+	return nil
 }
 
 func (c *conn) p() Player { return c.s.opts.Player }

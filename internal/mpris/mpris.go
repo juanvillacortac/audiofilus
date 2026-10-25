@@ -338,6 +338,14 @@ type root struct{ s *Server }
 func (r root) Raise() *dbus.Error { return nil }
 func (r root) Quit() *dbus.Error  { go r.s.quit(); return nil }
 
+// Remote, si no es nil, recibe las órdenes antes que el motor: el servicio
+// la pone para mandarlas a la interfaz mientras ella manda la música a otro
+// aparato (daemon/remote.go). Si dice que la atendió, el motor no se toca.
+var Remote func(cmd string) bool
+
+// remote le pasa cmd a Remote.
+func remote(cmd string) bool { return Remote != nil && Remote(cmd) }
+
 // player es org.mpris.MediaPlayer2.Player. Tras cada orden se publica el estado.
 type player struct{ s *Server }
 
@@ -352,18 +360,27 @@ func (p player) note(cmd string) {
 	}
 }
 
-func (p player) Next() *dbus.Error      { p.note("Next"); p.s.eng.Next(); return p.after() }
-func (p player) Previous() *dbus.Error  { p.note("Previous"); p.s.eng.Prev(); return p.after() }
-func (p player) Pause() *dbus.Error     { p.note("Pause"); p.s.eng.Pause(); return p.after() }
-func (p player) Play() *dbus.Error      { p.note("Play"); p.s.eng.Play(); return p.after() }
-func (p player) PlayPause() *dbus.Error { p.note("PlayPause"); p.s.eng.Toggle(); return p.after() }
-func (p player) Stop() *dbus.Error      { p.note("Stop"); p.s.eng.Pause(); return p.after() }
+// do hace f en el motor, salvo que Remote se quede con cmd.
+func (p player) do(name, cmd string, f func()) *dbus.Error {
+	p.note(name)
+	if !remote(cmd) {
+		f()
+	}
+	return p.after()
+}
+
+func (p player) Next() *dbus.Error      { return p.do("Next", "next", p.s.eng.Next) }
+func (p player) Previous() *dbus.Error  { return p.do("Previous", "prev", p.s.eng.Prev) }
+func (p player) Pause() *dbus.Error     { return p.do("Pause", "pause", p.s.eng.Pause) }
+func (p player) Play() *dbus.Error      { return p.do("Play", "resume", p.s.eng.Play) }
+func (p player) PlayPause() *dbus.Error { return p.do("PlayPause", "toggle", p.s.eng.Toggle) }
+func (p player) Stop() *dbus.Error      { return p.do("Stop", "pause", p.s.eng.Pause) }
 
 // SeekBy es "Seek" de MPRIS (se exporta con ese nombre: en Go, Seek choca con
 // io.Seeker): mueve offset microsegundos desde la posición actual.
 func (p player) SeekBy(offset int64) *dbus.Error {
-	p.s.eng.SeekBy(float64(offset) / 1e6)
-	return p.after()
+	sec := float64(offset) / 1e6
+	return p.do("Seek", fmt.Sprintf("seek %+g", sec), func() { p.s.eng.SeekBy(sec) })
 }
 
 // SetPosition salta a una posición absoluta de la canción actual.

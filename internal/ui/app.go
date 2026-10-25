@@ -141,6 +141,7 @@ type App struct {
 	volumeIn  float64 // cuándo empezó a verse el indicador (para que entre una vez)
 	volumeSeq int     // último VolumeSeq del servicio
 	powerSeq  int     // último PowerSeq del servicio (botón de encendido: sleep)
+	remoteSeq int     // último RemoteSeq del servicio (controles para el aparato)
 	sleeping  bool    // la pantalla está apagada (en sleep)
 	sleepSeen bool    // el servicio ya confirmó que está en sleep
 	sleepWake int     // WakeSeq del servicio al entrar en sleep (updateSleep)
@@ -999,6 +1000,7 @@ func (a *App) syncStatus() {
 		a.powerSeq = st.PowerSeq
 		a.volume = float64(st.VolumeTotal) / 100
 	}
+	a.castRemote(st)
 	prevIndex, wasPlaying := a.status.Index, a.isPlaying
 	a.status = st
 	a.isPlaying = st.State == "playing"

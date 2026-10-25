@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"fmt"
 	"log"
 	"math/rand/v2"
 	"runtime"
@@ -123,6 +124,12 @@ func (d *Daemon) do(a input.Action, rumbles bool) {
 	defer d.actSound(a)
 	rumble := ms(d.cfg.Sleep.RumbleMS)
 	seek := float64(d.cfg.Hotkeys.SeekSec)
+	if cmd := remoteCmd(a, seek); cmd != "" && d.remote(cmd) {
+		if rumbles {
+			d.rumble(rumble)
+		}
+		return
+	}
 	switch a {
 	case input.Prev:
 		d.eng.Prev()
@@ -148,6 +155,25 @@ func (d *Daemon) do(a input.Action, rumbles bool) {
 	if rumbles {
 		d.rumble(rumble)
 	}
+}
+
+// remoteCmd es la orden de la interfaz que corresponde a a, para mandarla al
+// aparato al que va la música ("" si no tiene: el aleatorio y despertar
+// se quedan aquí).
+func remoteCmd(a input.Action, seek float64) string {
+	switch a {
+	case input.Prev:
+		return "prev"
+	case input.Next:
+		return "next"
+	case input.SeekBack:
+		return fmt.Sprintf("seek -%g", seek)
+	case input.SeekForward:
+		return fmt.Sprintf("seek +%g", seek)
+	case input.TogglePause:
+		return "toggle"
+	}
+	return ""
 }
 
 func ms(n int) time.Duration { return time.Duration(n) * time.Millisecond }
@@ -246,7 +272,8 @@ func (d *Daemon) actSound(a input.Action) {
 		name = sfx.Next
 	case input.TogglePause:
 		name = sfx.Pause
-		if d.eng.Playing() {
+		// Mandando a otro aparato no se sabe aquí si suena: la pausa.
+		if !d.remoteActive() && d.eng.Playing() {
 			name = sfx.Play
 		}
 	case input.Random:
@@ -339,6 +366,9 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 		// él no lo saben: los que mandan PLAY o PAUSE según lo que creen (los
 		// Huawei FreeBuds) se desincronizaban, así que entonces alternan.
 		if d.bt != nil && d.bt.Registered() {
+			if d.remote(map[uint16]string{input.KeyPlayCD: "resume", input.KeyPauseCD: "pause"}[key]) {
+				return
+			}
 			if key == input.KeyPlayCD {
 				d.eng.Play()
 			} else {
@@ -350,6 +380,9 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 	case input.KeyPlayPause:
 		d.do(input.TogglePause, false)
 	case input.KeyStopCD, input.KeyStop:
+		if d.remote("pause") {
+			return
+		}
 		if d.eng.Playing() {
 			d.do(input.TogglePause, false)
 		}

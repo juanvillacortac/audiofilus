@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/juanvillacortac/audiofilus/internal/mdns"
 	"github.com/juanvillacortac/audiofilus/internal/mpd"
@@ -42,6 +43,9 @@ type mpdPlayer struct {
 	mu  sync.Mutex
 	c   *mpd.Client
 	id  string // el id de la canción que se le mandó
+	// loading: a medio Load (entre el clear y el addid la cola está vacía,
+	// y eso no es que dejara de recibir).
+	loading atomic.Bool
 }
 
 func newMPDPlayer(d Device) *mpdPlayer { return &mpdPlayer{dev: d} }
@@ -91,6 +95,8 @@ func (p *mpdPlayer) add(m media, pos string) (string, error) {
 }
 
 func (p *mpdPlayer) Load(_ context.Context, m media, start float64) error {
+	p.loading.Store(true)
+	defer p.loading.Store(false)
 	if _, err := p.cmd("clear"); err != nil {
 		return err
 	}
@@ -129,6 +135,12 @@ func (p *mpdPlayer) Status(context.Context) (Status, error) {
 		return Status{}, err
 	}
 	m := mpd.Map(pairs)
+	p.mu.Lock()
+	sent := p.id != ""
+	p.mu.Unlock()
+	if sent && m["playlistlength"] == "0" && !p.loading.Load() {
+		return Status{}, ErrReleased
+	}
 	st := Status{Volume: -1}
 	switch m["state"] {
 	case "play":

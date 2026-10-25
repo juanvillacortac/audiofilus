@@ -149,6 +149,31 @@ func (d *Daemon) stopMPD() {
 	d.closeMPDLocked()
 }
 
+// receiving dice quién le manda música a este aparato (FullStatus.Receiving),
+// con path lo que suena.
+func (d *Daemon) receiving(path string) string {
+	if s := d.mpdServer(); s != nil {
+		if h := s.Receiving(); h != "" {
+			return h
+		}
+	}
+	if dlna.IsRendererPath(path) {
+		return "DLNA"
+	}
+	return ""
+}
+
+// release deja de recibir: la cola que mandó el otro aparato se vacía y la
+// música se para.
+func (d *Daemon) release() {
+	log.Print("release: stop receiving")
+	if s := d.mpdServer(); s != nil {
+		s.Release()
+		return
+	}
+	d.eng.Clear()
+}
+
 // MPDStatus es la respuesta de "mpd".
 type MPDStatus struct {
 	On       bool   `json:"on"`

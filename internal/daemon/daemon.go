@@ -76,6 +76,9 @@ type Daemon struct {
 	sysSetAt     time.Time  // cuándo se pidió cambiar el volumen del sistema
 	powerSeq     int        // toques del botón de encendido que piden sleep (FullStatus.PowerSeq)
 	wakeSeq      int        // salidas del sleep (FullStatus.WakeSeq)
+	remoteOn     bool       // la interfaz manda la música a otro aparato (remote.go)
+	remoteSeq    int        // órdenes desviadas a la interfaz (FullStatus.RemoteSeq)
+	remoteActs   []string   // las últimas de ellas
 	sysSet       chan int   // los cambios de volumen del sistema, para applySystemVolume
 	sysKnown     bool       // sysVolume ya se leyó alguna vez
 	saveMu       sync.Mutex // un guardado de state.json a la vez (comparten el .tmp)
@@ -139,6 +142,7 @@ func Run(paths config.Paths) error {
 
 	// MPRIS: las teclas multimedia y los widgets del escritorio. Sin bus de
 	// sesión (en las portátiles) no se publica y no pasa nada.
+	mpris.Remote = d.remote
 	mp, err := mpris.Start(eng, func() { d.quitOnce.Do(func() { close(d.quit) }) })
 	if err != nil {
 		log.Printf("MPRIS disabled: %v", err)
@@ -837,11 +841,21 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		d.attached--
 		stop := d.attached <= 0 && !d.background
 		d.mu.Unlock()
+		d.setRemote(false)
 		if stop {
 			log.Print("UI closed without going to background: stopping")
 			e.Pause()
 			d.quitOnce.Do(func() { close(d.quit) })
 		}
+		return nil, nil
+	case "release":
+		// Dejar de recibir lo que manda otro aparato (mpd.go).
+		d.release()
+		return nil, nil
+	case "remote":
+		// remote on|off: la interfaz manda la música a otro aparato (o deja
+		// de hacerlo); mientras, los controles que lee el servicio van a ella.
+		d.setRemote(len(req.Args) > 0 && req.Args[0] == "on")
 		return nil, nil
 	case "vibration":
 		// vibration <off|low|mid|high>: la fuerza de la vibración (Ajustes);
@@ -940,6 +954,15 @@ type FullStatus struct {
 	// ve aunque el sleep durara menos que entre dos estados (abrir y cerrar
 	// la tapa enseguida) y nunca llegara a ver Sleep en true.
 	WakeSeq int `json:"wake_seq"`
+	// RemoteSeq sube con cada orden de los controles que lee el servicio
+	// mientras la interfaz manda la música a otro aparato; RemoteActs son las
+	// últimas ("toggle", "next", "seek -10"…), la última con el número
+	// RemoteSeq (remote.go).
+	RemoteSeq int `json:"remote_seq,omitempty"`
+	// Receiving: otro aparato le está mandando música a este (por MPD, su
+	// dirección; por DLNA, "DLNA"). La interfaz ofrece dejar de recibir.
+	Receiving  string   `json:"receiving,omitempty"`
+	RemoteActs []string `json:"remote_acts,omitempty"`
 	// Lid: la tapa está cerrada (el sensor de la consola, en Knulli y muOS).
 	Lid bool `json:"lid,omitempty"`
 	// Docked: hay una pantalla externa (HDMI): la tapa no apaga la pantalla.
@@ -963,10 +986,12 @@ func (d *Daemon) status() FullStatus {
 	d.mu.Lock()
 	s.Sleep, s.Awake, s.Pad, s.VolumeSeq, s.PowerSeq = d.sleeping, d.awakeApplied, d.pad, d.volumeSeq, d.powerSeq
 	s.WakeSeq = d.wakeSeq
+	s.RemoteSeq, s.RemoteActs = d.remoteSeq, append([]string(nil), d.remoteActs...)
 	if !d.timerAt.IsZero() {
 		s.TimerLeft = math.Max(0, time.Until(d.timerAt).Seconds())
 	}
 	d.mu.Unlock()
+	s.Receiving = d.receiving(s.Track.Path)
 	s.Lid = d.plat.LidClosed()
 	d.mu.Lock()
 	s.Alarm = d.alarm

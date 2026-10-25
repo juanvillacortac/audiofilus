@@ -19,11 +19,14 @@ srv, _ := cast.NewServer("")          // one per process; keep it open
 s, _ := cast.NewSession(srv, devs[i])
 _ = s.Cast(ctx, cast.Item{Path: song.Path, Title: song.Title, Artist: song.Artist, Album: song.Album, Cover: coverPath, Duration: dur}, pos)
 _ = s.Queue(ctx, nextItem)            // after each Cast/Advanced, the next song of the queue
-for e := range s.Events() { /* Advanced: show e.Item; Finished; Failed: e.Err */ }
+for e := range s.Events() { /* Advanced: show e.Item; Finished; Failed: e.Err; Released */ }
 s.Close(ctx)                          // stop the device; resume locally if wanted
 ```
 
 Local playback should be paused while casting; on `Close` the UI decides whether to resume locally from `s.Status().Position`.
+
+- **Controls the service reads** (the sleep gestures with the screen off, the FN hotkey, headset buttons, MPRIS media keys) would only touch the paused local engine. So while casting, the UI sends `remote on` (and `remote off` when it stops, or the service drops it when the UI detaches). The service then queues those commands (`toggle`, `next`, `prev`, `seek -10`, `pause`, `resume`) in `FullStatus.RemoteSeq`/`RemoteActs` instead, and the UI forwards them to the device through the same path as its own buttons (`castRemote`).
+- **Released:** an MPD device whose queue goes empty after something was sent (another audiofilus chose "Stop receiving") makes `Status` return `cast.ErrReleased`. The session emits `Released` and the UI resumes playing locally.
 
 ## Verified
 

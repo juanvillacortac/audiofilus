@@ -14,6 +14,7 @@ import (
 
 	"github.com/juanvillacortac/audiofilus/internal/cast"
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/daemon"
 	"github.com/juanvillacortac/audiofilus/internal/dlna"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
@@ -66,10 +67,26 @@ func (a *App) castEvents() chan castEvent {
 }
 
 // castItems son las opciones de Reproduciendo: enviar, o (mandando) dejar de
-// enviar y el volumen del aparato.
+// enviar y el volumen del aparato. Si otro aparato le manda música a este,
+// dejar de recibir y apagar el servidor MPD.
 func (a *App) castItems() []menuItem {
 	if !a.casting() {
-		return []menuItem{{label: T("cast_send"), icon: "speaker", do: a.castSearch}}
+		items := []menuItem{{label: T("cast_send"), icon: "speaker", do: a.castSearch}}
+		if from := a.status.Receiving; from != "" {
+			items = append(items, menuItem{label: T("recv_stop"), icon: "power",
+				value: func() string { return from },
+				do:    func() { a.send("release"); a.flash(T("recv_stopped")) }})
+			if a.cfg.MPD.On {
+				items = append(items, menuItem{label: T("recv_mpd_off"), icon: "server", do: func() {
+					a.send("release")
+					a.cfg.MPD.On = false
+					a.saveConfig()
+					a.send("mpd", "apply")
+					a.flash(T("recv_stopped"))
+				}})
+			}
+		}
+		return items
 	}
 	items := []menuItem{
 		{label: T("cast_stop", a.cast.dev.Name), icon: "power", do: func() { a.castEnd(true) }},
@@ -205,6 +222,11 @@ func (a *App) castStart(d cast.Device) {
 		}
 	}(c.stop)
 	a.castLoad(idx, a.position)
+	// Los controles que lee el servicio (con la pantalla apagada, los
+	// audífonos, las teclas multimedia) vienen aquí (castRemote).
+	if a.client != nil {
+		a.client.Send("remote", "on")
+	}
 	a.flash(T("cast_on", d.Name))
 }
 
@@ -401,6 +423,23 @@ func (a *App) castSend(cmd string, args []string) bool {
 	return true
 }
 
+// castRemote manda al aparato las órdenes de los controles que lee el
+// servicio (daemon/remote.go): las que llegaron desde el último estado.
+func (a *App) castRemote(st daemon.FullStatus) {
+	n := st.RemoteSeq - a.remoteSeq
+	a.remoteSeq = st.RemoteSeq
+	if n <= 0 || !a.casting() {
+		return
+	}
+	acts := st.RemoteActs[max(0, len(st.RemoteActs)-n):]
+	for _, act := range acts {
+		f := strings.Fields(act)
+		if len(f) > 0 {
+			a.castSend(f[0], f[1:])
+		}
+	}
+}
+
 // castSeek salta a sec segundos en el aparato.
 func (a *App) castSeek(sec float64) {
 	a.cast.st.Position = sec
@@ -418,6 +457,9 @@ func (a *App) castEnd(resume bool) {
 	pos, list, idx := c.st.Position, c.list, c.idx
 	c.sess = nil
 	close(c.stop)
+	if a.client != nil {
+		a.client.Send("remote", "off")
+	}
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -506,6 +548,11 @@ func (a *App) castEvent(e castEvent) {
 		case cast.Failed:
 			a.flash(T("cast_failed", e.ev.Err))
 			a.castEnd(false)
+		case cast.Released:
+			// El otro dejó de recibir: la música sigue aquí.
+			name := c.dev.Name
+			a.castEnd(true)
+			a.flash(T("cast_released", name))
 		}
 	}
 }
@@ -514,6 +561,9 @@ func (a *App) castEvent(e castEvent) {
 func (a *App) castTitle(title string) string {
 	if a.casting() {
 		return title + " → " + a.cast.dev.Name
+	}
+	if from := a.status.Receiving; from != "" {
+		return title + " ← " + from
 	}
 	return title
 }

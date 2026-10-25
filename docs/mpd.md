@@ -54,6 +54,13 @@ The library is `data/library.json`, the one the interface scanned. It's re-read 
 - Files are deleted when their song leaves the queue.
 - A seek sent while the song is still downloading is remembered by the engine (`waitSeek`) and applied when the song arrives.
 
+### Receiving
+
+The server remembers the client that last changed the queue or what plays (`add`, `addid`, `clear`, `play`…) and the queue version it left. While that client is still connected and the queue is still that one, the service reports `Receiving` (its address) in its status; a DLNA renderer song reports `DLNA`. Now Playing shows `← <address>` in its title, and its Start menu has:
+
+- **Stop receiving** (`audiofilus release`): empties the queue, so the music stops. An audiofilus that was sending sees the empty queue and goes on playing on its own.
+- **Turn off MPD server**: the same, and the server goes off (it can be turned back on in Settings → Online → MPD server).
+
 ## audiofilus as a client
 
 `internal/mpd` also has the client (`mpd.Dial`, `Cmd`, `Picture`, `Songs`, `Map`). The tests use it, and so does `cast`:

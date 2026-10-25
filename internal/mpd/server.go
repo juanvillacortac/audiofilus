@@ -89,10 +89,15 @@ type Server struct {
 	urls  int    // el número de la última URL añadida
 	last  Status // lo último visto, para saber qué cambió
 	lists int64  // para saber si cambiaron las listas guardadas
-	poke  chan struct{}
-	done  chan struct{}
-	start time.Time
-	wg    sync.WaitGroup
+	// owner es la dirección del cliente que cambió la cola por última vez
+	// y ownVer, la versión de la cola que dejó: mientras sigan, se le está
+	// mandando música a este audiofilus (Receiving).
+	owner  string
+	ownVer int
+	poke   chan struct{}
+	done   chan struct{}
+	start  time.Time
+	wg     sync.WaitGroup
 }
 
 // urlSong es una canción añadida por URL: la URL y sus etiquetas (las de
@@ -128,6 +133,51 @@ func Start(o Options) (*Server, error) {
 	go s.watch()
 	log.Printf("mpd: listening on %s", ln.Addr())
 	return s, nil
+}
+
+// Receiving es la dirección del cliente que le está mandando música: el
+// último que cambió la cola, si sigue conectado y la cola es la que dejó
+// (si aquí se pone otra cosa, ya no). "" si no hay.
+func (s *Server) Receiving() string {
+	ver := s.opts.Player.Status().Version
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.owner == "" || ver != s.ownVer {
+		return ""
+	}
+	for c := range s.conns {
+		if hostOf(c.nc.RemoteAddr()) == s.owner {
+			return s.owner
+		}
+	}
+	return ""
+}
+
+// Release deja de recibir: vacía la cola (la música se para) y olvida al
+// cliente. Un audiofilus que mandaba lo ve en su estado y sigue en el suyo.
+func (s *Server) Release() {
+	s.mu.Lock()
+	s.owner = ""
+	s.mu.Unlock()
+	s.opts.Player.Clear()
+	s.Changed()
+}
+
+// owned apunta que c cambió la cola (queueCmds).
+func (s *Server) owned(c *conn) {
+	ver := s.opts.Player.Status().Version
+	s.mu.Lock()
+	s.owner, s.ownVer = hostOf(c.nc.RemoteAddr()), ver
+	s.mu.Unlock()
+}
+
+// hostOf es la IP de una dirección, sin el puerto.
+func hostOf(a net.Addr) string {
+	h, _, err := net.SplitHostPort(a.String())
+	if err != nil {
+		return a.String()
+	}
+	return h
 }
 
 // Addr es la dirección en la que escucha.
