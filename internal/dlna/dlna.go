@@ -133,6 +133,19 @@ func (s *Service) Changed() {
 	}
 }
 
+// Release deja de recibir: el renderer olvida lo que le pusieron (queda en
+// NO_MEDIA_PRESENT, que un audiofilus que mandaba toma por "dejó de
+// recibir"). La cola del motor la vacía el servicio.
+func (s *Service) Release() {
+	if s.rend == nil {
+		return
+	}
+	s.rend.mu.Lock()
+	s.rend.cur, s.rend.next, s.rend.stopped = "", "", false
+	s.rend.mu.Unlock()
+	go s.rend.changed()
+}
+
 // IsRendererPath dice si path es una canción que mandó un mando.
 func IsRendererPath(path string) bool { return strings.HasPrefix(path, "dlna://r/") }
 

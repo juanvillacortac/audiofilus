@@ -26,7 +26,7 @@ s.Close(ctx)                          // stop the device; resume locally if want
 Local playback should be paused while casting; on `Close` the UI decides whether to resume locally from `s.Status().Position`.
 
 - **Controls the service reads** (the sleep gestures with the screen off, the FN hotkey, headset buttons, MPRIS media keys) would only touch the paused local engine. So while casting, the UI sends `remote on` (and `remote off` when it stops, or the service drops it when the UI detaches). The service then queues those commands (`toggle`, `next`, `prev`, `seek -10`, `pause`, `resume`) in `FullStatus.RemoteSeq`/`RemoteActs` instead, and the UI forwards them to the device through the same path as its own buttons (`castRemote`).
-- **Released:** an MPD device whose queue goes empty after something was sent (another audiofilus chose "Stop receiving") makes `Status` return `cast.ErrReleased`. The session emits `Released` and the UI resumes playing locally.
+- **Released:** another audiofilus that chose "Stop receiving" empties its queue: as MPD, its queue goes empty; as a DLNA renderer, it forgets what it was given (`NO_MEDIA_PRESENT`). Either one, after something was sent, makes `Status` return `cast.ErrReleased`. The session emits `Released` and the UI resumes playing locally.
 
 ## Verified
 

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync/atomic"
 )
 
 // El control de un aparato UPnP: órdenes SOAP a su AVTransport (cargar,
@@ -52,6 +53,9 @@ type upnpPlayer struct {
 	dev     Device
 	noNext  bool // ya dijo que no tiene SetNextAVTransportURI
 	lastVol float64
+	// loaded: ya se le mandó algo; loading: a medio Load. Si después
+	// queda sin nada puesto (NO_MEDIA_PRESENT), dejó de recibir.
+	loaded, loading atomic.Bool
 }
 
 func newUPnPPlayer(d Device) *upnpPlayer { return &upnpPlayer{dev: d, lastVol: -1} }
@@ -180,6 +184,8 @@ func (p *upnpPlayer) avt(ctx context.Context, action string, args ...[2]string) 
 }
 
 func (p *upnpPlayer) Load(ctx context.Context, m media, start float64) error {
+	p.loading.Store(true)
+	defer p.loading.Store(false)
 	_, _ = p.avt(ctx, "Stop") // algunos no aceptan otra canción sonando
 	if _, err := p.avt(ctx, "SetAVTransportURI", [2]string{"CurrentURI", m.URL}, [2]string{"CurrentURIMetaData", didl(m)}); err != nil {
 		return err
@@ -187,6 +193,7 @@ func (p *upnpPlayer) Load(ctx context.Context, m media, start float64) error {
 	if err := p.Play(ctx); err != nil {
 		return err
 	}
+	p.loaded.Store(true)
 	if start > 1 {
 		_ = p.Seek(ctx, start)
 	}
@@ -240,6 +247,11 @@ func (p *upnpPlayer) Status(ctx context.Context) (Status, error) {
 		return st, err
 	}
 	switch info["CurrentTransportState"] {
+	case "NO_MEDIA_PRESENT":
+		if p.loaded.Load() && !p.loading.Load() {
+			return st, ErrReleased
+		}
+		st.State = Stopped
 	case "PLAYING":
 		st.State = Playing
 	case "PAUSED_PLAYBACK", "PAUSED_RECORDING":

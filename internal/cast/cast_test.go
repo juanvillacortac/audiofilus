@@ -10,6 +10,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"io"
 	"math/big"
 	"net"
@@ -147,6 +148,13 @@ func TestUPnPSession(t *testing.T) {
 	}
 	if st.State != Playing || st.Position != 65 || st.Duration != 200 || st.Volume != 0.42 {
 		t.Errorf("status = %+v", st)
+	}
+	// Si después se queda sin nada puesto, dejó de recibir.
+	f.mu.Lock()
+	f.state = "NO_MEDIA_PRESENT"
+	f.mu.Unlock()
+	if _, err := s.p.Status(ctx); !errors.Is(err, ErrReleased) {
+		t.Errorf("status with no media after loading: %v, want ErrReleased", err)
 	}
 	_ = s.Queue(ctx, Item{Path: song, Title: "Otra"})
 	if !s.p.(*upnpPlayer).noNext {

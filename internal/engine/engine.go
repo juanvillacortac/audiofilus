@@ -763,6 +763,7 @@ func (e *Engine) Clear() {
 	e.apply(func() {
 		e.q.Set(nil, 0)
 		e.qver++
+		e.track = library.Track{} // ya no suena nada (ni para Status)
 		e.closeSourceLocked()
 		e.setPlayingLocked(false)
 	})

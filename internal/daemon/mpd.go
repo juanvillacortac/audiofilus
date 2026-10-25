@@ -171,8 +171,11 @@ func (d *Daemon) receiving(path string) string {
 // música se para.
 func (d *Daemon) release() {
 	log.Print("release: stop receiving")
-	if s := d.mpdServer(); s != nil {
+	if s := d.dlnaService(); s != nil {
 		s.Release()
+	}
+	if s := d.mpdServer(); s != nil {
+		s.Release() // vacía la cola
 		return
 	}
 	d.eng.Clear()
