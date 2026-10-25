@@ -38,6 +38,29 @@ type Config struct {
 	// DLNA es la música por la red local (internal/dlna): servirla a otros
 	// equipos y recibir la que manden.
 	DLNA DLNA `json:"dlna,omitzero"`
+	// MPD es el servidor del protocolo de MPD (internal/mpd): clientes de
+	// MPD y otros audiofilus controlan este y le mandan música.
+	MPD MPD `json:"mpd,omitzero"`
+}
+
+// MPD configura el servidor MPD del servicio. Apagado por defecto.
+type MPD struct {
+	On bool `json:"on,omitempty"`
+	// Port es el puerto TCP; 0: el de MPD, 6600.
+	Port int `json:"port,omitempty"`
+	// Password: vacía, cualquiera de la red puede controlarlo.
+	Password string `json:"password,omitempty"`
+	// Name es como se anuncia en la red (mDNS); vacío: el de DLNA,
+	// "audiofilus (<equipo>)".
+	Name string `json:"name,omitempty"`
+}
+
+// MPDPort es el puerto del servidor MPD (6600 si no se eligió otro).
+func (m MPD) MPDPort() int {
+	if m.Port <= 0 || m.Port > 65535 {
+		return 6600
+	}
+	return m.Port
 }
 
 // DLNA configura DLNA/UPnP en el servicio. Todo apagado por defecto: con

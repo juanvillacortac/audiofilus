@@ -31,6 +31,8 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/dlna"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/library"
+	"github.com/juanvillacortac/audiofilus/internal/mdns"
+	"github.com/juanvillacortac/audiofilus/internal/mpd"
 	"github.com/juanvillacortac/audiofilus/internal/mpris"
 	"github.com/juanvillacortac/audiofilus/internal/platform"
 	"github.com/juanvillacortac/audiofilus/internal/queue"
@@ -91,6 +93,13 @@ type Daemon struct {
 	dlna    *dlna.Service
 	dlnaCfg config.DLNA
 	dlnaErr string
+	// MPD (mpd.go): el servidor, su anuncio mDNS, su configuración y el
+	// último error.
+	mpdMu       sync.Mutex
+	mpd         *mpd.Server
+	mpdAnnounce *mdns.Responder
+	mpdCfg      config.MPD
+	mpdErr      string
 }
 
 // Run arranca el daemon y bloquea hasta recibir quit o una señal.
@@ -252,6 +261,7 @@ func Run(paths config.Paths) error {
 		nowPlayingChanged(eng)
 	}
 	d.installDLNA() // envuelve los ganchos de arriba (dlna.go)
+	d.installMPD()  // y los de DLNA (mpd.go)
 	d.restore()
 
 	go d.applySystemVolume()
@@ -331,6 +341,7 @@ loop:
 	_ = os.Remove(paths.Socket)
 	_ = d.setSleep(false, false)
 	d.stopDLNA()
+	d.stopMPD()
 	playing := eng.Playing()
 	d.saveState()
 	eng.Close()
@@ -759,6 +770,8 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		e.SetRepeat(r)
 	case "dlna":
 		return d.dlnaCommand(req.Args) // dlna.go
+	case "mpd":
+		return d.mpdCommand(req.Args) // mpd.go
 	case "alarm":
 		return d.alarmCommand(req.Args)
 	case "speed":

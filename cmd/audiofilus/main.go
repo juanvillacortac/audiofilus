@@ -204,7 +204,7 @@ func runClient(paths config.Paths, cmd string, args []string) int {
 
 // print pinta la respuesta de cmd en la terminal.
 func print(w io.Writer, cmd string, data json.RawMessage) {
-	if cmd == "dlna" {
+	if cmd == "dlna" || cmd == "mpd" {
 		var out bytes.Buffer
 		if json.Indent(&out, data, "", "  ") == nil {
 			fmt.Fprintln(w, out.String())

@@ -60,7 +60,7 @@ func TestResponse(t *testing.T) {
 	if err != nil || id != 0x1234 || len(qs) != 1 || qs[0].name != "_mpd._tcp.local" || qs[0].typ != dnsPTR {
 		t.Fatalf("questions: %x %+v %v", id, qs, err)
 	}
-	recs, err := parseDNS(r.response(id, qs, 1))
+	recs, err := parseDNS(r.response(id, qs, nil, 1))
 	if err != nil || len(recs) < 3 {
 		t.Fatalf("records: %+v %v", recs, err)
 	}

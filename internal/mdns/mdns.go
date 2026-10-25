@@ -6,6 +6,7 @@ package mdns
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -158,6 +159,11 @@ func Announce(name, service string, port int, txt map[string]string) (*Responder
 	for _, ip := range lanIPs() {
 		_ = joinGroup(conn, ip)
 	}
+	if err := setTTL(conn); err != nil {
+		log.Printf("mdns: ttl: %v", err)
+	}
+	// El host del SRV es propio (no el del equipo, que ya anuncia Avahi):
+	// "<equipo>-audiofilus-<puerto>.local".
 	host, _ := os.Hostname()
 	host = strings.Map(func(r rune) rune {
 		if r == '.' || r == ' ' {
@@ -166,10 +172,10 @@ func Announce(name, service string, port int, txt map[string]string) (*Responder
 		return r
 	}, host)
 	if host == "" {
-		host = "audiofilus"
+		host = "pc"
 	}
 	r := &Responder{conn: conn, instance: strings.ReplaceAll(name, ".", " ") + "." + service, service: service,
-		target: host + ".local", port: uint16(port), txt: txt, stop: make(chan struct{})}
+		target: fmt.Sprintf("%s-audiofilus-%d.local", host, port), port: uint16(port), txt: txt, stop: make(chan struct{})}
 	r.wg.Add(2)
 	go r.listen()
 	go r.announce()
@@ -179,7 +185,7 @@ func Announce(name, service string, port int, txt map[string]string) (*Responder
 // Close deja de anunciar (y avisa con un adiós: ttl 0).
 func (r *Responder) Close() {
 	close(r.stop)
-	_, _ = r.conn.WriteTo(r.response(0, nil, 0), groupAddr)
+	_, _ = r.conn.WriteTo(r.response(0, nil, nil, 0), groupAddr)
 	r.conn.Close()
 	r.wg.Wait()
 }
@@ -188,7 +194,7 @@ func (r *Responder) Close() {
 func (r *Responder) announce() {
 	defer r.wg.Done()
 	for i := range 3 {
-		if _, err := r.conn.WriteTo(r.response(0, nil, 1), groupAddr); err != nil {
+		if _, err := r.conn.WriteTo(r.response(0, nil, nil, 1), groupAddr); err != nil {
 			log.Printf("mdns: %v", err)
 		}
 		select {
@@ -234,19 +240,20 @@ func (r *Responder) listen() {
 		}
 		if from.Port != groupAddr.Port {
 			// Unicast legado: se contesta directo, con su id y su pregunta.
-			_, _ = r.conn.WriteToUDP(r.response(id, hit, 1), from)
+			_, _ = r.conn.WriteToUDP(r.response(id, hit, from.IP, 1), from)
 			continue
 		}
-		_, _ = r.conn.WriteTo(r.response(0, nil, 1), groupAddr)
+		_, _ = r.conn.WriteTo(r.response(0, nil, from.IP, 1), groupAddr)
 	}
 }
 
-// response arma la respuesta entera (PTR, SRV, TXT y A); ttl 0 es el adiós.
-func (r *Responder) response(id uint16, qs []question, ttl uint32) []byte {
+// response arma la respuesta entera (PTR, SRV, TXT y A) para quien pregunta
+// desde from (nil: para todos); ttl 0 es el adiós.
+func (r *Responder) response(id uint16, qs []question, from net.IP, ttl uint32) []byte {
 	b := make([]byte, 12, 512)
 	b[0], b[1] = byte(id>>8), byte(id)
 	b[2] = 0x84 // respuesta con autoridad
-	ips := lanIPs()
+	ips := ipsFor(from)
 	b[5] = byte(len(qs))
 	b[7] = byte(3 + len(ips))
 	for _, q := range qs {
@@ -262,26 +269,66 @@ func (r *Responder) response(id uint16, qs []question, ttl uint32) []byte {
 	return b
 }
 
-// lanIPs son las direcciones IPv4 de las interfaces de red activas (sin la
-// de bucle local).
-func lanIPs() []net.IP {
+// lanNets son las redes IPv4 de las interfaces de red activas: sin la de
+// bucle local, las punto a punto (VPN) ni las virtuales (Docker, puentes de
+// máquinas virtuales), que desde otro equipo no se alcanzan.
+func lanNets() []*net.IPNet {
 	ifs, err := net.Interfaces()
 	if err != nil {
 		return nil
 	}
-	var out []net.IP
+	var out []*net.IPNet
 	for _, ifi := range ifs {
-		if ifi.Flags&net.FlagUp == 0 || ifi.Flags&net.FlagLoopback != 0 || ifi.Flags&net.FlagMulticast == 0 {
+		if ifi.Flags&net.FlagUp == 0 || ifi.Flags&net.FlagLoopback != 0 || ifi.Flags&net.FlagMulticast == 0 ||
+			ifi.Flags&net.FlagPointToPoint != 0 || virtualIface(ifi.Name) {
 			continue
 		}
 		addrs, _ := ifi.Addrs()
 		for _, a := range addrs {
 			if n, ok := a.(*net.IPNet); ok {
 				if ip4 := n.IP.To4(); ip4 != nil {
-					out = append(out, ip4)
+					out = append(out, &net.IPNet{IP: ip4, Mask: n.Mask})
 				}
 			}
 		}
+	}
+	return out
+}
+
+// virtualIface dice si una interfaz es de Docker o de máquinas virtuales.
+func virtualIface(name string) bool {
+	for _, p := range []string{"docker", "br-", "veth", "virbr", "vmnet", "vboxnet", "cni", "flannel", "podman"} {
+		if strings.HasPrefix(name, p) {
+			return true
+		}
+	}
+	return false
+}
+
+// lanIPs son las direcciones de lanNets.
+func lanIPs() []net.IP {
+	var out []net.IP
+	for _, n := range lanNets() {
+		out = append(out, n.IP)
+	}
+	return out
+}
+
+// ipsFor son las direcciones que se anuncian a quien pregunta desde from:
+// la de su red si la hay (así no se le da una que no alcanza); si no (una
+// pregunta del propio equipo, o un anuncio), todas.
+func ipsFor(from net.IP) []net.IP {
+	nets := lanNets()
+	if from != nil {
+		for _, n := range nets {
+			if n.Contains(from) {
+				return []net.IP{n.IP}
+			}
+		}
+	}
+	var out []net.IP
+	for _, n := range nets {
+		out = append(out, n.IP)
 	}
 	return out
 }
