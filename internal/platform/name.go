@@ -20,12 +20,24 @@ var modelFiles = []string{
 	"/proc/device-tree/model",
 }
 
+// deviceName es el nombre que da la app del teléfono (SetDeviceName).
+var deviceName string
+
+// SetDeviceName pone el nombre del aparato cuando el sistema lo sabe mejor
+// que el hostname: en Android y en iOS el hostname es "localhost" o nada
+// útil, así que la app pasa el nombre que el usuario le dio al teléfono (o
+// su modelo).
+func SetDeviceName(name string) { deviceName = strings.TrimSpace(name) }
+
 // DeviceName es el nombre con el que el equipo se presenta en la red (MPD,
 // DLNA): el nombre del equipo tal cual; en una portátil que conserva el de
 // su sistema ("KNULLI", "ROCKNIX"), el modelo de la consola: el que dice
 // PortMaster (su DEVICE_NAME, que el lanzador pasa en AUDIOFILUS_DEVICE) o,
 // si no, el de modelFiles.
 func DeviceName() string {
+	if deviceName != "" {
+		return deviceName
+	}
 	h, _ := os.Hostname()
 	h = strings.TrimSpace(h)
 	if h != "" && !distroHosts[strings.ToLower(h)] {

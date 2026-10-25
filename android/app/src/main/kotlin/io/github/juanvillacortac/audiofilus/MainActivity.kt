@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -52,6 +53,7 @@ class MainActivity : Activity(), Host {
 
         Media.init(applicationContext)
         Mobile.setHost(this)
+        Mobile.setDeviceName(deviceName())
         Store.setup(this)
         home = homeDir().path
         Mobile.start(home, cacheDir.path, languages())
@@ -366,6 +368,15 @@ class MainActivity : Activity(), Host {
             }
             return if (rel.isEmpty()) base else "$base/$rel"
         }
+    }
+
+    // deviceName es el nombre con el que el teléfono se ve en la red: el que
+    // le dio el usuario (Ajustes → Acerca del teléfono) o, si no, el modelo.
+    private fun deviceName(): String {
+        val name = if (Build.VERSION.SDK_INT >= 25) {
+            Settings.Global.getString(contentResolver, Settings.Global.DEVICE_NAME)
+        } else null
+        return name?.takeIf { it.isNotBlank() } ?: Build.MODEL
     }
 }
 

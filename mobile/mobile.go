@@ -32,6 +32,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/daemon"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
+	"github.com/juanvillacortac/audiofilus/internal/platform"
 	"github.com/juanvillacortac/audiofilus/internal/ui"
 )
 
@@ -377,6 +378,12 @@ type Installer interface {
 // antes de Start.
 func SetInstaller(i Installer) {
 	ui.InstallPackage = i.InstallPackage
+}
+
+// SetDeviceName pone el nombre con el que el teléfono se presenta en la red
+// (DLNA, MPD): el que el usuario le dio, o su modelo. Llamarla antes de Start.
+func SetDeviceName(name string) {
+	platform.SetDeviceName(name)
 }
 
 // SetHost le da a audiofilus la app que abre el selector de carpetas.

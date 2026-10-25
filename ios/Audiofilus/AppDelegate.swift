@@ -23,6 +23,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try? session.setActive(true)
 
         MobileSetHost(root)
+        // El nombre en la red: el del aparato (desde iOS 16, sin un permiso
+        // especial, solo "iPhone" o "iPad").
+        MobileSetDeviceName(UIDevice.current.name)
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         MobileStart(docs.path, NSTemporaryDirectory(), Locale.preferredLanguages.joined(separator: ","))
         root.restoreFolder()
