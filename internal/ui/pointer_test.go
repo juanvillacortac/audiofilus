@@ -86,3 +86,31 @@ func TestSwipeInGames(t *testing.T) {
 		t.Error("a swipe in a game kept moving after release")
 	}
 }
+
+// TestSwipeSideways comprueba que deslizar de lado fuera de un juego es una
+// sola pulsación, sin inercia (cruzar la pantalla no pasa veinte pestañas),
+// y que un arrastre vertical algo torcido sigue siendo vertical.
+func TestSwipeSideways(t *testing.T) {
+	a := &App{offline: true, t: 1, screen: LibraryScreen}
+	a.pointerDown(300, 100, true, 0)
+	for x := 300; x >= 0; x -= 10 {
+		a.pointerMove(x, 100, 1.0/60)
+	}
+	if !a.input.virt[ActRight] || a.ptr.pending != 0 {
+		t.Errorf("swipe left: right %v, pending %d", a.input.virt[ActRight], a.ptr.pending)
+	}
+	a.pointerUp()
+	if a.ptr.flingAx != 0 {
+		t.Error("a sideways swipe kept moving after release")
+	}
+
+	// Hacia arriba con algo de lado: vertical.
+	a = &App{offline: true, t: 1, screen: LibraryScreen}
+	a.pointerDown(100, 100, true, 0)
+	for i := 1; i <= 10; i++ {
+		a.pointerMove(100-i*3, 100-i*4, 1.0/60)
+	}
+	if a.ptr.axis != 2 {
+		t.Errorf("a slanted vertical drag took axis %d, want 2", a.ptr.axis)
+	}
+}

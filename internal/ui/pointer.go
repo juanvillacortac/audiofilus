@@ -22,8 +22,11 @@ import (
 //   - en un juego, deslizar es una sola pulsación hacia donde va el dedo
 //     (en Bloques, a los lados la pieza sigue al dedo casilla a casilla,
 //     abajo la suelta y arriba la guarda; tocar el pozo la gira);
-//   - arrastrar en lo demás: ↑/↓ (o ←/→) por cada paso arrastrado, también
-//     con inercia; la rueda, ↑/↓;
+//   - arrastrar en lo demás: ↑/↓ por cada paso arrastrado, también con
+//     inercia; la rueda, ↑/↓;
+//   - deslizar de lado: una sola ← o → por deslizamiento, sin inercia (como
+//     pasar una página; con un paso por cada 14 píxeles y la inercia, cruzar
+//     la pantalla del teléfono eran veinte pestañas o portadas de golpe);
 //   - mantener pulsado (sin moverse): START, el menú Más;
 //   - clic derecho: B (atrás); clic central: pausa.
 
@@ -85,6 +88,7 @@ const (
 	flingDecay  = 4.0  // cuánto frena la inercia (por segundo)
 	flingStop   = 40.0 // por debajo de esta velocidad (px/s), se para
 	defaultStep = 14   // lo que hay que arrastrar por paso, si la pantalla no dice otro
+	swipeMin    = 20   // lo que hay que deslizar de lado para que cuente
 )
 
 // pointer es el estado del ratón o del dedo.
@@ -334,8 +338,10 @@ func (a *App) pointerMove(x, y int, dt float64) {
 	}
 	if !p.moved && (abs(x-p.sx) > tapSlop || abs(y-p.sy) > tapSlop) {
 		p.moved = true
+		// De lado solo si va claramente de lado: un desplazamiento vertical
+		// con el pulgar algo torcido no debe cambiar de pestaña.
 		p.axis = 2
-		if abs(x-p.sx) > abs(y-p.sy) {
+		if 2*abs(x-p.sx) > 3*abs(y-p.sy) {
 			p.axis = 1
 		}
 		dx, dy = x-p.sx, y-p.sy // cuenta desde donde empezó, no desde el margen
@@ -375,6 +381,19 @@ func (a *App) pointerMove(x, y int, dt float64) {
 				a.input.inject(ActDown)
 			default:
 				a.input.inject(ActUp)
+			}
+		}
+		return
+	}
+	// De lado, una sola pulsación por deslizamiento: el dedo hacia la
+	// izquierda es → (lo siguiente entra por la derecha, como una página).
+	if p.axis == 1 {
+		if !p.swiped && abs(x-p.sx) >= swipeMin {
+			p.swiped = true
+			if x < p.sx {
+				a.input.inject(ActRight)
+			} else {
+				a.input.inject(ActLeft)
 			}
 		}
 		return
