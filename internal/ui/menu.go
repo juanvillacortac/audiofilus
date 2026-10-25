@@ -410,9 +410,15 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 			} else if on {
 				vc = th.Accent
 			}
-			// Recortado a la baldosa, como la etiqueta (un perfil de EQ con un
-			// nombre largo se salía de ella).
-			drawTextW(dst, v, SmallFace, t.x+max(2, (t.w-textWidth(v, SmallFace))/2), vy, t.w-4, vc)
+			// Dentro de la baldosa (un perfil de EQ con un nombre largo se
+			// salía de ella): recortado y, en la elegida, de lado a lado para
+			// leerlo entero (perfiles que solo se distinguen al final, "ANC").
+			vx := t.x + max(2, (t.w-textWidth(v, SmallFace))/2)
+			if sel {
+				a.scrollText(dst, v, SmallFace, vx, vy, t.w-4, vc, nil)
+			} else {
+				drawTextW(dst, v, SmallFace, vx, vy, t.w-4, vc)
+			}
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg) // tapa la ayuda de la pantalla de debajo

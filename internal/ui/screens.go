@@ -3,10 +3,12 @@ package ui
 import (
 	"fmt"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
+	"image/color"
 	"math"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 )
@@ -563,15 +565,25 @@ func (a *App) drawMarquee(dst *ebiten.Image, s string, x, y, w int, centered boo
 		drawTextShadow(dst, s, BigFace, x, y, th.Text, th.Shadow)
 		return
 	}
-	// Ida y vuelta con pausas en los extremos.
-	over := float64(tw - w)
+	a.scrollText(dst, s, BigFace, x, y, w, th.Text, th.Shadow)
+}
+
+// scrollText escribe s en un hueco de w en el que no cabe, desplazándose de
+// lado a lado con pausas en los extremos, para que se lea entero (los
+// títulos grandes, el valor de la baldosa elegida de un menú).
+func (a *App) scrollText(dst *ebiten.Image, s string, face text.Face, x, y, w int, c, shadow color.Color) {
+	over := float64(textWidth(s, face) - w)
+	if over <= 0 {
+		drawText(dst, s, face, x, y, c)
+		return
+	}
 	period := over/20 + 3
 	ph := math.Mod(a.t, period*2) / period
 	f := math.Max(0, math.Min(1, (math.Abs(ph-1)*period-1.5)/(period-3)))
 	off := int(f * over)
-	// Se desvanece por el lado donde el título sigue: por la izquierda si ya
-	// se desplazó, por la derecha si aún queda texto.
-	drawFaded(dst, s, BigFace, x, y, w, off, off > 0, off < int(over), th.Text, th.Shadow)
+	// Se desvanece por el lado donde el texto sigue: por la izquierda si ya
+	// se desplazó, por la derecha si aún queda.
+	drawFaded(dst, s, face, x, y, w, off, off > 0, off < int(over), c, shadow)
 }
 
 // drawControls pinta anterior, play/pausa, siguiente, aleatorio y repetir.
