@@ -850,6 +850,7 @@ func (a *App) updateMain() {
 		a.stepVisual() // el visualizador de fondo del reproductor
 	}
 	if a.menu != nil {
+		a.overlayMusicKeys()
 		a.updateMenu()
 		return
 	}
@@ -2712,6 +2713,29 @@ func (a *App) playRandomSong() {
 	i := rand.IntN(len(a.lib.Songs))
 	a.playSongs(a.lib.Songs, i, a.shuffleBefore)
 	a.flash(T("random_song", a.lib.Songs[i].Title))
+}
+
+// overlayMusicKeys atiende, con un menú (Start) o la barra (Select)
+// abiertos, los botones de la música que ellos no usan: L1/R1 cambian de
+// canción (de capítulo, en un libro desde Reproduciendo) y L2/R2 buscan,
+// como con ellos cerrados.
+func (a *App) overlayMusicKeys() {
+	in := &a.input
+	book := a.screen == NowPlaying && a.isBook(a.playingSong.Path)
+	switch {
+	case book && in.Pressed(ActPrev):
+		a.chapterStep(-1)
+	case book && in.Pressed(ActNext):
+		a.chapterStep(1)
+	case in.Pressed(ActPrev):
+		a.send("prev")
+	case in.Pressed(ActNext):
+		a.send("next")
+	case in.Repeat(ActSeekBack):
+		a.seekBy(-10)
+	case in.Repeat(ActSeekFwd):
+		a.seekBy(+10)
+	}
 }
 
 // holdState es una flecha en la pantalla de reproducción: cuánto lleva

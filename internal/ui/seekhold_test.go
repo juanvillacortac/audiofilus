@@ -44,3 +44,36 @@ func TestSeekHoldAccelerates(t *testing.T) {
 		t.Errorf("a tap: %v", at)
 	}
 }
+
+// Con el menú de Start o la barra de Select abiertos, L1/R1 siguen cambiando
+// de canción y L2/R2 buscando (ninguno de los dos los usa).
+func TestMusicKeysOverMenus(t *testing.T) {
+	var sent []string
+	sendHook = func(cmd string, args []string) { sent = append(sent, cmd) }
+	defer func() { sendHook = nil }()
+	for _, open := range []string{"menu", "dock"} {
+		a := &App{offline: true, w: 320, h: 240, duration: 300, screen: LibraryScreen}
+		if open == "menu" {
+			a.menu = &menu{title: "x", items: []menuItem{{label: "a", do: func() {}}}}
+		} else {
+			a.dock.open = true
+		}
+		sent = nil
+		for _, act := range []Action{ActNext, ActSeekFwd} {
+			a.input = Input{}
+			a.input.inject(act)
+			if open == "menu" {
+				a.overlayMusicKeys()
+				a.updateMenu()
+			} else {
+				a.updateDock()
+			}
+		}
+		if len(sent) != 2 || sent[0] != "next" || sent[1] != "seek" {
+			t.Errorf("with the %s open: %v", open, sent)
+		}
+		if open == "menu" && a.menu == nil || open == "dock" && !a.dock.open {
+			t.Errorf("the %s closed", open)
+		}
+	}
+}

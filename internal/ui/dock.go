@@ -113,6 +113,7 @@ func (a *App) updateDock() bool {
 		}
 		return false
 	}
+	a.overlayMusicKeys()
 	n := len(a.docks())
 	switch {
 	case in.Pressed(ActSelect), in.Pressed(ActConfirm):
