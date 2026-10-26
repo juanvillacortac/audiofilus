@@ -71,6 +71,7 @@ func (a *App) autoEQSearch(from *menu) {
 			}
 		}()
 	})
+	a.prompt.back = from // B sin haber escrito: de vuelta a AutoEQ
 }
 
 // autoEQResults muestra lo encontrado; elegir uno lo baja y lo aplica.

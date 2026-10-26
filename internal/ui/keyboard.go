@@ -85,7 +85,7 @@ func (a *App) applyKeyboard(ev kbEvent) {
 		case ev.done:
 			a.promptAccept = true // updatePrompt lo acepta
 		case ev.closed:
-			a.prompt = nil
+			a.cancelPrompt()
 		}
 	case a.search.typing:
 		s := &a.search

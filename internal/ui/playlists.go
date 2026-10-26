@@ -248,6 +248,16 @@ type promptState struct {
 	secret   bool // una contraseña: se ve con asteriscos
 	layer    int  // la capa del teclado en pantalla (promptKeys)
 	done     func(string)
+	back     *menu // si está, cancelar vuelve a este menú (el que lo abrió)
+}
+
+// cancelPrompt deja de escribir sin aceptar: al menú de donde se abrió, si
+// lo dijo (AutoEQ → Buscar → B, a AutoEQ), o a nada.
+func (a *App) cancelPrompt() {
+	if a.prompt != nil && a.prompt.back != nil {
+		a.menu = a.prompt.back
+	}
+	a.prompt = nil
 }
 
 // promptRows son las capas del teclado en pantalla de openPrompt:
@@ -300,10 +310,11 @@ func (a *App) updatePrompt() {
 		if !p.secret {
 			name = strings.TrimSpace(name)
 		}
-		a.prompt = nil
 		if name == "" {
+			a.cancelPrompt()
 			return
 		}
+		a.prompt = nil
 		if !p.typed && !p.raw {
 			name = titleCase(name)
 		}
@@ -311,7 +322,7 @@ func (a *App) updatePrompt() {
 	}
 	back := func() {
 		if len(p.text) == 0 {
-			a.prompt = nil
+			a.cancelPrompt()
 			return
 		}
 		p.text = p.text[:len(p.text)-1]
@@ -336,7 +347,7 @@ func (a *App) updatePrompt() {
 		accept()
 		return
 	case inpututil.IsKeyJustPressed(ebiten.KeyEscape):
-		a.prompt = nil
+		a.cancelPrompt()
 		return
 	case inpututil.IsKeyJustPressed(ebiten.KeyBackspace):
 		back()

@@ -67,7 +67,8 @@ func edit(a *App, act Action) {
 }
 
 // B vuelve siempre un paso: de los editores al menú del que se abrieron
-// (Ecualizador, o AutoEQ al elegir un perfil). Y sobre un perfil pregunta si
+// (Ecualizador, o AutoEQ al elegir un perfil), y del teclado de Buscar sin
+// haber escrito, a AutoEQ. Y sobre un perfil pregunta si
 // borrarlo: "Conservar" vuelve a AutoEQ, y borrar también, ya sin el perfil.
 func TestEQBackOneStep(t *testing.T) {
 	a := &App{offline: true, w: 320, h: 240}
@@ -92,6 +93,16 @@ func TestEQBackOneStep(t *testing.T) {
 	aeq := a.menu
 	if aeq.title != "AutoEQ" || aeq.parent != eq {
 		t.Fatalf("AutoEQ: %q, parent %v", aeq.title, aeq.parent)
+	}
+	press(a, ActConfirm) // Buscar: el teclado
+	if a.prompt == nil {
+		t.Fatal("search didn't open the keyboard")
+	}
+	a.input = Input{}
+	a.input.inject(ActBack) // sin haber escrito: cancela
+	a.updatePrompt()
+	if a.prompt != nil || a.menu != aeq {
+		t.Fatalf("back from the search keyboard: %v", a.menu)
 	}
 	aeq.sel = 1 // el perfil
 	press(a, ActConfirm)
