@@ -31,22 +31,26 @@ type peqEditor struct {
 // openEQMenu es lo que abre la baldosa del ecualizador: elegir el gráfico
 // (diez bandas, el de siempre) o el paramétrico, y editar el que se use.
 func (a *App) openEQMenu() {
-	a.menu = &menu{title: T("set_eq"), items: []menuItem{
+	var m *menu
+	m = &menu{title: T("set_eq"), items: []menuItem{
 		{label: T("eq_graphic"), icon: "eq", active: func() bool { return orDefault(a.dspOf().EQMode, "graphic") == "graphic" },
 			close: true, do: func() {
 				a.send("eqmode", "graphic")
 				a.status.DSP.EQMode = "graphic"
 				a.openEQ()
+				a.editorBack = m
 			}},
 		{label: T("eq_parametric"), icon: "eq", active: func() bool { return a.dspOf().EQMode == "parametric" },
 			close: true, do: func() {
 				a.send("eqmode", "parametric")
 				a.status.DSP.EQMode = "parametric"
 				a.openPEQ()
+				a.editorBack = m
 			}},
 		// El perfil de los audífonos, de AutoEq (autoequi.go).
 		{label: "AutoEQ", icon: "headphones", do: a.openAutoEQ},
 	}}
+	a.menu = m
 }
 
 // openPEQ abre el editor con lo que tiene el servicio (sin bandas, una de
@@ -104,8 +108,11 @@ func (a *App) updatePEQ() {
 	aHeld := in.duration(ActConfirm) > 0
 	rows := len(e.bands) + 1
 	switch {
-	case in.Pressed(ActMenu), in.Pressed(ActBack):
+	case in.Pressed(ActMenu):
+		a.peqEdit, a.editorBack = nil, nil
+	case in.Pressed(ActBack):
 		a.peqEdit = nil
+		a.menu, a.editorBack = a.editorBack, nil // al menú de donde vino
 	case in.Pressed(ActPause) && e.row > 0:
 		e.bands = slices.Delete(e.bands, e.row-1, e.row)
 		e.row = min(e.row, len(e.bands))

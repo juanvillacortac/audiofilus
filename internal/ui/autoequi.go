@@ -22,7 +22,8 @@ func (a *App) eqDir() string { return filepath.Join(a.paths.Base, "eq") }
 
 // openAutoEQ es el menú de AutoEQ: buscar en línea y los archivos de eq/.
 func (a *App) openAutoEQ() {
-	items := []menuItem{{label: T("aeq_search"), icon: "search", do: a.autoEQSearch}}
+	var m *menu // este menú: B en el editor vuelve a él
+	items := []menuItem{{label: T("aeq_search"), icon: "search", do: func() { a.autoEQSearch(m) }}}
 	files, _ := filepath.Glob(filepath.Join(a.eqDir(), "*.txt"))
 	for _, f := range files {
 		name := eqProfileName(f)
@@ -38,17 +39,20 @@ func (a *App) openAutoEQ() {
 				return
 			}
 			a.applyAutoEQ(name, bands, pre)
+			a.editorBack = m
 		}})
 	}
 	if len(files) > 0 {
 		items = append(items, menuItem{label: T("eqp_delete"), icon: "trash", danger: true, do: a.openEQDelete})
 	}
-	a.menu = &menu{title: "AutoEQ", subtitle: T("aeq_sub"), items: items}
+	m = &menu{title: "AutoEQ", subtitle: T("aeq_sub"), items: items}
+	a.menu = m
 }
 
 // autoEQSearch pide el modelo y lo busca en el índice (en segundo plano: la
-// primera vez se baja, ~1 MB).
-func (a *App) autoEQSearch() {
+// primera vez se baja, ~1 MB). from es el menú de AutoEQ, al que B vuelve
+// desde los resultados.
+func (a *App) autoEQSearch(from *menu) {
 	a.openPrompt(T("aeq_model"), "", func(q string) {
 		if strings.TrimSpace(q) == "" {
 			return
@@ -64,18 +68,19 @@ func (a *App) autoEQSearch() {
 					a.flash(T("aeq_error", err))
 					return
 				}
-				a.autoEQResults(q, autoeq.Search(idx, q, 40))
+				a.autoEQResults(q, autoeq.Search(idx, q, 40), from)
 			}
 		}()
 	})
 }
 
 // autoEQResults muestra lo encontrado; elegir uno lo baja y lo aplica.
-func (a *App) autoEQResults(q string, res []autoeq.Profile) {
+func (a *App) autoEQResults(q string, res []autoeq.Profile, from *menu) {
 	if len(res) == 0 {
 		a.flash(T("aeq_none", q))
 		return
 	}
+	var m *menu // B en el editor vuelve a estos resultados
 	var items []menuItem
 	for _, p := range res {
 		items = append(items, menuItem{label: p.Name, icon: "headphones", note: p.Source, close: true, do: func() {
@@ -91,11 +96,13 @@ func (a *App) autoEQResults(q string, res []autoeq.Profile) {
 					}
 					a.saveEQProfile(p.Name, bands, pre) // para usarlo sin red (eqprofiles.go)
 					a.applyAutoEQ(p.Name, bands, pre)
+					a.editorBack = m
 				}
 			}()
 		}})
 	}
-	a.menu = &menu{title: "AutoEQ", subtitle: q, items: items, cols: 1}
+	m = &menu{title: "AutoEQ", subtitle: q, items: items, cols: 1, parent: from}
+	a.menu = m
 }
 
 // applyAutoEQ pone el perfil en el paramétrico y lo abre.

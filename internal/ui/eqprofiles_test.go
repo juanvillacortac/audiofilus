@@ -52,3 +52,70 @@ func TestEQProfileDelete(t *testing.T) {
 		t.Errorf("still applied: %q %+v", a.cfg.UI.EQProfile, a.status.DSP.PEQ)
 	}
 }
+
+// edit simula pulsar act en un fotograma del editor abierto (el gráfico o el
+// paramétrico).
+func edit(a *App, act Action) {
+	a.input = Input{}
+	a.input.inject(act)
+	if a.eqEdit != nil {
+		a.updateEQ()
+	} else {
+		a.updatePEQ()
+	}
+}
+
+// B vuelve siempre un paso: de los editores al menú del que se abrieron
+// (Ecualizador, o AutoEQ al elegir un perfil), y en Eliminar, "Conservar"
+// vuelve a la lista y borrar, a AutoEQ ya sin el perfil.
+func TestEQBackOneStep(t *testing.T) {
+	a := &App{offline: true, w: 320, h: 240}
+	a.paths.Base = t.TempDir()
+	os.MkdirAll(a.eqDir(), 0o755)
+	os.WriteFile(filepath.Join(a.eqDir(), "HD 650.txt"), []byte("Preamp: -6 dB\nFilter 1: ON PK Fc 100 Hz Gain 3 dB Q 1.0\n"), 0o644)
+	a.openEQMenu()
+	eq := a.menu
+	for sel := range 2 { // gráfico y paramétrico
+		eq.sel = sel
+		press(a, ActConfirm)
+		if a.eqEdit == nil && a.peqEdit == nil {
+			t.Fatalf("editor %d didn't open", sel)
+		}
+		edit(a, ActBack)
+		if a.menu != eq || a.eqEdit != nil || a.peqEdit != nil {
+			t.Fatalf("back from editor %d: menu %v", sel, a.menu)
+		}
+	}
+	eq.sel = 2
+	press(a, ActConfirm) // AutoEQ
+	aeq := a.menu
+	if aeq.title != "AutoEQ" || aeq.parent != eq {
+		t.Fatalf("AutoEQ: %q, parent %v", aeq.title, aeq.parent)
+	}
+	aeq.sel = 1 // el perfil
+	press(a, ActConfirm)
+	if a.peqEdit == nil {
+		t.Fatal("profile didn't open the editor")
+	}
+	edit(a, ActBack)
+	if a.menu != aeq {
+		t.Fatalf("back from the profile: %v", a.menu)
+	}
+	aeq.sel = len(aeq.items) - 1 // Eliminar
+	press(a, ActConfirm)
+	list := a.menu
+	press(a, ActConfirm) // HD 650
+	press(a, ActConfirm) // Conservar
+	if a.menu != list {
+		t.Fatalf("keep: %v", a.menu)
+	}
+	press(a, ActConfirm)
+	a.menu.sel = 1 // Eliminar
+	press(a, ActConfirm)
+	if _, err := os.Stat(filepath.Join(a.eqDir(), "HD 650.txt")); err == nil {
+		t.Fatal("not deleted")
+	}
+	if a.menu == nil || a.menu.title != "AutoEQ" || len(a.menu.items) != 1 || a.menu.parent != eq {
+		t.Fatalf("after deleting: %+v", a.menu)
+	}
+}

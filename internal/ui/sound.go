@@ -120,8 +120,11 @@ func (a *App) updateEQ() {
 	case in.Pressed(ActPause):
 		e.preset, e.gains = "flat", engine.PresetGains("flat")
 		a.sendEQ()
-	case in.Pressed(ActConfirm), in.Pressed(ActBack), in.Pressed(ActMenu):
+	case in.Pressed(ActMenu):
+		a.eqEdit, a.editorBack = nil, nil
+	case in.Pressed(ActConfirm), in.Pressed(ActBack):
 		a.eqEdit = nil
+		a.menu, a.editorBack = a.editorBack, nil // al menú de donde vino
 	}
 }
 

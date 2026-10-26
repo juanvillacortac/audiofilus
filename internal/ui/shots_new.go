@@ -47,7 +47,7 @@ func (a *App) shotsNew(shot func(string) error) error {
 		{Name: "Sennheiser HD 650", Source: "crinacle on GRAS 43AG-7"},
 		{Name: "Sennheiser HD 650", Source: "Rtings"},
 		{Name: "Sennheiser HD 650 (2020)", Source: "Kuulokenurkka"},
-	})
+	}, nil)
 	if err := shot("autoeq"); err != nil {
 		return err
 	}

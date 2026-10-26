@@ -57,10 +57,13 @@ type App struct {
 	// Las favoritas y el historial (marks.go): marks se carga la primera
 	// vez; hist es el historial leído y histAt la fecha de su archivo
 	// entonces; timerChoice, la última opción del temporizador.
-	eqEdit    *eqEditor   // el editor del ecualizador abierto (sound.go)
-	peqEdit   *peqEditor  // el del paramétrico (peq.go)
-	rateDirty bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
-	acctCh    chan func() // lo que vuelve de comprobar una cuenta (sound.go)
+	eqEdit  *eqEditor  // el editor del ecualizador abierto (sound.go)
+	peqEdit *peqEditor // el del paramétrico (peq.go)
+	// editorBack es el menú desde el que se abrió uno de los dos editores
+	// (Ecualizador, AutoEQ): B vuelve a él en vez de cerrar todo.
+	editorBack *menu
+	rateDirty  bool        // se cambió la frecuencia de salida: reiniciar al cerrar la elección
+	acctCh     chan func() // lo que vuelve de comprobar una cuenta (sound.go)
 	// mpdPasswords son las contraseñas de los servidores MPD a los que se
 	// mandó música (por host), para no volver a escribirlas (castui.go).
 	mpdPasswords map[string]string
