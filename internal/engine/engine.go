@@ -59,11 +59,22 @@ type Status struct {
 	QueueVersion int `json:"queue_version"`
 }
 
+// output es lo que el engine usa del player de oto (las pruebas ponen uno
+// de mentira).
+type output interface {
+	Play()
+	Pause()
+	Seek(offset int64, whence int) (int64, error)
+	Volume() float64
+	SetVolume(v float64)
+	BufferedSize() int
+}
+
 // Engine es seguro para uso concurrente. El hilo de audio de oto llama a Read;
 // los comandos llegan desde el socket de control.
 type Engine struct {
 	ctx    *oto.Context
-	player *oto.Player
+	player output
 	rate   int
 
 	mu      sync.Mutex
@@ -162,8 +173,9 @@ func New(sampleRate int, buffer time.Duration) (*Engine, error) {
 	}
 	e := &Engine{ctx: ctx, rate: sampleRate, q: queue.New(), events: make(chan func(), 16), boost: 1, vol: 1, gain: 1, latency: buffer, limit: newLimiter(sampleRate), meter: newMeter(sampleRate, 2*buffer)}
 	e.dsp = DSP{}.Normalize()
-	e.player = ctx.NewPlayer(e)
-	e.player.SetBufferSize(int(buffer.Seconds() * float64(sampleRate) * bytesPerFrame))
+	p := ctx.NewPlayer(e)
+	p.SetBufferSize(int(buffer.Seconds() * float64(sampleRate) * bytesPerFrame))
+	e.player = p
 	go e.dispatch()
 	return e, nil
 }
@@ -916,6 +928,10 @@ func (e *Engine) Queue() []string {
 
 // Status devuelve el estado. Position descuenta el audio que aún está en el búfer.
 func (e *Engine) Status() Status {
+	// Lo del búfer de oto se pide antes de tomar e.mu: oto llama a Seek con
+	// su candado tomado y Seek toma e.mu; al revés se trababan los dos (un
+	// Next mientras alguien pedía el estado congelaba el servicio).
+	bufBytes := e.player.BufferedSize()
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	s := Status{
@@ -952,7 +968,7 @@ func (e *Engine) Status() Status {
 	}
 	if e.src != nil {
 		rate := float64(e.src.SampleRate())
-		buffered := float64(e.player.BufferedSize()) / bytesPerFrame / float64(e.rate)
+		buffered := float64(bufBytes) / bytesPerFrame / float64(e.rate)
 		pending := 0.0 // lo leído que espera en el remuestreo
 		if e.rs != nil {
 			pending = e.rs.Pending()
