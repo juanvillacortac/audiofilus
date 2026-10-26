@@ -113,12 +113,15 @@ type Daemon struct {
 
 // Run arranca el daemon y bloquea hasta recibir quit o una señal.
 func Run(paths config.Paths) error {
-	// Si ya hay otro servicio contestando en el socket, este sobra (dos
+	// Un solo servicio por carpeta: si ya hay otro, este sobra (dos
 	// interfaces que lo arrancan a la vez, o una que lo arranca mientras el
-	// otro se reinicia): se va antes de tocar nada (el audio, la plataforma).
-	if _, err := control.Call(paths.Socket, control.Request{Cmd: "status"}); err == nil {
-		return ErrAlreadyRunning
+	// otro se reinicia) y se va antes de tocar nada (el audio, la
+	// plataforma).
+	unlock, err := lockService(paths)
+	if err != nil {
+		return err
 	}
+	defer unlock()
 	cfg, err := config.Load(paths)
 	if err != nil {
 		return fmt.Errorf("config %s: %w", paths.Config, err)
@@ -372,6 +375,40 @@ loop:
 // que lo abrió no hace falta abrirla otra vez).
 type OpenResult struct {
 	UIOpen bool `json:"ui_open"`
+}
+
+// lockWait es lo que se espera el candado de un servicio que no contesta (el
+// de antes, que se está cerrando al reiniciarse). Variable para las pruebas.
+var lockWait = 5 * time.Second
+
+// lockService se queda con el servicio de paths: el candado junto al socket
+// (lock_unix.go), que solo puede tener uno. Preguntar al socket no bastaba:
+// dos que arrancaban a la vez (al reiniciarse por una actualización, la
+// interfaz lanzaba otro) preguntaban antes de que el otro escuchara, y
+// seguían los dos, uno sin socket pero con el audio, los botones y el
+// bluetooth. Si el candado es de otro y ese contesta, ErrAlreadyRunning; si
+// no contesta (se está cerrando), se espera a que lo suelte, hasta lockWait.
+func lockService(paths config.Paths) (unlock func(), err error) {
+	deadline := time.Now().Add(lockWait)
+	for {
+		unlock, ok, err := tryLock(paths.Socket + ".lock")
+		if err != nil {
+			log.Printf("service lock: %v", err) // sin candado: como antes
+			unlock = func() {}
+			ok = true
+		}
+		if ok {
+			if _, err := control.Call(paths.Socket, control.Request{Cmd: "status"}); err == nil {
+				unlock() // contesta otro sin candado (uno de antes de este)
+				return nil, ErrAlreadyRunning
+			}
+			return unlock, nil
+		}
+		if _, err := control.Call(paths.Socket, control.Request{Cmd: "status"}); err == nil || time.Now().After(deadline) {
+			return nil, ErrAlreadyRunning
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 }
 
 // ErrAlreadyRunning es lo que devuelve Run si ya había otro servicio.
