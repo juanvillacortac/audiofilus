@@ -2715,26 +2715,43 @@ func (a *App) playRandomSong() {
 }
 
 // holdState es una flecha en la pantalla de reproducción: cuánto lleva
-// pulsada y si ya buscó (entonces, al soltarla, no cambia de canción).
+// pulsada, si ya buscó (entonces, al soltarla, no cambia de canción), en qué
+// frame toca el próximo salto y cuántos lleva.
 type holdState struct {
 	frames int
 	sought bool
+	next   int
+	steps  int
 }
 
-// Mantener una flecha busca tras holdFrames, y luego cada seekEvery frames.
+// Mantener una flecha busca tras holdFrames, y luego cada vez más seguido:
+// el primer hueco es seekFirst y cada salto lo acorta seekAccel, hasta
+// seekEvery. Así soltar tras uno o dos saltos (10 o 20 s) es fácil, y
+// mantenida llega a la velocidad de siempre, sin pasarla.
 const (
 	holdFrames = 18 // 0,3 s
-	seekEvery  = 12 // 0,2 s: 50 s de canción por segundo
+	seekFirst  = 36 // 0,6 s entre el primer salto y el segundo
+	seekAccel  = 6  // 0,1 s menos en cada salto
+	seekEvery  = 12 // 0,2 s, el tope: 50 s de canción por segundo
 )
 
+// seekGap son los frames entre el salto steps (desde 0) y el siguiente.
+func seekGap(steps int) int { return max(seekEvery, seekFirst-seekAccel*steps) }
+
 // tapOrHold atiende una flecha: soltada antes de holdFrames, manda cmd
-// (anterior o siguiente); mantenida, busca seek segundos cada seekEvery frames.
+// (anterior o siguiente); mantenida, busca seek segundos, cada vez más
+// seguido (seekGap).
 func (a *App) tapOrHold(h *holdState, d int, cmd string, seek float64) {
 	if d > 0 {
 		h.frames = d
-		if d >= holdFrames && (d-holdFrames)%seekEvery == 0 {
+		if h.next == 0 {
+			h.next = holdFrames
+		}
+		if d >= h.next {
 			a.seekBy(seek)
 			h.sought = true
+			h.next = d + seekGap(h.steps)
+			h.steps++
 		}
 		return
 	}
