@@ -77,6 +77,9 @@ func (a *App) soundFromSend(cmd string, args []string) {
 	}
 }
 
+// soundHook, en las pruebas, ve cada sonido de los botones que suena.
+var soundHook func(name string)
+
 // soundFromInput pone, si no hay otro, el sonido de los botones de este
 // fotograma y de lo que cambió (menús, barra, escritura). Va al final de
 // Update.
@@ -93,6 +96,11 @@ func (a *App) soundFromInput() {
 	// En los juegos, sin menú, los botones son del juego: sin sonidos.
 	inGame := (a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Tracker || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Runner) && !menu && !dock && !prompt
 	typing := prompt || a.searchTyping()
+	// En Reproduciendo las flechas no mueven nada (arriba y abajo son el
+	// scratch, los lados cambian de canción o buscan, cada uno con su
+	// sonido): sin el de moverse, que al mantenerlas se repetía. Con la letra
+	// abierta, arriba y abajo la recorren y sí suena.
+	still := a.screen == NowPlaying && !menu && !dock && !prompt && !a.lyricsOn
 	switch {
 	case inGame || a.sleeping || a.guideAt > 0:
 	case typing && (in.Pressed(ActConfirm) || in.Pressed(ActShuffle)):
@@ -101,10 +109,14 @@ func (a *App) soundFromInput() {
 		a.sound(sfx.Confirm, 1)
 	case in.Pressed(ActBack):
 		a.sound(sfx.Back, 1)
+	case still:
 	case in.Repeat(ActUp), in.Repeat(ActDown), in.Repeat(ActLeft), in.Repeat(ActRight):
 		a.sound(sfx.Move, 0)
 	}
 	if s.pending != "" && s.pending != soundNone {
+		if soundHook != nil {
+			soundHook(s.pending)
+		}
 		a.playSound(s.pending)
 	}
 	s.pending, s.prio = "", -1
