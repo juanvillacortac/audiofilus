@@ -34,7 +34,8 @@ func TestEQProfiles(t *testing.T) {
 	}
 }
 
-// Borrar el perfil puesto lo quita de eq/ y deja el ecualizador plano.
+// Borrar el perfil puesto (Y sobre él en AutoEQ) lo quita de eq/ y deja el
+// ecualizador plano.
 func TestEQProfileDelete(t *testing.T) {
 	a := &App{offline: true}
 	a.paths.Base = t.TempDir()
@@ -42,9 +43,9 @@ func TestEQProfileDelete(t *testing.T) {
 	if err := a.useEQProfile("HD 650"); err != nil {
 		t.Fatal(err)
 	}
-	a.openEQDelete()
-	a.menu.items[0].do() // el perfil
-	a.menu.items[1].do() // "Borrar"
+	a.openAutoEQ()
+	a.menu.items[1].del() // el perfil
+	a.menu.items[1].do()  // "Borrar"
 	if len(a.eqProfiles()) != 0 {
 		t.Errorf("profiles left: %v", a.eqProfiles())
 	}
@@ -66,8 +67,8 @@ func edit(a *App, act Action) {
 }
 
 // B vuelve siempre un paso: de los editores al menú del que se abrieron
-// (Ecualizador, o AutoEQ al elegir un perfil), y en Eliminar, "Conservar"
-// vuelve a la lista y borrar, a AutoEQ ya sin el perfil.
+// (Ecualizador, o AutoEQ al elegir un perfil). Y sobre un perfil pregunta si
+// borrarlo: "Conservar" vuelve a AutoEQ, y borrar también, ya sin el perfil.
 func TestEQBackOneStep(t *testing.T) {
 	a := &App{offline: true, w: 320, h: 240}
 	a.paths.Base = t.TempDir()
@@ -101,16 +102,21 @@ func TestEQBackOneStep(t *testing.T) {
 	if a.menu != aeq {
 		t.Fatalf("back from the profile: %v", a.menu)
 	}
-	aeq.sel = len(aeq.items) - 1 // Eliminar
-	press(a, ActConfirm)
-	list := a.menu
-	press(a, ActConfirm) // HD 650
+	if len(aeq.items) != 2 {
+		t.Fatalf("AutoEQ items: %d (search and the profile, no Delete)", len(aeq.items))
+	}
+	press(a, ActPause)   // Y sobre HD 650
 	press(a, ActConfirm) // Conservar
-	if a.menu != list {
+	if a.menu != aeq {
 		t.Fatalf("keep: %v", a.menu)
 	}
-	press(a, ActConfirm)
-	a.menu.sel = 1 // Eliminar
+	press(a, ActPause)
+	press(a, ActBack) // B en la pregunta: también a AutoEQ
+	if a.menu != aeq {
+		t.Fatalf("back from the question: %v", a.menu)
+	}
+	press(a, ActPause)
+	a.menu.sel = 1 // Borrar
 	press(a, ActConfirm)
 	if _, err := os.Stat(filepath.Join(a.eqDir(), "HD 650.txt")); err == nil {
 		t.Fatal("not deleted")

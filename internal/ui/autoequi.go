@@ -20,30 +20,29 @@ import (
 // eqDir es la carpeta de los perfiles propios.
 func (a *App) eqDir() string { return filepath.Join(a.paths.Base, "eq") }
 
-// openAutoEQ es el menú de AutoEQ: buscar en línea y los archivos de eq/.
+// openAutoEQ es el menú de AutoEQ: buscar en línea y los archivos de eq/;
+// Y sobre uno lo borra (con confirmación).
 func (a *App) openAutoEQ() {
 	var m *menu // este menú: B en el editor vuelve a él
 	items := []menuItem{{label: T("aeq_search"), icon: "search", do: func() { a.autoEQSearch(m) }}}
 	files, _ := filepath.Glob(filepath.Join(a.eqDir(), "*.txt"))
 	for _, f := range files {
 		name := eqProfileName(f)
-		items = append(items, menuItem{label: name, icon: "headphones", close: true, do: func() {
-			b, err := os.ReadFile(f)
-			if err != nil {
-				a.flash(err.Error())
-				return
-			}
-			bands, pre, err := autoeq.ParseParametric(string(b))
-			if err != nil {
-				a.flash(err.Error())
-				return
-			}
-			a.applyAutoEQ(name, bands, pre)
-			a.editorBack = m
-		}})
-	}
-	if len(files) > 0 {
-		items = append(items, menuItem{label: T("eqp_delete"), icon: "trash", danger: true, do: a.openEQDelete})
+		items = append(items, menuItem{label: name, icon: "headphones", close: true,
+			del: func() { a.askEQDelete(name, m) }, do: func() {
+				b, err := os.ReadFile(f)
+				if err != nil {
+					a.flash(err.Error())
+					return
+				}
+				bands, pre, err := autoeq.ParseParametric(string(b))
+				if err != nil {
+					a.flash(err.Error())
+					return
+				}
+				a.applyAutoEQ(name, bands, pre)
+				a.editorBack = m
+			}})
 	}
 	m = &menu{title: "AutoEQ", subtitle: T("aeq_sub"), items: items}
 	a.menu = m

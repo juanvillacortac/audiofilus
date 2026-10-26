@@ -14,6 +14,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
 
 	"github.com/juanvillacortac/audiofilus/internal/input"
+	"github.com/juanvillacortac/audiofilus/internal/mpris"
 )
 
 // armedRumble es la vibración que confirma que el atajo de FN quedó armado.
@@ -366,6 +367,12 @@ func (d *Daemon) mediaKey(key uint16, at time.Time, hook *input.HookCounter) {
 		// él no lo saben: los que mandan PLAY o PAUSE según lo que creen (los
 		// Huawei FreeBuds) se desincronizaban, así que entonces alternan.
 		if d.bt != nil && d.bt.Registered() {
+			// Salvo que pidan lo que ya pasa: entonces están desincronizados
+			// y alternan (mpris.HeadsetToggles).
+			if mpris.HeadsetToggles(map[uint16]string{input.KeyPlayCD: "Play", input.KeyPauseCD: "Pause"}[key], d.eng.Playing()) {
+				d.do(input.TogglePause, false)
+				return
+			}
 			if d.remote(map[uint16]string{input.KeyPlayCD: "resume", input.KeyPauseCD: "pause"}[key]) {
 				return
 			}

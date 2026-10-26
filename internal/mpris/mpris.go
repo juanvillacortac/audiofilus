@@ -371,10 +371,32 @@ func (p player) do(name, cmd string, f func()) *dbus.Error {
 
 func (p player) Next() *dbus.Error      { return p.do("Next", "next", p.s.eng.Next) }
 func (p player) Previous() *dbus.Error  { return p.do("Previous", "prev", p.s.eng.Prev) }
-func (p player) Pause() *dbus.Error     { return p.do("Pause", "pause", p.s.eng.Pause) }
-func (p player) Play() *dbus.Error      { return p.do("Play", "resume", p.s.eng.Play) }
+func (p player) Pause() *dbus.Error     { return p.playPause("Pause", "pause", p.s.eng.Pause) }
+func (p player) Play() *dbus.Error      { return p.playPause("Play", "resume", p.s.eng.Play) }
 func (p player) PlayPause() *dbus.Error { return p.do("PlayPause", "toggle", p.s.eng.Toggle) }
 func (p player) Stop() *dbus.Error      { return p.do("Stop", "pause", p.s.eng.Pause) }
+
+// playPause es Play o Pause: al pie de la letra, salvo de los audífonos
+// cuando piden lo que ya pasa (HeadsetToggles), que alterna.
+func (p player) playPause(name, cmd string, f func()) *dbus.Error {
+	if p.s.path == bluezPlayer && HeadsetToggles(name, p.s.eng.Playing()) {
+		return p.do(name, "toggle", p.s.eng.Toggle)
+	}
+	return p.do(name, cmd, f)
+}
+
+// HeadsetToggles dice si un Play o Pause de los audífonos (por BlueZ, o como
+// tecla con el reproductor registrado) es en
+// realidad alternar: piden lo que ya pasa (Pause con la música en pausa,
+// Play sonando), así que creen lo contrario. Los Huawei FreeBuds, a los
+// segundos de pausar, vuelven a creer que suena aunque BlueZ les diga
+// Paused, y su doble toque manda Pause: tomado al pie de la letra, no hacía
+// nada hasta tocar play en la consola. Lo que piden de acuerdo con lo que
+// pasa (la detección de puesta: quitárselos sonando pausa, ponérselos
+// reanuda lo que pausaron) sigue al pie de la letra.
+func HeadsetToggles(cmd string, playing bool) bool {
+	return cmd == "Pause" && !playing || cmd == "Play" && playing
+}
 
 // SeekBy es "Seek" de MPRIS (se exporta con ese nombre: en Go, Seek choca con
 // io.Seeker): mueve offset microsegundos desde la posición actual.

@@ -26,6 +26,7 @@ type menuItem struct {
 	close  bool   // cierra el menú aunque tenga active (p. ej. el de pantallas)
 	note   string // un texto debajo, sin más (a diferencia de value, cierra el menú)
 	cover  *Album // si está, su portada va en lugar del icono (un álbum)
+	del    func() // si está, Y la borra (un perfil de AutoEQ); la ayuda lo dice
 }
 
 // menu es el menú abierto.
@@ -111,6 +112,9 @@ func (a *App) updateMenu() {
 			a.menu = nil
 		}
 		it.do()
+		a.linkMenu(m)
+	case in.Pressed(ActPause) && m.items[m.sel].del != nil:
+		m.items[m.sel].del()
 		a.linkMenu(m)
 	case in.Pressed(ActMenu) && a.t-a.startAt < doubleStart:
 		// Start dos veces seguidas: a dormir (la primera abrió el menú).
@@ -452,5 +456,9 @@ func (a *App) drawMenu(dst *ebiten.Image) {
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg) // tapa la ayuda de la pantalla de debajo
-	a.drawHints(dst, []hint{{"A", T("h_ok")}, {"B", T("h_close")}})
+	hints := []hint{{"A", T("h_ok")}}
+	if m.sel < len(m.items) && m.items[m.sel].del != nil {
+		hints = append(hints, hint{"Y", T("h_delete")})
+	}
+	a.drawHints(dst, append(hints, hint{"B", T("h_close")}))
 }
