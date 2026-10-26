@@ -101,6 +101,43 @@ var (
 	}
 )
 
+// Alturas de una fila y de la cabecera de una sección de la guía.
+const guideRowH, guideHeadH = 11, 14
+
+// section es una sección de la guía: su cabecera y sus filas.
+type section struct {
+	head string
+	rows []hint
+}
+
+// guideColumns reparte las secciones de la guía en columnas para una
+// pantalla de w×h: a la izquierda esta pantalla y todas; a la derecha, en
+// las portátiles (sleep), los gestos del sleep y el segundo plano. En
+// vertical, si todo cabe en una columna, va en una: en dos, a 240 de ancho,
+// no se leen.
+func guideColumns(own, all []hint, sleep bool, w, h int) [][]section {
+	cols := [][]section{
+		{{"g_here", own}, {"g_everywhere", all}},
+		{{"g_sleep_head", guideSleep}, {"g_bg_head", guideBackground}},
+	}
+	if !sleep {
+		// Los gestos del sleep y los atajos de FN en segundo plano son de
+		// las portátiles.
+		cols = cols[:1]
+	}
+	tall := 0
+	for _, secs := range cols {
+		for _, sec := range secs {
+			tall += guideHeadH + 3 + len(sec.rows)*guideRowH
+		}
+	}
+	// Con una sola columna (en la PC, sin sleep) no hay nada que juntar.
+	if len(cols) > 1 && w < 300 && topH+4+tall <= h-bottomH {
+		cols = [][]section{append(cols[0], cols[1]...)}
+	}
+	return cols
+}
+
 // drawGuide pinta la guía mientras se mantiene FN, en dos columnas: a la
 // izquierda esta pantalla y todas; a la derecha el sleep y el segundo plano.
 // Cada fila lleva su botón en una pastilla.
@@ -112,31 +149,8 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	own, all := a.guideRows()
 	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, 0xe8))
-	const rowH, headH = 11, 14
-	type section struct {
-		head string
-		rows []hint
-	}
-	cols := [][]section{
-		{{"g_here", own}, {"g_everywhere", all}},
-		{{"g_sleep_head", guideSleep}, {"g_bg_head", guideBackground}},
-	}
-	if !a.canSleep() {
-		// Los gestos del sleep y los atajos de FN en segundo plano son de
-		// las portátiles.
-		cols = cols[:1]
-	}
-	// En vertical, si todo cabe en una columna, va en una: en dos, a 240 de
-	// ancho, no se leen.
-	tall := 0
-	for _, secs := range cols {
-		for _, sec := range secs {
-			tall += headH + 3 + len(sec.rows)*rowH
-		}
-	}
-	if w < 300 && topH+4+tall <= h-bottomH {
-		cols = [][]section{append(cols[0], cols[1]...)}
-	}
+	const rowH, headH = guideRowH, guideHeadH
+	cols := guideColumns(own, all, a.canSleep(), w, h)
 	// Lo que no cabe en el alto de una columna sigue en otra (la cabecera de
 	// la sección, repetida). Si las columnas no caben a lo ancho (a 110 px ya
 	// no se leen), se quitan las secciones del final: lo de esta pantalla va
