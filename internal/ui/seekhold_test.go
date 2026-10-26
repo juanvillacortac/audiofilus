@@ -1,45 +1,72 @@
 package ui
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
-// Mantener una flecha: el primer salto a los 0,3 s, el segundo 0,6 s después,
-// y luego cada vez más seguido hasta el tope de 0,2 s (no más rápido). Soltar
-// antes de 0,3 s cambia de canción, y después de saltar, no.
+// Mantener una flecha: a los 0,3 s empieza a buscar, sin saltos y cada vez
+// más rápido hasta el tope (50 s de canción por segundo, no más), mandando
+// la posición cada 0,2 s y al soltar. Suena una vez. Soltar antes de 0,3 s
+// cambia de canción, y después de buscar, no.
 func TestSeekHoldAccelerates(t *testing.T) {
-	a := &App{offline: true, duration: 600}
-	var at []int // los frames en que saltó
+	a := &App{offline: true, duration: 600, position: 100}
+	var at []int      // los frames en que mandó la posición
+	var pos []float64 // y cuál
 	frame := 0
 	sendHook = func(cmd string, args []string) {
 		switch cmd {
 		case "seek":
 			at = append(at, frame)
+			v, _ := strconv.ParseFloat(args[0], 64)
+			pos = append(pos, v)
 		case "next":
 			at = append(at, -1)
 		}
 	}
 	defer func() { sendHook = nil }()
 	var h holdState
+	sounds := 0
 	for frame = 1; frame <= 300; frame++ { // 5 s mantenida
-		a.tapOrHold(&h, frame, "next", 10)
-	}
-	a.tapOrHold(&h, 0, "next", 10) // soltada: no cambia de canción
-	if len(at) < 3 || at[0] != holdFrames || at[1]-at[0] != seekFirst {
-		t.Fatalf("seeks at %v", at)
-	}
-	for i := 1; i < len(at); i++ {
-		gap := at[i] - at[i-1]
-		if gap < seekEvery || i > 1 && gap > at[i-1]-at[i-2] || at[i] < 0 {
-			t.Fatalf("seeks at %v: gap %d", at, gap)
+		a.tapOrHold(&h, frame, "next", 1)
+		if a.snd.pending != "" {
+			sounds++
+			a.snd.pending, a.snd.prio = "", -1
+		}
+		if frame < holdFrames && a.position != 100 {
+			t.Fatalf("moved before holding: %v", a.position)
 		}
 	}
-	if last := at[len(at)-1] - at[len(at)-2]; last != seekEvery {
-		t.Errorf("top speed gap %d, want %d", last, seekEvery)
+	frame = 301
+	a.tapOrHold(&h, 0, "next", 1) // soltada: no cambia de canción
+	if sounds != 1 {
+		t.Errorf("%d sounds while holding, want 1", sounds)
+	}
+	if len(at) < 3 || at[0] != holdFrames || at[len(at)-1] != 301 {
+		t.Fatalf("seeks at %v", at)
+	}
+	for i := 1; i < len(at)-1; i++ {
+		if at[i]-at[i-1] != seekEvery {
+			t.Fatalf("seeks at %v", at)
+		}
+	}
+	if first := pos[1] - pos[0]; first > 1 {
+		t.Errorf("first 0.2 s moved %.2f s, want 1 s or less", first)
+	}
+	for i := 2; i < len(pos)-1; i++ {
+		step, prev := pos[i]-pos[i-1], pos[i-1]-pos[i-2]
+		if step < prev-0.11 || step > scrubMax*seekEvery/60+0.11 {
+			t.Fatalf("positions %v: step %.2f after %.2f", pos, step, prev)
+		}
+	}
+	if last := pos[len(pos)-2] - pos[len(pos)-3]; last < scrubMax*seekEvery/60-0.11 {
+		t.Errorf("top speed step %.2f, want %.0f", last, scrubMax*seekEvery/60)
 	}
 	at = nil
 	for frame = 1; frame < holdFrames; frame++ { // un toque
-		a.tapOrHold(&h, frame, "next", 10)
+		a.tapOrHold(&h, frame, "next", 1)
 	}
-	a.tapOrHold(&h, 0, "next", 10)
+	a.tapOrHold(&h, 0, "next", 1)
 	if len(at) != 1 || at[0] != -1 {
 		t.Errorf("a tap: %v", at)
 	}

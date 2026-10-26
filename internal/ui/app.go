@@ -908,11 +908,11 @@ func (a *App) updateMain() {
 		// Así se puede todo sin gatillos, que no todas las consolas tienen.
 		if a.spoken() {
 			// Un libro o un podcast: un toque salta 30 s (books.go).
-			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "-30", -10)
-			a.tapOrHold(&a.rightHold, in.duration(ActRight), "+30", +10)
+			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "-30", -1)
+			a.tapOrHold(&a.rightHold, in.duration(ActRight), "+30", 1)
 		} else {
-			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "prev", -10)
-			a.tapOrHold(&a.rightHold, in.duration(ActRight), "next", +10)
+			a.tapOrHold(&a.leftHold, in.duration(ActLeft), "prev", -1)
+			a.tapOrHold(&a.rightHold, in.duration(ActRight), "next", 1)
 		}
 	case LibraryScreen:
 		a.updateLibrary()
@@ -2739,47 +2739,66 @@ func (a *App) overlayMusicKeys() {
 }
 
 // holdState es una flecha en la pantalla de reproducción: cuánto lleva
-// pulsada, si ya buscó (entonces, al soltarla, no cambia de canción), en qué
-// frame toca el próximo salto y cuántos lleva.
+// pulsada, si ya buscó (entonces, al soltarla, no cambia de canción) y en
+// qué frame mandó la última posición al servicio.
 type holdState struct {
 	frames int
 	sought bool
-	next   int
-	steps  int
+	sent   int
 }
 
-// Mantener una flecha busca tras holdFrames, y luego cada vez más seguido:
-// el primer hueco es seekFirst y cada salto lo acorta seekAccel, hasta
-// seekEvery. Así soltar tras uno o dos saltos (10 o 20 s) es fácil, y
-// mantenida llega a la velocidad de siempre, sin pasarla.
+// Mantener una flecha busca tras holdFrames, sin saltos: la posición corre
+// cada fotograma, al principio a scrubFrom segundos de canción por segundo
+// (de uno en uno, para afinar) y cada vez más rápido (scrubAccel por segundo
+// mantenida) hasta scrubMax, la velocidad de antes. La barra la sigue suave;
+// al servicio se le manda cada seekEvery frames y al soltar, que cada salto
+// vacía el búfer de audio.
 const (
 	holdFrames = 18 // 0,3 s
-	seekFirst  = 36 // 0,6 s entre el primer salto y el segundo
-	seekAccel  = 6  // 0,1 s menos en cada salto
-	seekEvery  = 12 // 0,2 s, el tope: 50 s de canción por segundo
+	scrubFrom  = 2.0
+	scrubAccel = 20.0 // llega al tope en unos 2,4 s
+	scrubMax   = 50.0
+	seekEvery  = 12 // 0,2 s
 )
 
-// seekGap son los frames entre el salto steps (desde 0) y el siguiente.
-func seekGap(steps int) int { return max(seekEvery, seekFirst-seekAccel*steps) }
+// scrubSpeed son los segundos de canción por segundo tras held frames
+// buscando.
+func scrubSpeed(held int) float64 {
+	return min(scrubMax, scrubFrom+scrubAccel*float64(held)/60)
+}
 
 // tapOrHold atiende una flecha: soltada antes de holdFrames, manda cmd
-// (anterior o siguiente); mantenida, busca seek segundos, cada vez más
-// seguido (seekGap).
-func (a *App) tapOrHold(h *holdState, d int, cmd string, seek float64) {
+// (anterior o siguiente); mantenida, busca hacia dir (-1 o 1) cada vez más
+// rápido (scrubSpeed). Suena una vez, al empezar.
+func (a *App) tapOrHold(h *holdState, d int, cmd string, dir float64) {
 	if d > 0 {
 		h.frames = d
-		if h.next == 0 {
-			h.next = holdFrames
+		if d < holdFrames || a.duration <= 0 { // en vivo no se puede buscar
+			h.sought = h.sought || d >= holdFrames
+			return
 		}
-		if d >= h.next {
-			a.seekBy(seek)
+		if !h.sought {
 			h.sought = true
-			h.next = d + seekGap(h.steps)
-			h.steps++
+			a.seekWant = a.position
+			a.juiceSeek(int(dir))
+			if dir < 0 {
+				a.sound(sfx.Prev, 3)
+			} else {
+				a.sound(sfx.Next, 3)
+			}
+		}
+		a.seekWant = max(0, min(a.seekWant+dir*scrubSpeed(d-holdFrames)/60, a.duration))
+		a.seekAt, a.position = a.t, a.seekWant
+		if d-h.sent >= seekEvery {
+			a.sendScrub()
+			h.sent = d
 		}
 		return
 	}
-	if h.frames > 0 && !h.sought {
+	switch {
+	case h.sought && a.duration > 0:
+		a.sendScrub()
+	case h.frames > 0 && !h.sought:
 		switch cmd {
 		case "-30":
 			a.seekBy(-bookSkip)
@@ -2790,6 +2809,14 @@ func (a *App) tapOrHold(h *holdState, d int, cmd string, seek float64) {
 		}
 	}
 	*h = holdState{}
+}
+
+// sendScrub manda al servicio la posición de la búsqueda, sin el sonido de
+// cada salto.
+func (a *App) sendScrub() {
+	pending, prio := a.snd.pending, a.snd.prio
+	a.send("seek", strconv.FormatFloat(a.seekWant, 'f', 1, 64))
+	a.snd.pending, a.snd.prio = pending, prio
 }
 
 // watchProfile graba un perfil de CPU de 20 s si aparece data/cpuprofile (se
