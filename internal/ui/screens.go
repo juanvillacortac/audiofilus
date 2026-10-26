@@ -133,14 +133,32 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 var keyNames = map[string]string{"A": "ENTER", "B": "ESC", "X": "S", "Y": "SPACE", "START": "M", "SEL": "TAB", "FN": "F1", "L1": "Q", "R1": "E", "L2": ",", "R2": "."}
 
 // btn es el nombre de un botón del mando, o de su tecla si se está usando el
-// teclado.
+// teclado. Traduce también los compuestos ("X X", "A/Y", "FN x3 L1/R1"),
+// botón a botón.
 func (a *App) btn(b string) string {
-	if !a.input.usingPad && !a.offline {
-		if k, ok := keyNames[b]; ok {
-			return k
-		}
+	if a.input.usingPad || a.offline {
+		return b
 	}
-	return b
+	if k, ok := keyNames[b]; ok {
+		return k
+	}
+	var out strings.Builder
+	word := 0 // dónde empieza el botón que se está leyendo
+	for i := 0; i <= len(b); i++ {
+		if i < len(b) && !strings.ContainsRune(" /+", rune(b[i])) {
+			continue
+		}
+		if k, ok := keyNames[b[word:i]]; ok {
+			out.WriteString(k)
+		} else {
+			out.WriteString(b[word:i])
+		}
+		if i < len(b) {
+			out.WriteByte(b[i])
+		}
+		word = i + 1
+	}
+	return out.String()
 }
 
 // hint es un botón y lo que hace, para la barra de abajo.

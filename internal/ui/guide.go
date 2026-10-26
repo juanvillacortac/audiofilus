@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strings"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -202,6 +204,6 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 		}
 	}
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg)
-	msg := T("g_release")
+	msg := strings.ReplaceAll(T("g_release"), "FN", a.btn("FN"))
 	drawText(dst, msg, SmallFace, (w-textWidth(msg, SmallFace))/2, h-bottomH+4, th.Dim)
 }
