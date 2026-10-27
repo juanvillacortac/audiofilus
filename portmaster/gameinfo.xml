@@ -8,7 +8,6 @@
 		<publisher>juanvillacortac</publisher>
 		<genre>Music player</genre>
 		<players>1</players>
-		<image>./audiofilus/screenshot.png</image>
-		<thumbnail>./audiofilus/cover.png</thumbnail>
+		<image>./audiofilus/cover.png</image>
 	</game>
 </gameList>
