@@ -63,6 +63,19 @@ Changes: in sleep the service no longer reads the system volume (nobody sees it 
 
 Measured afterwards (same conditions, 60 s): the whole console went from ~47 % to **~18 % of one core**; the service, ~8 %; the interface, ~1.7 %; `gptokeyb`, 0 (frozen). The service profile in sleep: ~30 % in C calls (mpg123 and sending to PulseAudio), **16 % in the meter** (level and bass, which nobody looks at in sleep) and the rest in oto's mixing. Since then the whole meter (not just the spectrum) is only computed with the app open and awake. Still to do: measure with the reliable method (`capacity` drop) and compare with Songo.
 
+### Playing in sleep, v0.18.5 (October 27, 2026)
+
+After those changes, with the defaults of v0.18.5 (MilkDrop as the player's background, which only draws with the screen on): the interface open on Now Playing, app sleep (`backlight(0)`), `powersave` at 480 MHz, wifi on (SSH), the whole library on shuffle (mixed formats), battery at 27–28 %. Quick estimate: `time_to_empty_now` settled at ~10,000 s at 27 %, **~290 mA** (it starts higher, ~375 mA, and falls over the first two minutes). Per process, 120 s:
+
+| Process | CPU of one core at 480 MHz |
+|---|---|
+| Service | 11.6 % |
+| Interface | 0.9 % |
+| PortMaster's `gptokeyb` | 0 % (frozen in sleep) |
+| Whole console (all processes) | 18.6 % (was ~47 %) |
+
+The console total fell to less than half, mostly from no longer polling the system volume and freezing `gptokeyb`; the draw stays in the same range as before (~260–290 mA), so what's left is the baseline of the screen-off system and the wifi. A reliable measurement (`capacity` drop over 30–60 min) is still to be added.
+
 ## How to measure
 
 See the [`measure-power`](../.claude/skills/measure-power/SKILL.md) skill. In short:
