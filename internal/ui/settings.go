@@ -405,7 +405,7 @@ func (a *App) changeSetting(id, step int) {
 		a.status.DSP.Crossfeed = lv
 	case setThemeColor:
 		n, i := a.settingChoice(id)
-		c := themeColors[cycle(n, i)]
+		c := themeChoices()[cycle(n, i)]
 		a.cfg.UI.ThemeColor = ""
 		if c.name != "album" {
 			a.cfg.UI.ThemeColor = c.name
@@ -499,7 +499,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 	case setResampler:
 		return find(len(resamplerModes), func(i int) bool { return resamplerModes[i] == orDefault(a.dspOf().Resampler, "auto") })
 	case setThemeColor:
-		return find(len(themeColors), func(i int) bool { return themeColors[i].name == orDefault(a.cfg.UI.ThemeColor, "album") })
+		cs := themeChoices()
+		return find(len(cs), func(i int) bool { return cs[i].name == orDefault(a.cfg.UI.ThemeColor, "album") })
 	case setCrossfeed:
 		return find(len(engine.CrossfeedLevels), func(i int) bool { return engine.CrossfeedLevels[i] == a.dspOf().Crossfeed })
 	case setRate:
@@ -874,7 +875,7 @@ func choiceLabel(id, i int) string {
 	case setResampler:
 		return T("rs_" + resamplerModes[i])
 	case setThemeColor:
-		return T("tc_" + themeColors[i].name)
+		return T("tc_" + themeChoices()[i].name)
 	case setCrossfeed:
 		return crossfeedLabel(engine.CrossfeedLevels[i])
 	case setRate:

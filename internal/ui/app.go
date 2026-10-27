@@ -513,6 +513,7 @@ func (a *App) Update() error {
 	a.setBottomH()
 	a.covers.collect(a.t)
 	a.updateTheme()
+	a.followSystemTheme()
 	if a.ShotsDir != "" {
 		return a.updateShots()
 	}
@@ -1307,6 +1308,17 @@ func (a *App) warmUp() {
 	drawShine(tmp, src, 0, 0, 0.5)
 	for s := Screen(0); s < screenCount; s++ {
 		a.drawScreen(tmp, s)
+	}
+}
+
+// followSystemTheme sigue los cambios de tema de Omarchy con el color Sistema:
+// `omarchy theme set` cambia la interfaz sin reiniciarla.
+func (a *App) followSystemTheme() {
+	if a.cfg.UI.ThemeColor != "system" {
+		return
+	}
+	if th, ok := systemTheme(); ok {
+		a.theme = th
 	}
 }
 

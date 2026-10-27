@@ -113,8 +113,22 @@ var themeColors = []themeColor{
 	{"black", color.RGBA{0xe8, 0xe8, 0xec, 0xff}, color.RGBA{0x4a, 0x4c, 0x54, 0xff}, true},
 }
 
-// fixedTheme es el tema del color fijo con ese nombre, si lo hay.
+// themeChoices son los colores que ofrece Ajustes → Color: los de
+// themeColors y, detrás del del disco, el del sistema (system) si se está en
+// Omarchy (omarchy.go).
+func themeChoices() []themeColor {
+	if _, ok := systemTheme(); !ok {
+		return themeColors
+	}
+	return append([]themeColor{themeColors[0], {name: "system"}}, themeColors[1:]...)
+}
+
+// fixedTheme es el tema del color fijo con ese nombre, si lo hay. El del
+// sistema, fuera de Omarchy, no lo hay: se vuelve al del disco.
 func fixedTheme(name string) (Theme, bool) {
+	if name == "system" {
+		return systemTheme()
+	}
 	for _, c := range themeColors[1:] {
 		if c.name != name {
 			continue
