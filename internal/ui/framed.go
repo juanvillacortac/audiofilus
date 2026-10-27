@@ -22,18 +22,24 @@ func NewFramed(a *App) *Framed { return &Framed{a} }
 // LayoutF elige la escala entera más grande a la que cabe el lado corto (240)
 // y da el lienzo de la ventana entera a esa escala. Trabaja en píxeles
 // físicos, así en una pantalla HiDPI también es entera. Una ventana que no da
-// para ×2 (menos de 480 de lado corto) se queda con ViewSize, estirada como
-// antes: a ×1 la interfaz se vería diminuta.
+// para ×2 (menos de 480 de lado corto) va a la escala justa para que ese lado
+// mida 240, sin redondear (a ×1 la interfaz se vería diminuta); también ahí el
+// lienzo toma toda la ventana, sin el tope de 21:9 de ViewSize, así una
+// ventana muy apaisada no queda con bandas.
 func (f *Framed) LayoutF(w, h float64) (float64, float64) {
-	s := ebiten.Monitor().DeviceScaleFactor()
-	pw, ph := w*s, h*s
-	if f.App.status.Platform != "desktop" || math.Min(pw, ph) < 2*ScreenH {
+	if f.App.status.Platform != "desktop" {
 		lw, lh := f.App.Layout(int(w), int(h))
 		return float64(lw), float64(lh)
 	}
-	k := math.Floor(math.Min(pw, ph) / ScreenH)
-	f.App.w, f.App.h = int(pw/k), int(ph/k)
-	return pw / k, ph / k
+	s := ebiten.Monitor().DeviceScaleFactor()
+	pw, ph := w*s, h*s
+	k := math.Min(pw, ph) / ScreenH
+	if k >= 2 {
+		k = math.Floor(k)
+	}
+	lw, lh := math.Round(pw/k), math.Round(ph/k)
+	f.App.w, f.App.h = int(lw), int(lh)
+	return lw, lh
 }
 
 // Layout no se usa (ebiten llama a LayoutF), pero lo pide ebiten.Game.
