@@ -353,6 +353,13 @@ func (a *App) updatePrompt() {
 		back()
 		return
 	}
+	// Con el teclado del PC no se usa el de pantalla (como en Buscar): sus
+	// letras son atajos, y el carácter puede llegar un fotograma después de
+	// la pulsación, así que espacio (Pausa, la Y) borraba todo, Z elegía una
+	// tecla, S ponía otro espacio y M aceptaba.
+	if !in.usingPad && len(in.keys) > 0 {
+		return
+	}
 	keys := p.keys()
 	rows := len(keys)
 	switch {
