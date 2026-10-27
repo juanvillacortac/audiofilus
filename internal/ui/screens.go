@@ -371,12 +371,17 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	}
 
 	var size, cx, cy int
+	// En una ventana más apaisada que 21:9 (el escritorio, framed.go), la
+	// portada y los textos van en un bloque de 21:9 centrado, como en las
+	// pantallas anchas, en vez de quedar pegados a la izquierda; el espectro
+	// y la barra siguen a todo el ancho.
+	off := max(0, (w-max(maxW, h*21/9))/2)
 	if wide {
 		// Con alto de sobra (una ventana del escritorio a escala entera,
 		// framed.go), la portada crece con él y el espectro se queda en su
 		// proporción.
-		size = min(128+max(0, h-ScreenH)*3/4, w*34/100)
-		cx, cy = margin+4, topH+12
+		size = min(128+max(0, h-ScreenH)*3/4, (w-2*off)*34/100)
+		cx, cy = margin+4+off, topH+12
 	} else {
 		size = 92
 		cx, cy = (w-size)/2-16, topH+8
@@ -459,7 +464,7 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	var tx, tw, ty int
 	if wide {
 		tx = cx + size + slide + r/2 + 12
-		tw = w - tx - margin
+		tw = w - tx - margin - off
 		ty = cy + 4
 	} else {
 		tx, tw, ty = margin, w-2*margin, cy+size+8
