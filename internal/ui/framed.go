@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"image/color"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,10 +15,13 @@ import (
 // escala (las pantallas se acomodan a cualquier ancho y alto, como en el
 // móvil). En las portátiles (y mientras no se sabe dónde corre) se queda como
 // siempre (ViewSize): sus pantallas ya son de escala entera.
-type Framed struct{ *App }
+type Framed struct {
+	*App
+	k float64 // la escala entera elegida (0: no entera, la estira ebiten)
+}
 
 // NewFramed envuelve la interfaz para ebiten.RunGame en el escritorio.
-func NewFramed(a *App) *Framed { return &Framed{a} }
+func NewFramed(a *App) *Framed { return &Framed{App: a} }
 
 // LayoutF elige la escala entera más grande a la que cabe el lado corto (240)
 // y da el lienzo de la ventana entera a esa escala. Trabaja en píxeles
@@ -27,6 +31,7 @@ func NewFramed(a *App) *Framed { return &Framed{a} }
 // lienzo toma toda la ventana, sin el tope de 21:9 de ViewSize, así una
 // ventana muy apaisada no queda con bandas.
 func (f *Framed) LayoutF(w, h float64) (float64, float64) {
+	f.k = 0
 	if f.App.status.Platform != "desktop" {
 		lw, lh := f.App.Layout(int(w), int(h))
 		return float64(lw), float64(lh)
@@ -34,12 +39,39 @@ func (f *Framed) LayoutF(w, h float64) (float64, float64) {
 	s := ebiten.Monitor().DeviceScaleFactor()
 	pw, ph := w*s, h*s
 	k := math.Min(pw, ph) / ScreenH
-	if k >= 2 {
-		k = math.Floor(k)
-	}
 	lw, lh := math.Round(pw/k), math.Round(ph/k)
+	if k >= 2 {
+		// El lienzo, redondeado hacia abajo: si la ventana no es múltiplo
+		// de la escala (1366 a ×3), sobra un píxel que DrawFinalScreen
+		// deja al borde, en vez de estirar a ×3,002.
+		k = math.Floor(k)
+		f.k = k
+		lw, lh = math.Floor(pw/k), math.Floor(ph/k)
+	}
 	f.App.w, f.App.h = int(lw), int(lh)
 	return lw, lh
+}
+
+// DrawFinalScreen pone el lienzo a la escala entera exacta, centrado, con
+// lo que sobra (un píxel o dos) del color del fondo; sin escala entera, como
+// siempre (App.DrawFinalScreen).
+func (f *Framed) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Image, geoM ebiten.GeoM) {
+	if f.k == 0 {
+		f.App.DrawFinalScreen(screen, offscreen, geoM)
+		return
+	}
+	sw, sh := screen.Bounds().Dx(), screen.Bounds().Dy()
+	ow, oh := offscreen.Bounds().Dx(), offscreen.Bounds().Dy()
+	if f.App.Asleep() {
+		screen.Fill(color.Black)
+	} else {
+		screen.Fill(f.App.theme.Bg)
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(f.k, f.k)
+	op.GeoM.Translate(math.Floor((float64(sw)-float64(ow)*f.k)/2), math.Floor((float64(sh)-float64(oh)*f.k)/2))
+	op.Filter = ebiten.FilterNearest
+	screen.DrawImage(offscreen, op)
 }
 
 // Layout no se usa (ebiten llama a LayoutF), pero lo pide ebiten.Game.

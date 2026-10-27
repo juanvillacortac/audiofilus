@@ -370,18 +370,30 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 		return
 	}
 
-	var size, cx, cy int
+	var size, cx, cy, textW int
 	// En una ventana más apaisada que 21:9 (el escritorio, framed.go), la
-	// portada y los textos van en un bloque de 21:9 centrado, como en las
-	// pantallas anchas, en vez de quedar pegados a la izquierda; el espectro
-	// y la barra siguen a todo el ancho.
+	// portada y los textos van centrados, con el ancho de texto de un bloque
+	// de 21:9 como mucho, en vez de quedar pegados a la izquierda; el
+	// espectro y la barra siguen a todo el ancho.
 	off := max(0, (w-max(maxW, h*21/9))/2)
 	if wide {
 		// Con alto de sobra (una ventana del escritorio a escala entera,
 		// framed.go), la portada crece con él y el espectro se queda en su
 		// proporción.
 		size = min(128+max(0, h-ScreenH)*3/4, (w-2*off)*34/100)
-		cx, cy = margin+4+off, topH+12
+		cx, cy = margin+4, topH+12
+		if off > 0 {
+			// Se centra lo que se ve: la portada con el vinilo y la línea
+			// de texto más larga (o los controles), no el bloque entero, que
+			// con un título corto dejaría el hueco a la derecha.
+			lead := size + size*34/100 + (size/2-3)/2 + 12
+			line := max(textWidth(song.Title, BigFace), textWidth(song.Artist, SmallFace), textWidth(song.Album, SmallFace), 90)
+			if al != nil {
+				line = max(line, textWidth(al.Title, SmallFace))
+			}
+			textW = min(w-2*off-2*margin-4-lead, line)
+			cx = (w - lead - textW) / 2
+		}
 	} else {
 		size = 92
 		cx, cy = (w-size)/2-16, topH+8
@@ -464,7 +476,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	var tx, tw, ty int
 	if wide {
 		tx = cx + size + slide + r/2 + 12
-		tw = w - tx - margin - off
+		tw = w - tx - margin
+		if off > 0 {
+			tw = textW
+		}
 		ty = cy + 4
 	} else {
 		tx, tw, ty = margin, w-2*margin, cy+size+8

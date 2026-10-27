@@ -172,7 +172,9 @@ type UI struct {
 	// para volver a él.
 	Visualizer string `json:"visualizer,omitempty"`
 	// VisualBG pone ese visualizador de fondo en el reproductor, atenuado.
-	VisualBG bool `json:"visual_bg,omitempty"`
+	// Encendido por defecto; se guarda también apagado (sin omitempty), para
+	// que apagarlo no vuelva al valor por defecto al abrir.
+	VisualBG bool `json:"visual_bg"`
 	// ThemeColor es un color fijo para la interfaz ("blue", "purple"...;
 	// ui/theme.go), por ejemplo el de la carcasa; vacío, el de cada disco.
 	ThemeColor string `json:"theme_color,omitempty"`
@@ -213,7 +215,7 @@ func Default() Config {
 			RumbleMS:      150,
 			PauseRumbleMS: 400,
 		},
-		UI:      UI{SleepAfter: 30, Clock24: true, SleepMode: "backlight"},
+		UI:      UI{SleepAfter: 30, Clock24: true, SleepMode: "backlight", Visualizer: "milk", VisualBG: true},
 		Hotkeys: Hotkeys{Enabled: true, Taps: 3, TapMS: 400, WindowMS: 1500, SeekSec: 10},
 	}
 }
