@@ -77,10 +77,8 @@ func parseColors(raw []byte) map[string]color.RGBA {
 }
 
 // omarchyTheme convierte los colores de un tema de Omarchy en el de la
-// interfaz. En los temas oscuros se toman todos (fondo, texto y acento), así
-// se parece a la terminal y a la barra; en los claros, solo el acento sobre el
-// fondo oscuro de siempre, porque partes del pixel art dan por hecho un fondo
-// oscuro.
+// interfaz: fondo, texto y acento, claros u oscuros, así se parece a la
+// terminal y a la barra.
 func omarchyTheme(m map[string]color.RGBA) (Theme, bool) {
 	bg, okBg := m["background"]
 	fg, okFg := m["foreground"]
@@ -92,8 +90,12 @@ func omarchyTheme(m map[string]color.RGBA) (Theme, bool) {
 		return Theme{}, false
 	}
 	accent2 := secondTone(m, accent, fg)
+	shadow := mix(bg, color.RGBA{A: 0xff}, 0.6)
 	if luma(bg) > 0.5 {
-		return ThemeFor(accent, accent2), true
+		// En un tema claro la "sombra" (barras, paneles, sombras del texto)
+		// es un poco más oscura que el fondo, no negra: el texto oscuro se
+		// sigue leyendo encima.
+		shadow = mix(bg, fg, 0.15)
 	}
 	return Theme{
 		Bg:      bg,
@@ -102,7 +104,7 @@ func omarchyTheme(m map[string]color.RGBA) (Theme, bool) {
 		Dim:     mix(fg, bg, 0.4),
 		Accent:  accent,
 		Accent2: accent2,
-		Shadow:  mix(bg, color.RGBA{A: 0xff}, 0.6),
+		Shadow:  shadow,
 	}, true
 }
 

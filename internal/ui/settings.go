@@ -406,12 +406,11 @@ func (a *App) changeSetting(id, step int) {
 	case setThemeColor:
 		n, i := a.settingChoice(id)
 		c := themeChoices()[cycle(n, i)]
-		a.cfg.UI.ThemeColor = ""
-		if c.name != "album" {
-			a.cfg.UI.ThemeColor = c.name
-		}
+		// Se guarda también "album": vacío es "sin elegir", que en Omarchy
+		// es el del sistema (themeColor).
+		a.cfg.UI.ThemeColor = c.name
 		a.saveConfig()
-		if th, ok := fixedTheme(a.cfg.UI.ThemeColor); ok {
+		if th, ok := fixedTheme(c.name); ok {
 			a.theme = th
 		} else if a.playing != nil {
 			a.themeFor = a.playing // vuelve al color del disco que suena
@@ -500,7 +499,7 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(resamplerModes), func(i int) bool { return resamplerModes[i] == orDefault(a.dspOf().Resampler, "auto") })
 	case setThemeColor:
 		cs := themeChoices()
-		return find(len(cs), func(i int) bool { return cs[i].name == orDefault(a.cfg.UI.ThemeColor, "album") })
+		return find(len(cs), func(i int) bool { return cs[i].name == a.themeColor() })
 	case setCrossfeed:
 		return find(len(engine.CrossfeedLevels), func(i int) bool { return engine.CrossfeedLevels[i] == a.dspOf().Crossfeed })
 	case setRate:
@@ -570,7 +569,7 @@ func (a *App) settingValue(i int) string {
 	case setResampler:
 		return T("rs_" + orDefault(a.dspOf().Resampler, "auto"))
 	case setThemeColor:
-		return T("tc_" + orDefault(a.cfg.UI.ThemeColor, "album"))
+		return T("tc_" + a.themeColor())
 	case setCrossfeed:
 		return crossfeedLabel(a.dspOf().Crossfeed)
 	case setDLNAServer:

@@ -305,7 +305,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	}
 	a.input.swapAB = cfg.UI.SwapAB
 	a.vis.kind = visualizerIndex(cfg.UI.Visualizer)
-	if th, ok := fixedTheme(cfg.UI.ThemeColor); ok {
+	if th, ok := fixedTheme(a.themeColor()); ok {
 		a.theme = th
 	}
 	// En el móvil se empieza con el dedo (AUDIOFILUS_TOUCH lo fuerza, para
@@ -1311,10 +1311,23 @@ func (a *App) warmUp() {
 	}
 }
 
+// themeColor es el color elegido en Ajustes → Color. Sin elegir (vacío), en
+// Omarchy es el del sistema y en lo demás el de cada disco; las capturas van
+// siempre con el del disco, para que no dependan de la máquina.
+func (a *App) themeColor() string {
+	if c := a.cfg.UI.ThemeColor; c != "" {
+		return c
+	}
+	if _, ok := systemTheme(); ok && !a.offline {
+		return "system"
+	}
+	return "album"
+}
+
 // followSystemTheme sigue los cambios de tema de Omarchy con el color Sistema:
 // `omarchy theme set` cambia la interfaz sin reiniciarla.
 func (a *App) followSystemTheme() {
-	if a.cfg.UI.ThemeColor != "system" {
+	if a.themeColor() != "system" {
 		return
 	}
 	if th, ok := systemTheme(); ok {
@@ -1329,7 +1342,7 @@ func (a *App) updateTheme() {
 		return
 	}
 	// Con un color fijo (Ajustes → Color), los discos no lo cambian.
-	if th, ok := fixedTheme(a.cfg.UI.ThemeColor); ok {
+	if th, ok := fixedTheme(a.themeColor()); ok {
 		a.theme, a.themeFor = th, nil
 		return
 	}

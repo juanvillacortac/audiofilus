@@ -29,6 +29,7 @@ color14 = "#3AA99F"
 func withOmarchy(t *testing.T, raw string) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home) // os.UserHomeDir en Windows
 	sysCache.checked, sysCache.raw, sysCache.ok = sysCache.checked.AddDate(-1, 0, 0), nil, false
 	t.Cleanup(func() { sysCache.checked, sysCache.raw, sysCache.ok = sysCache.checked.AddDate(-1, 0, 0), nil, false })
 	if raw == "" {
@@ -59,9 +60,10 @@ func TestOmarchyDarkTheme(t *testing.T) {
 	}
 }
 
-// Un tema claro solo aporta el acento: el fondo sigue oscuro, porque partes
-// del pixel art dan por hecho uno oscuro.
-func TestOmarchyLightThemeKeepsDarkBackground(t *testing.T) {
+// Un tema claro también da toda la interfaz: su fondo claro, su texto oscuro
+// y una sombra apenas más oscura que el fondo (no negra), para que el texto
+// se lea en las barras.
+func TestOmarchyLightTheme(t *testing.T) {
 	th, ok := omarchyTheme(parseColors([]byte(`accent = "#DE6A41"
 foreground = "#242424"
 background = "#d0d0c8"
@@ -70,11 +72,11 @@ color9 = "#db0030"
 	if !ok {
 		t.Fatal("no theme from a light colors.toml")
 	}
-	if luma(th.Bg) > 0.2 || luma(th.Text) < 0.8 {
-		t.Errorf("light theme gave background %v and text %v, want the dark defaults", th.Bg, th.Text)
+	if th.Bg != (color.RGBA{0xd0, 0xd0, 0xc8, 0xff}) || th.Text != (color.RGBA{0x24, 0x24, 0x24, 0xff}) {
+		t.Errorf("light theme gave background %v and text %v, want the theme's", th.Bg, th.Text)
 	}
-	if th.Accent != (color.RGBA{0xde, 0x6a, 0x41, 0xff}) {
-		t.Errorf("accent = %v, want the theme's", th.Accent)
+	if luma(th.Shadow) < 0.5 {
+		t.Errorf("light theme shadow %v is dark, want a light one", th.Shadow)
 	}
 }
 
@@ -96,5 +98,28 @@ func TestSystemChoiceOnlyOnOmarchy(t *testing.T) {
 	}
 	if th, ok := fixedTheme("system"); !ok || th.Bg != (color.RGBA{0x10, 0x0f, 0x0f, 0xff}) {
 		t.Errorf("system theme = %+v, %v; want Flexoki's", th, ok)
+	}
+}
+
+// Sin color elegido, en Omarchy se usa el del sistema y fuera el del disco;
+// "album" elegido a propósito se respeta, y las capturas no dependen de la
+// máquina.
+func TestSystemIsDefaultOnOmarchy(t *testing.T) {
+	a := &App{}
+	withOmarchy(t, "")
+	if c := a.themeColor(); c != "album" {
+		t.Errorf("without Omarchy the default color is %q, want album", c)
+	}
+	withOmarchy(t, flexoki)
+	if c := a.themeColor(); c != "system" {
+		t.Errorf("on Omarchy the default color is %q, want system", c)
+	}
+	a.cfg.UI.ThemeColor = "album"
+	if c := a.themeColor(); c != "album" {
+		t.Errorf("chosen album became %q", c)
+	}
+	a.cfg.UI.ThemeColor, a.offline = "", true
+	if c := a.themeColor(); c != "album" {
+		t.Errorf("screenshots use %q, want album", c)
 	}
 }
