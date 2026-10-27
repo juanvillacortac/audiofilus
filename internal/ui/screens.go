@@ -358,7 +358,9 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	tall := h > ScreenH+40
 	th := a.theme
 	al, song := a.playing, a.playingSong
-	wide := w >= 300
+	// Lado a lado solo si es apaisada de verdad: una ventana casi cuadrada
+	// del escritorio va como en vertical, con la portada grande.
+	wide := w >= 300 && w*10 >= h*12
 	if song.Path == "" {
 		a.drawNothing(dst)
 		return
@@ -370,7 +372,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 
 	var size, cx, cy int
 	if wide {
-		size = min(128, w*34/100)
+		// Con alto de sobra (una ventana del escritorio a escala entera,
+		// framed.go), la portada crece con él y el espectro se queda en su
+		// proporción.
+		size = min(128+max(0, h-ScreenH)*3/4, w*34/100)
 		cx, cy = margin+4, topH+12
 	} else {
 		size = 92

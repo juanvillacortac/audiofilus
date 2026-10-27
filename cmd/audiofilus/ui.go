@@ -120,7 +120,11 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 	// La clase de la ventana es la de la entrada del lanzador (StartupWMClass):
 	// así Hyprland y la barra la asocian a audiofilus y a su icono.
 	opts := &ebiten.RunGameOptions{X11ClassName: desktop.ID, X11InstanceName: desktop.ID}
-	if err := ebiten.RunGameWithOptions(app, opts); err != nil {
+	var game ebiten.Game = app
+	if !offline {
+		game = ui.NewFramed(app) // escala entera en el escritorio (framed.go)
+	}
+	if err := ebiten.RunGameWithOptions(game, opts); err != nil {
 		return err
 	}
 	return app.Err()
