@@ -288,7 +288,9 @@ func (e *Engine) Read(p []byte) (int, error) {
 		gainBuf(buf[n:n+got], e.gain)
 		e.mixTailLocked(buf[n : n+got])
 		n += got
-		e.histWrite(buf[n-got : n])
+		if e.meter.spectrum { // solo con la app abierta y despierta, la única que pide un scratch
+			e.histWrite(buf[n-got : n])
+		}
 		if err == nil {
 			continue
 		}

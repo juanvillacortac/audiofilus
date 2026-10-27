@@ -3,6 +3,8 @@ package engine
 import (
 	"math"
 	"testing"
+
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 )
 
 // TestScratchResumes comprueba que el scratch suena (con la canción, ida y
@@ -39,5 +41,32 @@ func TestScratchResumes(t *testing.T) {
 		if got, want := out[2*(moveFrames+k)], float32(start+int64(k))/8000; got != want {
 			t.Fatalf("after the scratch, frame %d is %v, want %v", k, got, want)
 		}
+	}
+}
+
+// Con la app cerrada o en sleep (sin medidor) la historia del scratch no se
+// graba, y al volver empieza vacía: un scratch nunca suena a lo de antes.
+func TestScratchHistoryOnlyWhenWatched(t *testing.T) {
+	e := testEngine(48000, DSP{})
+	e.OpenRemote = func(string) (decode.Source, bool, error) { return &liveSource{}, true, nil }
+	e.q.Set([]string{"radio://a"}, 0)
+	e.openLocked()
+	e.playing = true
+	p := make([]byte, 4096*bytesPerFrame)
+	e.Read(p)
+	if e.histN != 0 {
+		t.Fatalf("history recorded with the app closed: %d frames", e.histN)
+	}
+	e.SetSpectrum(true)
+	e.Read(p)
+	if e.histN == 0 {
+		t.Fatal("no history with the app open")
+	}
+	e.SetSpectrum(false)
+	n := e.histN
+	e.Read(p)
+	e.SetSpectrum(true)
+	if e.histN != n || e.histFrom != n {
+		t.Errorf("after sleep: histN %d, histFrom %d, want both %d", e.histN, e.histFrom, n)
 	}
 }

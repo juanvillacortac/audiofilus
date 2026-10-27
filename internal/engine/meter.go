@@ -68,10 +68,18 @@ func newMeter(rate int, latency time.Duration) meter {
 
 // SetSpectrum activa o desactiva el medidor entero (nivel, graves y
 // espectro). Solo lo mira la interfaz abierta y despierta; en sleep y en
-// segundo plano medir era un 16 % de la CPU del servicio.
+// segundo plano medir era un 16 % de la CPU del servicio. Con él va la
+// historia del scratch (scratch.go), que solo pide la interfaz: al volver,
+// empieza vacía, porque lo de antes ya no es lo que se oía.
 func (e *Engine) SetSpectrum(on bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	if on && !e.meter.spectrum {
+		e.histFrom = e.histN
+	}
+	if !on {
+		e.scr = nil
+	}
 	e.meter.spectrum = on
 }
 
