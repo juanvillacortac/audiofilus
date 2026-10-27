@@ -15,11 +15,21 @@
 </p>
 
 <p align="center">
+  <a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
+</p>
+
+<p align="center">
   <img src="site/img/player.webp" alt="Now Playing" width="360">
   <img src="site/img/vis-lake.webp" alt="Lake visualizer" width="320">
 </p>
 
 Runs on **Knulli, muOS, ROCKNIX, ArkOS, dArkOS and EmuELEC** through PortMaster (and as a native app on muOS; tested on an Anbernic RG34XX-SP), on **Linux and Windows** desktops, and on **iPhone and iPad**.
+
+## Support
+
+Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If it keeps your music going, a coffee helps me keep working on it:
+
+<p><a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-6fe3c4?logo=kofi&logoColor=white&style=for-the-badge" alt="Support on Ko-fi"></a></p>
 
 ## Features
 
@@ -279,12 +289,6 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 - **Desktop:** Windows system media controls, layouts made for big windows.
 - **iOS:** a signed build.
 - **Android:** the same mobile app (the `mobile/` package already builds for it with ebitenmobile).
-
-## Support
-
-Audiofilus is free and made in my spare time. If you enjoy it, you can buy me a coffee:
-
-<a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 
 ## License
 
