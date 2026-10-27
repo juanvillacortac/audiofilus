@@ -9,12 +9,14 @@
 
 <p align="center">
   <a href="https://juanvillacortac.github.io/audiofilus/">Website</a> ·
+  <a href="https://portmaster.games/detail.html?name=audiofilus">Get it on PortMaster</a> ·
   <a href="https://github.com/juanvillacortac/audiofilus/releases/latest">Download</a> ·
   <a href="docs/README.md">Docs</a> ·
   <a href="https://ko-fi.com/juanvillacortac">Support on Ko-fi</a>
 </p>
 
 <p align="center">
+  <a href="https://portmaster.games/detail.html?name=audiofilus"><img src="https://img.shields.io/badge/PortMaster-Get%20it-ff5fa2" alt="Get it on PortMaster"></a>
   <a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Support%20audiofilus-6fe3c4?logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
@@ -206,9 +208,8 @@ The same player on iOS, touch first: every row, cover, tab and button is tappabl
 
 ### Handhelds (PortMaster)
 
-1. Download `audiofilus-portmaster.zip` from the [latest release](https://github.com/juanvillacortac/audiofilus/releases/latest).
-2. Install it with PortMaster, or unzip it into your `ports` folder.
-3. Open **Audiofilus** from Ports and pick your music folder.
+1. Open PortMaster on your handheld, find **Audiofilus** in the list and install it ([its page](https://portmaster.games/detail.html?name=audiofilus)). Or download `audiofilus-portmaster.zip` from the [latest release](https://github.com/juanvillacortac/audiofilus/releases/latest) and unzip it into your `ports` folder.
+2. Open **Audiofilus** from Ports and pick your music folder.
 
 Settings (`audiofilus.json`) and state (`data/`) live next to the binary.
 
