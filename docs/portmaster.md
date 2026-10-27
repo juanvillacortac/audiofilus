@@ -5,12 +5,13 @@ Besides the binaries, `./build.sh` produces `dist/audiofilus.zip`: the port for 
 ```
 Audiofilus.sh              the launcher (comments in English, like PortMaster's)
 gameinfo.xml               for the EmulationStation menu
+README.md                  notes and controls, for PortMaster's port page
 audiofilus/port.json       the port metadata for PortMaster
 audiofilus/cover.png       the cover (640×480)
 audiofilus/screenshot.png  a screenshot (640×480)
 audiofilus/audiofilus.aarch64  the UI, the service and the CLI in one binary, for arm64 handhelds
 audiofilus/audiofilus.x86_64   the same for x86_64 ones
-audiofilus/licenses/       MIT (audiofilus), OFL for Jersey 10 and Tiny5
+audiofilus/licenses/       one LICENSE.<component>.txt per component (as PortMaster asks): audiofilus (MIT), the fonts (OFL) and the bundled libraries, each with where its source is
 ```
 
 ## The launcher

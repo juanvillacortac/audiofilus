@@ -52,14 +52,26 @@ cp dist/audiofilus-arm64 "$pkg/audiofilus/audiofilus.aarch64"
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w $lfm" \
   -o "$pkg/audiofilus/audiofilus.x86_64" ./cmd/audiofilus
 mkdir -p "$pkg/audiofilus/licenses"
-cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$pkg/audiofilus/licenses/"
+# lic junta en licenses/LICENSE.<componente>.txt los textos de uno (su
+# licencia y de dónde sale el código): uno por componente, como pide
+# PortMaster.
+lic() {
+  name=$1
+  shift
+  for f in "$@"; do cat "$f"; echo; done > "$pkg/audiofilus/licenses/LICENSE.$name.txt"
+}
+lic audiofilus LICENSE
+for f in internal/ui/assets/fonts/OFL-*.txt; do
+  n=${f##*/OFL-}
+  lic "${n%.txt}" "$f"
+done
 # libgme (la música de consolas viejas), si se compiló con
 # tools/libgme/build.sh build/libgme: las portátiles no la traen. Va en
 # libs.<arquitectura>, donde la busca el programa, con su licencia (LGPL) y
 # de dónde sale el código.
 if [ -d build/libgme ]; then
   cp -r build/libgme/libs.aarch64 build/libgme/libs.x86_64 "$pkg/audiofilus/"
-  cp build/libgme/libgme-LICENSE.txt build/libgme/libgme-SOURCE.txt "$pkg/audiofilus/licenses/"
+  lic libgme build/libgme/libgme-LICENSE.txt build/libgme/libgme-SOURCE.txt
 else
   echo "build/libgme missing: the packages go without libgme (tools/libgme/build.sh)" >&2
 fi
@@ -70,8 +82,7 @@ if [ -d build/libvgm ]; then
     mkdir -p "$pkg/audiofilus/libs.$a"
     cp build/libvgm/libs.$a/libvgmshim.so "$pkg/audiofilus/libs.$a/"
   done
-  cp build/libvgm/libvgm-LICENSE.txt build/libvgm/libvgm-SOURCE.txt "$pkg/audiofilus/licenses/"
-  cp tools/libvgm/GPL-2.0.txt "$pkg/audiofilus/licenses/libvgm-GPL-2.0.txt"
+  lic libvgm build/libvgm/libvgm-LICENSE.txt build/libvgm/libvgm-SOURCE.txt tools/libvgm/GPL-2.0.txt
 else
   echo "build/libvgm missing: the packages go without libvgm (tools/libvgm/build.sh)" >&2
 fi
@@ -82,7 +93,7 @@ if [ -d build/fdk-aac ]; then
     mkdir -p "$pkg/audiofilus/libs.$a"
     cp build/fdk-aac/libs.$a/libfdk-aac.so.2 "$pkg/audiofilus/libs.$a/"
   done
-  cp build/fdk-aac/fdk-aac-LICENSE.txt build/fdk-aac/fdk-aac-SOURCE.txt "$pkg/audiofilus/licenses/"
+  lic fdk-aac build/fdk-aac/fdk-aac-LICENSE.txt build/fdk-aac/fdk-aac-SOURCE.txt
 else
   echo "build/fdk-aac missing: the packages go without libfdk-aac (tools/fdk-aac/build.sh)" >&2
 fi
