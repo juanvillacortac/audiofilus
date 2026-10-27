@@ -357,7 +357,7 @@ func (a *App) updatePrompt() {
 	// letras son atajos, y el carácter puede llegar un fotograma después de
 	// la pulsación, así que espacio (Pausa, la Y) borraba todo, Z elegía una
 	// tecla, S ponía otro espacio y M aceptaba.
-	if !in.usingPad && len(in.keys) > 0 {
+	if a.pcTyping() {
 		return
 	}
 	keys := p.keys()
@@ -401,6 +401,11 @@ func (a *App) updatePrompt() {
 		accept()
 	}
 }
+
+// pcTyping dice si se escribe con el teclado del PC (lo último usado no fue
+// el mando ni el dedo): entonces no se muestra el teclado en pantalla ni se
+// atienden sus atajos, que son letras (S espacio, M aceptar, espacio borrar).
+func (a *App) pcTyping() bool { return !a.input.usingPad && !a.input.touch && !a.offline }
 
 // titleCase pasa "MI LISTA DEL GYM" (el teclado en pantalla solo tiene
 // mayúsculas) a "Mi Lista Del Gym".
@@ -448,8 +453,8 @@ func (a *App) drawPrompt(dst *ebiten.Image) {
 	keys := p.keys()
 	kbTop := h - bottomH - 6 - len(keys)*keyH
 	kw := bw / 10
-	if a.nativeKeyboard() {
-		keys = nil // se escribe con el teclado del sistema (keyboard.go)
+	if a.nativeKeyboard() || a.pcTyping() {
+		keys = nil // se escribe con el teclado del sistema (keyboard.go) o el del PC
 	}
 	for r, row := range keys {
 		for c, k := range row {
@@ -467,6 +472,10 @@ func (a *App) drawPrompt(dst *ebiten.Image) {
 	rect(dst, 0, h-bottomH, w, bottomH, th.Bg)
 	if a.nativeKeyboard() {
 		a.drawHints(dst, []hint{{"START", T("h_ok")}})
+		return
+	}
+	if a.pcTyping() {
+		a.drawHints(dst, []hint{{"ENTER", T("h_ok")}, {"ESC", T("h_close")}})
 		return
 	}
 	a.drawHints(dst, []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_ok")}})

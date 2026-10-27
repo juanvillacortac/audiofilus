@@ -236,7 +236,7 @@ func (a *App) updateTyping() {
 		a.tabFocus = true
 		return
 	}
-	if !in.usingPad && len(in.keys) > 0 {
+	if a.pcTyping() {
 		return // con teclado no se usa el de pantalla (sus letras son atajos)
 	}
 	// El teclado en pantalla, con el mando.
@@ -394,7 +394,7 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 
 	// El teclado en pantalla, abajo, mientras se escribe con el mando.
 	kbTop := bottom
-	if s.typing && !a.tabFocus && !a.nativeKeyboard() && (a.input.usingPad || a.offline || a.input.touch) {
+	if s.typing && !a.tabFocus && !a.nativeKeyboard() && !a.pcTyping() {
 		const keyH = 13
 		kbTop = bottom - len(oskKeys)*keyH
 		kw := w / 10
@@ -475,6 +475,8 @@ func (a *App) searchHints() []hint {
 	switch {
 	case a.tabFocus:
 		return []hint{{"A", T("h_open")}, {"B", T("now_short")}, {"SEL", T("h_menu")}}
+	case a.search.typing && a.pcTyping():
+		return []hint{{"ENTER", T("h_search")}, {"ESC", T("h_back")}}
 	case a.search.typing:
 		return []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_search")}}
 	}
