@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -397,7 +397,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Apoyo</span>
         <h2>Que siga sonando</h2>
-        <p class="lede">Audiofilus es gratis y lo hago en mi tiempo libre. Si suena en tu portátil todos los días, un café me ayuda a seguir trabajando en él y llevarlo al escritorio y a los teléfonos.</p>
+        <p class="lede">Audiofilus es gratis, sin anuncios ni muros de pago, y lo hago en mi tiempo libre. Si suena en tu portátil todos los días, un café me ayuda a seguir añadiendo funciones y arreglando lo que reportas.</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Invítame un café en Ko-fi</a>
     </div>

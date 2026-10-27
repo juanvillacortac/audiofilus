@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -402,7 +402,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Поддержка</span>
         <h2>Пусть играет дальше</h2>
-        <p class="lede">Audiofilus бесплатный и делается в свободное время. Если он каждый день играет на твоей консоли, кофе поможет мне продолжать работу и довести его до компьютеров и телефонов.</p>
+        <p class="lede">Audiofilus бесплатный, без рекламы и платных функций, и делается в свободное время. Если он каждый день играет на твоей консоли, кофе поможет мне добавлять новые функции и исправлять то, о чём ты сообщаешь.</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Купи мне кофе на Ko-fi</a>
     </div>

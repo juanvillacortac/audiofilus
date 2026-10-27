@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -400,7 +400,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Dukung</span>
         <h2>Biarkan tetap berputar</h2>
-        <p class="lede">Audiofilus gratis dan dibuat di waktu luangku. Jika ia berputar di handheld-mu setiap hari, secangkir kopi membantuku terus mengerjakannya dan membawanya ke desktop dan ponsel.</p>
+        <p class="lede">Audiofilus gratis, tanpa iklan atau paywall, dan dibuat di waktu luangku. Jika ia berputar di handheld-mu setiap hari, secangkir kopi membantuku terus menambah fitur dan memperbaiki yang kamu laporkan.</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Traktir aku kopi di Ko-fi</a>
     </div>

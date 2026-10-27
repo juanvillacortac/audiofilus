@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -400,7 +400,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">Support</span>
         <h2>Keep it playing</h2>
-        <p class="lede">Audiofilus is free and made in my spare time. If it plays on your handheld every day, a coffee helps me keep working on it and bring it to desktop and phones.</p>
+        <p class="lede">Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If it plays on your handheld every day, a coffee helps me keep adding features and fixing what you report.</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Buy me a coffee on Ko-fi</a>
     </div>

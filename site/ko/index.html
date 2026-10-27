@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -405,7 +405,7 @@ footer img { height: 56px; width: auto; }
       <div class="head">
         <span class="eyebrow">후원</span>
         <h2>계속 울리게 해 주세요</h2>
-        <p class="lede">Audiofilus는 무료이고, 여가 시간에 만들고 있어요. 매일 휴대용 게임기에서 듣고 있다면, 커피 한 잔이 계속 개발하고 데스크톱과 휴대폰으로 가져가는 데 힘이 됩니다.</p>
+        <p class="lede">Audiofilus는 광고도 유료 기능도 없는 무료 앱이고, 여가 시간에 만들고 있어요. 매일 휴대용 게임기에서 듣고 있다면, 커피 한 잔이 새 기능을 더하고 알려 주신 문제를 고치는 데 힘이 됩니다.</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">Ko-fi에서 커피 사주기</a>
     </div>

@@ -213,7 +213,7 @@ figure { margin: 0; }
 .widths figure:nth-child(4) { flex: 427 1 0; }
 .widths figure:nth-child(5) { flex: 560 1 0; }
 .widths img { width: 100%; }
-@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure { flex-basis: 40%; } }
+@media (max-width: 640px) { .widths { flex-wrap: wrap; } .widths figure:nth-child(n) { flex-basis: 40%; } }
 
 /* Systems */
 .systems { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -413,7 +413,7 @@ body { line-break: strict; }
       <div class="head">
         <span class="eyebrow">支持</span>
         <h2>让它继续响下去</h2>
-        <p class="lede">Audiofilus 是免费的，是我利用业余时间开发的。如果它每天都在你的掌机上播放，请我喝杯咖啡，能帮助我继续开发，并把它带到桌面和手机上。</p>
+        <p class="lede">Audiofilus 是免费的，没有广告也没有付费墙，是我利用业余时间开发的。如果它每天都在你的掌机上播放，请我喝杯咖啡，能帮助我继续添加新功能、修复你们反馈的问题。</p>
       </div>
       <a class="btn coffee" href="https://ko-fi.com/juanvillacortac">在 Ko-fi 上请我喝咖啡</a>
     </div>
