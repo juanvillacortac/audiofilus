@@ -34,11 +34,13 @@ import (
 // Si lo que hay es el zip de la versión desempaquetada, primero lo
 // desempaqueta en base/yt-dlp/ (unpackZip).
 //
-// En iOS no hay nunca: una app no puede lanzar otros programas, y un yt-dlp
-// puesto en su carpeta solo encendía la búsqueda, que luego no reproducía
-// (fork/exec fallaba). Así YouTube Music ni aparece.
+// En iOS y Android no hay nunca: en iOS una app no puede lanzar otros
+// programas, y en Android no desde su carpeta de datos (desde Android 10), y
+// el yt-dlp de Linux tampoco arrancaría sin sus librerías. Uno puesto en su
+// carpeta solo encendía la búsqueda, que luego no reproducía (fork/exec
+// fallaba). Así YouTube Music ni aparece.
 func Find(base string) string {
-	if runtime.GOOS == "ios" {
+	if runtime.GOOS == "ios" || runtime.GOOS == "android" {
 		return ""
 	}
 	unpackZip(base)
