@@ -1550,11 +1550,13 @@ func (a *App) Asleep() bool { return a.sleeping }
 // no va contenido).
 func (a *App) DrawBackdrop(dst *ebiten.Image) { drawBackground(dst, a.theme, a.t) }
 
-// DrawInsets pinta las franjas de la zona segura de arriba (top) y abajo
-// (bottom) del oscuro de las barras de la interfaz (la de arriba y la de la
-// ayuda), sobre el fondo: las barras parecen llegar hasta el borde, detrás
-// de la hora y la isla y bajo la raya de inicio.
-func (a *App) DrawInsets(dst *ebiten.Image, top, bottom int) {
+// DrawInsets pinta las franjas de la zona segura (top, left, bottom, right)
+// del oscuro de las barras de la interfaz (la de arriba y la de la ayuda),
+// sobre el fondo: las barras parecen llegar hasta el borde, detrás de la hora
+// y la isla y bajo la raya de inicio. En apaisado (la muesca a un lado), la
+// barra de arriba y la de la ayuda siguen por las franjas de los lados hasta
+// el borde; si no, la interfaz se veía como una caja dentro de la pantalla.
+func (a *App) DrawInsets(dst *ebiten.Image, top, left, bottom, right int) {
 	w, h := dst.Bounds().Dx(), dst.Bounds().Dy()
 	bar := withAlpha(a.theme.Shadow, 0x99) // el de drawTopBar y drawHints
 	if a.sleeping {
@@ -1562,6 +1564,17 @@ func (a *App) DrawInsets(dst *ebiten.Image, top, bottom int) {
 	}
 	rect(dst, 0, 0, w, top, bar)
 	rect(dst, 0, h-bottom, w, bottom, bar)
+	if a.splashing || a.mode != modeMain || a.sleeping {
+		return // sin barras que seguir
+	}
+	for _, side := range [][2]int{{0, left}, {w - right, right}} {
+		if side[1] <= 0 {
+			continue
+		}
+		rect(dst, side[0], top, side[1], topH, bar)
+		rect(dst, side[0], top+topH, side[1], 1, withAlpha(a.theme.Accent, 0x55)) // la raya bajo la barra
+		rect(dst, side[0], h-bottom-bottomH, side[1], bottomH, bar)
+	}
 }
 
 // SetPointerOffset dice dónde empieza la interfaz dentro de la pantalla (en
@@ -2610,7 +2623,7 @@ func (a *App) render(path string, w int, draw func(*ebiten.Image)) error {
 		draw(inner)
 		a.ExternalBackdrop = false
 		drawBackground(canvas, a.theme, a.t)
-		a.DrawInsets(canvas, top, bot)
+		a.DrawInsets(canvas, top, 0, bot, 0)
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(0, float64(top))
 		canvas.DrawImage(inner, op)
