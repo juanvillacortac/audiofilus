@@ -1977,6 +1977,7 @@ func (a *App) writeShots() error {
 		}
 		// Los módulos: lo más bajado de The Mod Archive (con red).
 		a.modInit()
+		a.modExplore(0, "")
 		for i := 0; i < 300 && a.mods.loading[0]; i++ {
 			time.Sleep(100 * time.Millisecond)
 			a.pollModules()

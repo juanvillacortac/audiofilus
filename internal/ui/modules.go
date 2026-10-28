@@ -67,7 +67,10 @@ var modBrowse = []string{"top", "new", "random"}
 
 func (a *App) modCacheDir() string { return filepath.Join(a.paths.Data, "cache", "modules") }
 
-// modInit prepara los sitios (la primera vez que se abre la pantalla).
+// modInit prepara los sitios, sin pedirles nada: también se llama al dibujar
+// la pantalla, y el calentamiento del arranque (warmUp) dibuja todas, así que
+// pedir aquí la primera lista la bajaría al abrir Audiofilus, con o sin red.
+// La pide updateModules al entrar de verdad.
 func (a *App) modInit() {
 	m := &a.mods
 	if m.started {
@@ -81,7 +84,6 @@ func (a *App) modInit() {
 	m.online = make(chan []modsrc.Item, 1)
 	m.sdone = make(chan modSearchDone, 4)
 	m.tabFocus = true
-	a.modExplore(0, "")
 }
 
 // modExplore llena una pestaña con la primera forma de explorar que el sitio
