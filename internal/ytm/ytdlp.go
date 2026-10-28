@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -32,7 +33,14 @@ import (
 //
 // Si lo que hay es el zip de la versión desempaquetada, primero lo
 // desempaqueta en base/yt-dlp/ (unpackZip).
+//
+// En iOS no hay nunca: una app no puede lanzar otros programas, y un yt-dlp
+// puesto en su carpeta solo encendía la búsqueda, que luego no reproducía
+// (fork/exec fallaba). Así YouTube Music ni aparece.
 func Find(base string) string {
+	if runtime.GOOS == "ios" {
+		return ""
+	}
 	unpackZip(base)
 	if fi, err := os.Stat(filepath.Join(base, "yt-dlp")); err == nil {
 		if !fi.IsDir() {
