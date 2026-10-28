@@ -42,8 +42,12 @@ func IsStreamURL(s string) bool {
 	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
 }
 
-// extinfLogo saca el logo de una línea #EXTINF (tvg-logo="...").
-var extinfLogo = regexp.MustCompile(`tvg-logo="([^"]*)"`)
+// extinfLogo y extinfGroup sacan el logo y la categoría de una línea
+// #EXTINF (tvg-logo="..." y group-title="...").
+var (
+	extinfLogo  = regexp.MustCompile(`tvg-logo="([^"]*)"`)
+	extinfGroup = regexp.MustCompile(`group-title="([^"]*)"`)
+)
 
 // ParsePlaylist lee las emisoras de una lista .m3u o .pls (se distingue por
 // su contenido). Lo que no es una dirección http se salta.
@@ -51,8 +55,9 @@ func ParsePlaylist(r io.Reader) []Station {
 	var out []Station
 	sc := bufio.NewScanner(r)
 	sc.Buffer(make([]byte, 64<<10), 1<<20)
-	// m3u: el nombre y el logo de #EXTINF van con la dirección siguiente.
-	name, logo := "", ""
+	// m3u: el nombre, el logo y la categoría de #EXTINF van con la dirección
+	// siguiente.
+	name, logo, group := "", "", ""
 	// pls: FileN y TitleN, en cualquier orden.
 	plsURL, plsTitle := map[string]string{}, map[string]string{}
 	var plsOrder []string
@@ -67,6 +72,9 @@ func ParsePlaylist(r io.Reader) []Station {
 			}
 			if m := extinfLogo.FindStringSubmatch(line); m != nil {
 				logo = m[1]
+			}
+			if m := extinfGroup.FindStringSubmatch(line); m != nil {
+				group = strings.TrimSpace(m[1])
 			}
 		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "["):
 		case strings.HasPrefix(lower, "file") && strings.Contains(line, "="):
@@ -83,9 +91,9 @@ func ParsePlaylist(r io.Reader) []Station {
 			plsTitle[strings.TrimPrefix(strings.ToLower(k), "title")] = v
 		case IsStreamURL(line):
 			s := FromURL(line, name)
-			s.Favicon = logo
+			s.Favicon, s.Tags = logo, group
 			out = append(out, s)
-			name, logo = "", ""
+			name, logo, group = "", "", ""
 		}
 	}
 	for _, n := range plsOrder {
@@ -94,9 +102,9 @@ func ParsePlaylist(r io.Reader) []Station {
 	return out
 }
 
-// LoadPlaylists lee todas las listas de dir: sus emisoras, cada una con el
-// nombre de su lista (sin extensión) como género, en orden de lista y de
-// aparición, sin repetir direcciones.
+// LoadPlaylists lee todas las listas de dir: sus emisoras, cada una con su
+// categoría (group-title) como género o, si no tiene, el nombre de su lista
+// (sin extensión), en orden de lista y de aparición, sin repetir direcciones.
 func LoadPlaylists(dir string) []Station {
 	ents, err := os.ReadDir(dir)
 	if err != nil {
@@ -123,7 +131,9 @@ func LoadPlaylists(dir string) []Station {
 		for _, s := range ParsePlaylist(f) {
 			if !seen[s.URL] {
 				seen[s.URL] = true
-				s.Tags = list
+				if s.Tags == "" {
+					s.Tags = list
+				}
 				out = append(out, s)
 			}
 		}

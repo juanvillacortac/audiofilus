@@ -11,6 +11,10 @@ import (
 	"image/color"
 	_ "image/jpeg" // portadas JPEG
 	_ "image/png"  // portadas PNG
+
+	_ "golang.org/x/image/webp" // logos de radio en WebP
+
+	_ "github.com/juanvillacortac/audiofilus/internal/ico" // y los favicon.ico
 	"math"
 	"os"
 	"path/filepath"
@@ -37,6 +41,7 @@ type Album struct {
 	Songs         []Song
 	coverPath     string // archivo del que sacar la portada; vacío si no tiene
 	stray         bool   // no está en la biblioteca (lo que suena de YouTube Music)
+	logo          bool   // es un logo (de una radio): se encaja entero y con su transparencia
 	noAlbum       bool   // reúne las canciones sin álbum (su título es T("no_album"))
 
 	mu       sync.Mutex
@@ -318,6 +323,64 @@ func scaleCover(src image.Image, size int) *image.RGBA {
 	xdraw.CatmullRom.Scale(dst, dst.Bounds(), src, r, xdraw.Src, nil)
 	ditherCover(dst)
 	return dst
+}
+
+// scaleLogo es scaleCover para un logo: entero dentro del cuadrado (sin
+// recortar un logo apaisado), centrado y con su transparencia; la trama, solo
+// en lo opaco. Un logo oscuro con transparencia (letras negras, pensado para
+// una web blanca) va sobre un fondo claro, que si no se perdía en el oscuro de
+// la interfaz.
+func scaleLogo(src image.Image, size int) *image.RGBA {
+	dst := image.NewRGBA(image.Rect(0, 0, size, size))
+	b := src.Bounds()
+	w, h := size, size
+	if b.Dx() > b.Dy() {
+		h = max(1, size*b.Dy()/b.Dx())
+	} else {
+		w = max(1, size*b.Dx()/b.Dy())
+	}
+	r := image.Rect((size-w)/2, (size-h)/2, (size-w)/2+w, (size-h)/2+h)
+	xdraw.CatmullRom.Scale(dst, r, src, b, xdraw.Over, nil)
+	if logoDark(dst.SubImage(r).(*image.RGBA)) {
+		const bg = 0xe0
+		for i := 0; i < len(dst.Pix); i += 4 {
+			k := 0xff - int(dst.Pix[i+3]) // lo que deja ver el fondo (premultiplicado)
+			for c := 0; c < 3; c++ {
+				dst.Pix[i+c] = uint8(int(dst.Pix[i+c]) + k*bg/0xff)
+			}
+			dst.Pix[i+3] = 0xff
+		}
+	}
+	opaque := image.NewRGBA(dst.Rect)
+	copy(opaque.Pix, dst.Pix)
+	ditherCover(opaque)
+	for i := 0; i < len(dst.Pix); i += 4 {
+		if dst.Pix[i+3] == 0xff {
+			copy(dst.Pix[i:i+3], opaque.Pix[i:i+3])
+		}
+	}
+	return dst
+}
+
+// logoDark dice si un logo con transparencia es oscuro: su parte visible
+// (sin premultiplicar) tiene un brillo medio bajo. Sin transparencia dentro
+// del logo (img, sin las bandas de encajarlo), nunca: ya trae su fondo.
+func logoDark(img *image.RGBA) bool {
+	var sum, n, clear float64 // clear: los píxeles transparentes
+	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
+		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
+			i := img.PixOffset(x, y)
+			a := float64(img.Pix[i+3])
+			if a < 0x80 {
+				clear++
+				continue
+			}
+			sum += (0.299*float64(img.Pix[i]) + 0.587*float64(img.Pix[i+1]) + 0.114*float64(img.Pix[i+2])) / a
+			n++
+		}
+	}
+	// Transparente de verdad (no solo el borde suavizado al escalar).
+	return clear > 0.05*float64(img.Rect.Dx()*img.Rect.Dy()) && n > 0 && sum/n < 0.35
 }
 
 // bayer4 es la matriz de Bayer de 4×4, de 0 a 15.

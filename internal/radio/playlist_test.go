@@ -20,10 +20,10 @@ import (
 func TestParsePlaylist(t *testing.T) {
 	m3u := "\ufeff#EXTM3U\n#EXTINF:-1 tvg-logo=\"http://x/logo.png\" group-title=\"Rock\",Rock FM\nhttp://rock.example/stream\n# comment\n/local/file.mp3\nhttps://bare.example:8000/live\n"
 	got := ParsePlaylist(strings.NewReader(m3u))
-	if len(got) != 2 || got[0].Name != "Rock FM" || got[0].Favicon != "http://x/logo.png" || got[0].URL != "http://rock.example/stream" {
+	if len(got) != 2 || got[0].Name != "Rock FM" || got[0].Favicon != "http://x/logo.png" || got[0].URL != "http://rock.example/stream" || got[0].Tags != "Rock" {
 		t.Fatalf("m3u = %+v", got)
 	}
-	if got[1].Name != "bare.example:8000" || got[1].Favicon != "" {
+	if got[1].Name != "bare.example:8000" || got[1].Favicon != "" || got[1].Tags != "" {
 		t.Errorf("an entry without #EXTINF = %+v, want its host as name", got[1])
 	}
 	pls := "[playlist]\nTitle2=Two\nFile1=http://one.example/\nFile2=http://two.example/\nTitle1=One\nNumberOfEntries=2\n"
@@ -37,7 +37,8 @@ func TestParsePlaylist(t *testing.T) {
 }
 
 // TestLoadPlaylists comprueba que se lean todas las listas de la carpeta,
-// con su nombre como género y sin repetir direcciones.
+// con su categoría (group-title) o, sin ella, su nombre como género, y sin
+// repetir direcciones.
 func TestLoadPlaylists(t *testing.T) {
 	dir := t.TempDir()
 	write := func(n, s string) {
@@ -46,10 +47,10 @@ func TestLoadPlaylists(t *testing.T) {
 		}
 	}
 	write("b.pls", "File1=http://two/\nTitle1=Two\n")
-	write("a.m3u", "#EXTINF:-1,One\nhttp://one/\nhttp://two/\n")
+	write("a.m3u", "#EXTINF:-1,One\nhttp://one/\nhttp://two/\n#EXTINF:-1 group-title=\"Haber\",News\nhttp://news/\n")
 	write("notes.txt", "http://three/\n")
 	got := LoadPlaylists(dir)
-	if len(got) != 2 || got[0].Name != "One" || got[0].Tags != "a" || got[1].URL != "http://two/" || got[1].Tags != "a" {
+	if len(got) != 3 || got[0].Name != "One" || got[0].Tags != "a" || got[1].URL != "http://two/" || got[1].Tags != "a" || got[2].Tags != "Haber" {
 		t.Errorf("LoadPlaylists = %+v", got)
 	}
 	if LoadPlaylists(filepath.Join(dir, "missing")) != nil {

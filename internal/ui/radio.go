@@ -68,6 +68,10 @@ type radioState struct {
 	stations *radio.Stations
 	loaded   bool
 	logos    chan string // logos que terminaron de bajar (la ruta de la emisora)
+	// Los logos de las filas (stationLogo): el de cada emisora ya bajado, y
+	// las que ya se miraron (con logo o sin él), para no volver a pedirlo.
+	logoAlb map[string]*Album
+	logoTry map[string]bool
 }
 
 type radioResult struct {
@@ -84,6 +88,7 @@ func (a *App) initRadio() {
 	r := &a.radio
 	r.results = make(chan radioResult, 8)
 	r.logos = make(chan string, 4)
+	r.logoAlb, r.logoTry = map[string]*Album{}, map[string]bool{}
 	r.stations = radio.NewStations(a.paths.Data)
 	if b, err := os.ReadFile(a.favFile()); err == nil {
 		_ = json.Unmarshal(b, &r.favs)
@@ -210,6 +215,8 @@ func (a *App) updateRadioResults() {
 			if path == a.playingSong.Path {
 				a.lastTrack = "" // ya está el logo: se vuelve a armar lo que suena
 			}
+			uuid := strings.TrimPrefix(path, radio.Scheme)
+			r.logoAlb[uuid] = &Album{Title: uuid, coverPath: a.radioLogo(uuid), stray: true, logo: true}
 		case res := <-r.results:
 			r.loading[res.tab] = false
 			if res.err != nil {
@@ -548,17 +555,30 @@ func (a *App) drawRadio(dst *ebiten.Image) {
 				panel(dst, x0-3, y-3, cw+6, rowH-2, mix(th.Bg2, th.Accent, 0.35))
 				rect(dst, x0-3, y-3, 2, rowH-2, th.Accent)
 			}
-			icCol := th.Accent
-			if a.playingSong.Path == s.Path() {
-				icCol = th.Accent2
+			// El logo a la izquierda (o el icono de radio, si no tiene o no
+			// llegó aún); el de la que suena, con un marco del segundo acento.
+			const logo = 18
+			playing := a.playingSong.Path == s.Path()
+			panel(dst, x0-1, y-2, logo, logo, th.Bg2)
+			if al := a.stationLogo(s); al != nil {
+				a.drawCover(dst, al, x0-1, y-2, logo, 1)
+			} else {
+				icCol := th.Accent
+				if playing {
+					icCol = th.Accent2
+				}
+				drawIcon(dst, "radio", x0+4, y+3, icCol)
 			}
-			drawIcon(dst, "radio", x0, y, icCol)
+			if playing {
+				frame(dst, x0-2, y-3, logo+2, logo+2, th.Accent2)
+			}
 			name := s.Name
 			if a.isFav(s) {
 				name = "* " + name
 			}
-			drawTextW(dst, strings.TrimSpace(name), SmallFace, x0+11, y, cw-11, th.Text)
-			drawTextW(dst, stationSub(s), SmallFace, x0+11, y+9, cw-11, th.Dim)
+			tx := x0 + logo + 3
+			drawTextW(dst, strings.TrimSpace(name), SmallFace, tx, y, cw-(tx-x0), th.Text)
+			drawTextW(dst, stationSub(s), SmallFace, tx, y+9, cw-(tx-x0), th.Dim)
 		}
 		dst = whole
 		a.scrollBar(dst, x0+cw+4, top, bottom-top, first, rows, n)
@@ -598,18 +618,51 @@ func (a *App) radioLogo(uuid string) string {
 // fetchRadioLogo baja el logo de la emisora path, si tiene y no estaba.
 func (a *App) fetchRadioLogo(path string) {
 	uuid := strings.TrimPrefix(path, radio.Scheme)
-	st, ok := a.radio.stations.Get(uuid)
+	if st, ok := a.radio.stations.Get(uuid); ok {
+		a.fetchLogo(uuid, st.Favicon)
+	}
+}
+
+// stationLogo es el logo de la emisora s para su fila, como un álbum de paso
+// (con su portada, que se carga como las demás); nil si no tiene o aún no
+// llegó. La primera vez que se ve, si no está guardado, lo pide.
+func (a *App) stationLogo(s radio.Station) *Album {
+	r := &a.radio
+	if al := r.logoAlb[s.UUID]; al != nil {
+		return al
+	}
+	if r.logoAlb == nil {
+		return nil
+	}
+	a.fetchLogo(s.UUID, s.Favicon) // si ya estaba guardado, queda en logoAlb
+	return r.logoAlb[s.UUID]
+}
+
+// fetchLogo baja el logo url de la emisora uuid, una vez por sesión (si
+// falla, no se insiste), y avisa por radio.logos cuando está.
+func (a *App) fetchLogo(uuid, url string) {
+	r := &a.radio
 	file := a.radioLogo(uuid)
-	if !ok || st.Favicon == "" {
+	if url == "" || r.logoTry[uuid] {
 		return
+	}
+	if r.logoTry != nil {
+		r.logoTry[uuid] = true
 	}
 	if _, err := os.Stat(file); err == nil {
+		if r.logoAlb != nil { // ya estaba: la fila también lo usa
+			r.logoAlb[uuid] = &Album{Title: uuid, coverPath: file, stray: true, logo: true}
+		}
 		return
 	}
+	if a.offline { // las capturas no van a la red
+		return
+	}
+	path := radio.Scheme + uuid
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
-		req, err := http.NewRequestWithContext(ctx, "GET", st.Favicon, nil)
+		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 		if err != nil {
 			return
 		}
@@ -626,7 +679,7 @@ func (a *App) fetchRadioLogo(path string) {
 		if err != nil {
 			return
 		}
-		// Solo si se puede dibujar (JPEG o PNG; los .ico y .svg, no).
+		// Solo si se puede dibujar (JPEG, PNG, WebP o .ico; los .svg, no).
 		if _, _, err := image.Decode(bytes.NewReader(b)); err != nil {
 			return
 		}

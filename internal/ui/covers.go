@@ -53,7 +53,9 @@ func newCovers(workers int) *covers {
 		go func() {
 			for j := range c.jobs {
 				var rgba *image.RGBA
-				if src := j.al.decodeCover(); src != nil {
+				if src := j.al.decodeCover(); src != nil && j.al.logo {
+					rgba = scaleLogo(src, j.size)
+				} else if src != nil {
 					rgba = scaleCover(src, j.size)
 				}
 				c.results <- coverResult{j, rgba}
