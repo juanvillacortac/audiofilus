@@ -1034,6 +1034,9 @@ type FullStatus struct {
 	// Meter son el nivel y los graves de lo último que se oye y lo que se va a
 	// oír (engine/meter.go): para el visualizador y el tetris.
 	Meter []engine.MeterPoint `json:"meter,omitempty"`
+	// Key es la tonalidad de lo que suena ("C", "F#m"; engine/key.go), para
+	// que los sonidos de los juegos toquen en ella; "" si aún no se sabe.
+	Key string `json:"key,omitempty"`
 	// TimerLeft son los segundos que le quedan al temporizador (0: no hay;
 	// el de "al acabar la canción" es StopAfter).
 	TimerLeft float64 `json:"timer_left,omitempty"`
@@ -1063,6 +1066,7 @@ func (d *Daemon) status() FullStatus {
 		d.mu.Unlock()
 		if s.State == "playing" {
 			s.Meter = d.eng.Meter()
+			s.Key = d.eng.Key()
 		}
 	}
 	return s

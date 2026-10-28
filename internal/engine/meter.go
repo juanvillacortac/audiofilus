@@ -51,10 +51,12 @@ type meter struct {
 	mono     [meterWindow]float64
 	fft      fft
 	edges    [MeterBands + 1]int // la primera casilla de la FFT de cada banda
+	rate     int
+	key      *keyFinder // la tonalidad (key.go); se crea al medir por primera vez
 }
 
 func newMeter(rate int, latency time.Duration) meter {
-	m := meter{latency: latency, alpha: 1 - math.Exp(-2*math.Pi*meterBassHz/float64(rate))}
+	m := meter{latency: latency, alpha: 1 - math.Exp(-2*math.Pi*meterBassHz/float64(rate)), rate: rate}
 	m.fft = newFFT(meterWindow)
 	for b := 0; b <= MeterBands; b++ {
 		hz := bandLowHz * math.Pow(float64(bandHighHz)/bandLowHz, float64(b)/MeterBands)
@@ -88,8 +90,13 @@ func (m *meter) add(buf []float32, start time.Time, rate int) {
 	if !m.spectrum {
 		return // nadie mira el medidor (app cerrada o en sleep): ni se calcula
 	}
+	if m.key == nil {
+		k := newKeyFinder(m.rate)
+		m.key = &k
+	}
 	for i := 0; i+1 < len(buf); i += 2 {
 		x := float64(buf[i]+buf[i+1]) / 2
+		m.key.add(x)
 		m.low += m.alpha * (x - m.low)
 		m.sum += x * x
 		m.sumBass += m.low * m.low
@@ -121,6 +128,22 @@ func (e *Engine) Meter() []MeterPoint {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	return e.meter.list()
+}
+
+// Key es la tonalidad de lo que suena ("C", "F#m"; key.go), o "" si aún no
+// se sabe.
+func (e *Engine) Key() string {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.meter.keyName()
+}
+
+// keyName es la tonalidad medida, o "" si no se midió aún.
+func (m *meter) keyName() string {
+	if m.key == nil {
+		return ""
+	}
+	return m.key.key()
 }
 
 // list son los puntos guardados, del más viejo al más nuevo.
@@ -164,6 +187,13 @@ func (a *Analyzer) Points() []MeterPoint {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.m.list()
+}
+
+// Key es la tonalidad de lo medido, como Engine.Key.
+func (a *Analyzer) Key() string {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.m.keyName()
 }
 
 // bands calcula el espectro de la ventana: FFT con ventana de Hann y, por

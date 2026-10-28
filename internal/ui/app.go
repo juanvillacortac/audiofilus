@@ -2403,6 +2403,7 @@ func (a *App) writeFrames() error {
 		return err
 	}
 	a.screen, a.tetris = Blocks, a.newTetris()
+	a.beat = beat{} // el reloj vuelve a 10: el último golpe de antes quedaría en el futuro
 	g := a.tetris
 	g.queue = []int{2, 5, 3, 1, 6, 4, 0, 5, 2, 3, 1, 6, 0, 4, 5, 3, 2, 6, 1, 0, 4, 5, 3, 2, 1, 6, 0, 4, 5, 2}
 	g.bag = nil

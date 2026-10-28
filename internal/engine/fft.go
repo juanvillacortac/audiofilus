@@ -59,3 +59,11 @@ func (f *fft) magnitudes(x []float64) []float64 {
 	}
 	return f.mags
 }
+
+// clone es otra FFT del mismo tamaño que comparte las tablas (solo se leen)
+// y tiene sus propios búferes.
+func (f *fft) clone() fft {
+	c := *f
+	c.buf, c.mags = make([]complex128, f.n), make([]float64, f.n/2+1)
+	return c
+}

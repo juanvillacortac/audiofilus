@@ -14,6 +14,7 @@ func TestBtnKeyboardNames(t *testing.T) {
 		"B+A":         "ESC+ENTER",
 		"FN x3 L1/R1": "F1 x3 Q/E",
 		"<> ...":      "<> ...",
+		"=Z/X":        "Z/X", // ya es del teclado: tal cual
 	} {
 		if got := a.btn(in); got != want {
 			t.Errorf("btn(%q) = %q, want %q", in, got, want)

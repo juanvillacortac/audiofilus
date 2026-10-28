@@ -134,8 +134,12 @@ var keyNames = map[string]string{"A": "ENTER", "B": "ESC", "X": "S", "Y": "SPACE
 
 // btn es el nombre de un botón del mando, o de su tecla si se está usando el
 // teclado. Traduce también los compuestos ("X X", "A/Y", "FN x3 L1/R1"),
-// botón a botón.
+// botón a botón. Con "=" delante es una tecla tal cual (sin traducir), para
+// las ayudas que ya son del teclado.
 func (a *App) btn(b string) string {
+	if k, ok := strings.CutPrefix(b, "="); ok {
+		return k
+	}
 	if a.input.usingPad || a.offline {
 		return b
 	}

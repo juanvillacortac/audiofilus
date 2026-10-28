@@ -8,10 +8,13 @@ import (
 	"math/rand/v2"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	"github.com/juanvillacortac/audiofilus/internal/engine"
+	"github.com/juanvillacortac/audiofilus/internal/sfx"
 )
 
 // Bloques: un juego de piezas que caen, una pantalla más de las que se
@@ -24,14 +27,25 @@ import (
 //   - las piezas ya apiladas se iluminan por columnas con el espectro, como un
 //     ecualizador hecho de bloques, y detrás de ellas suben columnas tenues
 //     con el espectro;
+//   - en cada golpe una onda de luz sube por la pila, de abajo arriba, como
+//     en Tetris Effect;
+//   - al fijarse una pieza, de sus columnas sale un haz hacia arriba que se
+//     apaga enseguida, como en Apotris;
 //   - en cada golpe el borde destella y la pieza da un rebote; se calcula el
 //     tempo (BPM) y soltar una pieza a tiempo (±0,1 s del golpe) vale el doble;
-//   - completar líneas hace bombear el fondo.
+//   - completar líneas hace bombear el fondo;
+//   - suena como Tetris Effect: cada movimiento es una nota de una escala
+//     pentatónica y borrar líneas un arpegio (sfx/blocks.go), y un locutor
+//     de voz grave canta las jugadas: DOUBLE, TRIPLE, TETRA, T-SPIN, BACK TO
+//     BACK, LEVEL UP, FEVER y GAME OVER (sfx/voice.go).
 //
 // Controles: flechas para mover, ↓ para bajar rápido, ↑ para soltar, A gira a
-// la derecha y B (o X) a la izquierda, Start abre la pausa (seguir, nueva
+// la derecha y B a la izquierda, X guarda, Start abre la pausa (seguir, nueva
 // partida o salir), Select vuelve al reproductor. La música sigue a mano: Y
 // pausa o reanuda, L1/R1 cambian de canción, L2/R2 retroceden o adelantan.
+//
+// Con el teclado, los de los juegos modernos (tetKeys): Z y X giran, ↑ gira
+// también, Espacio suelta, C o Shift guardan y Esc pausa; la música, con P.
 //
 // Se llama "Bloques" y no por el nombre del juego original, que es una marca.
 
@@ -147,7 +161,29 @@ type tetris struct {
 	callAt       float64 // el aviso de jugada (T-SPIN, TETRIS, B2B)
 	call         string
 	colAvg       [tetW]float64 // la media reciente de cada columna del ecualizador
+	beams        []tetBeam     // los haces de las últimas piezas fijadas
+	hardDropping bool          // la pieza se está soltando de golpe (su sonido es otro)
+	sounds       []string      // lo que tiene que sonar este fotograma (emit)
 }
+
+// emit pide un sonido para este fotograma (updateTetris los toca al final).
+func (g *tetris) emit(name string) { g.sounds = append(g.sounds, name) }
+
+// tetBeam es el haz que sale hacia arriba de una columna de una pieza al
+// fijarse.
+type tetBeam struct {
+	x, top int     // la columna y la fila más alta de la pieza en ella
+	piece  int     // la pieza, para su color
+	at     float64 // cuándo se fijó
+	hard   bool    // soltada de golpe: el haz es más largo
+}
+
+// tetBeamFor es cuánto dura un haz, en segundos.
+const tetBeamFor = 0.35
+
+// tetWaveFor es lo que tarda la onda de cada golpe en subir por la pila, sea
+// alta o baja: así siempre se ve, y acaba antes del golpe siguiente.
+const tetWaveFor = 0.3
 
 // tetBest es el récord, en data/bloques.json.
 func (a *App) tetBestPath() string { return filepath.Join(a.paths.Data, "blocks.json") }
@@ -185,6 +221,8 @@ func (g *tetris) spawn(p int) {
 	g.fall, g.lockT, g.lockMoves, g.lowest, g.rotated = 0, 0, tetLockMoves, 0, false
 	if !g.fits(g.piece, g.rot, g.px, g.py) {
 		g.over = true
+		g.emit("bk_over")
+		g.emit(sfx.Voice + "over")
 		return
 	}
 	if g.fits(g.piece, g.rot, g.px, g.py+1) { // como el estándar: aparece y baja una
@@ -248,6 +286,7 @@ func (g *tetris) rotate(dir int) {
 			g.rot, g.px, g.py = r, g.px+k[0], g.py+k[1]
 			g.rotated = true
 			g.moved()
+			g.emit(fmt.Sprintf("bk_rot_%d", r))
 			return
 		}
 	}
@@ -273,6 +312,7 @@ func (g *tetris) swapHold() {
 		return
 	}
 	cur := g.piece
+	g.emit("bk_hold")
 	if g.hold < 0 {
 		g.spawn(g.take())
 	} else {
@@ -315,6 +355,7 @@ func (g *tetris) lock(t, beatSoon float64) {
 		g.board[g.py+c[1]][g.px+c[0]] = int8(g.piece + 1)
 		above = above && g.py+c[1] < tetHidden
 	}
+	g.addBeams(t, g.hardDropping)
 	g.held = false
 	g.clearing = g.clearing[:0]
 	for y := 0; y < tetRows; y++ {
@@ -327,20 +368,35 @@ func (g *tetris) lock(t, beatSoon float64) {
 		}
 	}
 	n := len(g.clearing)
-	// Puntos del estándar (por nivel); los difíciles seguidos, ×1,5.
+	// Puntos del estándar (por nivel); los difíciles seguidos, ×1,5. El
+	// aviso y el locutor dicen la jugada.
 	pts := []int{0, 100, 300, 500, 800}[n]
 	g.call = ""
+	said := []string{"", "", "double", "triple", "tetra"}[n]
 	switch {
 	case tspin:
 		pts = []int{400, 800, 1200, 1600, 1600}[n]
 		g.call = "T-SPIN"
-	case n == 4:
-		g.call = "TETRA"
+		said = "tspin"
+		if n > 0 {
+			name := []string{"", "single", "double", "triple", "triple"}[n]
+			g.call += " " + strings.ToUpper(name)
+			said += "+" + name
+		}
+	case n > 1:
+		g.call = strings.ToUpper(said)
 	}
 	hard := tspin && n > 0 || n == 4
 	if hard && g.b2b {
 		pts = pts * 3 / 2
 		g.call = "B2B " + g.call
+		said = "b2b+" + said
+	}
+	if !g.hardDropping {
+		g.emit("bk_lock")
+	}
+	if said != "" {
+		g.emit(sfx.Voice + said)
 	}
 	if n > 0 {
 		g.b2b = hard
@@ -367,6 +423,42 @@ func (g *tetris) lock(t, beatSoon float64) {
 	g.spawn(g.take())
 }
 
+// stackHeight es cuántas filas ocupa la pila, desde el fondo del pozo.
+func (g *tetris) stackHeight() int {
+	for y := 0; y < tetRows; y++ {
+		for x := 0; x < tetW; x++ {
+			if g.board[y][x] != 0 {
+				return tetRows - y
+			}
+		}
+	}
+	return 0
+}
+
+// addBeams lanza un haz por cada columna de la pieza recién fijada, desde su
+// celda más alta en esa columna. Los viejos que ya se apagaron se quitan.
+func (g *tetris) addBeams(t float64, hard bool) {
+	live := g.beams[:0]
+	for _, b := range g.beams {
+		if t-b.at < tetBeamFor {
+			live = append(live, b)
+		}
+	}
+	g.beams = live
+	tops := map[int]int{}
+	for _, c := range tetShapes[g.piece][g.rot] {
+		x, y := g.px+c[0], g.py+c[1]
+		if top, ok := tops[x]; !ok || y < top {
+			tops[x] = y
+		}
+	}
+	for x := 0; x < tetW; x++ {
+		if top, ok := tops[x]; ok {
+			g.beams = append(g.beams, tetBeam{x: x, top: top, piece: g.piece, at: t, hard: hard})
+		}
+	}
+}
+
 // finishClear quita las filas completas cuando acaba su parpadeo.
 func (g *tetris) finishClear() {
 	for _, row := range g.clearing {
@@ -375,7 +467,13 @@ func (g *tetris) finishClear() {
 		}
 		g.board[0] = [tetW]int8{}
 	}
+	before := g.level()
 	g.lines += len(g.clearing)
+	g.emit(fmt.Sprintf("bk_clear_%d", min(len(g.clearing), 4)))
+	if g.level() > before {
+		g.emit("bk_level")
+		g.emit(sfx.Voice + "level")
+	}
 	g.clearing = g.clearing[:0]
 	g.spawn(g.take())
 }
@@ -389,13 +487,59 @@ func (g *tetris) shift(left, right int) {
 		d, dir = right, 1
 	}
 	if d == 1 || (d > tetDAS && (d-tetDAS)%tetARR == 0) {
-		g.move(dir)
+		// Una nota por casilla, la de la columna; al repetir, una de cada
+		// tres, que a 30 por segundo era un zumbido.
+		if g.move(dir) && (d == 1 || (d-tetDAS)%(3*tetARR) == 0) {
+			g.emit(fmt.Sprintf("bk_move_%d", min(max(g.px+1, 0), tetW-1)))
+		}
 	}
+}
+
+// tetKeys dice qué se pulsó este fotograma en Bloques. Con mando (o el dedo)
+// son los botones de siempre; con el teclado, los de los juegos modernos,
+// porque Enter y Esc para girar no los espera nadie.
+type tetKeys struct {
+	rotR, rotL, hold, drop, pause, music bool
+}
+
+// tetInput lee los controles de Bloques del mando o del teclado.
+func (a *App) tetInput() tetKeys {
+	in := &a.input
+	if !a.tetKeyboard() {
+		return tetKeys{
+			rotR: in.Pressed(ActConfirm), rotL: in.Pressed(ActBack), hold: in.Pressed(ActShuffle),
+			drop: in.Pressed(ActUp), pause: in.Pressed(ActMenu), music: in.Pressed(ActPause),
+		}
+	}
+	key := func(ks ...ebiten.Key) bool {
+		for _, k := range ks {
+			if inpututil.IsKeyJustPressed(k) {
+				return true
+			}
+		}
+		return false
+	}
+	return tetKeys{
+		rotR:  key(ebiten.KeyX, ebiten.KeyArrowUp, ebiten.KeyEnter),
+		rotL:  key(ebiten.KeyZ, ebiten.KeyControlLeft, ebiten.KeyControlRight),
+		hold:  key(ebiten.KeyC, ebiten.KeyShiftLeft, ebiten.KeyShiftRight),
+		drop:  key(ebiten.KeySpace),
+		pause: key(ebiten.KeyEscape, ebiten.KeyM),
+		music: key(ebiten.KeyP),
+	}
+}
+
+// tetKeyboard dice si Bloques se juega con el teclado (lo último que se usó
+// no fue un mando ni el dedo; las capturas, con los botones del mando).
+func (a *App) tetKeyboard() bool {
+	return !a.input.usingPad && !a.input.touch && !a.offline
 }
 
 // updateTetris juega un fotograma.
 func (a *App) updateTetris() {
 	g, in := a.tetris, &a.input
+	defer a.tetSounds(g)
+	keys := a.tetInput()
 	beat := a.beatHit // el ritmo se sigue una vez por fotograma (Update)
 	if beat {
 		g.bounceAt = a.t
@@ -403,7 +547,7 @@ func (a *App) updateTetris() {
 	// La música se controla sin salir: Y pausa o reanuda, L1/R1 cambian de
 	// canción y L2/R2 retroceden o adelantan (los gatillos no los usa el juego).
 	switch {
-	case in.Pressed(ActPause):
+	case keys.music:
 		a.send("toggle")
 	case in.Pressed(ActPrev):
 		a.send("prev")
@@ -419,11 +563,11 @@ func (a *App) updateTetris() {
 		a.changeVolume(-volumeStep)
 	}
 	switch {
-	case in.Pressed(ActMenu):
+	case keys.pause:
 		a.openTetrisPause()
 		return
 	case g.over:
-		if in.Pressed(ActConfirm) {
+		if in.Pressed(ActConfirm) || keys.drop {
 			a.saveTetBest()
 			a.tetris = a.newTetris()
 		}
@@ -442,16 +586,16 @@ func (a *App) updateTetris() {
 	dt := 1.0 / 60
 	// Giros y hold.
 	switch {
-	case in.Pressed(ActConfirm):
+	case keys.rotR:
 		g.rotate(1)
-	case in.Pressed(ActBack):
+	case keys.rotL:
 		g.rotate(-1)
-	case in.Pressed(ActShuffle):
+	case keys.hold:
 		g.swapHold()
 	}
 	g.shift(in.duration(ActLeft), in.duration(ActRight))
-	// Soltar: ↑.
-	if in.Pressed(ActUp) {
+	// Soltar: ↑ (Espacio en el teclado).
+	if keys.drop {
 		a.hardDrop()
 		return
 	}
@@ -485,6 +629,20 @@ func (a *App) updateTetris() {
 	}
 }
 
+// tetSounds toca lo que pidió el juego en este fotograma, cada uno por su
+// lado (la voz suena a la vez que el arpegio). Las notas, en la tonalidad de
+// lo que suena (sfx/blocks.go).
+func (a *App) tetSounds(g *tetris) {
+	key := a.musicKey()
+	for _, name := range g.sounds {
+		if strings.HasPrefix(name, sfx.BlockPrefix) && key != "" {
+			name += "@" + key
+		}
+		a.playSound(name)
+	}
+	g.sounds = g.sounds[:0]
+}
+
 // hardDrop suelta la pieza de golpe y la fija: a tiempo con la música sube el
 // combo, que multiplica (y en FEVER, el doble); a destiempo se rompe.
 func (a *App) hardDrop() {
@@ -496,6 +654,10 @@ func (a *App) hardDrop() {
 	pts := 2 * n
 	if a.steadyOnBeat(0.12) {
 		g.combo++
+		if g.combo == 4 { // entra en FEVER
+			g.emit(sfx.Voice + "fever")
+		}
+		g.emit("bk_beat")
 		pts = (2*pts + 50*(g.level()+1)) * g.combo
 		if g.fever() {
 			pts *= 2
@@ -503,12 +665,15 @@ func (a *App) hardDrop() {
 		g.onBeatAt, g.onBeatBonus = a.t, pts
 	} else {
 		g.combo = 0
+		g.emit("bk_drop")
 	}
 	g.comboAt = a.t
 	g.score += pts
 	g.laserAt, g.laserY = a.t, g.py+tetBottom(g.piece, g.rot)
 	g.shakeAt = a.t
+	g.hardDropping = true
 	g.lock(a.t, a.beatSoon())
+	g.hardDropping = false
 	if g.over {
 		a.saveTetBest()
 	}
@@ -629,6 +794,32 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 	a.batch.draw(dst)
 
 	cols := a.tetColors()
+	// La onda de luz de cada golpe sube por la pila desde el fondo del pozo:
+	// wave es cuánto ilumina a una fila (0..1, por escalones), más fuerte
+	// cuanto más fuerte suena, y en FEVER con el segundo acento.
+	waveC := th.Text
+	if g.fever() {
+		waveC = mix(th.Accent2, th.Text, 0.4)
+	}
+	front, strength := -10.0, 0.0
+	if a.beat.at > 0 && since < tetWaveFor*1.5 {
+		front = since / tetWaveFor * float64(g.stackHeight()+4)
+		strength = 0.6 + 0.4*math.Min(1, level*1.5)
+	}
+	wave := func(row int) float64 {
+		d := front - float64(tetRows-1-row) // filas que el frente ya dejó atrás
+		if d < 0 || d > 4 {
+			return 0
+		}
+		return float64(steps(strength * (1 - d/4)))
+	}
+	// tetPop es un bloque que la onda hace crecer: se pinta después del resto.
+	type tetPop struct {
+		x, y, s int
+		c       color.RGBA
+		k       float64
+	}
+	var popped []tetPop
 	flash := len(g.clearing) > 0 && int((a.t-g.clearAt)*20)%2 == 0
 	for y := tetHidden; y < tetRows; y++ {
 		clearing := false
@@ -644,13 +835,37 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 			// El ecualizador: cada columna se ilumina con su banda.
 			band := bands[x*engine.MeterBands/tetW]
 			c = mix(c, th.Text, math.Max(0, band-0.35)*0.7)
+			// La onda del golpe: al pasar por la fila la aclara y hace crecer
+			// los bloques uno o dos píxeles por lado (en el frente, dos), y
+			// enciende su centro.
+			k := wave(y)
+			c = mix(c, waveC, 0.6*k)
 			if clearing && flash {
 				c = th.Text
 			}
-			a.batch.panel(bx+x*cell, sy(y), cell-1, cell-1, c)
+			grow := 0
+			if !clearing {
+				grow = int(k * 2)
+			}
+			cx, cy, cs := bx+x*cell-grow, sy(y)-grow, cell-1+2*grow
+			if grow > 0 {
+				popped = append(popped, tetPop{cx, cy, cs, c, k})
+				continue
+			}
+			a.batch.panel(cx, cy, cs, cs, c)
+		}
+	}
+	// Los que crecen, encima de los demás (si no, el vecino de la derecha
+	// los tapaba).
+	for _, p := range popped {
+		a.batch.panel(p.x, p.y, p.s, p.s, p.c)
+		if p.k >= 0.75 && p.s >= 8 {
+			in := p.s / 4
+			a.batch.add(p.x+in, p.y+in, p.s-2*in, p.s-2*in, mix(p.c, th.Text, 0.6))
 		}
 	}
 	a.batch.draw(dst)
+	a.drawBeams(dst, bx, by, cell, cols)
 	if !g.over && len(g.clearing) == 0 {
 		// La sombra de dónde caerá y la pieza.
 		gy := g.ghostY()
@@ -766,11 +981,53 @@ func (a *App) drawTetris(dst *ebiten.Image) {
 		panel(dst, bx+(bw-mw)/2, cy-bigCap/2-8, mw, bigCap+16, th.Bg2)
 		drawTextShadow(dst, msg, BigFace, bx+(bw-mw)/2+6, cy-bigCap/2, th.Text, th.Shadow)
 	}
-	if g.over {
+	switch {
+	case g.over:
 		a.drawHints(dst, []hint{{"A", T("h_again")}, {"SEL", T("h_menu")}})
-	} else {
+	case a.tetKeyboard():
+		a.drawHints(dst, []hint{{"=Z/X", T("h_rotate")}, {"=SPACE", T("h_drop")}, {"=C", T("h_hold")}, {"=ESC", T("h_pause")}})
+	default:
 		a.drawHints(dst, []hint{{"A/B", T("h_rotate")}, {"X", T("h_hold")}, {"START", T("h_pause")}, {"SEL", T("h_menu")}})
 	}
+}
+
+// drawBeams pinta los haces de las piezas recién fijadas: suben desde la
+// pieza por su columna, más tenues cuanto más arriba, y se estrechan hacia
+// el centro de la columna mientras se apagan (por escalones, como el resto).
+func (a *App) drawBeams(dst *ebiten.Image, bx, by, cell int, cols [7]color.RGBA) {
+	g, th := a.tetris, a.theme
+	for _, b := range g.beams {
+		p := (a.t - b.at) / tetBeamFor
+		if p < 0 || p >= 1 {
+			continue
+		}
+		top := b.top - tetHidden // en filas visibles
+		if top <= 0 {
+			continue
+		}
+		// Sube deprisa: en la primera mitad llega a su largo entero (el pozo
+		// si se soltó de golpe; seis filas si cayó sola).
+		length := top
+		if !b.hard {
+			length = min(top, 6)
+		}
+		reach := int(math.Ceil(float64(length*cell) * math.Min(1, p*2)))
+		bw := max(1, (cell-1)*int(4-math.Floor(p*4))/4) // se estrecha por escalones
+		x := bx + b.x*cell + (cell-1-bw)/2
+		base := by + top*cell // el borde de arriba de la pieza
+		c := mix(cols[b.piece], th.Text, 0.5)
+		fade := float64(steps(1 - p))
+		// Por tramos de una celda, más tenues hacia arriba.
+		for y := 0; y < reach; y += cell {
+			hgt := min(cell, reach-y)
+			k := fade * (1 - float64(y)/float64(length*cell)) * 0.8
+			if k <= 0 {
+				break
+			}
+			a.batch.add(x, base-y-hgt, bw, hgt, withAlpha(c, uint8(255*k)))
+		}
+	}
+	a.batch.draw(dst)
 }
 
 // openTetrisPause es la pausa de Bloques (Start): el menú de siempre, con

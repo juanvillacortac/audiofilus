@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"math"
 	"math/rand/v2"
+	"strings"
 	"sync"
 )
 
@@ -159,6 +160,14 @@ func Samples(name string) []float32 {
 	}
 	if name == Splash {
 		cache[name] = jingle()
+		return cache[name]
+	}
+	if strings.HasPrefix(name, Voice) {
+		cache[name] = say(name)
+		return cache[name]
+	}
+	if strings.HasPrefix(name, BlockPrefix) {
+		cache[name] = block(name)
 		return cache[name]
 	}
 	if ls, ok := kit[name]; ok {

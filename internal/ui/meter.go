@@ -41,6 +41,18 @@ func (a *App) meterPts() []engine.MeterPoint {
 	return a.status.Meter
 }
 
+// musicKey es la tonalidad de lo que suena ("C", "F#m"; engine/key.go), o
+// "" si aún no se sabe.
+func (a *App) musicKey() string {
+	if a.trackerSounding() {
+		return a.tracker.an.Key()
+	}
+	if !a.hearing() {
+		return ""
+	}
+	return a.status.Key
+}
+
 // meterNow son el nivel, los graves y el espectro (0..1) de lo que suena ahora;
 // ok es false si el servicio no mandó medidor (en pausa o sin servicio).
 func (a *App) meterNow() (level, bass float64, bands [engine.MeterBands]float64, ok bool) {

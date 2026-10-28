@@ -411,6 +411,9 @@ func (e *Engine) setSourceLocked(path, local string, src decode.Source) {
 	e.rs = resample.NewMode(src, e.rate, e.resamplerLocked())
 	e.ended, e.waiting = false, ""
 	e.track = library.ReadTrack(path)
+	if e.meter.key != nil {
+		e.meter.key.reset() // otra canción, quizá en otra tonalidad
+	}
 	e.gainTags, e.gainOK = library.Gain{}, false
 	local = decode.FileOf(local) // una pista de un CUE: la ganancia es la de su archivo
 	if local != "" {

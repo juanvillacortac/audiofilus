@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -152,7 +153,9 @@ type soundReq struct {
 // tardar segundos (PulseAudio), y hacerlo desde aquí congelaba la interfaz.
 func (a *App) playSound(name string) {
 	level := a.cfg.UI.UISounds
-	if musicSounds[name] {
+	// Los de los juegos van con el volumen de los de la música, como los de
+	// Cripta: los de Bloques y su locutor.
+	if musicSounds[name] || strings.HasPrefix(name, "bk_") || strings.HasPrefix(name, sfx.Voice) {
 		level = a.cfg.UI.Sounds
 	}
 	g := sfx.Gain(level)

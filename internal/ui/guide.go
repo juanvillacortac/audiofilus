@@ -36,6 +36,8 @@ func (a *App) guideRows() (own, all []hint) {
 		own = []hint{{"A", "g_open"}, {"B", "h_back"}, {"X", "g_play_shuffle"}, {"X X", "g_random"}, {"L1/R1", "g_letters"}, {"<", "g_tabs"}}
 	case a.screen == Queue:
 		own = []hint{{"A", "h_play"}, {"<>", "g_page"}, {"B", "h_back"}}
+	case a.screen == Blocks && a.tetKeyboard():
+		own = []hint{{"<>", "g_move"}, {"v", "g_soft"}, {"=SPACE", "g_hard"}, {"=Z/X ^", "h_rotate"}, {"=C", "h_hold"}, {"=ESC", "h_pause"}}
 	case a.screen == Blocks:
 		own = []hint{{"<>", "g_move"}, {"v", "g_soft"}, {"^", "g_hard"}, {"A/B", "h_rotate"}, {"X", "h_hold"}, {"START", "h_pause"}}
 	case a.screen == Rhythm:
@@ -84,6 +86,9 @@ func (a *App) guideRows() (own, all []hint) {
 	all = []hint{{"SEL", "g_screens"}, {"SEL SEL", "g_prev_screen"}, {"START", "g_more"}, {"Y", "g_pause"}, {"L1/R1", "g_skip"}, {"L2/R2", "g_seek"}}
 	if a.screen == Blocks || a.screen == Rhythm || a.screen == Crypt || a.screen == Quiz || a.screen == Snake || a.screen == Shooter || a.screen == Duel || a.screen == Runner {
 		all[2] = hint{"START", "h_pause"}
+	}
+	if a.screen == Blocks && a.tetKeyboard() {
+		all[3] = hint{"=P", "g_pause"} // Espacio suelta la pieza
 	}
 	return own, all
 }
