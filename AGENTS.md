@@ -50,7 +50,7 @@ GOOS=windows go vet ./...
 | `internal/library/` | Finding files (folders, `.m3u`) and reading tags |
 | `internal/control/` | The socket protocol between the service and its clients |
 | `internal/daemon/` | The service: ties together engine, platform, pocket mode and socket |
-| `internal/platform/` | Desktop (does nothing), Knulli, muOS, ROCKNIX, ArkOS/dArkOS, EmuELEC, CrossMix and any handheld whose launcher sets `AUDIOFILUS_HANDHELD=1` (lid, power button, battery saver, app sleep; see [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) and [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
+| `internal/platform/` | Desktop (does nothing), Knulli, muOS, ROCKNIX, ArkOS/dArkOS, EmuELEC, TrimUI (stock or CrossMix) and any handheld whose launcher sets `AUDIOFILUS_HANDHELD=1` (lid, power button, battery saver, app sleep; see [docs/knulli.md](docs/knulli.md), [docs/muos.md](docs/muos.md) and [docs/rocknix-arkos.md](docs/rocknix-arkos.md)) |
 | `internal/input/` | Logical buttons from the SDL mapping, controller reading (evdev), gesture and shortcut detection, power and headset keys |
 | `internal/sdlmap/` | Asks SDL2 (through `purego`) for the controller mapping |
 | `internal/remote/` | Subsonic/OpenSubsonic and Jellyfin clients, and the song cache |

@@ -4,6 +4,7 @@ package platform
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -58,23 +59,31 @@ import (
 //
 // Y dos más sin integración tan honda:
 //
-//   - CrossMix (las TrimUI Smart Pro y Brick, github.com/cizia64/CrossMix-OS):
-//     la pantalla y los LEDs de los sticks se apagan y encienden con sus
-//     scripts (lcd_off.sh y lcd_on.sh, que escriben en
-//     /sys/kernel/debug/dispdbg y /sys/class/led_anim; lcd_on.sh vuelve al
-//     brillo de sus ajustes). El botón de encendido lo lleva el sistema (el
-//     MainUI de TrimUI, cerrado) y suspende como siempre: para el bolsillo
-//     está el sleep de la app (Start dos veces).
+//   - TrimUI ("trimui": las Smart Pro y Brick con su sistema o con CrossMix,
+//     github.com/cizia64/CrossMix-OS): la pantalla se apaga y enciende por
+//     /sys/kernel/debug/dispdbg y los LEDs por /sys/class/led_anim, como
+//     los lcd_off.sh y lcd_on.sh de CrossMix; al encender vuelve al brillo
+//     de sus ajustes (/mnt/UDISK/system.json). El volumen es el control
+//     "digital volume" de ALSA, que va al revés (0 es el máximo). El botón
+//     de encendido lo lleva el sistema (el MainUI de TrimUI, cerrado) y
+//     suspende como siempre: para el bolsillo está el sleep de la app
+//     (Start dos veces).
 //   - Una portátil cualquiera ("handheld"), cuando el lanzador lo pide con
 //     AUDIOFILUS_HANDHELD=1 y no es ninguno de los sistemas que se conocen:
 //     el sleep de la app apaga el brillo por /sys/class/backlight y baja el
 //     governor, sin tocar la suspensión.
 
 const (
-	// crossMixVersion es el archivo con la versión de CrossMix, que lo
-	// distingue; crossMixScripts, la carpeta de sus scripts.
+	// crossMixVersion es el archivo con la versión de CrossMix y trimUIBin
+	// la carpeta de los programas de TrimUI (con su sistema o con CrossMix).
 	crossMixVersion = "/mnt/SDCARD/System/usr/trimui/crossmix-version.txt"
-	crossMixScripts = "/mnt/SDCARD/System/usr/trimui/scripts"
+	trimUIBin       = "/usr/trimui/bin"
+	// trimUIDisp es la interfaz de depuración del driver de pantalla de las
+	// Allwinner, por la que TrimUI cambia el brillo; trimUILeds, el brillo
+	// máximo de los LEDs de los sticks; trimUISettings, sus ajustes.
+	trimUIDisp      = "/sys/kernel/debug/dispdbg"
+	trimUILeds      = "/sys/class/led_anim/max_scale"
+	trimUISettings  = "/mnt/UDISK/system.json"
 	arkPause        = "/usr/local/bin/pause.sh"
 	arkProcessCheck = "/usr/local/bin/processcheck.sh"
 	arkMounts       = "/tmp/audiofilus-arkos-mounts"
@@ -83,10 +92,10 @@ const (
 	eeNoSleep = "/storage/.config/sleep.conf.d/zz-audiofilus.conf"
 )
 
-// handheld es ROCKNIX, la familia ArkOS, EmuELEC, CrossMix o una portátil
+// handheld es ROCKNIX, la familia ArkOS, EmuELEC, TrimUI o una portátil
 // cualquiera.
 type handheld struct {
-	name string // "rocknix", "arkos", "emuelec", "crossmix" o "handheld"
+	name string // "rocknix", "arkos", "emuelec", "trimui" o "handheld"
 	opts Options
 
 	mu            sync.Mutex
@@ -97,11 +106,12 @@ type handheld struct {
 	savedBright   map[string]string
 	savedGovernor string
 	frozenKeys    []int
-	crossMixOff   bool // la pantalla de CrossMix, apagada por crossMixScreen
+	trimUIOff     bool   // la pantalla de TrimUI, apagada por trimUIScreen
+	savedLeds     string // el brillo de los LEDs antes de apagarlos
 }
 
-// detectHandheld reconoce ROCKNIX y EmuELEC por /etc/os-release y la familia
-// ArkOS por su pause.sh y su usuario ark.
+// detectHandheld reconoce ROCKNIX y EmuELEC por /etc/os-release, la familia
+// ArkOS por su pause.sh y su usuario ark, y TrimUI por sus programas.
 func detectHandheld(opts Options) *handheld {
 	osr, _ := os.ReadFile("/etc/os-release")
 	id := strings.ToLower(string(osr))
@@ -117,8 +127,8 @@ func detectHandheld(opts Options) *handheld {
 		h := &handheld{name: "arkos", opts: opts}
 		h.unmountLeftovers()
 		return h
-	case fileExists(crossMixVersion):
-		return &handheld{name: "crossmix", opts: opts}
+	case fileExists(crossMixVersion) || fileExists(trimUIBin):
+		return &handheld{name: "trimui", opts: opts}
 	case os.Getenv("AUDIOFILUS_HANDHELD") != "":
 		return &handheld{name: "handheld", opts: opts}
 	}
@@ -180,9 +190,9 @@ func (h *handheld) SetAwake(awake bool) {
 		h.awake = true
 		// En ArkOS sin root, logind no lo da (y no hace falta: el botón lo
 		// lleva ogage, y la copia de pause.sh ya no suspende).
-		// CrossMix no tiene logind, y la portátil cualquiera se deja como
+		// TrimUI no tiene logind, y la portátil cualquiera se deja como
 		// está.
-		if h.name == "crossmix" || h.name == "handheld" {
+		if h.name == "trimui" || h.name == "handheld" {
 			return
 		}
 		if h.name == "emuelec" {
@@ -297,10 +307,13 @@ func (h *handheld) EnterSleep(screenOff bool) error {
 		return nil
 	}
 	h.sleeping = true
-	if screenOff && h.name == "crossmix" {
-		h.crossMixScreen(false)
+	if screenOff && h.name == "trimui" {
+		h.trimUIScreen(false)
 	} else if screenOff {
 		h.savedBright = map[string]string{}
+		if len(backlights()) == 0 {
+			log.Print("sleep: no backlight in /sys/class/backlight")
+		}
 		for _, b := range backlights() {
 			if v, err := os.ReadFile(b); err == nil {
 				h.savedBright[b] = strings.TrimSpace(string(v))
@@ -345,29 +358,57 @@ func (h *handheld) ExitSleep() error {
 		writeSys(b, v)
 	}
 	h.savedBright = nil
-	if h.name == "crossmix" {
-		h.crossMixScreen(true)
+	if h.name == "trimui" {
+		h.trimUIScreen(true)
 	}
 	return nil
 }
 
-// crossMixScreen enciende o apaga la pantalla y los LEDs con los scripts de
-// CrossMix. Encender solo hace falta si se apagó: lcd_on.sh pone el brillo de
-// sus ajustes, que con el sleep en modo OLED (pantalla encendida, pintada de
-// negro) ya estaba.
-func (h *handheld) crossMixScreen(on bool) {
-	script := "lcd_off.sh"
-	if on {
-		if !h.crossMixOff {
-			return
-		}
-		script = "lcd_on.sh"
-	}
-	if out, err := exec.Command("sh", filepath.Join(crossMixScripts, script)).CombinedOutput(); err != nil {
-		log.Printf("crossmix %s: %v %s", script, err, bytes.TrimSpace(out))
+// trimUIScreen apaga o enciende la pantalla y los LEDs de una TrimUI, como
+// los lcd_off.sh y lcd_on.sh de CrossMix. Encender solo hace falta si se
+// apagó: con el sleep en modo OLED la pantalla quedó encendida.
+func (h *handheld) trimUIScreen(on bool) {
+	if on == !h.trimUIOff {
 		return
 	}
-	h.crossMixOff = !on
+	if !on {
+		if b, err := os.ReadFile(trimUILeds); err == nil {
+			h.savedLeds = strings.TrimSpace(string(b))
+		}
+		trimUIBacklight(0)
+		writeSys(trimUILeds, "0")
+		h.trimUIOff = true
+		log.Printf("trimui: screen off (leds were %q)", h.savedLeds)
+		return
+	}
+	v := trimUIBrightness()
+	trimUIBacklight(v)
+	if h.savedLeds != "" && h.savedLeds != "0" {
+		writeSys(trimUILeds, h.savedLeds)
+	}
+	h.trimUIOff = false
+	log.Printf("trimui: screen on (backlight %d)", v)
+}
+
+// trimUIBacklight pone el brillo de la pantalla (0 a 255) por dispdbg.
+func trimUIBacklight(v int) {
+	for _, w := range [][2]string{{"name", "lcd0"}, {"command", "setbl"}, {"param", strconv.Itoa(v)}, {"start", "1"}} {
+		writeSys(filepath.Join(trimUIDisp, w[0]), w[1])
+	}
+}
+
+// trimUIBrightness es el brillo de los ajustes de TrimUI (0 a 10) en la
+// escala de la pantalla, como lo calcula lcd_on.sh: por 23, y al menos 4 para
+// que el 0 se vea.
+func trimUIBrightness() int {
+	var s struct {
+		Brightness *int `json:"brightness"`
+	}
+	b, _ := os.ReadFile(trimUISettings)
+	if json.Unmarshal(b, &s) != nil || s.Brightness == nil {
+		return 160
+	}
+	return max(*s.Brightness*23, 4)
 }
 
 // Rumble vibra si la consola tiene el motor del AXP (las H700); si no, nada.
@@ -391,6 +432,9 @@ func (h *handheld) SystemVolume() int {
 	if h.name == "rocknix" {
 		return pactlVolume()
 	}
+	if h.name == "trimui" {
+		return trimUIVolume()
+	}
 	for _, c := range amixerControls {
 		out, err := exec.Command("amixer", "sget", c).Output()
 		if err != nil {
@@ -413,12 +457,58 @@ func (h *handheld) SetSystemVolume(v int) error {
 		}
 		return exec.Command("pactl", "set-sink-volume", "@DEFAULT_SINK@", strconv.Itoa(v)+"%").Run()
 	}
+	if h.name == "trimui" {
+		return exec.Command("amixer", "-q", "-c", "0", "sset", trimUIVolumeControl, strconv.Itoa(trimUIVolumeRaw(v))).Run()
+	}
 	for _, c := range amixerControls {
 		if exec.Command("amixer", "-q", "sset", c, strconv.Itoa(v)+"%").Run() == nil {
 			return nil
 		}
 	}
 	return fmt.Errorf("amixer: no volume control")
+}
+
+// trimUIVolumeControl es el volumen de TrimUI en ALSA. Es una atenuación: 0
+// es el máximo, 40 lo más bajo que usa su sistema y 63 silencio.
+const (
+	trimUIVolumeControl = "digital volume"
+	trimUIVolumeMin     = 40
+	trimUIVolumeMute    = 63
+)
+
+// amixerRaw es el valor crudo de un control en la salida de amixer sget
+// ("Mono: 20 [68%]" o "Front Left: Playback 20 [68%]").
+var amixerRaw = regexp.MustCompile(`:\s+(?:Playback\s+)?(\d+)\s+\[`)
+
+// trimUIVolumeRaw pasa un volumen de 0 a 100 al valor de "digital volume",
+// como el preload.sh de CrossMix.
+func trimUIVolumeRaw(v int) int {
+	if v <= 0 {
+		return trimUIVolumeMute
+	}
+	return trimUIVolumeMin - min(v, 100)*trimUIVolumeMin/100
+}
+
+// trimUIVolumeFromRaw es lo contrario.
+func trimUIVolumeFromRaw(raw int) int {
+	if raw >= trimUIVolumeMin {
+		return 0
+	}
+	return (trimUIVolumeMin - raw) * 100 / trimUIVolumeMin
+}
+
+// trimUIVolume lee el volumen de TrimUI (0 a 100), o -1.
+func trimUIVolume() int {
+	out, err := exec.Command("amixer", "-c", "0", "sget", trimUIVolumeControl).Output()
+	if err != nil {
+		return -1
+	}
+	m := amixerRaw.FindSubmatch(out)
+	if m == nil {
+		return -1
+	}
+	raw, _ := strconv.Atoi(string(m[1]))
+	return trimUIVolumeFromRaw(raw)
 }
 
 // SetVolumeKeys no hace nada: los botones de volumen los llevan input_sense
