@@ -5,6 +5,10 @@ name: Android
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "App version (0.18.8); empty for 0.0.0. A test build with the installed release's version installs over it and updates by itself to the next one."
+        required: false
   workflow_call:
     secrets:
       LASTFM_KEY:
@@ -58,9 +62,11 @@ jobs:
           AUDIOFILUS_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           # The app's version is the tag's (v0.15.0 -> 0.15.0).
           [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=${GITHUB_REF_NAME#v}
+          [ -n "$INPUT_VERSION" ] && export VERSION=$INPUT_VERSION
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
             export AUDIOFILUS_KEYSTORE="$RUNNER_TEMP/release.jks"
