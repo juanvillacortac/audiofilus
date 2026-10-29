@@ -121,3 +121,12 @@ func TestRotatedLetterMapping(t *testing.T) {
 		t.Errorf("one hand: A shows %q, want %q", got, ">")
 	}
 }
+
+// Con una mano y la cruceta abajo, moverse se nombra con las letras de
+// A/B/X/Y que lo hacen, haya o no stick.
+func TestOneHandMoveLetters(t *testing.T) {
+	in := &Input{rot: rotLeft, oneHand: true}
+	if got := in.rotatedBtn("<>"); got != "X/B" {
+		t.Errorf("<> shows %q, want %q", got, "X/B")
+	}
+}

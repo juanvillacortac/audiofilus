@@ -194,18 +194,6 @@ func (in *Input) stickDir(dirs *[4]bool, held bool, x, y float64) {
 	dirs[3] = dirs[3] || dy > 0
 }
 
-// hasLeftStick dice si algún mando tiene stick: ejes de verdad, no los del
-// mapeo de SDL, que en Knulli trae sticks también en las consolas que no los
-// tienen (la RG35XX-SP o la RG Cube XX tienen solo la cruceta, un hat).
-func (in *Input) hasLeftStick() bool {
-	for _, id := range in.pads {
-		if ebiten.GamepadAxisCount(id) >= 2 {
-			return true
-		}
-	}
-	return false
-}
-
 // update se llama una vez por frame, antes de preguntar.
 func (in *Input) update() {
 	// Algunos receptores de ratón o teclado se anuncian como joystick: sin un

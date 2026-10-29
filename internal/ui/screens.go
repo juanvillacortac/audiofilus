@@ -173,10 +173,9 @@ func (a *App) btn(b string) string {
 // de la consola que hay que pulsar, que con la consola girada no es el de la
 // letra (Input.physical). Las letras pasan a la impresa en el botón que queda
 // en su sitio y, con una mano y la cruceta abajo, a la cruceta con ese brazo
-// pulsado; ahí las direcciones, si la consola no tiene stick (que queda
-// abajo, en esa mano), se hacen con A/B/X/Y y pasan a sus letras ("<>" es
-// "Y/A"). La cruceta sigue siendo una cruceta (o el stick), dibujada como se
-// ve en la mano. Traduce botón a botón, como btn.
+// pulsado; ahí las direcciones se hacen con A/B/X/Y y pasan a sus letras
+// ("<>" es "Y/A"), aunque haya stick. La cruceta sigue siendo una cruceta,
+// dibujada como se ve en la mano. Traduce botón a botón, como btn.
 func (in *Input) rotatedBtn(b string) string {
 	var out strings.Builder
 	word := 0
@@ -190,7 +189,7 @@ func (in *Input) rotatedBtn(b string) string {
 			for _, r := range w {
 				out.WriteString(in.pressName(in.buttons(hintActions[string(r)])[0]))
 			}
-		case isArrows(w) && in.oneHand && in.rot == rotLeft && !in.hasLeftStick():
+		case isArrows(w) && in.oneHand && in.rot == rotLeft:
 			for j, r := range w {
 				if j > 0 {
 					out.WriteByte('/')
