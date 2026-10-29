@@ -110,6 +110,10 @@ type Input struct {
 	// la pantalla es arriba en la cruceta y el botón de abajo sigue siendo el
 	// de aceptar.
 	rot int
+	// oneHand es el modo de una mano en vertical (config.UI.VerticalControls):
+	// todo se maneja con la mitad de abajo. Con la cruceta abajo (rotLeft),
+	// la cruceta hace de A/B/X/Y y A/B/X/Y de cruceta; los dos sticks mueven.
+	oneHand bool
 	// virt son las acciones de este fotograma que vienen del ratón o de un
 	// dedo (pointer.go): cuentan como recién pulsadas.
 	virt [actCount]bool
@@ -144,27 +148,17 @@ var stickDirs = [4]Action{ActLeft, ActRight, ActUp, ActDown}
 // de todos los mandos se suman.
 func (in *Input) updateStick() {
 	var dirs [4]bool
+	axes := [][2]ebiten.StandardGamepadAxis{{ebiten.StandardGamepadAxisLeftStickHorizontal, ebiten.StandardGamepadAxisLeftStickVertical}}
+	if in.rot != 0 && in.oneHand {
+		// Con una mano, el stick derecho también: con la cruceta arriba es el
+		// que queda abajo.
+		axes = append(axes, [2]ebiten.StandardGamepadAxis{ebiten.StandardGamepadAxisRightStickHorizontal, ebiten.StandardGamepadAxisRightStickVertical})
+	}
+	held := in.stick != [4]int{}
 	for _, id := range in.pads {
-		x := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickHorizontal)
-		y := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickVertical)
-		// Girada, la derecha en la pantalla es abajo en el stick (a la
-		// izquierda) o arriba (a la derecha).
-		switch in.rot {
-		case rotLeft:
-			x, y = y, -x
-		case rotRight:
-			x, y = -y, x
+		for _, ax := range axes {
+			in.stickDir(&dirs, held, ebiten.StandardGamepadAxisValue(id, ax[0]), ebiten.StandardGamepadAxisValue(id, ax[1]))
 		}
-		held := in.stick != [4]int{}
-		if r := math.Hypot(x, y); r < stickOff || (!held && r < stickOn) {
-			continue
-		}
-		an := math.Round(math.Atan2(y, x)/(math.Pi/4)) * (math.Pi / 4)
-		dx, dy := math.Round(math.Cos(an)), math.Round(math.Sin(an))
-		dirs[0] = dirs[0] || dx < 0
-		dirs[1] = dirs[1] || dx > 0
-		dirs[2] = dirs[2] || dy < 0
-		dirs[3] = dirs[3] || dy > 0
 	}
 	for i, on := range dirs {
 		if !on {
@@ -176,6 +170,28 @@ func (in *Input) updateStick() {
 			in.usingPad, in.decided, in.any = true, true, true
 		}
 	}
+}
+
+// stickDir suma a dirs la dirección de un stick (x, y), girada como la
+// interfaz; held dice si ya había alguna, y entonces vale con menos.
+func (in *Input) stickDir(dirs *[4]bool, held bool, x, y float64) {
+	// Girada, la derecha en la pantalla es abajo en el stick (a la
+	// izquierda) o arriba (a la derecha).
+	switch in.rot {
+	case rotLeft:
+		x, y = y, -x
+	case rotRight:
+		x, y = -y, x
+	}
+	if r := math.Hypot(x, y); r < stickOff || (!held && r < stickOn) {
+		return
+	}
+	an := math.Round(math.Atan2(y, x)/(math.Pi/4)) * (math.Pi / 4)
+	dx, dy := math.Round(math.Cos(an)), math.Round(math.Sin(an))
+	dirs[0] = dirs[0] || dx < 0
+	dirs[1] = dirs[1] || dx > 0
+	dirs[2] = dirs[2] || dy < 0
+	dirs[3] = dirs[3] || dy > 0
 }
 
 // update se llama una vez por frame, antes de preguntar.
@@ -247,10 +263,16 @@ func (in *Input) physical(b ebiten.StandardGamepadButton) ebiten.StandardGamepad
 	if in.rot == 0 {
 		return b
 	}
-	for _, ring := range [][4]ebiten.StandardGamepadButton{dpadRing, faceRing} {
-		for i, r := range ring {
+	// Con una mano y la cruceta abajo, cada grupo se lee del otro.
+	swap := in.oneHand && in.rot == rotLeft
+	for _, rings := range [][2][4]ebiten.StandardGamepadButton{{dpadRing, faceRing}, {faceRing, dpadRing}} {
+		from, to := rings[0], rings[0]
+		if swap {
+			to = rings[1]
+		}
+		for i, r := range from {
 			if r == b {
-				return ring[(i+in.rot)%4]
+				return to[(i+in.rot)%4]
 			}
 		}
 	}

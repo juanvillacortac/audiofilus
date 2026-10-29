@@ -138,6 +138,11 @@ type UI struct {
 	// cruceta abajo) o "right" (girada a la derecha, la cruceta arriba). La
 	// cruceta, el stick y A/B/X/Y giran con ella (ui.Input.rot).
 	Orientation string `json:"orientation,omitempty"`
+	// VerticalControls es cómo se maneja en vertical: "" (con las dos manos,
+	// cada grupo de botones gira en su sitio) u "one" (con la mano de abajo:
+	// el stick de esa mitad mueve y sus botones aceptan y vuelven; con la
+	// cruceta abajo, la cruceta y A/B/X/Y se intercambian).
+	VerticalControls string `json:"vertical_controls,omitempty"`
 	// Sounds es el volumen de los sonidos de la música (pausa, siguiente,
 	// anterior, aleatorio, al azar; también los del atajo de FN y los gestos
 	// del sleep, que pone el servicio): "off", "low", "" (medio) o "high"

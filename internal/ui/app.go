@@ -306,6 +306,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	a.input.swapAB = cfg.UI.SwapAB
 	if handheldUI {
 		a.input.rot = rotation(cfg.UI.Orientation)
+		a.input.oneHand = cfg.UI.VerticalControls == "one"
 	}
 	a.vis.kind = visualizerIndex(cfg.UI.Visualizer)
 	if th, ok := fixedTheme(a.themeColor()); ok {

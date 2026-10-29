@@ -67,3 +67,28 @@ func TestRotatedGeoM(t *testing.T) {
 		}
 	}
 }
+
+// Con una mano y la cruceta abajo (girada a la izquierda), la cruceta hace de
+// A/B/X/Y y A/B/X/Y de cruceta, cada una por su posición: aceptar (abajo) es
+// la izquierda de la cruceta, que queda abajo, y arriba es el botón de la
+// derecha de A/B/X/Y. Con la cruceta arriba no cambia nada.
+func TestOneHandButtons(t *testing.T) {
+	const (
+		up, right, down, left     = ebiten.StandardGamepadButtonLeftTop, ebiten.StandardGamepadButtonLeftRight, ebiten.StandardGamepadButtonLeftBottom, ebiten.StandardGamepadButtonLeftLeft
+		fTop, fRight, fDown, fLft = ebiten.StandardGamepadButtonRightTop, ebiten.StandardGamepadButtonRightRight, ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightLeft
+		l1                        = ebiten.StandardGamepadButtonFrontTopLeft
+	)
+	in := &Input{rot: rotLeft, oneHand: true}
+	for b, want := range map[ebiten.StandardGamepadButton]ebiten.StandardGamepadButton{
+		up: fRight, right: fDown, down: fLft, left: fTop, fTop: right, fRight: down, fDown: left, fLft: up, l1: l1} {
+		if got := in.physical(b); got != want {
+			t.Errorf("one hand, left: button %d reads %d, want %d", b, got, want)
+		}
+	}
+	one, two := &Input{rot: rotRight, oneHand: true}, &Input{rot: rotRight}
+	for _, b := range []ebiten.StandardGamepadButton{up, right, down, left, fTop, fRight, fDown, fLft} {
+		if one.physical(b) != two.physical(b) {
+			t.Errorf("one hand, right: button %d reads %d, want %d", b, one.physical(b), two.physical(b))
+		}
+	}
+}
