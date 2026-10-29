@@ -24,3 +24,19 @@ func TestOSReleaseID(t *testing.T) {
 		}
 	}
 }
+
+// Con AUDIOFILUS_HANDHELD (lo ponen los lanzadores), un sistema que no se
+// conoce es una portátil cualquiera; sin ella, nada (el PC).
+func TestDetectGenericHandheld(t *testing.T) {
+	if fileExists(crossMixVersion) || fileExists(arkPause) {
+		t.Skip("running on a known handheld")
+	}
+	t.Setenv("AUDIOFILUS_HANDHELD", "")
+	if h := detectHandheld(Options{}); h != nil && h.name == "handheld" {
+		t.Errorf("without the variable: %q", h.name)
+	}
+	t.Setenv("AUDIOFILUS_HANDHELD", "1")
+	if h := detectHandheld(Options{}); h == nil || h.name != "handheld" && h.name != "rocknix" && h.name != "emuelec" {
+		t.Errorf("with the variable: %v", h)
+	}
+}

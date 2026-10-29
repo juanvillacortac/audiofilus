@@ -673,10 +673,10 @@ func (a *App) canSleep() bool {
 func (a *App) mobile() bool { return StartService != nil || previewMobile }
 
 // handheldUI dice si la interfaz corre en una portátil: los lanzadores de
-// PortMaster y muOS la abren con el backend SDL2 (KMS/DRM). Vale también en
-// los sistemas sin integración propia (CrossMix en las TrimUI), que el
-// servicio no distingue de un PC.
-var handheldUI = os.Getenv("EBITENGINE_UI_BACKEND") == "sdl2"
+// PortMaster y muOS lo dicen con AUDIOFILUS_HANDHELD=1 (y la abren con el
+// backend SDL2, KMS/DRM). Vale también en los sistemas sin integración propia,
+// que el servicio trata como una portátil cualquiera por la misma variable.
+var handheldUI = os.Getenv("AUDIOFILUS_HANDHELD") != "" || os.Getenv("EBITENGINE_UI_BACKEND") == "sdl2"
 
 // previewMobile: las capturas, como en el móvil (AUDIOFILUS_MOBILE).
 var previewMobile = os.Getenv("AUDIOFILUS_MOBILE") != ""

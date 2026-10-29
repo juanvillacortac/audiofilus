@@ -42,6 +42,9 @@ export AUDIOFILUS_HOME="$GAMEDIR"
 # The console model (PortMaster's DEVICE_NAME), the network name when the
 # system keeps its default hostname.
 export AUDIOFILUS_DEVICE="$DEVICE_NAME"
+# It runs on a handheld: on a system Audiofilus doesn't know, the app's sleep
+# still turns off the backlight and the UI offers the handheld options.
+export AUDIOFILUS_HANDHELD=1
 
 # ArkOS and dArkOS have no PulseAudio: audio goes through ALSA, which takes the
 # output device from ~/.asoundrc, and some ports remove it. (No ${CFW_NAME^^}:

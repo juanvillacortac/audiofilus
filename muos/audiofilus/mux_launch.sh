@@ -25,6 +25,8 @@ fi
 # The settings and the library cache live in this folder (audiofilus.json and
 # data/); the service logs to data/audiofilus.log.
 export AUDIOFILUS_HOME="$APP_DIR"
+# It runs on a handheld (muOS is detected anyway; this is the fallback).
+export AUDIOFILUS_HANDHELD=1
 # The UI presents through SDL2 (KMS/DRM); SDL gives the gamepad mapping.
 export EBITENGINE_UI_BACKEND=sdl2
 

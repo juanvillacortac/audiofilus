@@ -55,8 +55,26 @@ import (
 //     "volume", que lo guarda); en ArkOS y EmuELEC, ALSA con amixer.
 //   - Tapa: el sensor del AXP (hallkey) o, con kernel mainline (ROCKNIX), el
 //     interruptor SW_LID por evdev.
+//
+// Y dos más sin integración tan honda:
+//
+//   - CrossMix (las TrimUI Smart Pro y Brick, github.com/cizia64/CrossMix-OS):
+//     la pantalla y los LEDs de los sticks se apagan y encienden con sus
+//     scripts (lcd_off.sh y lcd_on.sh, que escriben en
+//     /sys/kernel/debug/dispdbg y /sys/class/led_anim; lcd_on.sh vuelve al
+//     brillo de sus ajustes). El botón de encendido lo lleva el sistema (el
+//     MainUI de TrimUI, cerrado) y suspende como siempre: para el bolsillo
+//     está el sleep de la app (Start dos veces).
+//   - Una portátil cualquiera ("handheld"), cuando el lanzador lo pide con
+//     AUDIOFILUS_HANDHELD=1 y no es ninguno de los sistemas que se conocen:
+//     el sleep de la app apaga el brillo por /sys/class/backlight y baja el
+//     governor, sin tocar la suspensión.
 
 const (
+	// crossMixVersion es el archivo con la versión de CrossMix, que lo
+	// distingue; crossMixScripts, la carpeta de sus scripts.
+	crossMixVersion = "/mnt/SDCARD/System/usr/trimui/crossmix-version.txt"
+	crossMixScripts = "/mnt/SDCARD/System/usr/trimui/scripts"
 	arkPause        = "/usr/local/bin/pause.sh"
 	arkProcessCheck = "/usr/local/bin/processcheck.sh"
 	arkMounts       = "/tmp/audiofilus-arkos-mounts"
@@ -65,9 +83,10 @@ const (
 	eeNoSleep = "/storage/.config/sleep.conf.d/zz-audiofilus.conf"
 )
 
-// handheld es ROCKNIX, la familia ArkOS o EmuELEC.
+// handheld es ROCKNIX, la familia ArkOS, EmuELEC, CrossMix o una portátil
+// cualquiera.
 type handheld struct {
-	name string // "rocknix", "arkos" o "emuelec"
+	name string // "rocknix", "arkos", "emuelec", "crossmix" o "handheld"
 	opts Options
 
 	mu            sync.Mutex
@@ -78,6 +97,7 @@ type handheld struct {
 	savedBright   map[string]string
 	savedGovernor string
 	frozenKeys    []int
+	crossMixOff   bool // la pantalla de CrossMix, apagada por crossMixScreen
 }
 
 // detectHandheld reconoce ROCKNIX y EmuELEC por /etc/os-release y la familia
@@ -97,6 +117,10 @@ func detectHandheld(opts Options) *handheld {
 		h := &handheld{name: "arkos", opts: opts}
 		h.unmountLeftovers()
 		return h
+	case fileExists(crossMixVersion):
+		return &handheld{name: "crossmix", opts: opts}
+	case os.Getenv("AUDIOFILUS_HANDHELD") != "":
+		return &handheld{name: "handheld", opts: opts}
 	}
 	return nil
 }
@@ -156,6 +180,11 @@ func (h *handheld) SetAwake(awake bool) {
 		h.awake = true
 		// En ArkOS sin root, logind no lo da (y no hace falta: el botón lo
 		// lleva ogage, y la copia de pause.sh ya no suspende).
+		// CrossMix no tiene logind, y la portátil cualquiera se deja como
+		// está.
+		if h.name == "crossmix" || h.name == "handheld" {
+			return
+		}
 		if h.name == "emuelec" {
 			h.noSleepLocked(true)
 		} else if h.name != "arkos" || os.Geteuid() == 0 {
@@ -268,7 +297,9 @@ func (h *handheld) EnterSleep(screenOff bool) error {
 		return nil
 	}
 	h.sleeping = true
-	if screenOff {
+	if screenOff && h.name == "crossmix" {
+		h.crossMixScreen(false)
+	} else if screenOff {
 		h.savedBright = map[string]string{}
 		for _, b := range backlights() {
 			if v, err := os.ReadFile(b); err == nil {
@@ -314,7 +345,29 @@ func (h *handheld) ExitSleep() error {
 		writeSys(b, v)
 	}
 	h.savedBright = nil
+	if h.name == "crossmix" {
+		h.crossMixScreen(true)
+	}
 	return nil
+}
+
+// crossMixScreen enciende o apaga la pantalla y los LEDs con los scripts de
+// CrossMix. Encender solo hace falta si se apagó: lcd_on.sh pone el brillo de
+// sus ajustes, que con el sleep en modo OLED (pantalla encendida, pintada de
+// negro) ya estaba.
+func (h *handheld) crossMixScreen(on bool) {
+	script := "lcd_off.sh"
+	if on {
+		if !h.crossMixOff {
+			return
+		}
+		script = "lcd_on.sh"
+	}
+	if out, err := exec.Command("sh", filepath.Join(crossMixScripts, script)).CombinedOutput(); err != nil {
+		log.Printf("crossmix %s: %v %s", script, err, bytes.TrimSpace(out))
+		return
+	}
+	h.crossMixOff = !on
 }
 
 // Rumble vibra si la consola tiene el motor del AXP (las H700); si no, nada.
