@@ -25,3 +25,34 @@ func TestBtnKeyboardNames(t *testing.T) {
 		t.Errorf("with a gamepad btn(X X) = %q", got)
 	}
 }
+
+// Las direcciones (cruceta, stick o flechas del teclado) son siempre una
+// cruceta: las seguidas, una sola con esos brazos pulsados, también tras "+"
+// o "/"; las letras quedan como texto.
+func TestBtnParts(t *testing.T) {
+	for in, want := range map[string][]string{
+		"<>":     {"<>"},
+		"<>^v":   {"<>^v"},
+		"A+^v":   {"A+", "^v"},
+		"^/v":    {"^", "/", "v"},
+		"< v B":  {"<", " ", "v", " B"},
+		"L1/R1":  {"L1/R1"},
+		"<> ...": {"<>", " ..."},
+		"v":      {"v"},
+	} {
+		got := btnParts(in)
+		if len(got) != len(want) {
+			t.Errorf("btnParts(%q) = %q, want %q", in, got, want)
+			continue
+		}
+		for i := range got {
+			if got[i] != want[i] {
+				t.Errorf("btnParts(%q) = %q, want %q", in, got, want)
+				break
+			}
+		}
+	}
+	if padIcon("><") != padIcon("<>") || padIcon("<>^v") != "padurdl" {
+		t.Errorf("pad icons: %q %q", padIcon("<>"), padIcon("<>^v"))
+	}
+}

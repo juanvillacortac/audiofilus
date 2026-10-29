@@ -1,12 +1,12 @@
 package ui
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"image/color"
 	"math"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -142,9 +142,6 @@ func (a *App) btn(b string) string {
 		return k
 	}
 	if a.input.usingPad || a.offline {
-		if a.input.oneHand && a.input.rot == rotLeft {
-			return a.input.oneHandBtn(b)
-		}
 		return b
 	}
 	if k, ok := keyNames[b]; ok {
@@ -167,48 +164,6 @@ func (a *App) btn(b string) string {
 		word = i + 1
 	}
 	return out.String()
-}
-
-// oneHandBtn es el nombre de un botón con una mano y la cruceta abajo, donde
-// A/B/X/Y se pulsan en la cruceta: cada letra pasa a la cruceta con el brazo
-// que queda en su sitio pulsado (aceptar, abajo, es "▼"). Las flechas de
-// moverse quedan como están. Traduce botón a botón, como btn ("A+^v" es
-// "▼+^v").
-func (in *Input) oneHandBtn(b string) string {
-	var out strings.Builder
-	word := 0
-	for i := 0; i <= len(b); i++ {
-		if i < len(b) && !strings.ContainsRune(" /+", rune(b[i])) {
-			continue
-		}
-		w := b[word:i]
-		if w != "" && strings.Trim(w, "ABXY") == "" {
-			for _, r := range w {
-				out.WriteRune(in.faceArrow(hintActions[string(r)]))
-			}
-		} else {
-			out.WriteString(w)
-		}
-		if i < len(b) {
-			out.WriteByte(b[i])
-		}
-		word = i + 1
-	}
-	return out.String()
-}
-
-// faceArrow es la cruceta pulsada en la posición del botón de la acción a
-// entre A/B/X/Y (arriba, derecha, abajo, izquierda), con A/B y X/Y como
-// estén.
-func (in *Input) faceArrow(a Action) rune {
-	for _, b := range in.buttons(a) {
-		for i, r := range faceRing {
-			if r == b {
-				return []rune("▲▶▼◀")[i]
-			}
-		}
-	}
-	return '?'
 }
 
 // hint es un botón y lo que hace, para la barra de abajo.
@@ -299,25 +254,42 @@ func (a *App) drawTouchHints(dst *ebiten.Image, hints []hint, y int) {
 	}
 }
 
-// hintArrows son las flechas que se dibujan como icono en las pastillas.
-// "▲▶▼◀" son la cruceta con ese brazo pulsado (oneHandBtn).
-var hintArrows = map[rune]string{'<': "hint_l", '>': "hint_r", '^': "hint_u", 'v': "hint_d",
-	'▲': "pad_u", '▶': "pad_r", '▼': "pad_d", '◀': "pad_l"}
+// hintArrows son las direcciones de las pastillas de la ayuda: la cruceta,
+// el stick o las flechas del teclado. Se dibujan siempre como una cruceta con
+// los brazos de esas direcciones pulsados ("<>" es una sola, con izquierda y
+// derecha).
+var hintArrows = map[rune]byte{'^': 'u', '>': 'r', 'v': 'd', '<': 'l'}
 
-// btnParts parte el nombre de un botón en trozos: cada flecha suelta es un
-// icono y el resto, texto ("<>" son dos flechas, también tras "+" o "/"
-// como en "A+^v" o "^/v"; "L1/R1", texto).
+// isArrows dice si un trozo son solo direcciones.
+func isArrows(p string) bool {
+	for _, r := range p {
+		if _, ok := hintArrows[r]; !ok {
+			return false
+		}
+	}
+	return p != ""
+}
+
+// btnParts parte el nombre de un botón en trozos: las direcciones seguidas
+// son una cruceta y el resto, texto ("<>" es una cruceta, también tras "+" o
+// "/" como en "A+^v" o "^/v"; "L1/R1", texto).
 func btnParts(b string) []string {
 	var parts []string
 	word := []rune{}
+	arrows := false // word son direcciones
 	for _, r := range b {
-		if _, ok := hintArrows[r]; ok && (len(word) == 0 || strings.ContainsRune(" +/", word[len(word)-1])) {
-			if len(word) > 0 {
+		_, arrow := hintArrows[r]
+		if arrow && (len(word) == 0 || arrows || strings.ContainsRune(" +/", word[len(word)-1])) {
+			if len(word) > 0 && !arrows {
 				parts = append(parts, string(word))
 				word = word[:0]
 			}
-			parts = append(parts, string(r))
+			word, arrows = append(word, r), true
 			continue
+		}
+		if arrows {
+			parts = append(parts, string(word))
+			word, arrows = word[:0], false
 		}
 		word = append(word, r)
 	}
@@ -327,10 +299,42 @@ func btnParts(b string) []string {
 	return parts
 }
 
+// padIcon es el nombre del icono de la cruceta con los brazos de las
+// direcciones de p pulsados; lo dibuja la primera vez.
+func padIcon(p string) string {
+	var arms [4]bool // arriba, derecha, abajo, izquierda
+	for _, r := range p {
+		arms[strings.IndexByte("urdl", hintArrows[r])] = true
+	}
+	name := "pad"
+	for i, on := range arms {
+		if on {
+			name += string("urdl"[i])
+		}
+	}
+	if _, ok := iconArt[name]; ok {
+		return name
+	}
+	// La cruceta vacía; un brazo pulsado se rellena por dentro y llega hasta
+	// el centro.
+	art := [][]byte{[]byte("..###.."), []byte("..#.#.."), []byte("##...##"), []byte("#.....#"),
+		[]byte("##...##"), []byte("..#.#.."), []byte("..###..")}
+	fill := [4][2][2]int{{{1, 3}, {2, 3}}, {{3, 5}, {3, 4}}, {{5, 3}, {4, 3}}, {{3, 1}, {3, 2}}}
+	for i, on := range arms {
+		if on {
+			for _, c := range fill[i] {
+				art[c[0]][c[1]] = '#'
+			}
+		}
+	}
+	iconArt[name] = string(bytes.Join(art, []byte("\n")))
+	return name
+}
+
 // btnPartWidth es el ancho de un trozo.
 func btnPartWidth(p string) int {
-	if ic, ok := hintArrows[[]rune(p)[0]]; ok && utf8.RuneCountInString(p) == 1 {
-		return icon(ic).Bounds().Dx()
+	if isArrows(p) {
+		return icon(padIcon(p)).Bounds().Dx()
 	}
 	return textWidth(p, SmallFace)
 }
@@ -364,7 +368,8 @@ func (a *App) drawBtnChip(dst *ebiten.Image, b string, x, y int) int {
 	}
 	px := x + 2 + (inner-used)/2
 	for _, p := range parts {
-		if ic, ok := hintArrows[[]rune(p)[0]]; ok && utf8.RuneCountInString(p) == 1 {
+		if isArrows(p) {
+			ic := padIcon(p)
 			b := icon(ic).Bounds()
 			drawIcon(dst, ic, px, y+(9-b.Dy())/2, th.Bg)
 		} else {
