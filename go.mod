@@ -5,7 +5,7 @@ go 1.27.1
 require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/ebitengine/gomobile v0.0.0-20260820040257-d11f821a26a6
-	github.com/ebitengine/oto/v3 v3.5.0
+	github.com/ebitengine/oto/v3 v3.6.0-alpha.1.0.20261026174335-b240613119d6
 	github.com/ebitengine/purego v0.11.0
 	github.com/godbus/dbus/v5 v5.2.4
 	github.com/hajimehoshi/ebiten/v2 v2.10.3
