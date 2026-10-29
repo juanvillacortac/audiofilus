@@ -142,6 +142,9 @@ func (a *App) btn(b string) string {
 		return k
 	}
 	if a.input.usingPad || a.offline {
+		if a.input.rot != 0 {
+			return a.input.rotatedBtn(b)
+		}
 		return b
 	}
 	if k, ok := keyNames[b]; ok {
@@ -164,6 +167,66 @@ func (a *App) btn(b string) string {
 		word = i + 1
 	}
 	return out.String()
+}
+
+// rotatedBtn es el nombre de un botón con la interfaz girada: el del botón
+// de la consola que hay que pulsar, que con la consola girada no es el de la
+// letra (Input.physical). Las letras pasan a la impresa en el botón que queda
+// en su sitio y, con una mano y la cruceta abajo, a la cruceta con ese brazo
+// pulsado; ahí las direcciones, si la consola no tiene stick (que queda
+// abajo, en esa mano), se hacen con A/B/X/Y y pasan a sus letras ("<>" es
+// "Y/A"). La cruceta sigue siendo una cruceta (o el stick), dibujada como se
+// ve en la mano. Traduce botón a botón, como btn.
+func (in *Input) rotatedBtn(b string) string {
+	var out strings.Builder
+	word := 0
+	for i := 0; i <= len(b); i++ {
+		if i < len(b) && !strings.ContainsRune(" /+", rune(b[i])) {
+			continue
+		}
+		w := b[word:i]
+		switch {
+		case w != "" && strings.Trim(w, "ABXY") == "":
+			for _, r := range w {
+				out.WriteString(in.pressName(in.buttons(hintActions[string(r)])[0]))
+			}
+		case isArrows(w) && in.oneHand && in.rot == rotLeft && !in.hasLeftStick():
+			for j, r := range w {
+				if j > 0 {
+					out.WriteByte('/')
+				}
+				out.WriteString(in.pressName(actionButtons[hintActions[string(r)]][0]))
+			}
+		default:
+			out.WriteString(w)
+		}
+		if i < len(b) {
+			out.WriteByte(b[i])
+		}
+		word = i + 1
+	}
+	return out.String()
+}
+
+// pressName es cómo se nombra en la ayuda el botón de la consola que hace de
+// b (un botón lógico de la cruceta o de A/B/X/Y, en la pantalla): la letra
+// impresa si es de A/B/X/Y, o la flecha de la cruceta en el sitio de b.
+func (in *Input) pressName(b ebiten.StandardGamepadButton) string {
+	p := in.physical(b)
+	face := in.faceRing()
+	for i, r := range face {
+		if r == p {
+			return []string{"X", "A", "B", "Y"}[i] // como Nintendo (faceRing)
+		}
+	}
+	for _, ring := range [][4]ebiten.StandardGamepadButton{face, dpadRing} {
+		for i, r := range ring {
+			if r == b {
+				return string("^>v<"[i])
+			}
+		}
+	}
+	return "?"
 }
 
 // hint es un botón y lo que hace, para la barra de abajo.

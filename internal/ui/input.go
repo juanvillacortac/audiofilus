@@ -194,6 +194,18 @@ func (in *Input) stickDir(dirs *[4]bool, held bool, x, y float64) {
 	dirs[3] = dirs[3] || dy > 0
 }
 
+// hasLeftStick dice si algún mando tiene stick: ejes de verdad, no los del
+// mapeo de SDL, que en Knulli trae sticks también en las consolas que no los
+// tienen (la RG35XX-SP o la RG Cube XX tienen solo la cruceta, un hat).
+func (in *Input) hasLeftStick() bool {
+	for _, id := range in.pads {
+		if ebiten.GamepadAxisCount(id) >= 2 {
+			return true
+		}
+	}
+	return false
+}
+
 // update se llama una vez por frame, antes de preguntar.
 func (in *Input) update() {
 	// Algunos receptores de ratón o teclado se anuncian como joystick: sin un
@@ -247,14 +259,25 @@ func rotation(orientation string) int {
 	return 0
 }
 
-// Los cuatro botones de la cruceta y los de la derecha, en el orden en que
-// los recorre un giro a la derecha: arriba, derecha, abajo, izquierda.
-var (
-	dpadRing = [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonLeftTop, ebiten.StandardGamepadButtonLeftRight,
-		ebiten.StandardGamepadButtonLeftBottom, ebiten.StandardGamepadButtonLeftLeft}
-	faceRing = [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonRightTop, ebiten.StandardGamepadButtonRightRight,
-		ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightLeft}
-)
+// dpadRing son los cuatro botones de la cruceta en el orden en que los
+// recorre un giro a la derecha: arriba, derecha, abajo, izquierda.
+var dpadRing = [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonLeftTop, ebiten.StandardGamepadButtonLeftRight,
+	ebiten.StandardGamepadButtonLeftBottom, ebiten.StandardGamepadButtonLeftLeft}
+
+// faceRing son A/B/X/Y en ese mismo orden, por dónde están en la consola.
+// Las portátiles los traen como Nintendo (X arriba, A a la derecha, B abajo,
+// Y a la izquierda) y swapAB está como haga falta para que la ayuda diga la
+// letra impresa: sin él, el sistema ya los mapea por la letra (el A del mapeo
+// es el de la derecha, como en Knulli con el cambio de A/B/X/Y de los ports);
+// con él, por la posición (el A del mapeo es el de abajo).
+func (in *Input) faceRing() [4]ebiten.StandardGamepadButton {
+	if in.swapAB {
+		return [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonRightTop, ebiten.StandardGamepadButtonRightRight,
+			ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightLeft}
+	}
+	return [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonRightLeft, ebiten.StandardGamepadButtonRightBottom,
+		ebiten.StandardGamepadButtonRightRight, ebiten.StandardGamepadButtonRightTop}
+}
 
 // physical es el botón de la consola que, con la interfaz girada, queda donde
 // b en la mano: con la consola girada a la izquierda, el de la derecha queda
@@ -265,7 +288,8 @@ func (in *Input) physical(b ebiten.StandardGamepadButton) ebiten.StandardGamepad
 	}
 	// Con una mano y la cruceta abajo, cada grupo se lee del otro.
 	swap := in.oneHand && in.rot == rotLeft
-	for _, rings := range [][2][4]ebiten.StandardGamepadButton{{dpadRing, faceRing}, {faceRing, dpadRing}} {
+	face := in.faceRing()
+	for _, rings := range [][2][4]ebiten.StandardGamepadButton{{dpadRing, face}, {face, dpadRing}} {
 		from, to := rings[0], rings[0]
 		if swap {
 			to = rings[1]

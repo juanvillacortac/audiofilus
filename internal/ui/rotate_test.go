@@ -9,8 +9,9 @@ import (
 
 // Con la interfaz girada, cada botón de la cruceta y de la derecha se lee del
 // que queda en esa posición en la mano: con la consola girada a la izquierda
-// arriba es el de la derecha y aceptar (abajo) el de la izquierda; a la
-// derecha, al revés. Los gatillos y Start no giran.
+// arriba es el de la derecha y el de abajo el de la izquierda; a la derecha,
+// al revés. Los gatillos y Start no giran. Con A/B cambiados el mapeo va por
+// posición (el A del mapeo es el de abajo).
 func TestRotatedButtons(t *testing.T) {
 	const (
 		up, right, down, left     = ebiten.StandardGamepadButtonLeftTop, ebiten.StandardGamepadButtonLeftRight, ebiten.StandardGamepadButtonLeftBottom, ebiten.StandardGamepadButtonLeftLeft
@@ -27,7 +28,7 @@ func TestRotatedButtons(t *testing.T) {
 		{rotRight, map[ebiten.StandardGamepadButton]ebiten.StandardGamepadButton{
 			up: left, right: up, down: right, left: down, fTop: fLft, fRight: fTop, fDown: fRight, fLft: fDown, l1: l1, start: start}},
 	} {
-		in := &Input{rot: c.rot}
+		in := &Input{rot: c.rot, swapAB: true}
 		for b, want := range c.want {
 			if got := in.physical(b); got != want {
 				t.Errorf("rot %d: button %d reads %d, want %d", c.rot, b, got, want)
@@ -78,17 +79,45 @@ func TestOneHandButtons(t *testing.T) {
 		fTop, fRight, fDown, fLft = ebiten.StandardGamepadButtonRightTop, ebiten.StandardGamepadButtonRightRight, ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightLeft
 		l1                        = ebiten.StandardGamepadButtonFrontTopLeft
 	)
-	in := &Input{rot: rotLeft, oneHand: true}
+	in := &Input{rot: rotLeft, oneHand: true, swapAB: true}
 	for b, want := range map[ebiten.StandardGamepadButton]ebiten.StandardGamepadButton{
 		up: fRight, right: fDown, down: fLft, left: fTop, fTop: right, fRight: down, fDown: left, fLft: up, l1: l1} {
 		if got := in.physical(b); got != want {
 			t.Errorf("one hand, left: button %d reads %d, want %d", b, got, want)
 		}
 	}
-	one, two := &Input{rot: rotRight, oneHand: true}, &Input{rot: rotRight}
+	one, two := &Input{rot: rotRight, oneHand: true, swapAB: true}, &Input{rot: rotRight, swapAB: true}
 	for _, b := range []ebiten.StandardGamepadButton{up, right, down, left, fTop, fRight, fDown, fLft} {
 		if one.physical(b) != two.physical(b) {
 			t.Errorf("one hand, right: button %d reads %d, want %d", b, one.physical(b), two.physical(b))
 		}
+	}
+}
+
+// Sin A/B cambiados el sistema mapea por la letra impresa, como Nintendo (el
+// A del mapeo es el de la derecha, el B el de abajo, el X el de arriba y el Y
+// el de la izquierda, como Knulli con su cambio de A/B/X/Y): girada a la
+// izquierda, aceptar (A, a la derecha en la pantalla) se lee del de abajo,
+// que es el B, y la ayuda lo nombra así.
+func TestRotatedLetterMapping(t *testing.T) {
+	const (
+		a, b, x, y = ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightRight, ebiten.StandardGamepadButtonRightLeft, ebiten.StandardGamepadButtonRightTop
+	)
+	in := &Input{rot: rotLeft}
+	for btn, want := range map[ebiten.StandardGamepadButton]ebiten.StandardGamepadButton{a: b, b: y, y: x, x: a} {
+		if got := in.physical(btn); got != want {
+			t.Errorf("button %d reads %d, want %d", btn, got, want)
+		}
+	}
+	for hint, want := range map[string]string{"A": "B", "B": "Y", "X": "A", "Y": "X", "A/Y": "B/X", "START": "START", "<>": "<>"} {
+		if got := in.rotatedBtn(hint); got != want {
+			t.Errorf("hint %q shows %q, want %q", hint, got, want)
+		}
+	}
+	// Con una mano, aceptar va en la cruceta: el brazo de la derecha en la
+	// pantalla (que en la mano queda abajo).
+	in.oneHand = true
+	if got := in.rotatedBtn("A"); got != ">" {
+		t.Errorf("one hand: A shows %q, want %q", got, ">")
 	}
 }
