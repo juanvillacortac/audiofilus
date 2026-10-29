@@ -93,18 +93,22 @@ func TestOneHandButtons(t *testing.T) {
 	}
 }
 
-// La ayuda con una mano y la cruceta abajo nombra las flechas de la cruceta
-// en vez de A/B/X/Y, cada una en su sitio (y con A/B cambiados, cambian), y
-// pone el stick delante de las flechas de moverse.
+// La ayuda con una mano y la cruceta abajo nombra la cruceta pulsada en vez
+// de A/B/X/Y, cada brazo en su sitio (y con A/B cambiados, cambian); las
+// flechas de moverse quedan como están.
 func TestOneHandHints(t *testing.T) {
 	in := &Input{rot: rotLeft, oneHand: true}
-	for b, want := range map[string]string{"A": "v", "B": ">", "X": "<", "Y": "^", "START": "START", "<>": "LS <>", "A+^v": "v+LS ^v", "L1/R1": "L1/R1", "X X": "< <"} {
+	for b, want := range map[string]string{"A": "▼", "B": "▶", "X": "◀", "Y": "▲", "START": "START", "<>": "<>", "A+^v": "▼+^v", "L1/R1": "L1/R1", "X X": "◀ ◀"} {
 		if got := in.oneHandBtn(b); got != want {
 			t.Errorf("%q shows %q, want %q", b, got, want)
 		}
 	}
 	in.swapAB = true
-	if got := in.oneHandBtn("A"); got != ">" {
-		t.Errorf("A with A/B swapped shows %q, want %q", got, ">")
+	if got := in.oneHandBtn("A"); got != "▶" {
+		t.Errorf("A with A/B swapped shows %q, want %q", got, "▶")
+	}
+	// Cada cruceta pulsada es un icono en la pastilla, no texto.
+	if p := btnParts("▼+^v"); len(p) != 4 || p[0] != "▼" {
+		t.Errorf("parts of ▼+^v: %q", p)
 	}
 }

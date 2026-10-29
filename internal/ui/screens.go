@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"math"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -169,10 +170,10 @@ func (a *App) btn(b string) string {
 }
 
 // oneHandBtn es el nombre de un botón con una mano y la cruceta abajo, donde
-// A/B/X/Y se pulsan en la cruceta: cada letra pasa a la flecha que queda en
-// su sitio (aceptar, abajo, es "v"), y las flechas de moverse llevan delante
-// "LS", el stick con el que se mueve esa mano. Traduce botón a botón, como
-// btn ("A+^v" es "v+LS ^v").
+// A/B/X/Y se pulsan en la cruceta: cada letra pasa a la cruceta con el brazo
+// que queda en su sitio pulsado (aceptar, abajo, es "▼"). Las flechas de
+// moverse quedan como están. Traduce botón a botón, como btn ("A+^v" es
+// "▼+^v").
 func (in *Input) oneHandBtn(b string) string {
 	var out strings.Builder
 	word := 0
@@ -181,14 +182,11 @@ func (in *Input) oneHandBtn(b string) string {
 			continue
 		}
 		w := b[word:i]
-		switch {
-		case w != "" && strings.Trim(w, "ABXY") == "":
+		if w != "" && strings.Trim(w, "ABXY") == "" {
 			for _, r := range w {
-				out.WriteByte(in.faceArrow(hintActions[string(r)]))
+				out.WriteRune(in.faceArrow(hintActions[string(r)]))
 			}
-		case w != "" && strings.Trim(w, "<>^v") == "":
-			out.WriteString("LS " + w)
-		default:
+		} else {
 			out.WriteString(w)
 		}
 		if i < len(b) {
@@ -199,13 +197,14 @@ func (in *Input) oneHandBtn(b string) string {
 	return out.String()
 }
 
-// faceArrow es la flecha de la posición del botón de la acción a entre
-// A/B/X/Y (arriba, derecha, abajo, izquierda), con A/B y X/Y como estén.
-func (in *Input) faceArrow(a Action) byte {
+// faceArrow es la cruceta pulsada en la posición del botón de la acción a
+// entre A/B/X/Y (arriba, derecha, abajo, izquierda), con A/B y X/Y como
+// estén.
+func (in *Input) faceArrow(a Action) rune {
 	for _, b := range in.buttons(a) {
 		for i, r := range faceRing {
 			if r == b {
-				return "^>v<"[i]
+				return []rune("▲▶▼◀")[i]
 			}
 		}
 	}
@@ -301,16 +300,18 @@ func (a *App) drawTouchHints(dst *ebiten.Image, hints []hint, y int) {
 }
 
 // hintArrows son las flechas que se dibujan como icono en las pastillas.
-var hintArrows = map[rune]string{'<': "hint_l", '>': "hint_r", '^': "hint_u", 'v': "hint_d"}
+// "▲▶▼◀" son la cruceta con ese brazo pulsado (oneHandBtn).
+var hintArrows = map[rune]string{'<': "hint_l", '>': "hint_r", '^': "hint_u", 'v': "hint_d",
+	'▲': "pad_u", '▶': "pad_r", '▼': "pad_d", '◀': "pad_l"}
 
 // btnParts parte el nombre de un botón en trozos: cada flecha suelta es un
-// icono y el resto, texto ("<>" son dos flechas, también tras "+" como en
-// "A+^v"; "L1/R1", texto).
+// icono y el resto, texto ("<>" son dos flechas, también tras "+" o "/"
+// como en "A+^v" o "^/v"; "L1/R1", texto).
 func btnParts(b string) []string {
 	var parts []string
 	word := []rune{}
 	for _, r := range b {
-		if _, ok := hintArrows[r]; ok && (len(word) == 0 || word[len(word)-1] == ' ' || word[len(word)-1] == '+') {
+		if _, ok := hintArrows[r]; ok && (len(word) == 0 || strings.ContainsRune(" +/", word[len(word)-1])) {
 			if len(word) > 0 {
 				parts = append(parts, string(word))
 				word = word[:0]
@@ -328,7 +329,7 @@ func btnParts(b string) []string {
 
 // btnPartWidth es el ancho de un trozo.
 func btnPartWidth(p string) int {
-	if ic, ok := hintArrows[[]rune(p)[0]]; ok && len(p) == 1 {
+	if ic, ok := hintArrows[[]rune(p)[0]]; ok && utf8.RuneCountInString(p) == 1 {
 		return icon(ic).Bounds().Dx()
 	}
 	return textWidth(p, SmallFace)
@@ -363,7 +364,7 @@ func (a *App) drawBtnChip(dst *ebiten.Image, b string, x, y int) int {
 	}
 	px := x + 2 + (inner-used)/2
 	for _, p := range parts {
-		if ic, ok := hintArrows[[]rune(p)[0]]; ok && len(p) == 1 {
+		if ic, ok := hintArrows[[]rune(p)[0]]; ok && utf8.RuneCountInString(p) == 1 {
 			b := icon(ic).Bounds()
 			drawIcon(dst, ic, px, y+(9-b.Dy())/2, th.Bg)
 		} else {
