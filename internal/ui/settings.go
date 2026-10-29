@@ -56,6 +56,7 @@ const (
 	setAlarm
 	setVibration
 	setMPD
+	setOrientation
 	setCount
 )
 
@@ -132,6 +133,7 @@ var settingSections = []settingSection{
 		{setSleepMode, "screen", tileChoice},
 		{setClock, "clock", tileToggle},
 		{setThemeColor, "palette", tileChoice},
+		{setOrientation, "screen", tileChoice},
 	}},
 	{"sec_system", []settingTile{
 		{setLanguage, "globe", tileChoice},
@@ -182,7 +184,9 @@ func (a *App) sections() []settingSection {
 		// En el móvil no hay explorador de carpetas fuera de la app.
 		setMilkDir: a.mobile(), setRadioDir: a.mobile(),
 		// La vibración, solo en las portátiles (el PC y el móvil no tienen motor).
-		setVibration: a.mobile() || a.status.Platform == "" || a.status.Platform == "desktop"}
+		setVibration: a.mobile() || a.status.Platform == "" || a.status.Platform == "desktop",
+		// Girar la interfaz, solo en las portátiles (el móvil gira solo).
+		setOrientation: !handheldUI || a.mobile()}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -242,6 +246,9 @@ func (a *App) updateSettings() {
 			a.changeSetting(cur.id, 1)
 		case in.Pressed(ActConfirm), in.Pressed(ActBack):
 			a.settingsEdit = false
+			if cur.id == setOrientation {
+				a.input.rot = rotation(a.cfg.UI.Orientation)
+			}
 			if a.rateDirty {
 				a.rateDirty = false
 				a.send("restart")
@@ -369,6 +376,15 @@ func (a *App) changeSetting(id, step int) {
 		n, i := a.settingChoice(id)
 		a.cfg.UI.SleepMode = sleepModes[cycle(n, i)]
 		a.saveConfig()
+	case setOrientation:
+		// Con la cruceta se gira al cerrar la elección: girar a cada paso
+		// cambiaría a media elección qué flecha es cuál.
+		n, i := a.settingChoice(id)
+		a.cfg.UI.Orientation = orientations[cycle(n, i)]
+		a.saveConfig()
+		if !a.settingsEdit {
+			a.input.rot = rotation(a.cfg.UI.Orientation)
+		}
 	case setClock:
 		a.cfg.UI.Clock24 = !a.cfg.UI.Clock24
 		a.saveConfig()
@@ -463,7 +479,9 @@ func (a *App) changeSetting(id, step int) {
 var (
 	repeatOrder = []string{"off", "all", "one"}
 	sleepModes  = []string{"backlight", "oled"}
-	soundLevels = []string{"off", "low", "", "high"} // "" es el medio, el de por defecto
+	// orientations son las de config.UI.Orientation, en el orden de la elección.
+	orientations = []string{"", "left", "right"}
+	soundLevels  = []string{"off", "low", "", "high"} // "" es el medio, el de por defecto
 )
 
 // settingChoice dice cuántas opciones tiene una elección y cuál está puesta.
@@ -485,6 +503,8 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		return find(len(sleepChoices), func(i int) bool { return sleepChoices[i] == a.cfg.UI.SleepAfter })
 	case setSleepMode:
 		return find(len(sleepModes), func(i int) bool { return sleepModes[i] == orDefault(a.cfg.UI.SleepMode, "backlight") })
+	case setOrientation:
+		return find(len(orientations), func(i int) bool { return orientations[i] == a.cfg.UI.Orientation })
 	case setSounds:
 		return find(len(soundLevels), func(i int) bool { return soundLevels[i] == a.cfg.UI.Sounds })
 	case setUISounds:
@@ -546,6 +566,8 @@ func (a *App) settingValue(i int) string {
 		return fmt.Sprintf("%d min", a.cfg.UI.SleepAfter/60)
 	case setSleepMode:
 		return T("mode_" + orDefault(a.cfg.UI.SleepMode, "backlight"))
+	case setOrientation:
+		return T("or_" + orDefault(a.cfg.UI.Orientation, "none"))
 	case setClock:
 		return onOffLabel(a.cfg.UI.Clock24)
 	case setSwapAB:
@@ -645,7 +667,7 @@ func settingNames() [setCount]string {
 		T("set_volume"), T("set_sleep"), T("set_sleep_mode"), T("set_clock"), T("set_swap"),
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
-		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"),
+		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"), T("set_orientation"),
 	}
 }
 
@@ -865,6 +887,8 @@ func choiceLabel(id, i int) string {
 		return T("repeat_" + repeatOrder[i])
 	case setSleepMode:
 		return T("mode_" + sleepModes[i])
+	case setOrientation:
+		return T("or_" + orDefault(orientations[i], "none"))
 	case setSounds, setUISounds:
 		return T("snd_" + orDefault(soundLevels[i], "mid"))
 	case setVibration:

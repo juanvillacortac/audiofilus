@@ -304,6 +304,9 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		kbEvents: make(chan kbEvent, 64),
 	}
 	a.input.swapAB = cfg.UI.SwapAB
+	if handheldUI {
+		a.input.rot = rotation(cfg.UI.Orientation)
+	}
 	a.vis.kind = visualizerIndex(cfg.UI.Visualizer)
 	if th, ok := fixedTheme(a.themeColor()); ok {
 		a.theme = th
@@ -668,6 +671,12 @@ func (a *App) canSleep() bool {
 // mobile dice si es la app del móvil (el servicio va en el mismo proceso).
 // AUDIOFILUS_MOBILE lo simula en las capturas, para verlas como en el móvil.
 func (a *App) mobile() bool { return StartService != nil || previewMobile }
+
+// handheldUI dice si la interfaz corre en una portátil: los lanzadores de
+// PortMaster y muOS la abren con el backend SDL2 (KMS/DRM). Vale también en
+// los sistemas sin integración propia (CrossMix en las TrimUI), que el
+// servicio no distingue de un PC.
+var handheldUI = os.Getenv("EBITENGINE_UI_BACKEND") == "sdl2"
 
 // previewMobile: las capturas, como en el móvil (AUDIOFILUS_MOBILE).
 var previewMobile = os.Getenv("AUDIOFILUS_MOBILE") != ""
@@ -1512,6 +1521,9 @@ func (a *App) drawMessage(dst *ebiten.Image) {
 
 // Layout da el lienzo lógico según la orientación de la ventana (ViewSize).
 func (a *App) Layout(w, h int) (int, int) {
+	if a.input.rot != 0 {
+		w, h = h, w // girada: la pantalla se ve en vertical (DrawFinalScreen)
+	}
 	a.w, a.h = ViewSize(w, h)
 	return a.w, a.h
 }
@@ -1588,11 +1600,45 @@ func (a *App) portrait() bool { return a.h > ScreenH }
 // a cualquier escala, también no entera (pantalla completa en el PC), los
 // píxeles se ven duros y del mismo tamaño, sin el suavizado del filtro por
 // defecto y sin bandas negras de una escala entera (como Trancazo).
+//
+// Con la interfaz girada (Input.rot), el lienzo es vertical: se gira un cuarto
+// de vuelta, lo más grande que quepa y centrado, con el fondo alrededor.
 func (a *App) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Image, geoM ebiten.GeoM) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM = geoM
 	op.Filter = ebiten.FilterPixelated
+	if a.input.rot == 0 {
+		op.GeoM = geoM
+		screen.DrawImage(offscreen, op)
+		return
+	}
+	op.GeoM = rotatedGeoM(a.input.rot, screen.Bounds().Dx(), screen.Bounds().Dy(), offscreen.Bounds().Dx(), offscreen.Bounds().Dy())
+	if a.Asleep() {
+		screen.Fill(color.Black)
+	} else {
+		screen.Fill(a.theme.Bg)
+	}
 	screen.DrawImage(offscreen, op)
+}
+
+// rotatedGeoM pone un lienzo de ow×oh girado en una pantalla de sw×sh: con
+// la consola girada a la izquierda, lo de arriba del lienzo queda a la
+// derecha de la pantalla (un cuarto de vuelta en el sentido del reloj); a la
+// derecha, al revés.
+func rotatedGeoM(rot, sw, sh, ow, oh int) ebiten.GeoM {
+	fw, fh, w, h := float64(sw), float64(sh), float64(ow), float64(oh)
+	s := math.Min(fw/h, fh/w)
+	x, y := math.Floor((fw-h*s)/2), math.Floor((fh-w*s)/2)
+	var g ebiten.GeoM
+	if rot == rotLeft {
+		g.Rotate(math.Pi / 2)
+		g.Scale(s, s)
+		g.Translate(x+h*s, y)
+	} else {
+		g.Rotate(-math.Pi / 2)
+		g.Scale(s, s)
+		g.Translate(x, y+w*s)
+	}
+	return g
 }
 
 // Err es el error de las capturas, si hubo.

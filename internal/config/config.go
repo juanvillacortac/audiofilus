@@ -133,6 +133,11 @@ type UI struct {
 	// retroiluminación; en el PC no hace nada) u "oled" (solo la pinta de negro,
 	// que en una OLED es tener los píxeles apagados).
 	SleepMode string `json:"sleep_mode"`
+	// Orientation gira la interfaz en las portátiles, para sostenerlas en
+	// vertical: "" (horizontal), "left" (la consola girada a la izquierda, la
+	// cruceta abajo) o "right" (girada a la derecha, la cruceta arriba). La
+	// cruceta, el stick y A/B/X/Y giran con ella (ui.Input.rot).
+	Orientation string `json:"orientation,omitempty"`
 	// Sounds es el volumen de los sonidos de la música (pausa, siguiente,
 	// anterior, aleatorio, al azar; también los del atajo de FN y los gestos
 	// del sleep, que pone el servicio): "off", "low", "" (medio) o "high"

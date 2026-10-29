@@ -104,6 +104,12 @@ type Input struct {
 	// touch: lo último que se usó fue el dedo (o es el móvil): la ayuda sale
 	// como botones, sin teclas ni botones del mando.
 	touch bool
+	// rot es cómo está girada la interfaz (config.UI.Orientation): 0
+	// horizontal, rotLeft o rotRight. La cruceta, el stick izquierdo y
+	// A/B/X/Y se leen por la posición en que quedan en la mano, así arriba en
+	// la pantalla es arriba en la cruceta y el botón de abajo sigue siendo el
+	// de aceptar.
+	rot int
 	// virt son las acciones de este fotograma que vienen del ratón o de un
 	// dedo (pointer.go): cuentan como recién pulsadas.
 	virt [actCount]bool
@@ -141,6 +147,14 @@ func (in *Input) updateStick() {
 	for _, id := range in.pads {
 		x := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickHorizontal)
 		y := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickVertical)
+		// Girada, la derecha en la pantalla es abajo en el stick (a la
+		// izquierda) o arriba (a la derecha).
+		switch in.rot {
+		case rotLeft:
+			x, y = y, -x
+		case rotRight:
+			x, y = -y, x
+		}
 		held := in.stick != [4]int{}
 		if r := math.Hypot(x, y); r < stickOff || (!held && r < stickOn) {
 			continue
@@ -200,6 +214,49 @@ func (in *Input) update() {
 	in.updateStick()
 }
 
+// Cómo está girada la interfaz (Input.rot).
+const (
+	rotLeft  = 1 // la consola, girada a la izquierda (la cruceta abajo)
+	rotRight = 3 // girada a la derecha (la cruceta arriba)
+)
+
+// rotation es el Input.rot de config.UI.Orientation.
+func rotation(orientation string) int {
+	switch orientation {
+	case "left":
+		return rotLeft
+	case "right":
+		return rotRight
+	}
+	return 0
+}
+
+// Los cuatro botones de la cruceta y los de la derecha, en el orden en que
+// los recorre un giro a la derecha: arriba, derecha, abajo, izquierda.
+var (
+	dpadRing = [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonLeftTop, ebiten.StandardGamepadButtonLeftRight,
+		ebiten.StandardGamepadButtonLeftBottom, ebiten.StandardGamepadButtonLeftLeft}
+	faceRing = [4]ebiten.StandardGamepadButton{ebiten.StandardGamepadButtonRightTop, ebiten.StandardGamepadButtonRightRight,
+		ebiten.StandardGamepadButtonRightBottom, ebiten.StandardGamepadButtonRightLeft}
+)
+
+// physical es el botón de la consola que, con la interfaz girada, queda donde
+// b en la mano: con la consola girada a la izquierda, el de la derecha queda
+// arriba, así que arriba se lee del de la derecha.
+func (in *Input) physical(b ebiten.StandardGamepadButton) ebiten.StandardGamepadButton {
+	if in.rot == 0 {
+		return b
+	}
+	for _, ring := range [][4]ebiten.StandardGamepadButton{dpadRing, faceRing} {
+		for i, r := range ring {
+			if r == b {
+				return ring[(i+in.rot)%4]
+			}
+		}
+	}
+	return b
+}
+
 // buttons son los botones de una acción, con A/B y X/Y intercambiados si se
 // pidió.
 func (in *Input) buttons(a Action) []ebiten.StandardGamepadButton {
@@ -226,7 +283,7 @@ func (in *Input) duration(a Action) int {
 	}
 	for _, id := range in.pads {
 		for _, b := range in.buttons(a) {
-			d = max(d, inpututil.StandardGamepadButtonPressDuration(id, b))
+			d = max(d, inpututil.StandardGamepadButtonPressDuration(id, in.physical(b)))
 		}
 	}
 	for i, sa := range stickDirs {

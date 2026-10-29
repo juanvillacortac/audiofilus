@@ -40,7 +40,7 @@ func (f *Framed) Update() error {
 // ventana muy apaisada no queda con bandas.
 func (f *Framed) LayoutF(w, h float64) (float64, float64) {
 	f.k = 0
-	if f.App.status.Platform != "desktop" {
+	if f.App.status.Platform != "desktop" || handheldUI {
 		lw, lh := f.App.Layout(int(w), int(h))
 		return float64(lw), float64(lh)
 	}

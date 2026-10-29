@@ -46,7 +46,7 @@ type mouseCursor struct {
 // ventana sin foco, no, como el del sistema en Hyprland. Solo en el escritorio: en las
 // portátiles no hay ratón que pintar.
 func (c *mouseCursor) update(a *App) {
-	if a.status.Platform != "desktop" {
+	if a.status.Platform != "desktop" || handheldUI {
 		c.on = false
 		return
 	}
