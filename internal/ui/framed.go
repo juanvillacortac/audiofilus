@@ -17,11 +17,19 @@ import (
 // siempre (ViewSize): sus pantallas ya son de escala entera.
 type Framed struct {
 	*App
-	k float64 // la escala entera elegida (0: no entera, la estira ebiten)
+	k      float64     // la escala entera elegida (0: no entera, la estira ebiten)
+	cursor mouseCursor // el puntero del ratón, pintado (mousecursor.go)
 }
 
 // NewFramed envuelve la interfaz para ebiten.RunGame en el escritorio.
 func NewFramed(a *App) *Framed { return &Framed{App: a} }
+
+// Update es el de la interfaz, y luego decide si se ve el puntero.
+func (f *Framed) Update() error {
+	err := f.App.Update()
+	f.cursor.update(f.App)
+	return err
+}
 
 // LayoutF elige la escala entera más grande a la que cabe el lado corto (240)
 // y da el lienzo de la ventana entera a esa escala. Trabaja en píxeles
@@ -58,6 +66,7 @@ func (f *Framed) LayoutF(w, h float64) (float64, float64) {
 func (f *Framed) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Image, geoM ebiten.GeoM) {
 	if f.k == 0 {
 		f.App.DrawFinalScreen(screen, offscreen, geoM)
+		f.cursor.draw(screen, f.App, geoM, max(1, math.Round(geoM.Element(0, 0))))
 		return
 	}
 	sw, sh := screen.Bounds().Dx(), screen.Bounds().Dy()
@@ -72,6 +81,7 @@ func (f *Framed) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Im
 	op.GeoM.Translate(math.Floor((float64(sw)-float64(ow)*f.k)/2), math.Floor((float64(sh)-float64(oh)*f.k)/2))
 	op.Filter = ebiten.FilterNearest
 	screen.DrawImage(offscreen, op)
+	f.cursor.draw(screen, f.App, op.GeoM, f.k)
 }
 
 // Layout no se usa (ebiten llama a LayoutF), pero lo pide ebiten.Game.
