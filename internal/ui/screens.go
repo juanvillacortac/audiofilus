@@ -141,6 +141,9 @@ func (a *App) btn(b string) string {
 		return k
 	}
 	if a.input.usingPad || a.offline {
+		if a.input.oneHand && a.input.rot == rotLeft {
+			return a.input.oneHandBtn(b)
+		}
 		return b
 	}
 	if k, ok := keyNames[b]; ok {
@@ -163,6 +166,50 @@ func (a *App) btn(b string) string {
 		word = i + 1
 	}
 	return out.String()
+}
+
+// oneHandBtn es el nombre de un botón con una mano y la cruceta abajo, donde
+// A/B/X/Y se pulsan en la cruceta: cada letra pasa a la flecha que queda en
+// su sitio (aceptar, abajo, es "v"), y las flechas de moverse llevan delante
+// "LS", el stick con el que se mueve esa mano. Traduce botón a botón, como
+// btn ("A+^v" es "v+LS ^v").
+func (in *Input) oneHandBtn(b string) string {
+	var out strings.Builder
+	word := 0
+	for i := 0; i <= len(b); i++ {
+		if i < len(b) && !strings.ContainsRune(" /+", rune(b[i])) {
+			continue
+		}
+		w := b[word:i]
+		switch {
+		case w != "" && strings.Trim(w, "ABXY") == "":
+			for _, r := range w {
+				out.WriteByte(in.faceArrow(hintActions[string(r)]))
+			}
+		case w != "" && strings.Trim(w, "<>^v") == "":
+			out.WriteString("LS " + w)
+		default:
+			out.WriteString(w)
+		}
+		if i < len(b) {
+			out.WriteByte(b[i])
+		}
+		word = i + 1
+	}
+	return out.String()
+}
+
+// faceArrow es la flecha de la posición del botón de la acción a entre
+// A/B/X/Y (arriba, derecha, abajo, izquierda), con A/B y X/Y como estén.
+func (in *Input) faceArrow(a Action) byte {
+	for _, b := range in.buttons(a) {
+		for i, r := range faceRing {
+			if r == b {
+				return "^>v<"[i]
+			}
+		}
+	}
+	return '?'
 }
 
 // hint es un botón y lo que hace, para la barra de abajo.

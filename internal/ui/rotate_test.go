@@ -92,3 +92,19 @@ func TestOneHandButtons(t *testing.T) {
 		}
 	}
 }
+
+// La ayuda con una mano y la cruceta abajo nombra las flechas de la cruceta
+// en vez de A/B/X/Y, cada una en su sitio (y con A/B cambiados, cambian), y
+// pone el stick delante de las flechas de moverse.
+func TestOneHandHints(t *testing.T) {
+	in := &Input{rot: rotLeft, oneHand: true}
+	for b, want := range map[string]string{"A": "v", "B": ">", "X": "<", "Y": "^", "START": "START", "<>": "LS <>", "A+^v": "v+LS ^v", "L1/R1": "L1/R1", "X X": "< <"} {
+		if got := in.oneHandBtn(b); got != want {
+			t.Errorf("%q shows %q, want %q", b, got, want)
+		}
+	}
+	in.swapAB = true
+	if got := in.oneHandBtn("A"); got != ">" {
+		t.Errorf("A with A/B swapped shows %q, want %q", got, ">")
+	}
+}
