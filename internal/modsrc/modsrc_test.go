@@ -140,10 +140,10 @@ func TestParseAMP(t *testing.T) {
 	}
 }
 
-// Playable sigue a los decodificadores: los módulos y la música de consolas
-// sí, el SID y los formatos raros de Amiga no.
+// Playable sigue a los decodificadores: los módulos, la música de consolas y
+// la de los chips de 8 bits sí, los formatos raros de Amiga no.
 func TestPlayable(t *testing.T) {
-	for f, want := range map[string]bool{"MOD": true, "xm": true, "IT": true, "SPC": true, "VGZ": true, "FST": true, "SID": false, "AHX": false, "DBM": false} {
+	for f, want := range map[string]bool{"MOD": true, "xm": true, "IT": true, "SPC": true, "VGZ": true, "FST": true, "SID": true, "ym": true, "PT3": true, "VTX": true, "AHX": false, "DBM": false} {
 		if got := Playable(f); got != want {
 			t.Errorf("Playable(%q) = %v, want %v", f, got, want)
 		}
@@ -282,8 +282,8 @@ func TestModlandFlow(t *testing.T) {
 	if len(items) != 3 || items[0].Artist != "Purple Motion" || items[0].Format != "MOD" || items[0].Title != "sat 1" || items[2].Artist != "Purple Motion" {
 		t.Fatalf("items = %+v", items)
 	}
-	if got, _ := ml.Search(ctx, "commando"); len(got) != 0 {
-		t.Errorf("the SID file wasn't filtered out: %+v", got)
+	if got, _ := ml.Search(ctx, "commando"); len(got) != 1 || got[0].Format != "SID" || got[0].Artist != "Rob Hubbard" {
+		t.Errorf("the SID file = %+v", got)
 	}
 	vgm, _ := ml.Search(ctx, "streets")
 	if len(vgm) != 1 || vgm[0].Artist != "Yuzo Koshiro" {
@@ -294,7 +294,7 @@ func TestModlandFlow(t *testing.T) {
 		t.Errorf("by artist = %+v", art)
 	}
 	rnd, err := ml.Browse(ctx, "random")
-	if err != nil || len(rnd) != 5 {
+	if err != nil || len(rnd) != 6 {
 		t.Errorf("random = %v %d", err, len(rnd))
 	}
 	if _, err := ml.Browse(ctx, "top"); err != ErrUnsupported {
@@ -307,6 +307,23 @@ func TestModlandFlow(t *testing.T) {
 	b, _ := os.ReadFile(files[0])
 	if string(b) != "file /pub/modules/Protracker/Purple Motion/sat 1.mod" {
 		t.Errorf("downloaded %q", b)
+	}
+}
+
+// Un índice de Modland guardado por una versión que tocaba otros formatos
+// (el modland.txt de antes del SID) no se usa aunque sea reciente: se baja
+// otra vez, ya con lo nuevo, y el viejo se borra.
+func TestModlandIndexFormats(t *testing.T) {
+	server(t)
+	cache := t.TempDir()
+	stale := filepath.Join(cache, "modland.txt")
+	os.WriteFile(stale, []byte("1000\tProtracker/4-Mat/madness.mod\n"), 0o644)
+	got, err := Sources(cache)[1].Search(context.Background(), "commando")
+	if err != nil || len(got) != 1 {
+		t.Fatalf("commando = %+v, %v", got, err)
+	}
+	if _, err := os.Stat(stale); !os.IsNotExist(err) {
+		t.Errorf("the old index is still there: %v", err)
 	}
 }
 

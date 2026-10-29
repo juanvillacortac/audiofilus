@@ -125,11 +125,12 @@
 <tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)</td></tr>
 <tr><td>Tracker modules</td><td>MOD, XM, IT, S3M (and a few more)</td></tr>
 <tr><td>Console music</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>8-bit computers</td><td>SID (Commodore 64), YM (Atari ST), VTX and PT3 (ZX Spectrum)</td></tr>
 <tr><td>Lists</td><td>M3U/M3U8 playlists, CUE sheets</td></tr>
 </table>
 
 <h3 id="console-music">Console music</h3>
-<p>Console music files aren't recordings: they carry the game's music code, and Audiofilus emulates the console's sound chip to play them. A file with a whole soundtrack (an NSF usually holds every song of a game) shows up as <strong>one track per song</strong>, with the game as the album and the composer as the artist. Songs that loop forever last what the file says (or 2.5 minutes) and fade out at the end.</p>
+<p>Console music files aren't recordings: they carry the game's music code, and Audiofilus emulates the console's sound chip to play them. A file with a whole soundtrack (an NSF usually holds every song of a game) shows up as <strong>one track per song</strong>, with the game as the album and the composer as the artist. Songs that loop forever last what the file says (or 2.5 minutes) and fade out at the end. SID, YM, VTX and PT3 files from 8-bit computers work the same way, with nothing to install: Audiofilus emulates the Commodore 64's SID and the AY/YM chip itself. If you keep the whole HVSC collection, each SID song lasts what its <code>Songlengths.md5</code> says; otherwise, 3 minutes.</p>
 
 <h3 id="cue">CUE sheets</h3>
 <p>An album ripped to a single file with a <code>.cue</code> sheet next to it shows up as its separate tracks, with their titles. The big file itself is hidden.</p>

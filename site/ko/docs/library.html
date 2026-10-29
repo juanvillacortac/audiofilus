@@ -129,11 +129,12 @@
 <tr><td>오디오</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD(DSF와 DFF)</td></tr>
 <tr><td>트래커 모듈</td><td>MOD, XM, IT, S3M(그 밖에 몇 가지 더)</td></tr>
 <tr><td>게임기 음악</td><td>NSF/NSFE(NES), SPC(SNES), GBS(Game Boy), VGM/VGZ와 GYM(Genesis, Master System, 아케이드), HES(PC Engine), KSS(MSX), AY(ZX Spectrum), SAP(Atari)</td></tr>
+<tr><td>8비트 컴퓨터</td><td>SID(Commodore 64), YM(Atari ST), VTX와 PT3(ZX Spectrum)</td></tr>
 <tr><td>목록</td><td>M3U/M3U8 재생목록, CUE 시트</td></tr>
 </table>
 
 <h3 id="console-music">게임기 음악</h3>
-<p>게임기 음악 파일은 녹음이 아니에요. 게임의 음악 코드가 들어 있고, Audiofilus가 게임기의 사운드 칩을 에뮬레이션해서 재생합니다. 사운드트랙 전체가 든 파일(NSF에는 보통 게임의 모든 곡이 들어 있어요)은 <strong>곡마다 한 트랙</strong>으로 나타나고, 게임이 앨범, 작곡가가 아티스트가 돼요. 끝없이 반복되는 곡은 파일에 적힌 길이(또는 2분 30초)만큼 재생되고 끝에서 페이드아웃돼요.</p>
+<p>게임기 음악 파일은 녹음이 아니에요. 게임의 음악 코드가 들어 있고, Audiofilus가 게임기의 사운드 칩을 에뮬레이션해서 재생합니다. 사운드트랙 전체가 든 파일(NSF에는 보통 게임의 모든 곡이 들어 있어요)은 <strong>곡마다 한 트랙</strong>으로 나타나고, 게임이 앨범, 작곡가가 아티스트가 돼요. 끝없이 반복되는 곡은 파일에 적힌 길이(또는 2분 30초)만큼 재생되고 끝에서 페이드아웃돼요. 8비트 컴퓨터의 SID, YM, VTX, PT3 파일도 똑같이 동작하고, 따로 설치할 건 없어요. Audiofilus가 Commodore 64의 SID와 AY/YM 칩을 직접 에뮬레이션해요. HVSC 컬렉션을 통째로 두면 SID 곡마다 <code>Songlengths.md5</code>에 적힌 길이만큼 재생되고, 없으면 3분이에요.</p>
 
 <h3 id="cue">CUE 시트</h3>
 <p><code>.cue</code> 시트와 함께 한 파일로 리핑한 앨범은 제목이 붙은 개별 트랙으로 나타나요. 큰 파일 자체는 숨겨집니다.</p>

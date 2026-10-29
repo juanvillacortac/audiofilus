@@ -163,7 +163,8 @@ func postPage(ctx context.Context, u, form string) (string, string, error) {
 }
 
 // formatExt es la extensión de cada formato que audiofilus puede tocar
-// (con libxmp los módulos y con libgme la música de consolas). Las variantes
+// (con libxmp los módulos, con libgme la música de consolas y con
+// internal/chip la de ordenadores de 8 bits). Las variantes
 // del MOD de Amiga (FST, STK, NST...) son MOD.
 var formatExt = map[string]string{
 	"MOD": ".mod", "FST": ".mod", "STK": ".mod", "NST": ".mod", "M15": ".mod",
@@ -171,10 +172,11 @@ var formatExt = map[string]string{
 	"MTM": ".mtm", "STM": ".stm", "FAR": ".far", "ULT": ".ult",
 	"NSF": ".nsf", "NSFE": ".nsfe", "SPC": ".spc", "GBS": ".gbs", "VGM": ".vgm", "VGZ": ".vgz",
 	"GYM": ".gym", "HES": ".hes", "KSS": ".kss", "AY": ".ay", "SAP": ".sap",
+	"SID": ".sid", "YM": ".ym", "VTX": ".vtx", "PT3": ".pt3",
 }
 
 // Playable dice si audiofilus sabe tocar ese formato (por la lista de
-// extensiones de sus decodificadores). El SID, por ejemplo, no.
+// extensiones de sus decodificadores). El AHX, por ejemplo, no.
 func Playable(format string) bool {
 	ext, ok := formatExt[strings.ToUpper(format)]
 	if !ok {

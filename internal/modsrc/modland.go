@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"math/rand/v2"
 	"net/url"
 	"os"
@@ -16,6 +17,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 )
 
 // Modland (ftp.modland.com): el archivo más grande, con medio millón de
@@ -46,8 +49,23 @@ func newModland(cacheDir string) *modland { return &modland{cacheDir: cacheDir} 
 
 func (*modland) Name() string { return "Modland" }
 
-// indexPath es el índice ya filtrado.
-func (m *modland) indexPath() string { return filepath.Join(m.cacheDir, "modland.txt") }
+// indexPath es el índice ya filtrado. Su nombre lleva una suma de las
+// extensiones que se pueden tocar: si cambian (un formato nuevo), el índice
+// viejo no sirve y se vuelve a bajar.
+func (m *modland) indexPath() string {
+	sum := crc32.ChecksumIEEE([]byte(strings.Join(decode.Extensions, ",")))
+	return filepath.Join(m.cacheDir, fmt.Sprintf("modland-%08x.txt", sum))
+}
+
+// removeOldIndexes borra los índices de otras extensiones.
+func (m *modland) removeOldIndexes() {
+	old, _ := filepath.Glob(filepath.Join(m.cacheDir, "modland*.txt"))
+	for _, f := range old {
+		if f != m.indexPath() {
+			os.Remove(f)
+		}
+	}
+}
 
 // ensureIndex baja el índice si no está o es viejo. Si la descarga falla y
 // hay uno viejo, se sigue con ese.
@@ -67,7 +85,7 @@ func (m *modland) ensureIndex(ctx context.Context) error {
 	return nil
 }
 
-// fetchIndex baja allmods.zip y escribe modland.txt con lo que se puede
+// fetchIndex baja allmods.zip y escribe el índice con lo que se puede
 // tocar.
 func (m *modland) fetchIndex(ctx context.Context) error {
 	data, _, err := download(ctx, modlandIndex, nil)
@@ -128,7 +146,11 @@ func (m *modland) fetchIndex(ctx context.Context) error {
 		os.Remove(tmp)
 		return errors.New("modland: empty index")
 	}
-	return os.Rename(tmp, m.indexPath())
+	if err := os.Rename(tmp, m.indexPath()); err != nil {
+		return err
+	}
+	m.removeOldIndexes()
+	return nil
 }
 
 // scan recorre el índice llamando a fn con cada línea; fn devuelve false

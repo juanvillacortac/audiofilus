@@ -125,11 +125,12 @@
 <tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF y DFF)</td></tr>
 <tr><td>Módulos de tracker</td><td>MOD, XM, IT, S3M (y unos cuantos más)</td></tr>
 <tr><td>Música de consola</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ y GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>Computadoras de 8 bits</td><td>SID (Commodore 64), YM (Atari ST), VTX y PT3 (ZX Spectrum)</td></tr>
 <tr><td>Listas</td><td>Listas M3U/M3U8, hojas CUE</td></tr>
 </table>
 
 <h3 id="console-music">Música de consola</h3>
-<p>Los archivos de música de consola no son grabaciones: llevan el código de la música del juego, y Audiofilus emula el chip de sonido de la consola para reproducirlos. Un archivo con una banda sonora entera (un NSF suele traer todas las canciones de un juego) aparece como <strong>una pista por canción</strong>, con el juego como álbum y el compositor como artista. Las canciones que se repiten sin fin duran lo que dice el archivo (o 2,5 minutos) y terminan con un fundido.</p>
+<p>Los archivos de música de consola no son grabaciones: llevan el código de la música del juego, y Audiofilus emula el chip de sonido de la consola para reproducirlos. Un archivo con una banda sonora entera (un NSF suele traer todas las canciones de un juego) aparece como <strong>una pista por canción</strong>, con el juego como álbum y el compositor como artista. Las canciones que se repiten sin fin duran lo que dice el archivo (o 2,5 minutos) y terminan con un fundido. Los SID, YM, VTX y PT3 de las computadoras de 8 bits funcionan igual, sin instalar nada: Audiofilus emula él mismo el SID del Commodore 64 y el chip AY/YM. Si tienes la colección HVSC entera, cada canción SID dura lo que dice su <code>Songlengths.md5</code>; si no, 3 minutos.</p>
 
 <h3 id="cue">Hojas CUE</h3>
 <p>Un álbum ripeado en un solo archivo con una hoja <code>.cue</code> al lado aparece como sus pistas separadas, con sus títulos. El archivo grande se oculta.</p>

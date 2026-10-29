@@ -51,7 +51,7 @@ jobs:
             d=audiofilus-linux-$arch
             mkdir -p "$d/licenses"
             cp "dist/audiofilus-$arch" "$d/audiofilus"
-            cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
+            cp LICENSE internal/ui/assets/fonts/OFL-*.txt internal/chip/LICENSE.* "$d/licenses/"
             libs=libs.aarch64
             [ "$arch" = amd64 ] && libs=libs.x86_64
             cp -r "build/libgme/$libs" "$d/"
@@ -66,7 +66,7 @@ jobs:
           d=audiofilus-windows-amd64
           mkdir -p "$d/licenses"
           cp dist/audiofilus-windows-amd64.exe "$d/audiofilus.exe"
-          cp LICENSE internal/ui/assets/fonts/OFL-*.txt "$d/licenses/"
+          cp LICENSE internal/ui/assets/fonts/OFL-*.txt internal/chip/LICENSE.* "$d/licenses/"
           cp build/windows-dlls/*.dll "$d/"
           cp -r build/windows-dlls/licenses/. "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)

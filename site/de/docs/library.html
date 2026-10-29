@@ -125,11 +125,12 @@
 <tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF und DFF)</td></tr>
 <tr><td>Tracker-Module</td><td>MOD, XM, IT, S3M (und ein paar weitere)</td></tr>
 <tr><td>Konsolenmusik</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ und GYM (Genesis, Master System, Arcade), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>8-Bit-Computer</td><td>SID (Commodore 64), YM (Atari ST), VTX und PT3 (ZX Spectrum)</td></tr>
 <tr><td>Listen</td><td>M3U/M3U8-Playlists, CUE-Sheets</td></tr>
 </table>
 
 <h3 id="console-music">Konsolenmusik</h3>
-<p>Konsolenmusik-Dateien sind keine Aufnahmen: Sie enthalten den Musikcode des Spiels, und Audiofilus emuliert den Soundchip der Konsole, um sie abzuspielen. Eine Datei mit einem ganzen Soundtrack (ein NSF enthält meist jeden Song eines Spiels) erscheint als <strong>ein Titel pro Song</strong>, mit dem Spiel als Album und dem Komponisten als Interpret. Endlos loopende Songs dauern so lange, wie die Datei angibt (oder 2,5 Minuten), und werden am Ende ausgeblendet.</p>
+<p>Konsolenmusik-Dateien sind keine Aufnahmen: Sie enthalten den Musikcode des Spiels, und Audiofilus emuliert den Soundchip der Konsole, um sie abzuspielen. Eine Datei mit einem ganzen Soundtrack (ein NSF enthält meist jeden Song eines Spiels) erscheint als <strong>ein Titel pro Song</strong>, mit dem Spiel als Album und dem Komponisten als Interpret. Endlos loopende Songs dauern so lange, wie die Datei angibt (oder 2,5 Minuten), und werden am Ende ausgeblendet. SID-, YM-, VTX- und PT3-Dateien von 8-Bit-Computern funktionieren genauso, ohne Installation: Audiofilus emuliert den SID des Commodore 64 und den AY/YM-Chip selbst. Mit der kompletten HVSC-Sammlung dauert jeder SID-Song so lange, wie seine <code>Songlengths.md5</code> angibt, sonst 3 Minuten.</p>
 
 <h3 id="cue">CUE-Sheets</h3>
 <p>Ein Album, das als einzelne Datei mit einem <code>.cue</code>-Sheet daneben gerippt wurde, erscheint als seine einzelnen Titel mit ihren Namen. Die große Datei selbst wird ausgeblendet.</p>

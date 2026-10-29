@@ -138,11 +138,12 @@ body { line-break: strict; }
 <tr><td>音频</td><td>MP3、AAC/M4A、ALAC、FLAC、Ogg Vorbis、Opus、WAV、AIFF、DSD（DSF 和 DFF）</td></tr>
 <tr><td>Tracker 模块</td><td>MOD、XM、IT、S3M（以及其他几种）</td></tr>
 <tr><td>游戏音乐</td><td>NSF/NSFE（NES）、SPC（SNES）、GBS（Game Boy）、VGM/VGZ 和 GYM（Genesis、Master System、街机）、HES（PC Engine）、KSS（MSX）、AY（ZX Spectrum）、SAP（Atari）</td></tr>
+<tr><td>8 位电脑</td><td>SID（Commodore 64）、YM（Atari ST）、VTX 和 PT3（ZX Spectrum）</td></tr>
 <tr><td>列表</td><td>M3U/M3U8 播放列表、CUE 文件</td></tr>
 </table>
 
 <h3 id="console-music">游戏音乐</h3>
-<p>游戏音乐文件不是录音：它们包含游戏的音乐代码，Audiofilus 通过模拟主机的声音芯片来播放。包含整张原声的文件（一个 NSF 通常包含一款游戏的所有歌曲）会显示为<strong>每首歌一条曲目</strong>，以游戏作为专辑、作曲者作为艺人。无限循环的歌曲按文件中标明的时长播放（或 2.5 分钟），并在结尾淡出。</p>
+<p>游戏音乐文件不是录音：它们包含游戏的音乐代码，Audiofilus 通过模拟主机的声音芯片来播放。包含整张原声的文件（一个 NSF 通常包含一款游戏的所有歌曲）会显示为<strong>每首歌一条曲目</strong>，以游戏作为专辑、作曲者作为艺人。无限循环的歌曲按文件中标明的时长播放（或 2.5 分钟），并在结尾淡出。8 位电脑的 SID、YM、VTX 和 PT3 文件也一样，无需安装任何东西：Audiofilus 自己模拟 Commodore 64 的 SID 和 AY/YM 芯片。如果你有完整的 HVSC 合集，每首 SID 歌曲按其 <code>Songlengths.md5</code> 中的时长播放；否则播放 3 分钟。</p>
 
 <h3 id="cue">CUE 文件</h3>
 <p>用整轨抓取、旁边带有 <code>.cue</code> 文件的专辑会按各个曲目显示，并带有曲目标题。整轨大文件本身会被隐藏。</p>

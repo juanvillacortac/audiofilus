@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"unsafe"
+
+	"github.com/juanvillacortac/audiofilus/internal/chip"
 )
 
 // La música de consolas viejas con libgme (Game_Music_Emu, ver native.go):
@@ -67,8 +69,12 @@ func loadGME() error {
 // GMEAvailable dice si libgme está (sin ella, estos formatos no se ofrecen).
 func GMEAvailable() bool { return loadGME() == nil }
 
-// IsGMEFile dice si path es un archivo de libgme, por su extensión.
+// IsGMEFile dice si path es un archivo de libgme o de chips (chip.go), por
+// su extensión: los que pueden traer varias canciones.
 func IsGMEFile(path string) bool {
+	if chip.Is(path) {
+		return true
+	}
 	ext := strings.ToLower(filepath.Ext(path))
 	for _, e := range GMEExtensions {
 		if ext == e {
@@ -180,8 +186,11 @@ func gmeInfo(emu uintptr, i int) GMETrack {
 }
 
 // GMETracks son las canciones de un archivo de libgme (un VGM, con libvgm
-// si está: vgm.go).
+// si está: vgm.go; uno de chips, con internal/chip: chip.go).
 func GMETracks(file string) ([]GMETrack, error) {
+	if chip.Is(file) {
+		return chipTracks(file)
+	}
 	if isVGMFile(file) && loadVGM() == nil {
 		if t, err := vgmTracks(file); err == nil {
 			return t, nil
@@ -210,8 +219,11 @@ type gmeSource struct {
 }
 
 // newGME abre la canción song (desde 1) de file (un VGM, con libvgm si
-// está: vgm.go).
+// está: vgm.go; uno de chips, con internal/chip: chip.go).
 func newGME(file string, song int) (Source, error) {
+	if chip.Is(file) {
+		return newChip(file, song)
+	}
 	if isVGMFile(file) && song == 1 && loadVGM() == nil {
 		if s, err := newVGM(file); err == nil {
 			return s, nil

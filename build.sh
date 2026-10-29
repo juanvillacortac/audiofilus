@@ -61,6 +61,10 @@ lic() {
   for f in "$@"; do cat "$f"; echo; done > "$pkg/audiofilus/licenses/LICENSE.$name.txt"
 }
 lic audiofilus LICENSE
+# Lo que internal/chip toma de otros proyectos MIT: el AY de ayumi y la
+# rutina de PT3 de pt3player.
+lic ayumi internal/chip/LICENSE.ayumi
+lic pt3player internal/chip/LICENSE.pt3player
 for f in internal/ui/assets/fonts/OFL-*.txt; do
   n=${f##*/OFL-}
   lic "${n%.txt}" "$f"

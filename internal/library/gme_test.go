@@ -53,3 +53,36 @@ func TestScanGMESongs(t *testing.T) {
 		t.Errorf("titles = %q", titles)
 	}
 }
+
+// TestScanSIDSongs comprueba que un .sid de dos canciones (que se toca sin
+// libgme, con internal/chip) salga como dos pistas: el nombre como disco y
+// "Nombre #n" como título, y el autor como artista.
+func TestScanSIDSongs(t *testing.T) {
+	h := make([]byte, 0x7c)
+	copy(h, "PSID")
+	binary.BigEndian.PutUint16(h[4:], 2)
+	binary.BigEndian.PutUint16(h[6:], 0x7c)
+	binary.BigEndian.PutUint16(h[8:], 0x1000)
+	binary.BigEndian.PutUint16(h[14:], 2)
+	copy(h[0x16:], "Chip Tune")
+	copy(h[0x36:], "Tester")
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "tune.sid"), append(h, 0x60), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	files, err := Expand([]string{dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var titles []string
+	for _, f := range files {
+		tr := ReadTrack(f)
+		if tr.Album != "Chip Tune" || tr.Artist != "Tester" {
+			t.Errorf("%s: %+v", f, tr)
+		}
+		titles = append(titles, tr.Title)
+	}
+	if strings.Join(titles, "|") != "Chip Tune #1|Chip Tune #2" {
+		t.Errorf("titles = %q", titles)
+	}
+}

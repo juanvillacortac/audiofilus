@@ -125,11 +125,12 @@
 <tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF dan DFF)</td></tr>
 <tr><td>Modul tracker</td><td>MOD, XM, IT, S3M (dan beberapa lainnya)</td></tr>
 <tr><td>Musik konsol</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ dan GYM (Genesis, Master System, arcade), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>Komputer 8-bit</td><td>SID (Commodore 64), YM (Atari ST), VTX dan PT3 (ZX Spectrum)</td></tr>
 <tr><td>Daftar</td><td>Playlist M3U/M3U8, CUE sheet</td></tr>
 </table>
 
 <h3 id="console-music">Musik konsol</h3>
-<p>File musik konsol bukan rekaman: isinya kode musik game, dan Audiofilus mengemulasikan chip suara konsolnya untuk memutarnya. File yang berisi seluruh soundtrack (NSF biasanya memuat semua lagu sebuah game) muncul sebagai <strong>satu track per lagu</strong>, dengan game sebagai album dan komposer sebagai artis. Lagu yang berulang tanpa akhir diputar selama yang tertulis di file (atau 2,5 menit) dan memudar di akhir.</p>
+<p>File musik konsol bukan rekaman: isinya kode musik game, dan Audiofilus mengemulasikan chip suara konsolnya untuk memutarnya. File yang berisi seluruh soundtrack (NSF biasanya memuat semua lagu sebuah game) muncul sebagai <strong>satu track per lagu</strong>, dengan game sebagai album dan komposer sebagai artis. Lagu yang berulang tanpa akhir diputar selama yang tertulis di file (atau 2,5 menit) dan memudar di akhir. File SID, YM, VTX, dan PT3 dari komputer 8-bit bekerja dengan cara yang sama, tanpa perlu memasang apa pun: Audiofilus sendiri yang mengemulasikan chip SID Commodore 64 dan chip AY/YM. Kalau kamu menyimpan seluruh koleksi HVSC, setiap lagu SID diputar selama yang tertulis di <code>Songlengths.md5</code>; kalau tidak, 3 menit.</p>
 
 <h3 id="cue">CUE sheet</h3>
 <p>Album yang di-rip menjadi satu file dengan sheet <code>.cue</code> di sampingnya muncul sebagai track-track terpisah, dengan judulnya. File besarnya sendiri disembunyikan.</p>

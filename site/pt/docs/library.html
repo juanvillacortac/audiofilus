@@ -125,11 +125,12 @@
 <tr><td>Áudio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF e DFF)</td></tr>
 <tr><td>Módulos de tracker</td><td>MOD, XM, IT, S3M (e mais alguns)</td></tr>
 <tr><td>Música de console</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ e GYM (Genesis, Master System, arcades), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>Computadores de 8 bits</td><td>SID (Commodore 64), YM (Atari ST), VTX e PT3 (ZX Spectrum)</td></tr>
 <tr><td>Listas</td><td>Playlists M3U/M3U8, arquivos CUE</td></tr>
 </table>
 
 <h3 id="console-music">Música de console</h3>
-<p>Arquivos de música de console não são gravações: trazem o código da música do jogo, e o Audiofilus emula o chip de som do console para tocá-los. Um arquivo com a trilha inteira (um NSF costuma ter todas as músicas de um jogo) aparece com <strong>uma faixa por música</strong>, com o jogo como álbum e o compositor como artista. As músicas que repetem para sempre duram o que o arquivo diz (ou 2,5 minutos) e terminam com um fade.</p>
+<p>Arquivos de música de console não são gravações: trazem o código da música do jogo, e o Audiofilus emula o chip de som do console para tocá-los. Um arquivo com a trilha inteira (um NSF costuma ter todas as músicas de um jogo) aparece com <strong>uma faixa por música</strong>, com o jogo como álbum e o compositor como artista. As músicas que repetem para sempre duram o que o arquivo diz (ou 2,5 minutos) e terminam com um fade. Os arquivos SID, YM, VTX e PT3 dos computadores de 8 bits funcionam do mesmo jeito, sem instalar nada: o próprio Audiofilus emula o SID do Commodore 64 e o chip AY/YM. Se você tiver a coleção HVSC inteira, cada música SID dura o que diz o seu <code>Songlengths.md5</code>; senão, 3 minutos.</p>
 
 <h3 id="cue">Arquivos CUE</h3>
 <p>Um álbum ripado num arquivo só com um <code>.cue</code> ao lado aparece com as faixas separadas, com seus títulos. O arquivo grande fica oculto.</p>

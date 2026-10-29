@@ -125,11 +125,12 @@
 <tr><td>Ses</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF ve DFF)</td></tr>
 <tr><td>Tracker modülleri</td><td>MOD, XM, IT, S3M (ve birkaç tane daha)</td></tr>
 <tr><td>Konsol müziği</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ ve GYM (Genesis, Master System, atari salonu makineleri), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>8 bit bilgisayarlar</td><td>SID (Commodore 64), YM (Atari ST), VTX ve PT3 (ZX Spectrum)</td></tr>
 <tr><td>Listeler</td><td>M3U/M3U8 çalma listeleri, CUE dosyaları</td></tr>
 </table>
 
 <h3 id="console-music">Konsol müziği</h3>
-<p>Konsol müziği dosyaları kayıt değildir: oyunun müzik kodunu taşırlar ve Audiofilus onları çalmak için konsolun ses çipini emüle eder. Tüm bir film müziğini içeren bir dosya (bir NSF genellikle bir oyunun bütün şarkılarını tutar) <strong>her şarkı bir parça</strong> olarak görünür; albüm olarak oyun, sanatçı olarak besteci. Sonsuza dek dönen şarkılar dosyanın söylediği kadar (ya da 2,5 dakika) sürer ve sonunda kısılarak biter.</p>
+<p>Konsol müziği dosyaları kayıt değildir: oyunun müzik kodunu taşırlar ve Audiofilus onları çalmak için konsolun ses çipini emüle eder. Tüm bir film müziğini içeren bir dosya (bir NSF genellikle bir oyunun bütün şarkılarını tutar) <strong>her şarkı bir parça</strong> olarak görünür; albüm olarak oyun, sanatçı olarak besteci. Sonsuza dek dönen şarkılar dosyanın söylediği kadar (ya da 2,5 dakika) sürer ve sonunda kısılarak biter. 8 bit bilgisayarların SID, YM, VTX ve PT3 dosyaları da aynı şekilde çalışır, hiçbir şey kurman gerekmez: Audiofilus, Commodore 64'ün SID'ini ve AY/YM çipini kendisi emüle eder. HVSC koleksiyonunun tamamı sende varsa her SID şarkısı <code>Songlengths.md5</code> dosyasında yazan süre kadar çalar; yoksa 3 dakika.</p>
 
 <h3 id="cue">CUE dosyaları</h3>
 <p>Yanında bir <code>.cue</code> dosyasıyla tek dosyaya aktarılmış bir albüm, adlarıyla ayrı parçalar olarak görünür. Büyük dosyanın kendisi gizlenir.</p>

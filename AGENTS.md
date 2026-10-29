@@ -43,6 +43,7 @@ GOOS=windows go vet ./...
 |---|---|
 | `cmd/audiofilus/` | The one binary: the interface with no arguments (`ui.go`), `daemon`, the CLI commands and `bench` |
 | `internal/decode/` | Decoders to stereo float32: pure Go (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) and C libraries through purego (mpg123, opusfile, fdk-aac, libxmp) |
+| `internal/chip/` | 8-bit computer music emulated in pure Go: the AY/YM2149 (YM, VTX and PT3 files) and the C64's SID with a 6502 (`.sid`, PSID/RSID) |
 | `internal/resample/` | Linear resampling to the output rate (48 kHz) |
 | `internal/engine/` | Playback with `oto`: one player, the queue, gapless transitions |
 | `internal/queue/` | The order: shuffle, repeat, previous/next, "play next" |

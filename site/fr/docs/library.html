@@ -125,11 +125,12 @@
 <tr><td>Audio</td><td>MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF et DFF)</td></tr>
 <tr><td>Modules tracker</td><td>MOD, XM, IT, S3M (et quelques autres)</td></tr>
 <tr><td>Musique de consoles</td><td>NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ et GYM (Mega Drive, Master Système, arcade), HES (PC Engine), KSS (MSX), AY (ZX Spectrum), SAP (Atari)</td></tr>
+<tr><td>Ordinateurs 8 bits</td><td>SID (Commodore 64), YM (Atari ST), VTX et PT3 (ZX Spectrum)</td></tr>
 <tr><td>Listes</td><td>Playlists M3U/M3U8, fichiers CUE</td></tr>
 </table>
 
 <h3 id="console-music">Musique de consoles</h3>
-<p>Les fichiers de musique de consoles ne sont pas des enregistrements&nbsp;: ils contiennent le code musical du jeu, et Audiofilus émule la puce sonore de la console pour les jouer. Un fichier avec toute une bande-son (un NSF contient en général toutes les chansons d’un jeu) apparaît comme <strong>une piste par chanson</strong>, avec le jeu comme album et le compositeur comme artiste. Les chansons qui bouclent à l’infini durent ce qu’indique le fichier (ou 2 minutes 30) et finissent en fondu.</p>
+<p>Les fichiers de musique de consoles ne sont pas des enregistrements&nbsp;: ils contiennent le code musical du jeu, et Audiofilus émule la puce sonore de la console pour les jouer. Un fichier avec toute une bande-son (un NSF contient en général toutes les chansons d’un jeu) apparaît comme <strong>une piste par chanson</strong>, avec le jeu comme album et le compositeur comme artiste. Les chansons qui bouclent à l’infini durent ce qu’indique le fichier (ou 2 minutes 30) et finissent en fondu. Les fichiers SID, YM, VTX et PT3 des ordinateurs 8 bits marchent de la même façon, sans rien installer&#8239;: Audiofilus émule lui-même le SID du Commodore 64 et la puce AY/YM. Si tu as toute la collection HVSC, chaque morceau SID dure ce qu’indique son <code>Songlengths.md5</code>&#8239;; sinon, 3 minutes.</p>
 
 <h3 id="cue">Fichiers CUE</h3>
 <p>Un album rippé en un seul fichier avec un <code>.cue</code> à côté apparaît piste par piste, avec leurs titres. Le gros fichier lui-même est masqué.</p>
