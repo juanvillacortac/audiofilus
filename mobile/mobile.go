@@ -270,6 +270,11 @@ func start(home, tmp, langs string) error {
 	if err := os.MkdirAll(filepath.Join(home, "data"), 0o755); err == nil {
 		if f, err := os.OpenFile(filepath.Join(home, "data", "audiofilus.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644); err == nil {
 			log.SetOutput(f)
+			// Un panic de Go iría a stderr, que en Android acaba en logcat y en
+			// iOS en ningún sitio: también al log, para verlo en los reportes.
+			if err := debug.SetCrashOutput(f, debug.CrashOptions{}); err != nil {
+				log.Printf("mobile: crash output: %v", err)
+			}
 		}
 	}
 	// Los sockets de Unix no admiten rutas de más de 104 bytes y las de una

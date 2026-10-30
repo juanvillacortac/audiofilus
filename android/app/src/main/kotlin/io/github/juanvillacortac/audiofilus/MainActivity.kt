@@ -57,6 +57,7 @@ class MainActivity : Activity(), Host {
         Mobile.setMulticast(MulticastHold(applicationContext))
         Store.setup(this)
         home = homeDir().path
+        logCrashes(File(home, "data/audiofilus.log"))
         Mobile.start(home, cacheDir.path, languages())
 
         val root = FrameLayout(this)
@@ -106,6 +107,29 @@ class MainActivity : Activity(), Host {
         Log.w(TAG, "home: $ext not usable, using ${filesDir.path}")
         filesDir.mkdirs()
         return filesDir
+    }
+
+    // logCrashes escribe en el log de audiofilus las excepciones que cierran
+    // la app (si no, solo quedan en logcat y no salen en los reportes) y
+    // después deja que Android las trate como siempre.
+    private fun logCrashes(log: File) {
+        val prev = Thread.getDefaultUncaughtExceptionHandler()
+        if (prev is CrashLogger) return
+        Thread.setDefaultUncaughtExceptionHandler(CrashLogger(log, prev))
+    }
+
+    private class CrashLogger(
+        val log: File,
+        val prev: Thread.UncaughtExceptionHandler?,
+    ) : Thread.UncaughtExceptionHandler {
+        override fun uncaughtException(t: Thread, e: Throwable) {
+            try {
+                log.parentFile?.mkdirs()
+                log.appendText("android: uncaught exception in thread ${t.name}:\n${Log.getStackTraceString(e)}\n")
+            } catch (_: Exception) {
+            }
+            prev?.uncaughtException(t, e)
+        }
     }
 
     // usable dice si audiofilus puede escribir en dir y leer lo suyo que ya
