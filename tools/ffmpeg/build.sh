@@ -68,7 +68,10 @@ ndkTools() {
   tc="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
   bin="$work/bin-$1"
   mkdir -p "$bin"
-  ln -sf "$tc/$1-clang" "$bin/cc"
+  # Un script, no un enlace: el <triple>-clang del NDK busca clang en su
+  # propia carpeta.
+  printf '#!/bin/sh\nexec %s "$@"\n' "$tc/$1-clang" >"$bin/cc"
+  chmod +x "$bin/cc"
   for t in ar ranlib nm; do ln -sf "$tc/llvm-$t" "$bin/$t"; done
 }
 
