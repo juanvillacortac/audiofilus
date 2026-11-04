@@ -122,11 +122,18 @@ func (a *App) drawTopBar(dst *ebiten.Image, title string) {
 	// el móvil, nada de esto: lo muestra el sistema en su barra.
 	switch {
 	case a.mobile():
+		return
 	case a.status.Output == "wired":
-		drawIcon(dst, "headphones", right-11, 4, th.Text)
+		right -= 11
+		drawIcon(dst, "headphones", right, 4, th.Text)
 	case a.status.Output == "bluetooth":
-		drawIcon(dst, "headphones", right-17, 4, th.Text)
-		drawIcon(dst, "bluetooth", right-9, 4, th.Accent)
+		right -= 17
+		drawIcon(dst, "headphones", right, 4, th.Text)
+		drawIcon(dst, "bluetooth", right+8, 4, th.Accent)
+	}
+	// Con salida a la red, el icono del Wi-Fi.
+	if a.online.Load() {
+		drawIcon(dst, "wifi", right-10, 4, th.Text)
 	}
 }
 
@@ -252,16 +259,49 @@ func (a *App) drawHints(dst *ebiten.Image, hints []hint) {
 	for _, hn := range hints {
 		total += btnChipWidth(hn.btn) + 3 + textWidth(hn.label, SmallFace) + 10
 	}
+	// La barra se pinta una vez y se guarda: el texto letra a letra en cada
+	// fotograma se llevaba un 10 % de la CPU. Se vuelve a pintar si cambian
+	// los botones, el ancho o los colores.
+	var key strings.Builder
+	for _, hn := range hints {
+		key.WriteString(hn.btn + "\x00" + hn.label + "\x00")
+	}
+	c := &a.hintCache
+	if c.img == nil || c.key != key.String() || c.w != w || c.th != th {
+		if c.img == nil || c.img.Bounds().Dx() != w || c.img.Bounds().Dy() != bottomH {
+			if c.img != nil {
+				c.img.Deallocate()
+			}
+			c.img = ebiten.NewImage(w, bottomH)
+		}
+		c.img.Clear()
+		c.key, c.w, c.th = key.String(), w, th
+		x := (w - total + 10) / 2
+		for _, hn := range hints {
+			x += a.drawBtnChip(c.img, hn.btn, x, 2) + 3
+			drawText(c.img, hn.label, SmallFace, x, 4, th.Dim)
+			x += textWidth(hn.label, SmallFace) + 10
+		}
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, float64(y))
+	dst.DrawImage(c.img, op)
 	x := (w - total + 10) / 2
 	for i, hn := range hints {
 		x0 := x
-		x += a.drawBtnChip(dst, hn.btn, x, y+2) + 3
-		drawText(dst, hn.label, SmallFace, x, y+4, th.Dim)
-		x += textWidth(hn.label, SmallFace) + 10
+		x += btnChipWidth(hn.btn) + 3 + textWidth(hn.label, SmallFace) + 10
 		if act, ok := hintActions[orig[i]]; ok {
-			a.tapZone(x0-4, y, x-x0, bottomH, func() { a.input.inject(act) })
+			a.tapZone(x0-4, y, x-x0-10, bottomH, func() { a.input.inject(act) })
 		}
 	}
+}
+
+// hintCache es la barra de ayuda ya pintada (drawHints).
+type hintCache struct {
+	img *ebiten.Image
+	key string
+	w   int
+	th  Theme
 }
 
 // actRandom es el botón táctil "Al azar" (no es una acción del mando: es X

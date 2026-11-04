@@ -10,9 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dhowden/tag"
-
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // Expand convierte archivos, carpetas (recursivamente) y listas .m3u/.m3u8 en
@@ -217,7 +216,7 @@ func ReadTrack(path string) Track {
 		return g
 	}
 	if f, err := os.Open(path); err == nil {
-		if m, err := tag.ReadFrom(f); err == nil {
+		if m, err := tags.ReadFrom(f); err == nil {
 			t.Title, t.Artist, t.Album = m.Title(), m.Artist(), m.Album()
 			if t.Artist == "" {
 				t.Artist = m.AlbumArtist()

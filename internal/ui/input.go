@@ -172,6 +172,30 @@ func (in *Input) updateStick() {
 	}
 }
 
+// rightStick es el joystick derecho de todos los mandos, sumado y girado
+// como la interfaz (x, y de -1 a 1; 0, 0 dentro de la zona muerta). En el
+// modo de una mano en vertical, el derecho hace de izquierdo: entonces nada.
+func (in *Input) rightStick() (float64, float64) {
+	if in.rot != 0 && in.oneHand {
+		return 0, 0
+	}
+	var x, y float64
+	for _, id := range in.pads {
+		x += ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisRightStickHorizontal)
+		y += ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisRightStickVertical)
+	}
+	switch in.rot {
+	case rotLeft:
+		x, y = y, -x
+	case rotRight:
+		x, y = -y, x
+	}
+	if math.Hypot(x, y) < stickOff {
+		return 0, 0
+	}
+	return max(-1, min(1, x)), max(-1, min(1, y))
+}
+
 // stickDir suma a dirs la dirección de un stick (x, y), girada como la
 // interfaz; held dice si ya había alguna, y entonces vale con menos.
 func (in *Input) stickDir(dirs *[4]bool, held bool, x, y float64) {

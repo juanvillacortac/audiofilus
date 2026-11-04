@@ -18,7 +18,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dhowden/tag"
 	"github.com/godbus/dbus/v5"
 	"github.com/godbus/dbus/v5/introspect"
 	"github.com/godbus/dbus/v5/prop"
@@ -26,6 +25,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/queue"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 const (
@@ -257,7 +257,7 @@ func (s *Server) art(path string) string {
 		return ""
 	}
 	defer f.Close()
-	m, err := tag.ReadFrom(f)
+	m, err := tags.ReadFrom(f)
 	if err != nil || m.Picture() == nil {
 		return ""
 	}

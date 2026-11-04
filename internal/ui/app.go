@@ -51,7 +51,13 @@ type App struct {
 	paths   config.Paths
 	cfg     config.Config
 	client  *Client
-	offline bool // maqueta sin servicio (capturas y pruebas de memoria)
+	offline bool        // maqueta sin servicio (capturas y pruebas de memoria)
+	online  atomic.Bool // hay salida a la red (online.go): el icono de la barra
+	// hdmiChanged: se conectó o desconectó el HDMI (hdmi.go).
+	hdmiChanged atomic.Bool
+	hintCache   hintCache // la barra de ayuda ya pintada (drawHints)
+	// wifiKicked: ya se miró si hacía falta pedir el Wi-Fi (kickWifi).
+	wifiKicked bool
 
 	// La vista de letras de Now Playing (lyrics.go).
 	// Las favoritas y el historial (marks.go): marks se carga la primera
@@ -191,6 +197,7 @@ type App struct {
 	vis         visState     // los visualizadores (visual.go)
 	batch       rectBatch    // rectángulos en un solo dibujo (icons.go)
 
+	gm         gameModeState     // el modo juego, solo en Knulli (gamemode.go)
 	dock       dockState         // la barra de pantallas (Select)
 	prompt     *promptState      // un nombre que se está escribiendo (playlists.go)
 	yt         ytState           // YouTube Music, si hay yt-dlp (ytmusic.go)
@@ -247,9 +254,12 @@ type App struct {
 	shotDay     int      // en las capturas, el día especial que se finge
 
 	theme    Theme
-	themeFor *Album    // el tema se tiñe con este álbum en cuanto se lea su portada
-	frames2  frameLog  // los fotogramas lentos (framelog.go)
-	books    bookState // los audiolibros (books.go)
+	themeFor *Album   // el tema se tiñe con este álbum en cuanto se lea su portada
+	frames2  frameLog // los fotogramas lentos (framelog.go)
+	// finalW y finalH son el tamaño de la pantalla de verdad (la del último
+	// DrawFinalScreen), no el del lienzo lógico.
+	finalW, finalH int
+	books          bookState // los audiolibros (books.go)
 
 	t        float64 // segundos desde que arrancó, para las animaciones
 	now      time.Time
@@ -317,6 +327,8 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	a.input.touch = StartService != nil || os.Getenv("AUDIOFILUS_TOUCH") != ""
 	a.splashing = !offline
 	if !offline {
+		a.watchOnline()
+		a.watchHDMI()
 		a.client = NewClient(paths)
 		a.client.OnWake = func() {
 			a.woke.Store(true)
@@ -605,7 +617,8 @@ func (a *App) Update() error {
 	if a.BenchVisual != "" {
 		return a.benchVisual()
 	}
-	if !a.sleeping && a.lidClosed() {
+	// En el modo juego la tapa es de Knulli: suspende de verdad.
+	if !a.sleeping && !a.gm.on && a.lidClosed() {
 		// Cerrar la tapa apaga la pantalla enseguida, sin fundido (ya no se ve).
 		a.menu, a.fadingOut, a.fadingIn = nil, false, false
 		a.goToSleep()
@@ -621,6 +634,19 @@ func (a *App) Update() error {
 	if a.fadingIn {
 		a.sleepFade += 1.0 / 60
 		a.fadingIn = a.sleepFade < fadeInLen
+	}
+	if a.updateHDMI() {
+		return nil
+	}
+	a.gmCheckResume()
+	a.kickWifi()
+	if a.gameModeToggle() {
+		return nil
+	}
+	if a.gm.on {
+		a.updateGameMode()
+		a.gmMaybeSleep()
+		return nil
 	}
 	a.pollUpdate()
 	a.updateMain()
@@ -745,6 +771,9 @@ func (a *App) updateSleep() {
 		// más corto que entre dos estados: la tapa abierta enseguida).
 		a.status.WakeSeq > a.sleepWake && !a.status.Sleep:
 		a.exitSleep(false)
+	case a.gm.on && a.input.any:
+		// En el modo juego (sin bolsillo ni gestos) despierta cualquier botón.
+		a.exitSleep(true)
 	case len(a.input.keys) > 0 && a.status.Platform == "desktop":
 		// El teclado despierta solo en el PC. En las portátiles hay "teclas"
 		// que no son tocar la pantalla: en la RG34XX-SP la tapa manda Insert al
@@ -1290,6 +1319,20 @@ func (a *App) Draw(screen *ebiten.Image) {
 		a.drawSplash(screen)
 		return
 	}
+	if a.gm.on && a.mode == modeMain && !a.sleeping {
+		a.drawGameModeFrame(screen)
+		a.drawPrompt(screen)
+		a.drawGuide(screen)
+		a.drawVolume(screen)
+		a.drawMessage(screen)
+		switch { // el fundido al apagar y encender la pantalla (gmMaybeSleep)
+		case a.fadingOut:
+			drawDissolve(screen, a.sleepFade/fadeOutLen)
+		case a.fadingIn:
+			drawDissolve(screen, 1-a.sleepFade/fadeInLen)
+		}
+		return
+	}
 	if !a.warm && a.mode == modeMain {
 		a.warmUp()
 	}
@@ -1605,9 +1648,15 @@ func (a *App) portrait() bool { return a.h > ScreenH }
 // Con la interfaz girada (Input.rot), el lienzo es vertical: se gira un cuarto
 // de vuelta, lo más grande que quepa y centrado, con el fondo alrededor.
 func (a *App) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Image, geoM ebiten.GeoM) {
+	a.finalW, a.finalH = screen.Bounds().Dx(), screen.Bounds().Dy()
 	op := &ebiten.DrawImageOptions{}
 	op.Filter = ebiten.FilterPixelated
 	if a.input.rot == 0 {
+		if a.gmVideoNative() {
+			// El vídeo del modo juego, a la resolución de la pantalla; el
+			// lienzo (transparente donde va el vídeo) encima.
+			a.drawNativeVideo(screen.(*ebiten.Image))
+		}
 		op.GeoM = geoM
 		screen.DrawImage(offscreen, op)
 		return
@@ -1669,6 +1718,9 @@ func (a *App) updateShots() error {
 		warm.Deallocate()
 		a.warmed = true
 		return nil
+	}
+	if _, ok := os.LookupEnv("AUDIOFILUS_KNULLI_ROOT"); ok {
+		return a.updateGMShots() // las del modo juego (gamemode_shots.go)
 	}
 	if a.frames > 2 && len(a.covers.pending) == 0 && a.themeFor == nil {
 		a.shotsErr = a.writeShots()

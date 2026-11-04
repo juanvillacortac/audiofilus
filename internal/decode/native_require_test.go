@@ -14,13 +14,13 @@ func TestRequireNative(t *testing.T) {
 		t.Skip("set AUDIOFILUS_REQUIRE_NATIVE=1 to require the native libraries")
 	}
 	for name, load := range map[string]func() error{
-		"mpg123": loadMPG123, "fdk-aac": loadFDK, "opusfile": loadOpusfile, "libxmp": loadXMP, "libgme": loadGME,
+		"mpg123": loadMPG123, "fdk-aac": loadFDK, "opusfile": loadOpusfile, "libxmp": loadXMP, "libgme": loadGME, "libavshim": loadAV,
 	} {
 		if err := load(); err != nil {
 			t.Errorf("%s: %v", name, err)
 		}
 	}
-	for _, f := range []string{"testdata/tone.mp3", "testdata/tone.m4a", "testdata/tone.opus"} {
+	for _, f := range []string{"testdata/tone.mp3", "testdata/tone.m4a", "testdata/tone.opus", "testdata/tone.wma"} {
 		src, err := Open(f)
 		if err != nil {
 			t.Errorf("%s: %v", f, err)

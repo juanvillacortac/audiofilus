@@ -8,11 +8,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/dhowden/tag"
-
 	"github.com/juanvillacortac/audiofilus/internal/config"
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/library"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // entry es una canción en la caché de la biblioteca (data/library.json).
@@ -175,7 +174,7 @@ func readEntry(p string, info os.FileInfo) (e entry) {
 		return e
 	}
 	defer f.Close()
-	m, err := tag.ReadFrom(f)
+	m, err := tags.ReadFrom(f)
 	if err != nil {
 		return e
 	}

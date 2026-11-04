@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: zig, for fdk-aac
+      - name: zig, for fdk-aac and FFmpeg
         uses: jdx/mise-action@v2
         with:
           mise_toml: |

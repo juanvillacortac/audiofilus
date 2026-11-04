@@ -65,6 +65,7 @@ lic audiofilus LICENSE
 # rutina de PT3 de pt3player.
 lic ayumi internal/chip/LICENSE.ayumi
 lic pt3player internal/chip/LICENSE.pt3player
+lic console-models internal/ui/models/CREDITS.md
 for f in internal/ui/assets/fonts/OFL-*.txt; do
   n=${f##*/OFL-}
   lic "${n%.txt}" "$f"
@@ -101,6 +102,17 @@ if [ -d build/fdk-aac ]; then
 else
   echo "build/fdk-aac missing: the packages go without libfdk-aac (tools/fdk-aac/build.sh)" >&2
 fi
+# libavshim (FFmpeg recortado: WMA), igual, si se compiló con
+# tools/ffmpeg/build.sh build/ffmpeg.
+if [ -d build/ffmpeg/libs.aarch64 ]; then
+  for a in aarch64 x86_64; do
+    mkdir -p "$pkg/audiofilus/libs.$a"
+    cp build/ffmpeg/libs.$a/libavshim.so "$pkg/audiofilus/libs.$a/"
+  done
+  lic ffmpeg build/ffmpeg/ffmpeg-LICENSE.txt build/ffmpeg/ffmpeg-SOURCE.txt
+else
+  echo "build/ffmpeg missing: the packages go without WMA (tools/ffmpeg/build.sh)" >&2
+fi
 (cd "$pkg" && zip -qr ../audiofilus.zip .)
 echo dist/audiofilus.zip
 
@@ -122,6 +134,10 @@ fi
 if [ -d build/fdk-aac ]; then
   mkdir -p "$app/audiofilus/libs.aarch64"
   cp build/fdk-aac/libs.aarch64/libfdk-aac.so.2 "$app/audiofilus/libs.aarch64/"
+fi
+if [ -d build/ffmpeg/libs.aarch64 ]; then
+  mkdir -p "$app/audiofilus/libs.aarch64"
+  cp build/ffmpeg/libs.aarch64/libavshim.so "$app/audiofilus/libs.aarch64/"
 fi
 chmod +x "$app/audiofilus/mux_launch.sh" "$app/audiofilus/audiofilus.aarch64"
 (cd "$app" && zip -qr ../audiofilus.muxapp .)

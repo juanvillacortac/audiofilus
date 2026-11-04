@@ -42,7 +42,8 @@ GOOS=windows go vet ./...
 | Folder | What's in it |
 |---|---|
 | `cmd/audiofilus/` | The one binary: the interface with no arguments (`ui.go`), `daemon`, the CLI commands and `bench` |
-| `internal/decode/` | Decoders to stereo float32: pure Go (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) and C libraries through purego (mpg123, opusfile, fdk-aac, libxmp) |
+| `internal/decode/` | Decoders to stereo float32: pure Go (Vorbis, FLAC, WAV, AIFF, ALAC, MP4) and C libraries through purego (mpg123, opusfile, fdk-aac, libxmp, and libavshim: a cut-down FFmpeg for WMA) |
+| `internal/tags/` | Reading tags: ASF (WMA) here, everything else through `dhowden/tag`; use `tags.ReadFrom`, never `tag.ReadFrom` |
 | `internal/chip/` | 8-bit computer music emulated in pure Go: the AY/YM2149 (YM, VTX and PT3 files) and the C64's SID with a 6502 (`.sid`, PSID/RSID) |
 | `internal/resample/` | Linear resampling to the output rate (48 kHz) |
 | `internal/engine/` | Playback with `oto`: one player, the queue, gapless transitions |
@@ -72,6 +73,7 @@ GOOS=windows go vet ./...
 | `portmaster/` | The PortMaster port: launcher, `gameinfo.xml`, `port.json` and images ([docs/portmaster.md](docs/portmaster.md)) |
 | `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/fdk-aac/` | `build.sh`: the same for libfdk-aac (M4A, M4B, AAC radio), which muOS and others don't ship |
+| `tools/ffmpeg/` | `build.sh` and `shim.c`: libavshim, FFmpeg cut down to WMA with a small C layer, for Linux, Windows and Android |
 | `tools/windows/` | `dlls.sh`: the decoder DLLs for the Windows zip (MSYS2 builds plus fdk-aac compiled with zig by `fdk-aac.sh`), with their licenses |
 | `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
 | `site/` | The website (GitHub Pages); its screenshots and GIFs come from `-shots`/`-frames` with `-lang en` |

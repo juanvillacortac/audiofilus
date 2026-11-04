@@ -268,6 +268,32 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 }
 `
 
+// consoleSrc es paletteSrc para las maquetas del modo juego (consoles.go):
+// igual, pero lo que no se pintó (transparente) se queda transparente, para
+// que la maqueta vaya sobre el fondo de la interfaz.
+const consoleSrc = `//kage:unit pixels
+package main
+
+var Bg vec3
+var Mid vec3
+var Hi vec3
+` + bayerKage + `
+func Fragment(dst vec4, src vec2, color vec4) vec4 {
+	s := imageSrc0At(src)
+	if s.a < 0.5 {
+		return vec4(0)
+	}
+	v := s.r * 1.5
+	p := dst.xy - imageDstOrigin()
+	v = floor(v*5+bayer(p)) / 5
+	col := mix(Bg, Mid, clamp(v, 0, 1))
+	if v > 1 {
+		col = mix(Mid, Hi, clamp((v-1)*2, 0, 1))
+	}
+	return vec4(col, 1)
+}
+`
+
 // gbSrc es el modo Game Boy (eggs.go): la luminancia de cada píxel, con trama
 // de Bayer, en los cuatro verdes de la pantalla de la Game Boy.
 const gbSrc = `//kage:unit pixels
@@ -345,6 +371,7 @@ var (
 	dissolveShader *ebiten.Shader
 	rhythmShader   *ebiten.Shader
 	paletteShader  *ebiten.Shader
+	consoleShader  *ebiten.Shader
 	gbShader       *ebiten.Shader
 	plasmaShader   *ebiten.Shader
 )
@@ -355,7 +382,7 @@ func LoadShaders() error {
 	for _, s := range []struct {
 		dst **ebiten.Shader
 		src string
-	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&plasmaShader, plasmaSrc}, {&gbShader, gbSrc}} {
+	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&consoleShader, consoleSrc}, {&plasmaShader, plasmaSrc}, {&gbShader, gbSrc}} {
 		if *s.dst, err = ebiten.NewShader([]byte(s.src)); err != nil {
 			return err
 		}

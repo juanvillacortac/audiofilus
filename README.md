@@ -67,7 +67,7 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 ### Library
 
 - **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder (or any folder you pick in Settings → *Radio lists*) and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream. **HLS** stations (`.m3u8` split into segments: MPEG-TS, packed AAC/MP3 or fMP4, AES-128 encrypted too) play as well (thanks to volkybaba for the report and ideas).
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. And **8-bit computer music**, emulated in Go with nothing to install: SID (Commodore 64, the HVSC's `.sid` files, PSID and RSID with digis), YM (Atari ST, with its SID-voice and digidrum effects), VTX and PT3 (ZX Spectrum, TurboSound included). A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, WMA, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. And **8-bit computer music**, emulated in Go with nothing to install: SID (Commodore 64, the HVSC's `.sid` files, PSID and RSID with digis), YM (Atari ST, with its SID-voice and digidrum effects), VTX and PT3 (ZX Spectrum, TurboSound included). A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.
@@ -177,6 +177,16 @@ More in [docs/milkdrop.md](docs/milkdrop.md).
   <img src="site/img/width-16x9.png" alt="16:9 layout" width="427">
 </p>
 
+### Game mode (Knulli Scarab)
+
+On **Knulli Scarab** (for now the only system and version it is built and tested for), **tap FN three times** to turn Audiofilus into a game launcher that replaces EmulationStation, while the music keeps playing (L1/R1 change songs, Y pauses). Tap FN three times again to go back to the player.
+
+- **Systems** in a carousel of 3D console models (turn them with the right stick), grouped and hidden as EmulationStation has them, plus Favorites, Last played and Most played.
+- **Games** with their box art, logos, video previews (full screen too) and screenshots, search, and a random pick.
+- **Continue** from a save state, with its screenshot, before launching a RetroArch game; per-game and per-system **options** (emulator, core, ratio, shaders...) written to `knulli.conf` like EmulationStation does.
+- **Wi-Fi and Bluetooth** from the System screen.
+- While a game runs, Syncthing pauses and the game gets a higher priority; everything is restored when you come back. Knulli's own sleep and battery saver keep working ([docs/knulli.md](docs/knulli.md)).
+
 ### Linux desktop
 
 On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy](https://omarchy.org):
@@ -240,7 +250,7 @@ Every release has an unsigned `audiofilus-ios-unsigned.ipa`. Install it with [Si
 
 ### Windows
 
-On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. Everything plays out of the box, AAC/M4A, Opus, tracker modules, console music and AAC/HLS radio included: the zip carries the decoder DLLs next to the `.exe` (mpg123, opusfile, libxmp and libgme from MSYS2, and fdk-aac built with zig; their licenses are in `licenses/`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
+On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. Everything plays out of the box, AAC/M4A, Opus, tracker modules, console music and AAC/HLS radio included: the zip carries the decoder DLLs next to the `.exe` (mpg123, opusfile, libxmp and libgme from MSYS2, and fdk-aac and a cut-down FFmpeg for WMA built with zig; their licenses are in `licenses/`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
 
 ## Build
 
@@ -264,7 +274,7 @@ Both leave in `dist/`:
 | `audiofilus-windows-amd64.exe` | The same for Windows |
 | `audiofilus.zip` | The PortMaster port |
 
-The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile and libxmp are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.
+The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile, libxmp and the FFmpeg layer for WMA (`libavshim`) are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.
 
 ### CLI
 

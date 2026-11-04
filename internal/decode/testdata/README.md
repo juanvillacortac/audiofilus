@@ -25,7 +25,11 @@ ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=44100"
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=44100" -ac 2 -c:a aac -b:a 64k tone.m4a
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=44100" -ac 2 -c:a alac alac.m4a
 ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=1:sample_rate=48000" -ac 1 -c:a alac -sample_fmt s32p alac24mono.m4a
+ffmpeg -v error -y -f lavfi -i "sine=frequency=440:duration=2:sample_rate=44100" -ac 2 -c:a wmav2 -b:a 64k \
+  -metadata title="Prueba wma" -metadata artist=audiofilus -metadata album=Tonos -metadata track=3 tone.wma
 ```
+
+`tone.wma` is also read by `internal/tags` (its ASF tags).
 
 `opus.ogg` is also used to check that, without the C libraries (`AUDIOFILUS_DECODER=go`), Opus is rejected with `ErrUnsupported`.
 

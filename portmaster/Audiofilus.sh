@@ -66,9 +66,32 @@ export EBITENGINE_UI_BACKEND=sdl2
 export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 echo "SDL_GAMECONTROLLERCONFIG=$SDL_GAMECONTROLLERCONFIG"
 
+# Game mode (FN three times, Knulli only): to launch a game the UI writes
+# the request to /tmp/audiofilus-launch.json and closes, with the music still
+# playing; here the game runs with `audiofilus launch` (which has the screen
+# to itself) and then the UI opens again where it was.
+export AUDIOFILUS_LAUNCHER=1
+LAUNCH=/tmp/audiofilus-launch.json
+# When the HDMI cable goes in or out the UI leaves this mark and closes:
+# it opens again here, on the new output (like Knulli restarts ES).
+RESTART=/tmp/audiofilus-restart
+rm -f "$LAUNCH" "$RESTART"
+
 # gptokeyb only provides PortMaster's exit hotkey (Select+Start).
 $GPTOKEYB "$BINARY" &
 pm_platform_helper "$GAMEDIR/$BINARY"
-./"$BINARY" "$@"
+while :; do
+  ./"$BINARY" "$@"
+  if [ -f "$RESTART" ]; then
+    rm -f "$RESTART"
+    continue
+  fi
+  [ -f "$LAUNCH" ] || break
+  # No exit hotkey during the game: it would kill the launcher, not the game.
+  $ESUDO pkill -x gptokeyb 2>/dev/null
+  $ESUDO pkill -x gptokeyb2 2>/dev/null
+  ./"$BINARY" launch "$LAUNCH"
+  $GPTOKEYB "$BINARY" &
+done
 
 pm_finish

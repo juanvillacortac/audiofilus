@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: zig, for libgme, libvgm and fdk-aac
+      - name: zig, for libgme, libvgm, fdk-aac and FFmpeg
         uses: jdx/mise-action@v2
         with:
           mise_toml: |
@@ -35,6 +35,8 @@ jobs:
         run: tools/libvgm/build.sh build/libvgm
       - name: libfdk-aac for the handhelds and Linux (tools/fdk-aac/build.sh)
         run: tools/fdk-aac/build.sh build/fdk-aac
+      - name: FFmpeg (WMA) for the handhelds and Linux (tools/ffmpeg/build.sh)
+        run: tools/ffmpeg/build.sh build/ffmpeg
       - name: The Windows DLLs (tools/windows/dlls.sh)
         run: tools/windows/dlls.sh build/windows-dlls
       - name: Build in the container
@@ -61,6 +63,8 @@ jobs:
             cp tools/libvgm/GPL-2.0.txt "$d/licenses/libvgm-GPL-2.0.txt"
             cp "build/fdk-aac/$libs/libfdk-aac.so.2" "$d/$libs/"
             cp build/fdk-aac/fdk-aac-*.txt "$d/licenses/"
+            cp "build/ffmpeg/$libs/libavshim.so" "$d/$libs/"
+            cp build/ffmpeg/ffmpeg-*.txt "$d/licenses/"
             tar -czf "out/$d.tar.gz" "$d"
           done
           d=audiofilus-windows-amd64

@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/dhowden/tag"
+
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // Gain es la ganancia ReplayGain de una canción (sus etiquetas
@@ -28,7 +30,7 @@ func ReadGain(path string) (Gain, bool) {
 		return Gain{}, false
 	}
 	defer f.Close()
-	m, err := tag.ReadFrom(f)
+	m, err := tags.ReadFrom(f)
 	if err != nil {
 		return Gain{}, false
 	}

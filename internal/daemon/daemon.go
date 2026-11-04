@@ -60,7 +60,11 @@ type Daemon struct {
 
 	mu         sync.Mutex
 	sleeping   bool
-	awakeUntil time.Time // hasta cuándo la app pidió mantener despierta la consola
+	awakeUntil time.Time // hasta cuándo la app dijo que está abierta
+	// awakeHold: la app abierta impide la suspensión ("awake on"); con
+	// "awake open" (el modo juego) solo dice que está abierta: los botones de
+	// volumen pasan por el servicio, pero la consola se suspende como siempre.
+	awakeHold bool
 	// El temporizador para parar la música (timer.go): cuándo, y el que lo
 	// hace.
 	timerAt time.Time
@@ -487,7 +491,8 @@ func (d *Daemon) updateAwake() {
 	// pausar en el bolsillo no debe suspender de verdad, porque entonces los
 	// gatillos ya no harían nada y habría que sacar la consola para seguir.
 	// La interfaz apaga la pantalla sola (su sleep) cuando no se usa.
-	want := open
+	// En el modo juego (awake open), no: ahí manda la suspensión de Knulli.
+	want := open && d.awakeHold
 	changed := want != d.awakeApplied
 	openChanged := open != d.appOpen
 	d.awakeApplied, d.appOpen = want, open
@@ -496,8 +501,10 @@ func (d *Daemon) updateAwake() {
 		log.Printf("blocking suspend: %v", want)
 		d.plat.SetAwake(want)
 	}
+	if changed || openChanged {
+		d.updateSpectrum() // depende de las dos cosas
+	}
 	if openChanged {
-		d.updateSpectrum()
 		log.Printf("volume keys through audiofilus: %v", open)
 		d.plat.SetVolumeKeys(open)
 		d.refreshSystemVolume()
@@ -613,13 +620,16 @@ func (d *Daemon) applySystemVolume() {
 	}
 }
 
-// setAwake da o quita el permiso de la app para mantener despierta la consola.
-func (d *Daemon) setAwake(on bool, lease time.Duration) {
+// setAwake da o quita el permiso de la app: mode "on" (abierta y
+// manteniendo despierta la consola), "open" (abierta, sin impedir la
+// suspensión) u "off" (cerrada).
+func (d *Daemon) setAwake(mode string, lease time.Duration) {
 	d.mu.Lock()
-	if on {
-		d.awakeUntil = time.Now().Add(lease)
-	} else {
+	if mode == "off" {
 		d.awakeUntil = time.Time{}
+	} else {
+		d.awakeUntil = time.Now().Add(lease)
+		d.awakeHold = mode == "on"
 	}
 	d.mu.Unlock()
 	d.updateAwake()
@@ -938,18 +948,18 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		}
 		d.volumeStep(n)
 	case "awake":
-		if len(req.Args) == 0 || (req.Args[0] != "on" && req.Args[0] != "off") {
-			return nil, errors.New("usage: awake on [seconds] | awake off")
+		if len(req.Args) == 0 || (req.Args[0] != "on" && req.Args[0] != "open" && req.Args[0] != "off") {
+			return nil, errors.New("usage: awake on|open [seconds] | awake off")
 		}
 		lease := defaultLease
 		if len(req.Args) > 1 {
 			s, err := strconv.Atoi(req.Args[1])
 			if err != nil || s <= 0 {
-				return nil, errors.New("usage: awake on [seconds] | awake off")
+				return nil, errors.New("usage: awake on|open [seconds] | awake off")
 			}
 			lease = time.Duration(s) * time.Second
 		}
-		d.setAwake(req.Args[0] == "on", lease)
+		d.setAwake(req.Args[0], lease)
 	case "quit":
 		d.quitOnce.Do(func() { close(d.quit) })
 		return nil, nil
@@ -1146,10 +1156,11 @@ func onOff(args []string, toggled bool) (bool, error) {
 }
 
 // updateSpectrum calcula el espectro solo con la app abierta y despierta: es
-// para el visualizador, y en segundo plano o en sleep nadie lo ve.
+// para el visualizador, y en segundo plano, en sleep o en el modo juego
+// (awake open) nadie lo ve.
 func (d *Daemon) updateSpectrum() {
 	d.mu.Lock()
-	on := d.appOpen && !d.sleeping
+	on := d.appOpen && d.awakeHold && !d.sleeping
 	d.mu.Unlock()
 	if d.eng != nil { // sin motor todavía (al arrancar, en las pruebas)
 		d.eng.SetSpectrum(on)

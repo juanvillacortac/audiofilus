@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dhowden/tag"
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/resample"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // El servidor HTTP de los archivos: el aparato pide la canción a este equipo.
@@ -434,7 +434,7 @@ func embeddedPicture(path string) []byte {
 		return nil
 	}
 	defer f.Close()
-	m, err := tag.ReadFrom(f)
+	m, err := tags.ReadFrom(f)
 	if err != nil || m.Picture() == nil {
 		return nil
 	}

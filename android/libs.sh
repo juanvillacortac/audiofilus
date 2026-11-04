@@ -3,8 +3,9 @@
 # ejecución (purego) y que Android no trae, y las deja en
 # android/app/src/main/jniLibs/<abi>/, de donde Gradle las mete en el APK:
 #   android/libs.sh
-# Por ahora libfdk-aac (AAC: M4A, M4B, radios AAC y HLS). Necesita el SDK con
-# el NDK (ANDROID_HOME, o ANDROID_NDK_HOME), cmake, curl y tar.
+# libfdk-aac (AAC: M4A, M4B, radios AAC y HLS) y libavshim (FFmpeg
+# recortado: WMA, con tools/ffmpeg/build.sh). Necesita el SDK con el NDK
+# (ANDROID_HOME, o ANDROID_NDK_HOME), cmake, make, curl y tar con xz.
 set -eu
 cd "$(dirname "$0")/.."
 : "${ANDROID_HOME:?set ANDROID_HOME to the Android SDK}"
@@ -43,4 +44,11 @@ for abi in arm64-v8a armeabi-v7a x86_64; do
   esac
   cp "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/$triple/libc++_shared.so" "$out/$abi/"
   "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip" --strip-unneeded "$out/$abi/libc++_shared.so"
+done
+
+# libavshim (WMA): el mismo script que en Linux y Windows, con el NDK.
+ANDROID_NDK_HOME=$ANDROID_NDK_HOME tools/ffmpeg/build.sh "$work/ffmpeg" android
+for abi in arm64-v8a armeabi-v7a x86_64; do
+  cp "$work/ffmpeg/$abi/libavshim.so" "$out/$abi/"
+  echo "$out/$abi/libavshim.so"
 done

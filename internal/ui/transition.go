@@ -2,7 +2,6 @@ package ui
 
 import (
 	"github.com/juanvillacortac/audiofilus/internal/sfx"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -55,23 +54,5 @@ func (a *App) drawTransition(dst *ebiten.Image) {
 		a.drawScreen(a.transImg, a.transFrom)
 		a.transReady = true
 	}
-	a.transNew.Clear()
-	a.transNew.DrawImage(dst, nil)
-	// Con frenada (cúbica) y en píxeles enteros.
-	e := 1 - math.Pow(1-p, 3)
-	off := int(math.Round(e * float64(w)))
-	d := a.transDir
-	dst.Clear()
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(-d*off), 0)
-	dst.DrawImage(a.transImg, op)
-	op = &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(d*(w-off)), 0)
-	dst.DrawImage(a.transNew, op)
-	// Una raya de acento en el borde de la que entra.
-	edge := w - off
-	if d < 0 {
-		edge = off - 1
-	}
-	rect(dst, edge, 0, 1, h, a.theme.Accent)
+	pushFrame(dst, a.transImg, a.transNew, a.transAt, a.transDir, a.t, a.theme.Accent)
 }

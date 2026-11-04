@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dhowden/tag"
-
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // Option es una letra posible para una canción, de donde sea.
@@ -126,7 +125,7 @@ func Embedded(path string) []Option {
 		return nil
 	}
 	defer f.Close()
-	m, err := tag.ReadFrom(f)
+	m, err := tags.ReadFrom(f)
 	if err != nil {
 		return nil
 	}

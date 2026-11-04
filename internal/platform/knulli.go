@@ -14,6 +14,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 )
 
 const (
@@ -308,7 +310,10 @@ func (k *knulli) ExitSleep() error {
 		k.screenOff = false
 	}
 	if k.stoppedIdle {
-		run(idleInit, "start")
+		// Con prioridad normal: si heredaba el -4 del servicio, el ahorro
+		// agresivo de Knulli congelaba al propio idlewatcher, que ya no veía
+		// los botones para despertar (ver proc.NormalPriority).
+		_ = proc.NormalPriority(func() error { run(idleInit, "start"); return nil })
 		k.stoppedIdle = false
 	}
 	return nil

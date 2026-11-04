@@ -2,7 +2,7 @@
 # Baja de MSYS2 (mingw64) las DLL que audiofilus carga en Windows con purego
 # y deja junto al .exe del paquete: libmpg123 (MP3), libfdk-aac (AAC: radios,
 # HLS, M4A), libopusfile (Opus), libxmp (módulos tracker) y libgme (música de
-# consolas), con lo que ellas necesitan. Sin ellas Windows solo toca lo que
+# consolas), con lo que ellas necesitan, y libavshim (WMA), que se compila. Sin ellas Windows solo toca lo que
 # está en Go puro (ver docs/architecture.md#windows).
 #   tools/windows/dlls.sh <carpeta de salida>
 # deja <salida>/*.dll, <salida>/licenses/<paquete>/ (los textos de cada
@@ -12,7 +12,8 @@
 # Las dependencias salen de la base de datos de MSYS2 (%DEPENDS%) y después
 # se comprueban las DLL que importa cada una (objdump): si falta alguna que
 # no sea del sistema, falla. fdk-aac ya no está en MSYS2 y se compila con zig
-# (fdk-aac.sh). Necesita curl, tar con zstd, python3, objdump, cmake y zig.
+# (fdk-aac.sh), igual que libavshim (tools/ffmpeg/build.sh). Necesita curl,
+# tar con zstd y xz, python3, objdump, cmake, make, nm y zig.
 set -eu
 mkdir -p "${1:?usage: tools/windows/dlls.sh <output dir>}"
 out=$(cd "$1" && pwd)
@@ -125,3 +126,11 @@ mkdir -p "$out/licenses"
 
 # fdk-aac (AAC) no está en MSYS2: se compila aquí con zig, con libc++ dentro.
 "$(dirname "$0")/fdk-aac.sh" "$out"
+
+# libavshim (FFmpeg recortado: WMA), con zig, como en Linux.
+"$(dirname "$0")/../ffmpeg/build.sh" "$work/ffmpeg" windows
+cp "$work/ffmpeg/libavshim.dll" "$out/"
+mkdir -p "$out/licenses/ffmpeg"
+cp "$work/ffmpeg/ffmpeg-LICENSE.txt" "$out/licenses/ffmpeg/COPYING.LGPLv2.1"
+cat "$work/ffmpeg/ffmpeg-SOURCE.txt" >>"$out/licenses/windows-dlls-SOURCE.txt"
+echo "$out/libavshim.dll"

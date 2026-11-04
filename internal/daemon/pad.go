@@ -238,13 +238,14 @@ func (d *Daemon) startPower() (stop func()) {
 // powerPressed atiende un toque del botón de encendido con la app abierta:
 // despierta, entra en sleep pidiéndoselo a la interfaz (para que haga su
 // fundido); en sleep, despierta, salvo con la tapa cerrada (en el bolsillo se
-// pulsa sin querer). Con la app cerrada no hace nada: Knulli suspende.
+// pulsa sin querer). Con la app cerrada, o en el modo juego (awake open),
+// no hace nada: Knulli suspende.
 func (d *Daemon) powerPressed(held time.Duration) {
 	if held > powerShort {
 		return
 	}
 	d.mu.Lock()
-	open, sleeping := d.appOpen, d.sleeping
+	open, sleeping := d.appOpen && d.awakeHold, d.sleeping
 	d.mu.Unlock()
 	switch {
 	case !open:

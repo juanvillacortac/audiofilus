@@ -15,10 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dhowden/tag"
-
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/library"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // handler atiende un comando: escribe su respuesta (sin el OK final) en c.w.
@@ -1269,7 +1268,7 @@ func (c *conn) coverData(uri string, embedded bool) []byte {
 	}
 	if data == nil && s.pic {
 		if f, err := os.Open(file); err == nil {
-			if md, err := tag.ReadFrom(f); err == nil && md.Picture() != nil {
+			if md, err := tags.ReadFrom(f); err == nil && md.Picture() != nil {
 				data = md.Picture().Data
 			}
 			f.Close()

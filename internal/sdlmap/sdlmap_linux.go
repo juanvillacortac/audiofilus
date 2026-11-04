@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/ebitengine/purego"
 	"golang.org/x/sys/unix"
@@ -38,6 +39,11 @@ var (
 	sdlMappingForDeviceIndex func(index int32) *byte
 	sdlFree                  func(p *byte)
 	sdlJoystickPathForIndex  func(index int32) string
+	sdlJoystickOpen          func(index int32) uintptr
+	sdlJoystickClose         func(js uintptr)
+	sdlJoystickNumButtons    func(js uintptr) int32
+	sdlJoystickNumHats       func(js uintptr) int32
+	sdlJoystickNumAxes       func(js uintptr) int32
 	hasJoystickPathForIndex  bool
 	loadErr                  error
 	loaded                   bool
@@ -76,6 +82,11 @@ func load() error {
 		{&sdlJoystickNameForIndex, "SDL_JoystickNameForIndex"},
 		{&sdlMappingForDeviceIndex, "SDL_GameControllerMappingForDeviceIndex"},
 		{&sdlFree, "SDL_free"},
+		{&sdlJoystickOpen, "SDL_JoystickOpen"},
+		{&sdlJoystickClose, "SDL_JoystickClose"},
+		{&sdlJoystickNumButtons, "SDL_JoystickNumButtons"},
+		{&sdlJoystickNumHats, "SDL_JoystickNumHats"},
+		{&sdlJoystickNumAxes, "SDL_JoystickNumAxes"},
 	} {
 		if _, err := purego.Dlsym(lib, f.name); err != nil {
 			loadErr = fmt.Errorf("sdlmap: %s not found in libSDL2: %w", f.name, err)
@@ -139,6 +150,63 @@ func Controllers() ([]Controller, error) {
 			c.Path = sdlJoystickPathForIndex(i)
 		}
 		out = append(out, c)
+	}
+	return out, nil
+}
+
+// Joystick es un mando como lo ve SDL, con lo que EmulationStation le pasa de
+// él a emulatorlauncher (-pNindex, -pNguid, -pNname...): configgen busca con
+// eso su configuración en es_input.cfg.
+type Joystick struct {
+	Index               int
+	Name, GUID, Path    string
+	Buttons, Hats, Axes int
+}
+
+// Joysticks devuelve todos los mandos que ve SDL. El GUID sale del mapeo de
+// SDL (su primer campo), así que solo lo tienen los que SDL reconoce como
+// gamepad; configgen también encuentra un mando solo por el nombre. Usa SDL
+// (lo inicia y lo cierra): no se puede llamar desde un proceso que ya lo use,
+// como la interfaz.
+func Joysticks() ([]Joystick, error) {
+	if err := load(); err != nil {
+		return nil, err
+	}
+	sdlSetHint("SDL_NO_SIGNAL_HANDLERS", "1")
+	sdlSetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1")
+	if os.Getenv("SDL_GAMECONTROLLERCONFIG_FILE") == "" {
+		for _, p := range dbPaths() {
+			if _, err := os.Stat(p); err == nil {
+				sdlSetHint("SDL_GAMECONTROLLERCONFIG_FILE", p)
+				break
+			}
+		}
+	}
+	if sdlInit(sdlInitGameController) != 0 {
+		return nil, fmt.Errorf("sdlmap: SDL_Init: %s", sdlGetError())
+	}
+	defer sdlQuit()
+	var out []Joystick
+	n := sdlNumJoysticks()
+	for i := int32(0); i < n; i++ {
+		j := Joystick{Index: int(i), Name: sdlJoystickNameForIndex(i)}
+		if sdlIsGameController(i) {
+			if p := sdlMappingForDeviceIndex(i); p != nil {
+				m := unix.BytePtrToString(p)
+				sdlFree(p)
+				if guid, _, ok := strings.Cut(m, ","); ok {
+					j.GUID = guid
+				}
+			}
+		}
+		if hasJoystickPathForIndex {
+			j.Path = sdlJoystickPathForIndex(i)
+		}
+		if js := sdlJoystickOpen(i); js != 0 {
+			j.Buttons, j.Hats, j.Axes = int(sdlJoystickNumButtons(js)), int(sdlJoystickNumHats(js)), int(sdlJoystickNumAxes(js))
+			sdlJoystickClose(js)
+		}
+		out = append(out, j)
 	}
 	return out, nil
 }

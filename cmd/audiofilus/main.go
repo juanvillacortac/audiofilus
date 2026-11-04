@@ -45,7 +45,7 @@ const usage = `usage:
   audiofilus volume <0..2>
   audiofilus queue
   audiofilus sleep [on|off]       app sleep: screen off + double-tap gestures
-  audiofilus awake on [s] | off   keep the console awake while playing (lease, default 60 s)
+  audiofilus awake on|open [s] | off  the app is open: on keeps the console awake, open does not (lease, default 60 s)
   audiofilus quit                 stop the service
   audiofilus pad                  show the gamepad and its SDL mapping
   audiofilus ytm search|fetch|download|download-mp3 <text>
@@ -61,6 +61,9 @@ Config lives next to the binary: audiofilus.json and data/.
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+	// Si un juego anterior no terminó bien, lo que se congeló para él
+	// (gameboost_linux.go) vuelve a andar.
+	thawLeftovers()
 	// Archivos o carpetas abiertos desde el explorador (open.go).
 	if files, ok := openArgs(os.Args[1:]); ok {
 		runOpen(files)
@@ -82,6 +85,8 @@ func main() {
 		os.Exit(runBench(args))
 	case "pad":
 		os.Exit(runPad())
+	case "launch":
+		os.Exit(runLaunch(args)) // launch.go: un juego del modo juego
 	case "ytm":
 		os.Exit(runYTM(args))
 	case "desktop":

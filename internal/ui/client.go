@@ -58,6 +58,10 @@ type Client struct {
 	// restartUntil: se pidió reiniciar el servicio y hasta entonces no
 	// contestar es normal (no se arranca otro).
 	restartUntil atomic.Int64
+	// noAwake: no pedir que la consola siga despierta (el modo juego: ahí la
+	// suspensión de Knulli funciona siempre, suene música o no), solo decir
+	// que la app está abierta ("awake open").
+	noAwake atomic.Bool
 
 	// OnWake se llama (desde otro hilo) cuando el servicio sale del sleep: la
 	// interfaz no dibuja nada en sleep y necesita que la despierten.
@@ -67,6 +71,11 @@ type Client struct {
 	stop chan struct{}
 	done chan struct{}
 }
+
+// HoldAwake dice si la interfaz pide que la consola siga despierta mientras
+// suena música (lo normal) o no (el modo juego). El cambio se manda en el
+// siguiente estado (un cuarto de segundo).
+func (c *Client) HoldAwake(hold bool) { c.noAwake.Store(!hold) }
 
 // NewClient prepara el cliente; Start arranca el servicio si hace falta.
 func NewClient(paths config.Paths) *Client {
@@ -208,6 +217,7 @@ func (c *Client) loop() {
 	defer tick.Stop()
 	every := statusEvery
 	lastAwake := time.Time{}
+	awakeMode := "" // el último awake mandado: "on" u "open"
 	for {
 		select {
 		case <-c.stop:
@@ -216,9 +226,16 @@ func (c *Client) loop() {
 		case req := <-c.cmds:
 			c.do(req)
 		case <-tick.C:
-			if time.Since(lastAwake) > awakeEvery {
-				lastAwake = time.Now()
-				c.do(control.Request{Cmd: "awake", Args: []string{"on", awakeLease}})
+			// En el modo juego, "open": la app sigue abierta (los botones de
+			// volumen pasan por el servicio y se ve el indicador) pero no
+			// impide la suspensión.
+			mode := "on"
+			if c.noAwake.Load() {
+				mode = "open"
+			}
+			if mode != awakeMode || time.Since(lastAwake) > awakeEvery {
+				lastAwake, awakeMode = time.Now(), mode
+				c.do(control.Request{Cmd: "awake", Args: []string{mode, awakeLease}})
 			}
 			c.do(control.Request{Cmd: "status"})
 			// En sleep se pregunta menos.

@@ -14,9 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dhowden/tag"
-
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // El servidor de medios: la biblioteca en el ContentDirectory (Artistas →
@@ -546,7 +545,7 @@ func (m *mediaServer) serveArt(w http.ResponseWriter, r *http.Request) {
 	file := decode.FileOf(s.path)
 	if s.pic {
 		if f, err := os.Open(file); err == nil {
-			md, terr := tag.ReadFrom(f)
+			md, terr := tags.ReadFrom(f)
 			f.Close()
 			if terr == nil && md.Picture() != nil {
 				mime := md.Picture().MIMEType

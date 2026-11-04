@@ -25,6 +25,9 @@ func (a *App) updateGuide() bool {
 
 // guideRows son los controles de la pantalla actual, primero los suyos.
 func (a *App) guideRows() (own, all []hint) {
+	if a.gm.on {
+		return a.gmGuideRows()
+	}
 	switch {
 	case a.dock.open:
 		own = []hint{{"<>", "g_dock_move"}, {"SEL/A", "g_dock_go"}, {"B", "h_close"}}
@@ -156,6 +159,11 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 	rect(dst, 0, 0, w, h, withAlpha(th.Shadow, 0xe8))
 	const rowH, headH = guideRowH, guideHeadH
 	cols := guideColumns(own, all, a.canSleep(), w, h)
+	if a.gm.on {
+		// En el modo juego, el sleep es el de Knulli: en vez de sus gestos,
+		// lo que se puede hacer con la música dentro de un juego.
+		cols = [][]section{{{"g_here", own}, {"g_everywhere", all}}, {{"gx_g_ingame", gmGuideInGame}}}
+	}
 	// Lo que no cabe en el alto de una columna sigue en otra (la cabecera de
 	// la sección, repetida). Si las columnas no caben a lo ancho (a 110 px ya
 	// no se leen), se quitan las secciones del final: lo de esta pantalla va
@@ -226,3 +234,37 @@ func (a *App) drawGuide(dst *ebiten.Image) {
 	msg := strings.ReplaceAll(T("g_release"), "FN", a.btn("FN"))
 	drawText(dst, msg, SmallFace, (w-textWidth(msg, SmallFace))/2, h-bottomH+4, th.Dim)
 }
+
+// gmGuideRows son los controles del modo juego, por pantalla.
+func (a *App) gmGuideRows() (own, all []hint) {
+	g := &a.gm
+	switch g.screen {
+	case gmSystems:
+		own = []hint{{"<>", "gx_g_choose"}, {"A", "gx_g_games"}, {"X", "gx_g_search"}, {"START", "gx_g_options"}, {"SEL", "gx_g_system"}, {"RS", "gx_g_spin"}}
+	case gmGames:
+		own = []hint{{"^v", "gx_g_choose"}, {"<>", "g_page"}, {"A", "gx_g_play"}, {"A ...", "gx_g_info"}, {"X", "gx_g_random"},
+			{"SEL", "gx_g_search"}, {"START", "gx_g_options"}, {"B", "gx_g_back"}, {"RS", "gx_g_spin"}}
+	case gmOptions:
+		own = []hint{{"^v", "gx_g_choose"}, {"<>", "gx_g_change"}, {"A", "gx_g_sub"}, {"B", "gx_g_saveback"}}
+	case gmSearch:
+		own = []hint{{"A", "h_type"}, {"B", "h_del"}, {"X", "h_space"}, {"Y", "g_clear"}, {"START", "gx_g_results"}}
+	case gmSaves:
+		own = []hint{{"^v", "gx_g_choose"}, {"A", "gx_g_play"}, {"B", "gx_g_back"}}
+	case gmViewer:
+		own = []hint{{"<>", "gx_g_choose"}, {"A", "gx_g_zoom"}, {"<>^v", "gx_g_pan"}, {"B", "gx_g_back"}}
+	case gmInfo:
+		own = []hint{{"<>", "gx_g_media"}, {"^v", "gx_g_scroll"}, {"A", "gx_g_play"}, {"X", "gx_g_full"}, {"B", "gx_g_back"}}
+	case gmVideoFull:
+		own = []hint{{"B", "gx_g_back"}}
+	case gmZoom2:
+		own = []hint{{"A", "gx_g_zoom"}, {"<>^v", "gx_g_pan"}, {"B", "gx_g_back"}}
+	case gmSysMenu:
+		own = []hint{{"^v", "gx_g_choose"}, {"A", "gx_g_change"}, {"X", "gx_g_forget"}, {"B", "gx_g_back"}}
+	}
+	all = []hint{{"FN x3", "gx_g_player"}, {"Y", "g_pause"}, {"L1/R1", "g_skip"}, {"L2/R2", "g_seek"}}
+	return own, all
+}
+
+// gmGuideInGame son los atajos de la música dentro de un juego (los
+// atiende el servicio, con la interfaz cerrada).
+var gmGuideInGame = []hint{{"FN x3 L1/R1", "g_skip"}, {"FN x3 L2/R2", "g_seek"}, {"FN x3 SEL", "g_pause"}}

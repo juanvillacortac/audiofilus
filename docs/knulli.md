@@ -93,6 +93,21 @@ That's why the mapping comes from SDL (`internal/sdlmap`), not from the standard
 - **FN shortcut tested on the console (October 17):** changing song, pausing and seeking work with FN ×3 + button.
 - The console's wifi drops often (it stops answering ARP); long SSH sessions get cut off.
 
+## Game mode and Knulli's inactivity
+
+Ports run with nice −4, and so does the interface (it is a port). With Knulli's **aggressive battery saver** (`system.batterysaver.aggressive=1`), the idle hook (`/etc/idlewatcher/idle.d/01idle-hooks`) sends `SIGSTOP` to every process with nice −4 and suspends EmulationStation's process group; the "active" hook should send `SIGCONT` on the next button. In game mode the screen dimmed, the interface froze and never came back (the console had to be restarted).
+
+- **Game mode sleeps first:** after `system.idlewatcher.timer` minus 15 s (or sooner, if the interface's own sleep setting is shorter) it enters the app's sleep. That stops `idlewatcher` while it lasts, so its idle hook never runs. Any button wakes it (not only Start: there is no pocket mode here). The lid stays Knulli's (a real suspend). Not with `system.batterysaver.mode=none`.
+- **What Audiofilus starts from the system runs at nice 0** (`proc.NormalPriority`): `knulli-wifi enable` restarted `connmand` with the interface's −4, and the aggressive hook froze it with everything else (the console dropped off the network). Worse, the service restarts `idlewatcher` when its sleep ends, so `idlewatcher` itself ran at −4: the hook froze the very process that watches the buttons, and nothing could wake the console. This is the most likely reason it never came back.
+
+## While a game runs from game mode
+
+`audiofilus launch` (the port's launcher runs it with the interface closed) gives the game as much of the console as it can, and undoes it when the game ends:
+
+- **Syncthing is frozen** (`SIGSTOP`, then `SIGCONT`). When it syncs it walks and hashes files: spikes of CPU, disk and heat, and on the RG34XX-SP the CPU is throttled from 60 °C. Freezing writes nothing to its configuration (pausing it through its API would). Its peers reconnect on their own afterwards.
+- **The game's scheduling group gets nice −5.** The kernel has `SCHED_AUTOGROUP`, which shares the CPU between sessions rather than processes, so per-process `nice` would not help against other sessions. The game runs in EmulationStation's session (with `launch`), so `launch` sets that group's nice through `/proc/self/autogroup` and restores the old value afterwards.
+- The frozen pids are written to `/tmp/audiofilus-frozen` first. If Audiofilus dies mid-game, any later start of the binary (interface, service or command) thaws them.
+
 ## Unverified risks
 
 - **The `idlewatcher` "active" hook** (`/etc/idlewatcher/active.d/01active-hooks`) ignores the `*.pause` files: on detecting a button it runs `S31emulationstation resume`, restores the governor and `knulli-brightness undim`. That's why the app's sleep stops `idlewatcher` while it lasts (not yet tested on the console).

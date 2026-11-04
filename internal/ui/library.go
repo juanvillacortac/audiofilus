@@ -9,6 +9,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/remote"
 	"image"
 	"image/color"
+	"image/draw"
 	_ "image/jpeg" // portadas JPEG
 	_ "image/png"  // portadas PNG
 
@@ -22,10 +23,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dhowden/tag"
 	xdraw "golang.org/x/image/draw"
 
 	"github.com/juanvillacortac/audiofilus/internal/library"
+	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
 // Song es una canción con sus etiquetas.
@@ -42,7 +43,14 @@ type Album struct {
 	coverPath     string // archivo del que sacar la portada; vacío si no tiene
 	stray         bool   // no está en la biblioteca (lo que suena de YouTube Music)
 	logo          bool   // es un logo (de una radio): se encaja entero y con su transparencia
-	noAlbum       bool   // reúne las canciones sin álbum (su título es T("no_album"))
+	// clear: con su transparencia siempre (las imágenes de los juegos): sin
+	// el fondo claro que se pone a los logos oscuros de las radios.
+	clear   bool
+	noAlbum bool // reúne las canciones sin álbum (su título es T("no_album"))
+	// passing: se pide mientras está a la vista (las imágenes del modo
+	// juego): si cuando le toca nadie la pidió hace un rato, ya se pasó de
+	// largo y no se prepara (ver covers.request).
+	passing bool
 
 	mu       sync.Mutex
 	decoded  bool // ya se leyó la portada una vez (para sus colores)
@@ -281,7 +289,7 @@ func (a *Album) decodeCover() image.Image {
 		// Una imagen suelta (la miniatura de YouTube Music, ytm.Fetch).
 		img, _, err = image.Decode(f)
 	default:
-		m, terr := tag.ReadFrom(f)
+		m, terr := tags.ReadFrom(f)
 		if terr != nil || m.Picture() == nil {
 			return nil
 		}
@@ -320,9 +328,49 @@ func scaleCover(src image.Image, size int) *image.RGBA {
 	side := min(b.Dx(), b.Dy())
 	r := image.Rect(b.Min.X+(b.Dx()-side)/2, b.Min.Y+(b.Dy()-side)/2, 0, 0)
 	r.Max = r.Min.Add(image.Pt(side, side))
+	src, r = shrinkFor(src, r, size, size)
 	xdraw.CatmullRom.Scale(dst, dst.Bounds(), src, r, xdraw.Src, nil)
 	ditherCover(dst)
 	return dst
+}
+
+// shrinkFor reduce la parte r de src con un promedio de f×f píxeles (f
+// entero) mientras siga siendo más del doble de w×h, y devuelve la imagen
+// reducida y su parte. CatmullRom al reducir mira más píxeles cuanto más se
+// achica: una caja de 1000 píxeles a 96, o una captura grande al fondo, le
+// costaba cientos de milisegundos a la consola. El promedio es casi gratis,
+// y el filtro solo hace el último tramo.
+func shrinkFor(src image.Image, r image.Rectangle, w, h int) (image.Image, image.Rectangle) {
+	f := min(r.Dx()/(2*w), r.Dy()/(2*h))
+	if f < 2 {
+		return src, r
+	}
+	// En RGBA (premultiplicado: promediar así respeta la transparencia).
+	in, ok := src.(*image.RGBA)
+	if !ok || in.Rect != r {
+		in = image.NewRGBA(image.Rect(0, 0, r.Dx(), r.Dy()))
+		draw.Draw(in, in.Rect, src, r.Min, draw.Src)
+	}
+	ow, oh := r.Dx()/f, r.Dy()/f
+	out := image.NewRGBA(image.Rect(0, 0, ow, oh))
+	n := uint32(f * f)
+	for y := 0; y < oh; y++ {
+		for x := 0; x < ow; x++ {
+			var sr, sg, sb, sa uint32
+			for yy := 0; yy < f; yy++ {
+				row := in.Pix[(y*f+yy)*in.Stride+x*f*4:]
+				for xx := 0; xx < f*4; xx += 4 {
+					sr += uint32(row[xx])
+					sg += uint32(row[xx+1])
+					sb += uint32(row[xx+2])
+					sa += uint32(row[xx+3])
+				}
+			}
+			o := y*out.Stride + x*4
+			out.Pix[o], out.Pix[o+1], out.Pix[o+2], out.Pix[o+3] = uint8(sr/n), uint8(sg/n), uint8(sb/n), uint8(sa/n)
+		}
+	}
+	return out, out.Rect
 }
 
 // scaleLogo es scaleCover para un logo: entero dentro del cuadrado (sin
@@ -330,7 +378,11 @@ func scaleCover(src image.Image, size int) *image.RGBA {
 // en lo opaco. Un logo oscuro con transparencia (letras negras, pensado para
 // una web blanca) va sobre un fondo claro, que si no se perdía en el oscuro de
 // la interfaz.
-func scaleLogo(src image.Image, size int) *image.RGBA {
+func scaleLogo(src image.Image, size int) *image.RGBA { return scaleLogoBg(src, size, true) }
+
+// scaleLogoBg es scaleLogo; sin backdrop, lo transparente queda
+// transparente aunque el logo sea oscuro.
+func scaleLogoBg(src image.Image, size int, backdrop bool) *image.RGBA {
 	dst := image.NewRGBA(image.Rect(0, 0, size, size))
 	b := src.Bounds()
 	w, h := size, size
@@ -340,8 +392,9 @@ func scaleLogo(src image.Image, size int) *image.RGBA {
 		w = max(1, size*b.Dx()/b.Dy())
 	}
 	r := image.Rect((size-w)/2, (size-h)/2, (size-w)/2+w, (size-h)/2+h)
+	src, b = shrinkFor(src, b, w, h)
 	xdraw.CatmullRom.Scale(dst, r, src, b, xdraw.Over, nil)
-	if logoDark(dst.SubImage(r).(*image.RGBA)) {
+	if backdrop && logoDark(dst.SubImage(r).(*image.RGBA)) {
 		const bg = 0xe0
 		for i := 0; i < len(dst.Pix); i += 4 {
 			k := 0xff - int(dst.Pix[i+3]) // lo que deja ver el fondo (premultiplicado)

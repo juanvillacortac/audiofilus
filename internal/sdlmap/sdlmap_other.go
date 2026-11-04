@@ -18,3 +18,15 @@ type Controller struct {
 func Controllers() ([]Controller, error) {
 	return nil, errors.New("sdlmap is only used on Linux")
 }
+
+// Joystick es un mando como lo ve SDL (solo en Linux).
+type Joystick struct {
+	Index               int
+	Name, GUID, Path    string
+	Buttons, Hats, Axes int
+}
+
+// Joysticks no encuentra mandos fuera de Linux.
+func Joysticks() ([]Joystick, error) {
+	return nil, errors.New("sdlmap is only used on Linux")
+}

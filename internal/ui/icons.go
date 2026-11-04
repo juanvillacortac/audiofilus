@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // iconArt son los iconos, dibujados a mano ('#' encendido). Casi todos son de
@@ -131,6 +130,30 @@ var iconArt = map[string]string{
 #.....#
 #######
 ..###..`,
+	"hourglass0": `
+#######
+.#####.
+..###..
+...#...
+..#.#..
+.#...#.
+#######`,
+	"hourglass1": `
+#######
+.#...#.
+..###..
+...#...
+..#.#..
+.#.#.#.
+#######`,
+	"hourglass2": `
+#######
+.#...#.
+..#.#..
+...#...
+..###..
+.#####.
+#######`,
 	"clock": `
 ..###..
 .#.#.#.
@@ -243,6 +266,14 @@ var iconArt = map[string]string{
 ##...##
 ##...##
 ##...##`,
+	"wifi": `
+.#####.
+#.....#
+..###..
+.#...#.
+.......
+...#...
+.......`,
 	"bluetooth": `
 ..#....
 ..##...
@@ -596,7 +627,30 @@ func drawIcon(dst *ebiten.Image, name string, x, y int, c color.Color) {
 
 // rect rellena un rectángulo sin suavizado.
 func rect(dst *ebiten.Image, x, y, w, h int, c color.Color) {
-	vector.FillRect(dst, float32(x), float32(y), float32(w), float32(h), c, false)
+	if w <= 0 || h <= 0 {
+		return
+	}
+	// Un píxel blanco estirado y teñido: lo mismo que vector.FillRect para
+	// un rectángulo de píxeles enteros, pero mucho más barato (en el
+	// perfil del modo juego, los rectángulos se llevaban un 5 % de la CPU).
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(float64(w), float64(h))
+	op.GeoM.Translate(float64(x), float64(y))
+	op.ColorScale.ScaleWithColor(c)
+	dst.DrawImage(whitePixel(), op)
+}
+
+// whitePx es un píxel blanco (el centro de una imagen de 3×3, para que el
+// filtrado no tome los bordes).
+var whitePx *ebiten.Image
+
+func whitePixel() *ebiten.Image {
+	if whitePx == nil {
+		img := ebiten.NewImage(3, 3)
+		img.Fill(color.White)
+		whitePx = img.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image)
+	}
+	return whitePx
 }
 
 // frame dibuja el contorno de un rectángulo de un píxel.
