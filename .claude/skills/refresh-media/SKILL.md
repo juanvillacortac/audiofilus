@@ -26,6 +26,14 @@ tools/portmaster/art.sh ~/Music/gym "Wonder What"
 
 Regenerates `cover.png` and `screenshot.png` (640×480).
 
+## Game mode
+
+```sh
+AUDIOFILUS_KNULLI_ROOT=<copy of a console's files> dist/audiofilus -shots /tmp/gm -frames /tmp/gm-frames -music ~/Music/gym -album "Wonder What" -lang en
+```
+
+With `AUDIOFILUS_KNULLI_ROOT`, `-shots` saves the game mode screens (`juego-*.png`) instead of the player's, and `-frames` adds four sequences at 30 fps (`internal/ui/gamemode_frames.go`): the system carousel, the right-stick spin, the GBA game list and a game's details with its video. For a GIF, scale down to 360×240 and back up ×2 without smoothing so the pixels stay sharp (`scale=360:240:flags=neighbor,scale=720:480:flags=neighbor`, then `palettegen`/`paletteuse`).
+
 ## Before committing
 
 The repo is public. Check the images don't show personal paths (the Settings screen shows the music folder), error messages, or anything private. Album covers from the author's library appear in the screenshots; that was accepted for now.

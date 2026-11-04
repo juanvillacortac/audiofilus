@@ -198,6 +198,9 @@ func (a *App) updateGMShots() error {
 			s.set()
 			a.drawGameMode(tmp)
 		}
+		if a.FramesDir != "" {
+			a.warmGMFrames(tmp) // y lo que sale en las animaciones (gamemode_frames.go)
+		}
 		tmp.Deallocate()
 		if gmShotFrames > 1200 {
 			a.shotsErr = fmt.Errorf("covers did not load in time")
@@ -221,6 +224,11 @@ func (a *App) updateGMShots() error {
 		}); err != nil {
 			a.shotsErr = err
 			return ebiten.Termination
+		}
+	}
+	if a.FramesDir != "" {
+		if err := a.writeGMFrames(); err != nil {
+			a.shotsErr = err
 		}
 	}
 	// La configuración de la copia no se toca (las capturas cambian opciones
