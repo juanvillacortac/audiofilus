@@ -8,7 +8,7 @@ func init() {
 		"es": {
 			"gx_fullscreen": "PANTALLA COMPLETA", "gx_g_full": "Pantalla completa (y acercar)", "gx_g_spin": "Girar la maqueta",
 			"gx_recent": "Jugados recientemente", "gx_mostplayed": "Más jugados",
-			"gx_sys_reboot": "Reiniciar", "gx_sys_poweroff": "Apagar", "gx_sys_again": "Pulsa A otra vez",
+			"gx_sys_reboot": "Reiniciar", "gx_sys_poweroff": "Apagar", "gx_sys_again": "Pulsa A otra vez", "gx_sys_rescan": "Buscar juegos de nuevo", "gx_sys_restart_app": "Reiniciar Audiofilus",
 			"gx_g_choose": "Elegir", "gx_g_games": "Ver sus juegos", "gx_g_search": "Buscar", "gx_g_options": "Opciones", "gx_g_system": "Sistema: Wi-Fi y Bluetooth", "gx_g_play": "Jugar", "gx_g_random": "Un juego al azar", "gx_g_back": "Volver", "gx_g_change": "Cambiar", "gx_g_sub": "Abrir el submenú", "gx_g_saveback": "Guardar y volver", "gx_g_results": "Ver los resultados", "gx_g_zoom": "Acercar", "gx_g_pan": "Mover la imagen", "gx_g_media": "Caja, captura o video", "gx_g_scroll": "Leer la descripción", "gx_g_forget": "Olvidar el dispositivo", "gx_g_ingame": "Dentro de un juego: la música",
 			"gx_zoom": "AMPLIAR", "gx_pan": "MOVER",
 			"gx_info": "FICHA", "gx_info_short": "FICHA", "gx_g_info": "Ver la ficha del juego", "gx_media": "VER", "gx_scroll": "DESPLAZAR", "gx_media_box": "Caja", "gx_media_shot": "Captura", "gx_media_video": "Video", "gx_players": "%s jugadores", "gx_no_desc": "Sin descripción.", "gx_no_video": "No se pudo ver el video",
@@ -28,7 +28,7 @@ func init() {
 		"en": {
 			"gx_fullscreen": "FULL SCREEN", "gx_g_full": "Full screen (and zoom)", "gx_g_spin": "Spin the model",
 			"gx_recent": "Recently played", "gx_mostplayed": "Most played",
-			"gx_sys_reboot": "Restart", "gx_sys_poweroff": "Power off", "gx_sys_again": "Press A again",
+			"gx_sys_reboot": "Restart", "gx_sys_poweroff": "Power off", "gx_sys_again": "Press A again", "gx_sys_rescan": "Rescan games", "gx_sys_restart_app": "Restart Audiofilus",
 			"gx_g_choose": "Choose", "gx_g_games": "See its games", "gx_g_search": "Search", "gx_g_options": "Options", "gx_g_system": "System: Wi-Fi and Bluetooth", "gx_g_play": "Play", "gx_g_random": "A random game", "gx_g_back": "Back", "gx_g_change": "Change", "gx_g_sub": "Open the submenu", "gx_g_saveback": "Save and go back", "gx_g_results": "See the results", "gx_g_zoom": "Zoom in", "gx_g_pan": "Move the picture", "gx_g_media": "Box, screenshot or video", "gx_g_scroll": "Read the description", "gx_g_forget": "Forget the device", "gx_g_ingame": "Inside a game: the music",
 			"gx_zoom": "ZOOM", "gx_pan": "MOVE",
 			"gx_info": "DETAILS", "gx_info_short": "DETAILS", "gx_g_info": "Show the game's details", "gx_media": "VIEW", "gx_scroll": "SCROLL", "gx_media_box": "Box", "gx_media_shot": "Screenshot", "gx_media_video": "Video", "gx_players": "%s players", "gx_no_desc": "No description.", "gx_no_video": "Couldn't play the video",
@@ -48,7 +48,7 @@ func init() {
 		"pt": {
 			"gx_fullscreen": "TELA CHEIA", "gx_g_full": "Tela cheia (e ampliar)", "gx_g_spin": "Girar o modelo",
 			"gx_recent": "Jogados recentemente", "gx_mostplayed": "Mais jogados",
-			"gx_sys_reboot": "Reiniciar", "gx_sys_poweroff": "Desligar", "gx_sys_again": "Aperte A de novo",
+			"gx_sys_reboot": "Reiniciar", "gx_sys_poweroff": "Desligar", "gx_sys_again": "Aperte A de novo", "gx_sys_rescan": "Procurar jogos de novo", "gx_sys_restart_app": "Reiniciar o Audiofilus",
 			"gx_g_choose": "Escolher", "gx_g_games": "Ver os jogos", "gx_g_search": "Buscar", "gx_g_options": "Opções", "gx_g_system": "Sistema: Wi-Fi e Bluetooth", "gx_g_play": "Jogar", "gx_g_random": "Um jogo aleatório", "gx_g_back": "Voltar", "gx_g_change": "Mudar", "gx_g_sub": "Abrir o submenu", "gx_g_saveback": "Salvar e voltar", "gx_g_results": "Ver os resultados", "gx_g_zoom": "Ampliar", "gx_g_pan": "Mover a imagem", "gx_g_media": "Caixa, captura ou vídeo", "gx_g_scroll": "Ler a descrição", "gx_g_forget": "Esquecer o dispositivo", "gx_g_ingame": "Dentro de um jogo: a música",
 			"gx_zoom": "AMPLIAR", "gx_pan": "MOVER",
 			"gx_info": "FICHA", "gx_info_short": "FICHA", "gx_g_info": "Ver a ficha do jogo", "gx_media": "VER", "gx_scroll": "ROLAR", "gx_media_box": "Caixa", "gx_media_shot": "Captura", "gx_media_video": "Vídeo", "gx_players": "%s jogadores", "gx_no_desc": "Sem descrição.", "gx_no_video": "Não foi possível ver o vídeo",
@@ -68,7 +68,7 @@ func init() {
 		"fr": {
 			"gx_fullscreen": "PLEIN ÉCRAN", "gx_g_full": "Plein écran (et zoom)", "gx_g_spin": "Faire tourner le modèle",
 			"gx_recent": "Joués récemment", "gx_mostplayed": "Les plus joués",
-			"gx_sys_reboot": "Redémarrer", "gx_sys_poweroff": "Éteindre", "gx_sys_again": "Appuyez encore sur A",
+			"gx_sys_reboot": "Redémarrer", "gx_sys_poweroff": "Éteindre", "gx_sys_again": "Appuyez encore sur A", "gx_sys_rescan": "Rechercher les jeux", "gx_sys_restart_app": "Redémarrer Audiofilus",
 			"gx_g_choose": "Choisir", "gx_g_games": "Voir ses jeux", "gx_g_search": "Rechercher", "gx_g_options": "Options", "gx_g_system": "Système : Wi-Fi et Bluetooth", "gx_g_play": "Jouer", "gx_g_random": "Un jeu au hasard", "gx_g_back": "Retour", "gx_g_change": "Changer", "gx_g_sub": "Ouvrir le sous-menu", "gx_g_saveback": "Enregistrer et revenir", "gx_g_results": "Voir les résultats", "gx_g_zoom": "Zoomer", "gx_g_pan": "Déplacer l'image", "gx_g_media": "Boîte, capture ou vidéo", "gx_g_scroll": "Lire la description", "gx_g_forget": "Oublier l'appareil", "gx_g_ingame": "Dans un jeu : la musique",
 			"gx_zoom": "ZOOM", "gx_pan": "DÉPLACER",
 			"gx_info": "FICHE", "gx_info_short": "FICHE", "gx_g_info": "Voir la fiche du jeu", "gx_media": "VOIR", "gx_scroll": "DÉFILER", "gx_media_box": "Boîte", "gx_media_shot": "Capture", "gx_media_video": "Vidéo", "gx_players": "%s joueurs", "gx_no_desc": "Pas de description.", "gx_no_video": "Vidéo illisible",
@@ -88,7 +88,7 @@ func init() {
 		"it": {
 			"gx_fullscreen": "SCHERMO INTERO", "gx_g_full": "Schermo intero (e zoom)", "gx_g_spin": "Ruotare il modello",
 			"gx_recent": "Giocati di recente", "gx_mostplayed": "Più giocati",
-			"gx_sys_reboot": "Riavvia", "gx_sys_poweroff": "Spegni", "gx_sys_again": "Premi di nuovo A",
+			"gx_sys_reboot": "Riavvia", "gx_sys_poweroff": "Spegni", "gx_sys_again": "Premi di nuovo A", "gx_sys_rescan": "Cerca di nuovo i giochi", "gx_sys_restart_app": "Riavvia Audiofilus",
 			"gx_g_choose": "Scegli", "gx_g_games": "Vedi i giochi", "gx_g_search": "Cerca", "gx_g_options": "Opzioni", "gx_g_system": "Sistema: Wi-Fi e Bluetooth", "gx_g_play": "Gioca", "gx_g_random": "Un gioco a caso", "gx_g_back": "Indietro", "gx_g_change": "Cambia", "gx_g_sub": "Apri il sottomenu", "gx_g_saveback": "Salva e torna", "gx_g_results": "Vedi i risultati", "gx_g_zoom": "Ingrandisci", "gx_g_pan": "Sposta l'immagine", "gx_g_media": "Scatola, schermata o video", "gx_g_scroll": "Leggi la descrizione", "gx_g_forget": "Dimentica il dispositivo", "gx_g_ingame": "In un gioco: la musica",
 			"gx_zoom": "INGRANDISCI", "gx_pan": "SPOSTA",
 			"gx_info": "SCHEDA", "gx_info_short": "SCHEDA", "gx_g_info": "Mostra la scheda del gioco", "gx_media": "VEDI", "gx_scroll": "SCORRI", "gx_media_box": "Scatola", "gx_media_shot": "Schermata", "gx_media_video": "Video", "gx_players": "%s giocatori", "gx_no_desc": "Nessuna descrizione.", "gx_no_video": "Impossibile riprodurre il video",
@@ -108,7 +108,7 @@ func init() {
 		"de": {
 			"gx_fullscreen": "VOLLBILD", "gx_g_full": "Vollbild (und Zoom)", "gx_g_spin": "Modell drehen",
 			"gx_recent": "Zuletzt gespielt", "gx_mostplayed": "Meistgespielt",
-			"gx_sys_reboot": "Neu starten", "gx_sys_poweroff": "Ausschalten", "gx_sys_again": "Nochmals A drücken",
+			"gx_sys_reboot": "Neu starten", "gx_sys_poweroff": "Ausschalten", "gx_sys_again": "Nochmals A drücken", "gx_sys_rescan": "Spiele neu einlesen", "gx_sys_restart_app": "Audiofilus neu starten",
 			"gx_g_choose": "Auswählen", "gx_g_games": "Seine Spiele", "gx_g_search": "Suchen", "gx_g_options": "Optionen", "gx_g_system": "System: WLAN und Bluetooth", "gx_g_play": "Spielen", "gx_g_random": "Ein zufälliges Spiel", "gx_g_back": "Zurück", "gx_g_change": "Ändern", "gx_g_sub": "Untermenü öffnen", "gx_g_saveback": "Speichern und zurück", "gx_g_results": "Ergebnisse ansehen", "gx_g_zoom": "Vergrößern", "gx_g_pan": "Bild verschieben", "gx_g_media": "Hülle, Screenshot oder Video", "gx_g_scroll": "Beschreibung lesen", "gx_g_forget": "Gerät vergessen", "gx_g_ingame": "Im Spiel: die Musik",
 			"gx_zoom": "ZOOM", "gx_pan": "VERSCHIEBEN",
 			"gx_info": "DETAILS", "gx_info_short": "DETAILS", "gx_g_info": "Spieldetails anzeigen", "gx_media": "ANSICHT", "gx_scroll": "BLÄTTERN", "gx_media_box": "Hülle", "gx_media_shot": "Screenshot", "gx_media_video": "Video", "gx_players": "%s Spieler", "gx_no_desc": "Keine Beschreibung.", "gx_no_video": "Video nicht abspielbar",
@@ -128,7 +128,7 @@ func init() {
 		"pl": {
 			"gx_fullscreen": "PEŁNY EKRAN", "gx_g_full": "Pełny ekran (i powiększenie)", "gx_g_spin": "Obracaj model",
 			"gx_recent": "Ostatnio grane", "gx_mostplayed": "Najczęściej grane",
-			"gx_sys_reboot": "Uruchom ponownie", "gx_sys_poweroff": "Wyłącz", "gx_sys_again": "Naciśnij A ponownie",
+			"gx_sys_reboot": "Uruchom ponownie", "gx_sys_poweroff": "Wyłącz", "gx_sys_again": "Naciśnij A ponownie", "gx_sys_rescan": "Wyszukaj gry ponownie", "gx_sys_restart_app": "Uruchom ponownie Audiofilus",
 			"gx_g_choose": "Wybierz", "gx_g_games": "Zobacz gry", "gx_g_search": "Szukaj", "gx_g_options": "Opcje", "gx_g_system": "System: Wi-Fi i Bluetooth", "gx_g_play": "Graj", "gx_g_random": "Losowa gra", "gx_g_back": "Wróć", "gx_g_change": "Zmień", "gx_g_sub": "Otwórz podmenu", "gx_g_saveback": "Zapisz i wróć", "gx_g_results": "Zobacz wyniki", "gx_g_zoom": "Powiększ", "gx_g_pan": "Przesuń obraz", "gx_g_media": "Pudełko, zrzut lub wideo", "gx_g_scroll": "Czytaj opis", "gx_g_forget": "Zapomnij urządzenie", "gx_g_ingame": "W grze: muzyka",
 			"gx_zoom": "POWIĘKSZ", "gx_pan": "PRZESUŃ",
 			"gx_info": "KARTA", "gx_info_short": "KARTA", "gx_g_info": "Pokaż kartę gry", "gx_media": "WIDOK", "gx_scroll": "PRZEWIŃ", "gx_media_box": "Pudełko", "gx_media_shot": "Zrzut", "gx_media_video": "Wideo", "gx_players": "Gracze: %s", "gx_no_desc": "Brak opisu.", "gx_no_video": "Nie można odtworzyć wideo",
@@ -148,7 +148,7 @@ func init() {
 		"tr": {
 			"gx_fullscreen": "TAM EKRAN", "gx_g_full": "Tam ekran (ve yakınlaştırma)", "gx_g_spin": "Modeli döndür",
 			"gx_recent": "Son oynananlar", "gx_mostplayed": "En çok oynananlar",
-			"gx_sys_reboot": "Yeniden başlat", "gx_sys_poweroff": "Kapat", "gx_sys_again": "Tekrar A'ya bas",
+			"gx_sys_reboot": "Yeniden başlat", "gx_sys_poweroff": "Kapat", "gx_sys_again": "Tekrar A'ya bas", "gx_sys_rescan": "Oyunları yeniden tara", "gx_sys_restart_app": "Audiofilus'u yeniden başlat",
 			"gx_g_choose": "Seç", "gx_g_games": "Oyunlarını gör", "gx_g_search": "Ara", "gx_g_options": "Seçenekler", "gx_g_system": "Sistem: Wi-Fi ve Bluetooth", "gx_g_play": "Oyna", "gx_g_random": "Rastgele bir oyun", "gx_g_back": "Geri", "gx_g_change": "Değiştir", "gx_g_sub": "Alt menüyü aç", "gx_g_saveback": "Kaydet ve geri dön", "gx_g_results": "Sonuçları gör", "gx_g_zoom": "Yakınlaştır", "gx_g_pan": "Resmi kaydır", "gx_g_media": "Kutu, ekran görüntüsü veya video", "gx_g_scroll": "Açıklamayı oku", "gx_g_forget": "Cihazı unut", "gx_g_ingame": "Oyun içinde: müzik",
 			"gx_zoom": "YAKINLAŞTIR", "gx_pan": "KAYDIR",
 			"gx_info": "BİLGİ", "gx_info_short": "BİLGİ", "gx_g_info": "Oyun bilgisini göster", "gx_media": "GÖR", "gx_scroll": "KAYDIR", "gx_media_box": "Kutu", "gx_media_shot": "Ekran görüntüsü", "gx_media_video": "Video", "gx_players": "%s oyuncu", "gx_no_desc": "Açıklama yok.", "gx_no_video": "Video oynatılamadı",
@@ -168,7 +168,7 @@ func init() {
 		"ru": {
 			"gx_fullscreen": "ВЕСЬ ЭКРАН", "gx_g_full": "На весь экран (и увеличение)", "gx_g_spin": "Вращать модель",
 			"gx_recent": "Недавние", "gx_mostplayed": "Самые популярные",
-			"gx_sys_reboot": "Перезагрузить", "gx_sys_poweroff": "Выключить", "gx_sys_again": "Нажмите A ещё раз",
+			"gx_sys_reboot": "Перезагрузить", "gx_sys_poweroff": "Выключить", "gx_sys_again": "Нажмите A ещё раз", "gx_sys_rescan": "Обновить список игр", "gx_sys_restart_app": "Перезапустить Audiofilus",
 			"gx_g_choose": "Выбрать", "gx_g_games": "Его игры", "gx_g_search": "Поиск", "gx_g_options": "Настройки", "gx_g_system": "Система: Wi-Fi и Bluetooth", "gx_g_play": "Играть", "gx_g_random": "Случайная игра", "gx_g_back": "Назад", "gx_g_change": "Изменить", "gx_g_sub": "Открыть подменю", "gx_g_saveback": "Сохранить и выйти", "gx_g_results": "К результатам", "gx_g_zoom": "Увеличить", "gx_g_pan": "Двигать картинку", "gx_g_media": "Коробка, скриншот или видео", "gx_g_scroll": "Читать описание", "gx_g_forget": "Забыть устройство", "gx_g_ingame": "В игре: музыка",
 			"gx_zoom": "УВЕЛИЧИТЬ", "gx_pan": "СДВИГ",
 			"gx_info": "ОБ ИГРЕ", "gx_info_short": "ОБ ИГРЕ", "gx_g_info": "Показать данные об игре", "gx_media": "СМОТРЕТЬ", "gx_scroll": "ЛИСТАТЬ", "gx_media_box": "Коробка", "gx_media_shot": "Скриншот", "gx_media_video": "Видео", "gx_players": "Игроков: %s", "gx_no_desc": "Нет описания.", "gx_no_video": "Не удалось показать видео",
@@ -188,7 +188,7 @@ func init() {
 		"id": {
 			"gx_fullscreen": "LAYAR PENUH", "gx_g_full": "Layar penuh (dan perbesar)", "gx_g_spin": "Putar model",
 			"gx_recent": "Baru dimainkan", "gx_mostplayed": "Paling sering dimainkan",
-			"gx_sys_reboot": "Mulai ulang", "gx_sys_poweroff": "Matikan", "gx_sys_again": "Tekan A lagi",
+			"gx_sys_reboot": "Mulai ulang", "gx_sys_poweroff": "Matikan", "gx_sys_again": "Tekan A lagi", "gx_sys_rescan": "Pindai ulang game", "gx_sys_restart_app": "Mulai ulang Audiofilus",
 			"gx_g_choose": "Pilih", "gx_g_games": "Lihat game-nya", "gx_g_search": "Cari", "gx_g_options": "Opsi", "gx_g_system": "Sistem: Wi-Fi dan Bluetooth", "gx_g_play": "Main", "gx_g_random": "Game acak", "gx_g_back": "Kembali", "gx_g_change": "Ubah", "gx_g_sub": "Buka submenu", "gx_g_saveback": "Simpan dan kembali", "gx_g_results": "Lihat hasil", "gx_g_zoom": "Perbesar", "gx_g_pan": "Geser gambar", "gx_g_media": "Kotak, tangkapan, atau video", "gx_g_scroll": "Baca deskripsi", "gx_g_forget": "Lupakan perangkat", "gx_g_ingame": "Di dalam game: musik",
 			"gx_zoom": "PERBESAR", "gx_pan": "GESER",
 			"gx_info": "INFO", "gx_info_short": "INFO", "gx_g_info": "Lihat info game", "gx_media": "LIHAT", "gx_scroll": "GULIR", "gx_media_box": "Kotak", "gx_media_shot": "Tangkapan", "gx_media_video": "Video", "gx_players": "%s pemain", "gx_no_desc": "Tanpa deskripsi.", "gx_no_video": "Video tidak bisa diputar",
@@ -208,7 +208,7 @@ func init() {
 		"ja": {
 			"gx_fullscreen": "全画面", "gx_g_full": "全画面（拡大も）", "gx_g_spin": "モデルを回す",
 			"gx_recent": "最近遊んだ", "gx_mostplayed": "よく遊ぶ",
-			"gx_sys_reboot": "再起動", "gx_sys_poweroff": "電源を切る", "gx_sys_again": "もう一度Aを押す",
+			"gx_sys_reboot": "再起動", "gx_sys_poweroff": "電源を切る", "gx_sys_again": "もう一度Aを押す", "gx_sys_rescan": "ゲームを再スキャン", "gx_sys_restart_app": "Audiofilusを再起動",
 			"gx_g_choose": "選ぶ", "gx_g_games": "ゲームを見る", "gx_g_search": "検索", "gx_g_options": "オプション", "gx_g_system": "システム：Wi-FiとBluetooth", "gx_g_play": "遊ぶ", "gx_g_random": "ランダムなゲーム", "gx_g_back": "戻る", "gx_g_change": "変更", "gx_g_sub": "サブメニューを開く", "gx_g_saveback": "保存して戻る", "gx_g_results": "結果を見る", "gx_g_zoom": "拡大", "gx_g_pan": "画像を動かす", "gx_g_media": "パッケージ・画像・動画", "gx_g_scroll": "説明を読む", "gx_g_forget": "デバイスを削除", "gx_g_ingame": "ゲーム中：音楽",
 			"gx_zoom": "拡大", "gx_pan": "移動",
 			"gx_info": "詳細", "gx_info_short": "詳細", "gx_g_info": "ゲームの詳細を見る", "gx_media": "表示", "gx_scroll": "スクロール", "gx_media_box": "パッケージ", "gx_media_shot": "スクリーンショット", "gx_media_video": "動画", "gx_players": "%s人", "gx_no_desc": "説明はありません。", "gx_no_video": "動画を再生できません",
@@ -228,7 +228,7 @@ func init() {
 		"zh": {
 			"gx_fullscreen": "全屏", "gx_g_full": "全屏（可放大）", "gx_g_spin": "旋转模型",
 			"gx_recent": "最近玩过", "gx_mostplayed": "最常玩",
-			"gx_sys_reboot": "重启", "gx_sys_poweroff": "关机", "gx_sys_again": "再按一次 A",
+			"gx_sys_reboot": "重启", "gx_sys_poweroff": "关机", "gx_sys_again": "再按一次 A", "gx_sys_rescan": "重新扫描游戏", "gx_sys_restart_app": "重启 Audiofilus",
 			"gx_g_choose": "选择", "gx_g_games": "查看游戏", "gx_g_search": "搜索", "gx_g_options": "选项", "gx_g_system": "系统：Wi-Fi 和蓝牙", "gx_g_play": "开始游戏", "gx_g_random": "随机游戏", "gx_g_back": "返回", "gx_g_change": "更改", "gx_g_sub": "打开子菜单", "gx_g_saveback": "保存并返回", "gx_g_results": "查看结果", "gx_g_zoom": "放大", "gx_g_pan": "移动图片", "gx_g_media": "包装盒、截图或视频", "gx_g_scroll": "阅读简介", "gx_g_forget": "忘记设备", "gx_g_ingame": "游戏中：音乐",
 			"gx_zoom": "放大", "gx_pan": "移动",
 			"gx_info": "详情", "gx_info_short": "详情", "gx_g_info": "查看游戏详情", "gx_media": "查看", "gx_scroll": "滚动", "gx_media_box": "包装盒", "gx_media_shot": "截图", "gx_media_video": "视频", "gx_players": "%s 名玩家", "gx_no_desc": "暂无简介。", "gx_no_video": "无法播放视频",
@@ -248,7 +248,7 @@ func init() {
 		"ko": {
 			"gx_fullscreen": "전체 화면", "gx_g_full": "전체 화면 (확대)", "gx_g_spin": "모델 회전",
 			"gx_recent": "최근 플레이", "gx_mostplayed": "가장 많이 플레이",
-			"gx_sys_reboot": "다시 시작", "gx_sys_poweroff": "전원 끄기", "gx_sys_again": "A를 한 번 더",
+			"gx_sys_reboot": "다시 시작", "gx_sys_poweroff": "전원 끄기", "gx_sys_again": "A를 한 번 더", "gx_sys_rescan": "게임 다시 검색", "gx_sys_restart_app": "Audiofilus 다시 시작",
 			"gx_g_choose": "선택", "gx_g_games": "게임 보기", "gx_g_search": "검색", "gx_g_options": "옵션", "gx_g_system": "시스템: Wi-Fi와 블루투스", "gx_g_play": "플레이", "gx_g_random": "무작위 게임", "gx_g_back": "뒤로", "gx_g_change": "변경", "gx_g_sub": "하위 메뉴 열기", "gx_g_saveback": "저장하고 돌아가기", "gx_g_results": "결과 보기", "gx_g_zoom": "확대", "gx_g_pan": "이미지 이동", "gx_g_media": "박스, 스크린샷 또는 동영상", "gx_g_scroll": "설명 읽기", "gx_g_forget": "기기 삭제", "gx_g_ingame": "게임 중: 음악",
 			"gx_zoom": "확대", "gx_pan": "이동",
 			"gx_info": "정보", "gx_info_short": "정보", "gx_g_info": "게임 정보 보기", "gx_media": "보기", "gx_scroll": "스크롤", "gx_media_box": "박스", "gx_media_shot": "스크린샷", "gx_media_video": "동영상", "gx_players": "%s인", "gx_no_desc": "설명이 없습니다.", "gx_no_video": "동영상을 재생할 수 없음",

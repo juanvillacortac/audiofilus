@@ -1,6 +1,7 @@
 package proc
 
 import (
+	"os/exec"
 	"runtime"
 	"syscall"
 )
@@ -27,4 +28,17 @@ func NormalPriority(run func() error) error {
 	}
 	defer syscall.Setpriority(syscall.PRIO_PROCESS, 0, prev)
 	return run()
+}
+
+// OwnSession pone c en una sesión nueva (setsid) y lo devuelve. Para los
+// servicios del sistema que se lanzan desde la interfaz (bluetoothd,
+// connmand): si no, heredan el grupo de procesos de EmulationStation (la
+// interfaz es un port), y el ahorro agresivo de Knulli congela ese grupo
+// entero (S31emulationstation suspend) tras un rato sin tocar nada.
+func OwnSession(c *exec.Cmd) *exec.Cmd {
+	if c.SysProcAttr == nil {
+		c.SysProcAttr = &syscall.SysProcAttr{}
+	}
+	c.SysProcAttr.Setsid = true
+	return c
 }

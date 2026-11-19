@@ -2,6 +2,7 @@ package ui
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand/v2"
@@ -14,6 +15,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/juanvillacortac/audiofilus/internal/esdata"
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 )
 
 // El modo juego (solo en Knulli): la otra cara de Audiofilus, un lanzador de
@@ -758,6 +760,14 @@ func (a *App) gmCachePath() string { return filepath.Join(a.paths.Data, "gamemod
 
 // gmSaveResume apunta dónde está el modo juego.
 func (a *App) gmSaveResume() {
+	b, _ := json.Marshal(a.gmResumeHere())
+	if err := os.WriteFile(a.gmResumePath(), b, 0o644); err != nil {
+		log.Printf("game mode: %v", err)
+	}
+}
+
+// gmResumeHere es dónde está el modo juego, para volver ahí.
+func (a *App) gmResumeHere() gmResume {
 	g := &a.gm
 	r := gmResume{Screen: g.screen}
 	switch g.screen {
@@ -777,10 +787,58 @@ func (a *App) gmSaveResume() {
 			r.Game = gm.Path
 		}
 	}
-	b, _ := json.Marshal(r)
-	if err := os.WriteFile(a.gmResumePath(), b, 0o644); err != nil {
+	return r
+}
+
+// gmRescan vuelve a leer los juegos de todos los sistemas sin el caché
+// (como "Actualizar las listas de juegos" de ES): para lo que el caché no
+// ve, como un gamelist.xml cambiado sin cambiar de tamaño en el mismo
+// segundo, o ROMs nuevas en una subcarpeta. Al terminar, vuelve a donde
+// estaba.
+func (a *App) gmRescan() {
+	g := &a.gm
+	if g.loading {
+		return
+	}
+	if err := os.Remove(a.gmCachePath()); err != nil && !errors.Is(err, os.ErrNotExist) {
 		log.Printf("game mode: %v", err)
 	}
+	log.Printf("game mode: rescanning the games")
+	r := a.gmResumeHere()
+	if r.Screen == gmSysMenu {
+		r.Screen = gmSystems
+	}
+	g.resume, g.screen, g.opts = &r, gmSystems, nil
+	g.loading, g.err = true, ""
+	g.ch = make(chan gmLoaded, 1)
+	root, cache := g.root, a.gmCachePath()
+	go func() { g.ch <- loadGameData(root, cache) }()
+}
+
+// gmRestartApp reinicia Audiofilus: el servicio (que sigue sonando, como
+// con "restart") y la interfaz, que el lanzador del port vuelve a abrir
+// (con la marca de RestartPath, como al cambiar el HDMI) en el modo juego,
+// donde estaba.
+func (a *App) gmRestartApp() {
+	a.gmSaveConf()
+	log.Printf("game mode: restarting Audiofilus")
+	a.send("restart")
+	time.Sleep(300 * time.Millisecond) // que el servicio reciba el pedido antes de irnos
+	if os.Getenv("AUDIOFILUS_LAUNCHER") == "" {
+		// Sin el lanzador del port nadie la vuelve a abrir: se ejecuta otra vez.
+		a.gmSaveResume()
+		if err := proc.Reexec(); err != nil {
+			os.Remove(a.gmResumePath())
+			a.flash(err.Error())
+		}
+		return
+	}
+	if err := os.WriteFile(RestartPath, nil, 0o644); err != nil {
+		a.flash(err.Error())
+		return
+	}
+	a.gmSaveResume()
+	a.exit(true) // la música sigue
 }
 
 // gmCheckResume, una vez al arrancar (en cuanto se sabe en qué sistema

@@ -153,7 +153,11 @@ func startDetached(paths config.Paths) error {
 	c.SysProcAttr = detachAttr()
 	c.Env = append(os.Environ(), "AUDIOFILUS_HOME="+paths.Base)
 	closeInherited()
-	if err := c.Start(); err != nil {
+	// Con prioridad normal: en Knulli el port corre con nice -4, que es lo
+	// que el ahorro agresivo de Knulli congela tras un rato sin tocar nada
+	// (lo toma por un juego). El servicio va en su propia sesión, y por
+	// tanto en su propio autogroup: su nice no le quita CPU frente al juego.
+	if err := proc.NormalPriority(c.Start); err != nil {
 		return err
 	}
 	// Se espera a que responda el socket para que el siguiente comando lo encuentre.

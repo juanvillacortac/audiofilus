@@ -94,3 +94,18 @@ func LoadRequest(path string) (*Request, error) {
 	}
 	return &q, nil
 }
+
+// launcherMark es lo que tiene el lanzador del port de Audiofilus
+// (portmaster/Audiofilus.sh): así se reconoce aunque se llame de otra forma.
+const launcherMark = "AUDIOFILUS_LAUNCHER=1"
+
+// IsOwnLauncher dice si file (un archivo de la copia o de la consola) es el
+// lanzador de Audiofilus: un .sh con launcherMark. Lanzarlo desde el modo
+// juego abriría Audiofilus dentro de sí mismo.
+func IsOwnLauncher(file string) bool {
+	if !strings.EqualFold(path.Ext(file), ".sh") {
+		return false
+	}
+	b, err := os.ReadFile(file)
+	return err == nil && strings.Contains(string(b), launcherMark)
+}

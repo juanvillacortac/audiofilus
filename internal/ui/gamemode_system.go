@@ -25,7 +25,7 @@ import (
 
 // Las vistas del menú Sistema.
 const (
-	sysMain = iota // Wi-Fi, Bluetooth, opciones globales
+	sysMain = iota // Wi-Fi, Bluetooth, opciones globales, buscar juegos, reiniciar
 	sysWifi        // las redes
 	sysBT          // los dispositivos
 )
@@ -75,7 +75,7 @@ func (a *App) gmRun(busy string, timeout time.Duration, done func(out string, er
 		defer cancel()
 		var out []byte
 		err := proc.NormalPriority(func() (err error) { // ver proc.NormalPriority
-			out, err = exec.CommandContext(ctx, name, args...).CombinedOutput()
+			out, err = proc.OwnSession(exec.CommandContext(ctx, name, args...)).CombinedOutput()
 			return err
 		})
 		if err != nil {
@@ -173,8 +173,10 @@ func (a *App) gmSysRows() []gmRow {
 		{main: "Bluetooth", sub: onOff(sy.btOn)},
 		{main: T("gx_sys_devices")},
 		{main: T("gx_global")},
-		{main: T("gx_sys_reboot"), sub: confirm(5)},
-		{main: T("gx_sys_poweroff"), sub: confirm(6)},
+		{main: T("gx_sys_rescan")},
+		{main: T("gx_sys_restart_app")},
+		{main: T("gx_sys_reboot"), sub: confirm(7)},
+		{main: T("gx_sys_poweroff"), sub: confirm(8)},
 	}
 }
 
@@ -251,14 +253,18 @@ func (a *App) updateGMSysMain() {
 		a.gmSysBTList()
 	case sy.sel == 4 && in.Pressed(ActConfirm):
 		a.gmOpenOptions(T("gx_global"), esdata.Scope{})
-	case (sy.sel == 5 || sy.sel == 6) && in.Pressed(ActConfirm):
+	case sy.sel == 5 && in.Pressed(ActConfirm):
+		a.gmRescan()
+	case sy.sel == 6 && in.Pressed(ActConfirm):
+		a.gmRestartApp()
+	case (sy.sel == 7 || sy.sel == 8) && in.Pressed(ActConfirm):
 		// Reiniciar o apagar, con una segunda A para confirmar.
 		if sy.confirm != sy.sel || a.t-sy.confirmAt > gmConfirmTime {
 			sy.confirm, sy.confirmAt = sy.sel, a.t
 			return
 		}
 		sy.confirm = -1
-		a.gmPowerOff(sy.sel == 5)
+		a.gmPowerOff(sy.sel == 7)
 	}
 }
 
@@ -472,7 +478,7 @@ func (a *App) kickWifi() {
 		}
 		log.Printf("wifi: enabled but no network after %v: asking connman again", wifiKickAfter)
 		if err := proc.NormalPriority(func() (err error) { // connmand, con prioridad normal
-			out, err = exec.Command("knulli-wifi", "enable").CombinedOutput()
+			out, err = proc.OwnSession(exec.Command("knulli-wifi", "enable")).CombinedOutput()
 			return err
 		}); err != nil {
 			log.Printf("wifi: knulli-wifi enable: %v: %s", err, strings.TrimSpace(string(out)))
@@ -492,7 +498,7 @@ func (a *App) kickWifi() {
 		}
 		log.Printf("bluetooth: enabled but the adapter is off: starting it again")
 		if err := proc.NormalPriority(func() (err error) { // bluetoothd, con prioridad normal
-			out, err = exec.Command("knulli-bluetooth", "enable").CombinedOutput()
+			out, err = proc.OwnSession(exec.Command("knulli-bluetooth", "enable")).CombinedOutput()
 			return err
 		}); err != nil {
 			log.Printf("bluetooth: knulli-bluetooth enable: %v: %s", err, strings.TrimSpace(string(out)))

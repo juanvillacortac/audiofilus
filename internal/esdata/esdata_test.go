@@ -479,3 +479,27 @@ func TestRecordPlay(t *testing.T) {
 		t.Errorf("gametime not added up:\n%s", data)
 	}
 }
+
+// El lanzador del port se reconoce por su contenido (el de verdad, para que
+// no deje de reconocerse si cambia) y otros puertos no.
+func TestIsOwnLauncher(t *testing.T) {
+	if !IsOwnLauncher(filepath.Join("..", "..", "portmaster", "Audiofilus.sh")) {
+		t.Error("portmaster/Audiofilus.sh is not recognized")
+	}
+	dir := t.TempDir()
+	other := filepath.Join(dir, "Halo.sh")
+	os.WriteFile(other, []byte("#!/bin/bash\n./halo\n"), 0o644)
+	if IsOwnLauncher(other) {
+		t.Error("another port is recognized as Audiofilus")
+	}
+	renamed := filepath.Join(dir, "Musica.SH")
+	os.WriteFile(renamed, []byte("export AUDIOFILUS_LAUNCHER=1\n"), 0o644)
+	if !IsOwnLauncher(renamed) {
+		t.Error("a renamed launcher is not recognized")
+	}
+	notScript := filepath.Join(dir, "notes.txt")
+	os.WriteFile(notScript, []byte("export AUDIOFILUS_LAUNCHER=1\n"), 0o644)
+	if IsOwnLauncher(notScript) || IsOwnLauncher(filepath.Join(dir, "missing.sh")) {
+		t.Error("a file that is not a .sh, or is missing, is recognized")
+	}
+}

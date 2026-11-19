@@ -29,6 +29,10 @@ func (a *App) gmPlay(s *gmSystem, gm *esdata.Game) {
 		g.screen = gmViewer // las capturas se ven aquí
 		return
 	}
+	if esdata.IsOwnLauncher(g.root.Path(gm.Path)) {
+		a.setGameMode(false, g.root) // Audiofilus ya está abierto: al reproductor
+		return
+	}
 	emu, _ := esdata.CurrentEmulator(g.conf, esdata.Scope{System: &s.sys, Game: gm})
 	if esdata.SupportsSaveStates(emu) {
 		if states := g.root.SaveStates(&s.sys, gm); len(states) > 0 {

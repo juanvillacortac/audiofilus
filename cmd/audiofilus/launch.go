@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/esdata"
+	"github.com/juanvillacortac/audiofilus/internal/proc"
 	"github.com/juanvillacortac/audiofilus/internal/sdlmap"
 )
 
@@ -52,7 +53,10 @@ func runLaunch(args []string) int {
 		cmd.Stdout, cmd.Stderr = f, f
 	}
 	start := time.Now()
-	if err := cmd.Run(); err != nil {
+	// Con prioridad normal, como lo lanza ES: emulatorlauncher ya le pone
+	// nice -4 al juego, y sobre el -4 que este proceso hereda del port
+	// quedaba en -8. El ahorro agresivo de Knulli busca exactamente -4.
+	if err := proc.NormalPriority(cmd.Run); err != nil {
 		log.Printf("launch: %v", err)
 	}
 	played := time.Since(start)
@@ -125,7 +129,7 @@ func runESScripts(event string, args ...string) {
 			if st, err := os.Stat(f); err != nil || st.IsDir() || st.Mode()&0o111 == 0 {
 				continue
 			}
-			if err := exec.Command(f, args...).Run(); err != nil {
+			if err := proc.NormalPriority(exec.Command(f, args...).Run); err != nil {
 				log.Printf("launch: %s: %v", f, err)
 			}
 		}
