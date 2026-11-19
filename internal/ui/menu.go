@@ -199,9 +199,13 @@ func (a *App) openItemMenu(v *view) {
 	case vAlbums:
 		al := v.albums[v.sel]
 		a.menu = a.songsMenu(al.Title, al.Songs, nil, al.Artist)
+		if !al.noAlbum {
+			a.menu.items = append(a.menu.items, a.ytMoreItems(al.Artist, al.Title)...) // ytmusic.go
+		}
 	case vArtists:
 		ar := v.artists[v.sel]
 		a.menu = a.songsMenu(ar.Name, ar.AllSongs(), nil, "")
+		a.menu.items = append(a.menu.items, a.ytMoreItems(ar.Name, "")...)
 	case vPlaylists:
 		pl := v.playlists[v.sel]
 		a.smartFill(pl)
@@ -236,6 +240,7 @@ func (a *App) openItemMenu(v *view) {
 		}
 		a.menu = a.songsMenu(s.Title, songs, al, artist)
 		a.menu.items = append(a.menu.items, a.markItems(s)...)
+		a.menu.items = append(a.menu.items, a.ytMoreItems(artist, "")...)
 		if v.kind == vPlaylist && v.pl != nil && !v.pl.Remote {
 			a.menu.items = append(a.menu.items, a.playlistSongItems(v.pl, v.sel)...)
 		}

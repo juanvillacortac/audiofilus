@@ -246,8 +246,12 @@ func (a *App) updateTyping() {
 		s.row = (s.row - 1 + rows) % rows
 	case in.Repeat(ActDown):
 		s.row = (s.row + 1) % rows
+	case in.Pressed(ActLeft) && s.col == 0:
+		// En la primera columna, ◀ sale a las secciones con lo escrito
+		// intacto (B borra letra a letra), como en los resultados.
+		a.tabFocus = true
 	case in.Repeat(ActLeft):
-		s.col = (s.col - 1 + len(oskKeys[s.row])) % len(oskKeys[s.row])
+		s.col = max(0, s.col-1)
 	case in.Repeat(ActRight):
 		s.col = (s.col + 1) % len(oskKeys[s.row])
 	case in.Pressed(ActConfirm):
@@ -478,7 +482,7 @@ func (a *App) searchHints() []hint {
 	case a.search.typing && a.pcTyping():
 		return []hint{{"ENTER", T("h_search")}, {"ESC", T("h_back")}}
 	case a.search.typing:
-		return []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_search")}}
+		return []hint{{"A", T("h_type")}, {"B", T("h_del")}, {"X", T("h_space")}, {"START", T("h_search")}, {"<", T("h_back")}}
 	}
 	return []hint{{"A", T("h_open")}, {"START", T("h_more")}, {"L1/R1", T("h_filter")}, {"B", T("h_keys")}}
 }

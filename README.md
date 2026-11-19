@@ -74,7 +74,7 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 - The interface colors come from the album cover.
 - **Liked songs and ratings** (1 to 5), synced with Subsonic/Navidrome and Jellyfin.
 - **Smart playlists** that fill themselves from rules (most played, never played, recently added, by genre or year...), with ready-made ones.
-- **Edit tags** of songs and albums (MP3, FLAC, Ogg, Opus, M4A), **find missing covers** (Cover Art Archive, iTunes) and **fix albums from MusicBrainz**.
+- **Edit tags** of songs and albums (MP3, FLAC, Ogg, Opus, M4A), **find missing covers** (Cover Art Archive, iTunes) and **fix albums from MusicBrainz**, or look up a single song's title, album, year and cover.
 - **Send to speakers and TVs** on your network (DLNA/UPnP and Chromecast), **share your library over DLNA** and **receive music** from phones and other DLNA apps.
 - **History:** Recent and Most played lists, and stats (plays, hours, top artists, albums and songs).
 - **Scrobbling** to Last.fm and ListenBrainz (queued while offline), and play counts on your Subsonic or Jellyfin server.
@@ -167,7 +167,7 @@ More in [docs/milkdrop.md](docs/milkdrop.md).
 - On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
 - The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.
 - Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
-- 13 languages: English, Spanish, Portuguese, French, Italian, German, Polish, Turkish (thanks to volkybaba), Russian, Indonesian, Japanese, Chinese and Korean. Japanese, Chinese and Korean text (song titles too) shows in a pixel font, Fusion Pixel. 12 h (AM/PM) or 24 h clock.
+- 21 languages: English, Spanish, Portuguese, French, Italian, German, Dutch, Swedish, Polish, Turkish (thanks to volkybaba), Russian, Ukrainian, Indonesian, Vietnamese, Japanese, Simplified and Traditional Chinese, Korean, Thai, Hindi and Arabic. Japanese, Chinese and Korean text (song titles too) shows in a pixel font, Fusion Pixel, and Thai in Silver (Poppy Works); Vietnamese letters the pixel fonts lack are assembled from their own accents; Hindi and Arabic are shaped properly (conjuncts, joined letters, right to left) and drawn with crisp pixels. 12 h (AM/PM) or 24 h clock.
 - **Color:** each album's colors, or a fixed color to match your console's shell (red, orange, yellow, green, ice blue, blue, purple, pink, pearl pink, white, platinum, graphite or black).
 - With a station or a podcast playing, `B` on Now Playing goes back to Radio or Podcasts instead of the library.
 - On desktop: fullscreen with sharp pixels.

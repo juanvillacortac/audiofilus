@@ -124,6 +124,9 @@ func (a *App) addMetaItems(v *view) {
 	var items []menuItem
 	if s := localTaggable(song); len(s) == 1 {
 		items = append(items, menuItem{label: T("tg_edit"), icon: "pencil", do: func() { a.openTagEditor(s, false) }})
+		if !a.offline {
+			items = append(items, menuItem{label: T("tg_lookup"), icon: "search", do: func() { a.songLookup(s[0]) }})
+		}
 	}
 	if al != nil {
 		if s := localTaggable(al.Songs); len(s) > 0 {

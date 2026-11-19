@@ -196,6 +196,41 @@ func (a *App) ytReporter(j *ytJob) func(ytm.Progress) {
 	}
 }
 
+// ytSearchFor abre Buscar con q en YouTube Music: desde el menú de un
+// artista o de un álbum, para encontrar (y descargar) más de lo suyo.
+func (a *App) ytSearchFor(q string) {
+	q = strings.TrimSpace(q)
+	if a.yt.bin == "" || q == "" {
+		return
+	}
+	rs := []rune(q)
+	if len(rs) > 40 { // lo que cabe en la caja de Buscar
+		rs = rs[:40]
+	}
+	a.screen, a.libTab, a.tabFocus = LibraryScreen, tabSearch, false
+	s := &a.search
+	s.query, s.scope, s.lastQuery, s.typing, s.sel = rs, scopeYT, "", false, 0
+	a.searchOnline(string(rs))
+	a.updateSearchResults()
+}
+
+// ytMoreItems son las entradas de YouTube Music del menú de un artista o
+// un álbum (nada si no hay yt-dlp).
+func (a *App) ytMoreItems(artist, album string) []menuItem {
+	if a.yt.bin == "" || a.mobile() {
+		return nil
+	}
+	var items []menuItem
+	if album != "" {
+		q := strings.TrimSpace(artist + " " + album)
+		items = append(items, menuItem{label: T("ytm_more_album"), icon: "search", do: func() { a.ytSearchFor(q) }})
+	}
+	if artist != "" {
+		items = append(items, menuItem{label: T("ytm_more_artist"), icon: "search", do: func() { a.ytSearchFor(artist) }})
+	}
+	return items
+}
+
 // ytSearch busca q en YouTube Music en segundo plano.
 func (a *App) ytSearch(q string) {
 	q = strings.TrimSpace(q)
