@@ -22,8 +22,11 @@ type Config struct {
 	// SampleRate es la frecuencia de salida; toda canción se remuestrea a ella.
 	SampleRate int `json:"sample_rate"`
 	// BufferMS es el búfer de audio. Uno mayor despierta la CPU menos veces.
-	BufferMS int     `json:"buffer_ms"`
-	Volume   float64 `json:"volume"`
+	BufferMS int `json:"buffer_ms"`
+	// AudioOutput es la salida de audio elegida en Ajustes (el ID de
+	// platform.Output); vacía es automático: un DAC USB al conectarlo.
+	AudioOutput string  `json:"audio_output,omitempty"`
+	Volume      float64 `json:"volume"`
 	// Language es el idioma de la interfaz ("es", "en"); vacío lo elige por $LANG.
 	Language string  `json:"language"`
 	Sleep    Sleep   `json:"sleep"`

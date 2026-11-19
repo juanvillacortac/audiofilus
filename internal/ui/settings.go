@@ -58,6 +58,7 @@ const (
 	setMPD
 	setOrientation
 	setVControls
+	setOutput
 	setCount
 )
 
@@ -118,6 +119,7 @@ var settingSections = []settingSection{
 	{"sec_sound", []settingTile{
 		{setReplayGain, "speaker", tileChoice},
 		{setEQ, "eq", tileAction},
+		{setOutput, "headphones", tileAction},
 		{setRate, "headphones", tileChoice},
 		{setResampler, "headphones", tileChoice},
 		{setCrossfeed, "headphones", tileChoice},
@@ -189,6 +191,9 @@ func (a *App) sections() []settingSection {
 		setVibration: a.mobile() || a.status.Platform == "" || a.status.Platform == "desktop",
 		// Girar la interfaz, solo en las portátiles (el móvil gira solo).
 		setOrientation: !handheldUI || a.mobile(),
+		// La salida de audio, si el servicio da a elegir (no en Windows,
+		// macOS ni el móvil, que cambian solos).
+		setOutput: a.mobile() || len(a.status.Outputs) == 0,
 		// Cómo se maneja en vertical, solo si está en vertical.
 		setVControls: !handheldUI || a.mobile() || a.cfg.UI.Orientation == ""}
 	var out []settingSection
@@ -318,6 +323,8 @@ func (a *App) updateSettings() {
 			a.openScrobbleMenu()
 		case setMPD:
 			a.openMPDMenu() // mpdui.go
+		case setOutput:
+			a.openOutputMenu() // outputui.go
 		}
 	}
 }
@@ -623,6 +630,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.cfg.MPD.On)
 	case setRate:
 		return rateLabel(a.cfg.SampleRate)
+	case setOutput:
+		return a.outputValue()
 	case setScrobble:
 		var names []string
 		if a.cfg.Scrobble.LastFMSession != "" {
@@ -689,6 +698,7 @@ func settingNames() [setCount]string {
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
 		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"), T("set_orientation"), T("set_vcontrols"),
+		T("set_output"),
 	}
 }
 

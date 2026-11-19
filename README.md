@@ -58,6 +58,7 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 - **Resampling**: a light linear one on handhelds (battery) and a high-quality sinc one on the desktop, or pick one.
 - **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
 - **Output rate** of 44.1, 48, 96 or 192 kHz.
+- **USB DACs:** plug one in and the music moves to it; unplug it and the music pauses and goes back to the previous output. Settings → Audio output can also pin any output. Works on Knulli, muOS, ROCKNIX, ArkOS, TrimUI, EmuELEC and desktop Linux; Windows, macOS, Android and iOS already switch on their own.
 
 <p align="center">
   <img src="site/img/eq.png" alt="The 10-band equalizer with the Rock preset" width="360">
@@ -274,7 +275,7 @@ Both leave in `dist/`:
 | `audiofilus-windows-amd64.exe` | The same for Windows |
 | `audiofilus.zip` | The PortMaster port |
 
-The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile, libxmp and the FFmpeg layer for WMA (`libavshim`) are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend.
+The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile, libxmp and the FFmpeg layer for WMA (`libavshim`) are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend, and audio goes through [a fork of oto](https://github.com/juanvillacortac/oto/tree/alsa-device) that can open a chosen ALSA card.
 
 ### CLI
 

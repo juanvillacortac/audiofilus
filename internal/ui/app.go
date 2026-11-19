@@ -8,6 +8,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/engine"
 	"github.com/juanvillacortac/audiofilus/internal/history"
 	"github.com/juanvillacortac/audiofilus/internal/lyrics"
+	"github.com/juanvillacortac/audiofilus/internal/platform"
 	"github.com/juanvillacortac/audiofilus/internal/podcast"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
 	"github.com/juanvillacortac/audiofilus/internal/remote"
@@ -1162,6 +1163,9 @@ func (a *App) simulatePlaying() {
 	a.isPlaying, a.position, a.duration = true, 64, 231
 	a.status.Shuffle, a.status.Repeat, a.status.Volume = true, "off", 1
 	a.status.Output = "bluetooth"
+	// Salidas de ejemplo, para que se vea la baldosa de la salida de audio.
+	a.status.Outputs = []platform.Output{{ID: "codec", Name: "Audio Codec"}, {ID: "usb-dac", Name: "USB Audio DAC", USB: true}}
+	a.status.OutputID = "usb-dac"
 	a.volume = 1
 	a.themeFor = al
 	root := a.rootView(tabAlbums)

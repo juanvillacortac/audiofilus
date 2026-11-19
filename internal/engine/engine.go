@@ -89,6 +89,11 @@ type Engine struct {
 	fbuf    []float32
 	boost   float32 // el refuerzo por encima del 100 % (1 = ninguno), con limitador
 	limit   limiter
+	// cut es lo que baja el volumen de salida por software (0 = nada, 1 =
+	// silencio): hace de volumen del sistema cuando este no llega a la
+	// salida, con un DAC USB por ALSA directo, donde los botones de la
+	// consola mueven el control de la tarjeta interna.
+	cut float32
 	// El sonido (dsp.go): la configuración, el ecualizador, la ganancia de
 	// ReplayGain de lo que suena y sus etiquetas (para recalcularla).
 	dsp DSP
@@ -311,6 +316,7 @@ func (e *Engine) Read(p []byte) (int, error) {
 	e.xfeed.process(buf[:n])
 	e.limit.process(buf[:n], e.boost, len(e.eq.bands) > 0 || e.gain > 1)
 	e.meter.add(buf[:n], time.Now().Add(e.meter.latency), e.rate)
+	gainBuf(buf[:n], 1-e.cut) // después del medidor: como un volumen de hardware
 	for i := 0; i < n; i++ {
 		binary.LittleEndian.PutUint32(p[i*4:], math.Float32bits(buf[i]))
 	}
@@ -830,6 +836,15 @@ func (e *Engine) SetVolume(v float64) {
 	if playing {
 		e.player.SetVolume(math.Min(v, 1))
 	}
+}
+
+// SetMaster pone el volumen de salida por software (0..1), el que hace de
+// volumen del sistema cuando este no llega a la salida (ver cut).
+func (e *Engine) SetMaster(v float64) {
+	v = math.Max(0, math.Min(v, 1))
+	e.mu.Lock()
+	e.cut = float32(1 - v*v) // curva cuadrática: el oído no es lineal
+	e.mu.Unlock()
 }
 
 // SetSpeed cambia la velocidad de reproducción (de 0,5 a 3; 1 es normal) sin

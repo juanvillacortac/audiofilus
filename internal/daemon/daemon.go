@@ -71,6 +71,19 @@ type Daemon struct {
 	timer   *time.Timer
 	// restarting: el servicio se cierra para volver a arrancar (restart).
 	restarting bool
+	// restartPaused: el reinicio es porque se desconectó el DAC por el
+	// que sonaba; el nuevo arranca en pausa, como al quitar los audífonos.
+	restartPaused bool
+
+	// La salida de audio (outputs.go): quien la elige (nil si el sistema),
+	// la de antes de pasar a un DAC (para volver al quitarlo), las que se
+	// conocían y si el volumen del sistema va por software (DAC por ALSA).
+	outs     platform.Outputs
+	outPrev  string
+	outCur   string
+	outKnown map[string]bool
+	softVol  bool
+	outStop  chan struct{}
 	// openedAt es el último "open" (archivos abiertos desde el explorador).
 	openedAt     time.Time
 	awakeApplied bool       // si la plataforma está impidiendo la suspensión ahora
@@ -130,6 +143,9 @@ func Run(paths config.Paths) error {
 	if err != nil {
 		return fmt.Errorf("config %s: %w", paths.Config, err)
 	}
+	// Sin PipeWire/PulseAudio, oto abre una tarjeta al arrancar: se elige
+	// antes (outputs.go).
+	alsaOut := platform.PickALSAOutput(cfg.AudioOutput)
 	eng, err := engine.New(cfg.SampleRate, time.Duration(cfg.BufferMS)*time.Millisecond)
 	if err != nil {
 		return fmt.Errorf("audio output: %w", err)
@@ -148,6 +164,8 @@ func Run(paths config.Paths) error {
 
 		sysVolume: -1,
 	}
+	d.startOutputs(alsaOut)
+	defer d.stopOutputs()
 	log.Printf("audiofilus on %s, home %s", d.plat.Name(), paths.Base)
 	// El remuestreo "auto": el fiel en el escritorio, el barato en las
 	// portátiles (la batería).
@@ -366,7 +384,9 @@ loop:
 	if restarting {
 		// Que el nuevo siga sonando si esto sonaba.
 		st := config.LoadState(paths)
-		st.Resume = playing
+		d.mu.Lock()
+		st.Resume = playing && !d.restartPaused // se fue el DAC: en pausa
+		d.mu.Unlock()
 		_ = config.SaveState(paths, st)
 		log.Print("restarting")
 		return ErrRestart
@@ -588,6 +608,7 @@ func (d *Daemon) volumeStep(delta int) {
 		d.sysSetAt = time.Now()
 	}
 	d.mu.Unlock()
+	d.applySoftVolume(sys)
 	// Una vibración corta al llegar a 0, a 100 (el tope del sistema) o a 200:
 	// se notan los límites sin mirar la pantalla (en el bolsillo, en sleep).
 	if total := d.totalVolume(); total != totalBefore && (total == 0 || total == 100 || total == 200) {
@@ -922,6 +943,12 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		// de hacerlo); mientras, los controles que lee el servicio van a ella.
 		d.setRemote(len(req.Args) > 0 && req.Args[0] == "on")
 		return nil, nil
+	case "output":
+		// output <id|auto>: la salida de audio (Ajustes).
+		if len(req.Args) != 1 {
+			return nil, errors.New("usage: output <id>|auto")
+		}
+		d.chooseOutput(req.Args[0])
 	case "vibration":
 		// vibration <off|low|mid|high>: la fuerza de la vibración (Ajustes);
 		// vibra una vez para que se note la nueva.
@@ -1041,6 +1068,12 @@ type FullStatus struct {
 	// Output es por dónde sale el sonido: speaker, wired, bluetooth o "" si
 	// no se sabe.
 	Output string `json:"output"`
+	// Outputs son las salidas de audio que se pueden elegir (Ajustes), la
+	// que suena y la elegida ("" es automático); sin Outputs no hay
+	// elección (lo hace el sistema).
+	Outputs    []platform.Output `json:"outputs,omitempty"`
+	OutputID   string            `json:"output_id,omitempty"`
+	OutputPref string            `json:"output_pref,omitempty"`
 	// Meter son el nivel y los graves de lo último que se oye y lo que se va a
 	// oír (engine/meter.go): para el visualizador y el tetris.
 	Meter []engine.MeterPoint `json:"meter,omitempty"`
@@ -1066,6 +1099,7 @@ func (d *Daemon) status() FullStatus {
 	s.Receiving = d.receiving(s.Track.Path)
 	s.Cover = d.receivedCover(s.Track.Path)
 	s.Lid = d.plat.LidClosed()
+	s.Outputs, s.OutputID, s.OutputPref = d.outputsStatus()
 	d.mu.Lock()
 	s.Alarm = d.alarm
 	d.mu.Unlock()
