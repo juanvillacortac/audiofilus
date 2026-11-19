@@ -65,7 +65,7 @@ func (a *App) initServers() {
 
 // addSource añade un servidor y empieza a cargarlo.
 func (a *App) addSource(srv config.Server) *remoteSource {
-	src := &remoteSource{srv: srv, lib: buildLibrary(nil), loading: true}
+	src := &remoteSource{srv: srv, lib: buildLibrary(nil, nil), loading: true}
 	a.remotes = append(a.remotes, src)
 	go a.loadCatalog(src)
 	return src
@@ -152,7 +152,7 @@ func buildRemoteLibrary(server string, cat catalog) (*Library, map[string]remote
 		entries = append(entries, e)
 		songs[s.ID] = s
 	}
-	lib := buildLibrary(entries)
+	lib := buildLibrary(entries, nil)
 	for _, p := range cat.Playlists {
 		pl := &Playlist{Name: p.Name, Remote: true, server: server, srvID: p.ID}
 		for k, id := range p.Songs {

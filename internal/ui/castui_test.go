@@ -96,7 +96,7 @@ func TestCastFlow(t *testing.T) {
 	lib := buildLibrary([]entry{
 		{Path: filepath.Join(dir, "tone.mp3"), Title: "Uno", Artist: "Prueba", Album: "Tonos", Track: 1},
 		{Path: filepath.Join(dir, "tone.flac"), Title: "Dos", Artist: "Prueba", Album: "Tonos", Track: 2},
-	})
+	}, nil)
 	a := &App{lib: lib, local: lib}
 	a.playing, a.playingSong = lib.Albums[0], lib.Albums[0].Songs[0]
 

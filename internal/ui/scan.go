@@ -120,7 +120,7 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 			}
 		}
 	}
-	lib := buildLibrary(entries)
+	lib := buildLibrary(entries, dirs)
 	lib.Roots = dirs
 	// Las listas de la música y las propias (data/playlists, playlists.go).
 	lib.addPlaylists(library.FindPlaylists(append(slices.Clone(dirs), filepath.Join(paths.Data, "playlists"))))
@@ -141,7 +141,7 @@ func loadCachedLibrary(paths config.Paths, dirs []string) *Library {
 	if json.Unmarshal(b, &c) != nil || c.Version < cacheVersion || !slices.Equal(c.Dirs, dirs) || len(c.Entries) == 0 {
 		return nil
 	}
-	lib := buildLibrary(c.Entries)
+	lib := buildLibrary(c.Entries, dirs)
 	lib.Roots = dirs
 	lib.addPlaylists(library.FindPlaylists([]string{filepath.Join(paths.Data, "playlists")}))
 	return lib

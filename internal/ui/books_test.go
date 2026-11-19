@@ -125,7 +125,7 @@ func TestQuizSkipsBooks(t *testing.T) {
 func TestNoAlbumLanguage(t *testing.T) {
 	defer SetLanguage(lang)
 	SetLanguage("en")
-	lib := buildLibrary([]entry{{Path: "a.mp3", Title: "A"}})
+	lib := buildLibrary([]entry{{Path: "a.mp3", Title: "A"}}, nil)
 	if len(lib.Albums) != 1 || lib.Albums[0].Title != "No album" || lib.Songs[0].Album != "No album" {
 		t.Fatalf("album %q, song album %q, want No album", lib.Albums[0].Title, lib.Songs[0].Album)
 	}

@@ -19,6 +19,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -159,8 +160,10 @@ func (l *Library) AlbumOf(path string) (*Album, int) {
 
 // buildLibrary agrupa las canciones escaneadas por álbum (álbum + artista del
 // álbum) y las ordena: los álbumes por artista y título, las canciones de cada
-// álbum por número de pista.
-func buildLibrary(entries []entry) *Library {
+// álbum por número de pista. Una canción sin álbum en sus etiquetas toma el
+// de su carpeta (folderAlbum); roots son las carpetas de la música, que no
+// cuentan como álbum.
+func buildLibrary(entries []entry, roots []string) *Library {
 	lib := &Library{byPath: map[string]*Album{}, song: map[string]Song{}, meta: map[string]songMeta{}}
 	byKey := map[string]*Album{}
 	for _, e := range entries {
@@ -169,6 +172,9 @@ func buildLibrary(entries []entry) *Library {
 		file := audioFile(e.Path)
 		if s.Title == "" {
 			s.Title = strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
+		}
+		if s.Album == "" {
+			s.Album = folderAlbum(e.Path, roots)
 		}
 		noAlbum := s.Album == ""
 		if noAlbum {
@@ -524,6 +530,41 @@ func (a *Album) decodeRemoteCover() image.Image {
 		return nil
 	}
 	return img
+}
+
+// discFolder reconoce las carpetas de un disco dentro de un álbum ("CD1",
+// "Disc 2", "disk_3"): el álbum es la de arriba.
+var discFolder = regexp.MustCompile(`(?i)^(cd|dis[ck])[ _-]*\d+$`)
+
+// folderAlbum es el álbum de una canción sin etiqueta de álbum: el nombre de
+// su carpeta (o el de la de arriba, si es la de un disco). Muchos rips
+// antiguos (WMA de Windows Media Player, por ejemplo) no traen la etiqueta
+// en todos los archivos, pero sí van un álbum por carpeta. "" para lo que no
+// es un archivo local y para las canciones sueltas en una carpeta de la
+// música (roots).
+func folderAlbum(path string, roots []string) string {
+	file := audioFile(path)
+	if strings.Contains(file, "://") || !filepath.IsAbs(file) {
+		return ""
+	}
+	dir := filepath.Dir(file)
+	isRoot := func(d string) bool {
+		for _, r := range roots {
+			if filepath.Clean(r) == d {
+				return true
+			}
+		}
+		return d == filepath.Dir(d) // la raíz del sistema
+	}
+	if isRoot(dir) {
+		return ""
+	}
+	if name := filepath.Base(dir); discFolder.MatchString(name) {
+		if up := filepath.Dir(dir); !isRoot(up) {
+			return filepath.Base(up)
+		}
+	}
+	return filepath.Base(dir)
 }
 
 // audioFile es el archivo de una canción: el mismo path, o el del disco
