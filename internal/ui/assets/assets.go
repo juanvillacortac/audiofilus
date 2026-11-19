@@ -4,7 +4,8 @@ package assets
 import "embed"
 
 // FS tiene las fuentes (Jersey 10, Tiny5 y Fusion Pixel, comprimida; licencia
-// OFL, ver los OFL-*.txt).
+// OFL, ver los OFL-*.txt) y el tailandés de Silver (CC BY 4.0, ver
+// CC-BY-Silver.txt).
 //
 //go:embed fonts/*.ttf fonts/*.ttf.gz
 var FS embed.FS

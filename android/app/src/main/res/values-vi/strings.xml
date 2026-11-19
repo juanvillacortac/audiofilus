@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Phát nhạc</string>
+    <string name="folder_unreadable">Không đọc được %1$s. Hãy cho phép Audiofilus truy cập nhạc và âm thanh, hoặc chọn thư mục khác.</string>
+    <string name="need_audio_permission">Audiofilus cần quyền truy cập nhạc và âm thanh để đọc thư mục đó. Bạn có thể cấp quyền trong cài đặt ứng dụng.</string>
+    <string name="folder_picked">Thư mục nhạc: %1$s (%2$d mục)</string>
+</resources>

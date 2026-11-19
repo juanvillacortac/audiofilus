@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">播放</string>
+    <string name="folder_unreadable">無法讀取 %1$s。請允許 Audiofilus 存取音樂和音訊，或選擇其他資料夾。</string>
+    <string name="need_audio_permission">Audiofilus 需要音樂和音訊權限才能讀取該資料夾。你可以在應用程式設定中允許。</string>
+    <string name="folder_picked">音樂資料夾：%1$s（%2$d 個項目）</string>
+</resources>

@@ -6,15 +6,19 @@ import (
 	"strings"
 )
 
-// Los idiomas de la interfaz. Solo los que caben en las dos fuentes pixel art
-// (Jersey 10 y Tiny5 cubren el latín básico con tildes, ñ, ¿ y ¡): otro
-// alfabeto obligaría a cargar otra fuente. Para añadir uno, se copia el bloque
-// de "en" y se comprueba que todas sus letras salen en las capturas.
-var languages = []string{"es", "en", "pt", "fr", "it", "de", "pl", "tr", "ru", "id", "ja", "zh", "ko"}
+// Los idiomas de la interfaz. Sus letras tienen que salir en las fuentes pixel
+// art (fonts.go): Jersey 10 y Tiny5 para el latín y el cirílico, Fusion Pixel
+// para el japonés, el chino y el coreano, Silver para el tailandés, y las
+// letras del vietnamita que faltan se arman (compose.go). Para añadir uno, se
+// copia el bloque de "en" y se comprueba en las capturas que todas sus letras
+// salen.
+var languages = []string{"es", "en", "pt", "fr", "it", "de", "nl", "sv", "pl", "tr", "ru", "uk", "id", "vi", "ja", "zh", "zh-TW", "ko", "th", "hi", "ar"}
 
 // langNames es el nombre de cada idioma en su propio idioma.
-var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe", "de": "Deutsch", "fr": "Français", "ja": "日本語", "zh": "中文",
-	"pt": "Português", "it": "Italiano", "pl": "Polski", "ru": "Русский", "id": "Indonesia", "ko": "한국어"}
+var langNames = map[string]string{"es": "Español", "en": "English", "tr": "Türkçe", "de": "Deutsch", "fr": "Français", "ja": "日本語", "zh": "简体中文", "zh-TW": "繁體中文",
+	"pt": "Português", "it": "Italiano", "pl": "Polski", "ru": "Русский", "id": "Indonesia", "ko": "한국어",
+	"vi": "Tiếng Việt", "th": "ไทย", "nl": "Nederlands", "sv": "Svenska", "uk": "Українська",
+	"hi": "हिन्दी", "ar": "العربية"}
 
 var strs = map[string]map[string]string{
 	"es": {
@@ -2108,6 +2112,10 @@ func SetLanguage(l string) {
 				if _, ok := strs[v[:min(2, len(v))]]; ok {
 					l = v[:2]
 				}
+				// El chino de Taiwán y Hong Kong, en tradicional.
+				if strings.HasPrefix(v, "zh_TW") || strings.HasPrefix(v, "zh_HK") || strings.HasPrefix(v, "zh_Hant") {
+					l = "zh-TW"
+				}
 				break
 			}
 		}
@@ -2123,7 +2131,7 @@ func SetLanguage(l string) {
 // la usan.
 func decimal(s string) string {
 	switch lang {
-	case "es", "tr", "de", "fr", "pt", "it", "pl", "ru", "id":
+	case "es", "tr", "de", "fr", "pt", "it", "pl", "ru", "id", "vi", "nl", "sv", "uk":
 		return strings.Replace(s, ".", ",", 1)
 	}
 	return s

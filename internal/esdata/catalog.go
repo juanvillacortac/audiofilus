@@ -27,18 +27,26 @@ func (c Catalog) Tr(s string) string {
 // localeDirs son las carpetas de locale de cada idioma de Audiofilus, en
 // orden de preferencia (Knulli trae unas con país y otras sin).
 var localeDirs = map[string][]string{
-	"es": {"es", "es_ES", "es_MX"},
-	"pt": {"pt_BR", "pt", "pt_PT"},
-	"fr": {"fr", "fr_FR"},
-	"it": {"it", "it_IT"},
-	"de": {"de", "de_DE"},
-	"pl": {"pl", "pl_PL"},
-	"tr": {"tr", "tr_TR"},
-	"ru": {"ru", "ru_RU"},
-	"id": {"id_ID", "id"},
-	"ja": {"ja", "ja_JP"},
-	"zh": {"zh_CN", "zh", "zh_TW"},
-	"ko": {"ko", "ko_KR"},
+	"es":    {"es", "es_ES", "es_MX"},
+	"pt":    {"pt_BR", "pt", "pt_PT"},
+	"fr":    {"fr", "fr_FR"},
+	"it":    {"it", "it_IT"},
+	"de":    {"de", "de_DE"},
+	"pl":    {"pl", "pl_PL"},
+	"tr":    {"tr", "tr_TR"},
+	"ru":    {"ru", "ru_RU"},
+	"id":    {"id_ID", "id"},
+	"ja":    {"ja", "ja_JP"},
+	"zh":    {"zh_CN", "zh", "zh_TW"},
+	"zh-TW": {"zh_TW", "zh"},
+	"ko":    {"ko", "ko_KR"},
+	"vi":    {"vi", "vi_VN"},
+	"th":    {"th", "th_TH"},
+	"nl":    {"nl", "nl_NL"},
+	"sv":    {"sv", "sv_SE"},
+	"uk":    {"uk", "uk_UA"},
+	"hi":    {"hi", "hi_IN"},
+	"ar":    {"ar", "ar_SA"},
 }
 
 // LoadCatalog lee el catálogo de ES del idioma lang ("es", "pt"...): nil

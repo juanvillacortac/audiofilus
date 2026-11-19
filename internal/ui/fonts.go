@@ -25,7 +25,10 @@ import (
 // Jersey). Hay dos variantes, porque el japonés y el chino dibujan distinto
 // los mismos caracteres: va primero la del idioma de la interfaz (la china en
 // chino, la japonesa en los demás) y la otra detrás. Así los kanji de un
-// título salen en cualquier idioma.
+// título salen en cualquier idioma. El tailandés, que no tiene ninguna, sale
+// de Silver (pixel art, CC BY 4.0), recortada a ese alfabeto: no hay una a
+// 8 px, así que va a su tamaño (19 px) en el texto y en los títulos, y
+// sobresale un poco de las líneas de Tiny5.
 var (
 	// BigFace es Jersey 10: rejilla de 75 unidades sobre 1400, así que a
 	// 1400/75 px cada píxel de la letra cae en uno del lienzo. Mayúsculas de
@@ -41,6 +44,12 @@ var (
 	bigBase, smallBase text.Face
 	cjkBig, cjkSmall   [2]text.Face
 )
+
+// thaiFont es Silver solo con el tailandés (10 KB: se carga con las de base).
+const thaiFont = "fonts/Silver-thai.ttf"
+
+// thaiPx es el tamaño de Silver: su rejilla es de 1900/100 = 19 px.
+const thaiPx = 19
 
 // cjkFonts son los archivos de Fusion Pixel 8px, comprimidos (sin
 // comprimir pesan 3,7 MB cada uno).
@@ -76,11 +85,21 @@ func LoadFonts() error {
 	if err != nil {
 		return err
 	}
-	bigMain := text.Face(text.NewGoXFace(big))
-	if m, err := text.NewMultiFace(bigMain, text.NewGoXFace(tinyBig)); err == nil {
-		bigMain = m
+	// Las letras con marcas que les falten (el vietnamita), armadas con sus
+	// partes (compose.go).
+	bigFaces := []text.Face{text.NewGoXFace(newComposeFace(big, 2)), text.NewGoXFace(newComposeFace(tinyBig, 2))}
+	smallFaces := []text.Face{text.NewGoXFace(newComposeFace(small, 1))}
+	// El tailandés, con las medidas de cada una (ver newFace): si no carga,
+	// sigue sin él.
+	if f, err := parseFont(thaiFont); err == nil {
+		tb, err1 := newFace(f, thaiFont, thaiPx, big)
+		ts, err2 := newFace(f, thaiFont, thaiPx, small)
+		if err1 == nil && err2 == nil {
+			bigFaces = append(bigFaces, text.NewGoXFace(tb))
+			smallFaces = append(smallFaces, text.NewGoXFace(ts))
+		}
 	}
-	bigBase, smallBase = bigMain, text.NewGoXFace(small)
+	bigBase, smallBase = multiFace(bigFaces), multiFace(smallFaces)
 	cjkBig, cjkSmall = [2]text.Face{}, [2]text.Face{}
 	setFontOrder()
 	cjkLoaded = make(chan [2][2]text.Face, 1)
@@ -101,6 +120,19 @@ func LoadFonts() error {
 		ebiten.ScheduleFrame()
 	}(cjkLoaded)
 	return nil
+}
+
+// multiFace junta faces (la primera que tenga cada letra); si no se puede,
+// se queda con la primera.
+func multiFace(faces []text.Face) text.Face {
+	if len(faces) == 1 {
+		return faces[0]
+	}
+	m, err := text.NewMultiFace(faces...)
+	if err != nil {
+		return faces[0]
+	}
+	return m
 }
 
 // pollFonts pone las de Fusion Pixel en cuanto llegan (desde el hilo de la
@@ -133,7 +165,7 @@ func setFontOrder() {
 		return // aún no se cargaron (SetLanguage va antes que LoadFonts)
 	}
 	order := [2]int{0, 1}
-	if lang == "zh" {
+	if lang == "zh" || lang == "zh-TW" {
 		order = [2]int{1, 0}
 	}
 	build := func(base text.Face, cjk [2]text.Face) text.Face {
@@ -236,6 +268,15 @@ func drawText(dst *ebiten.Image, s string, face text.Face, x, y int, c color.Col
 	if face == BigFace {
 		top = bigCapTop
 	}
+	if needsShaping(s) { // hindi o árabe (complex.go)
+		l := shapeLine(s, face)
+		img := l.image(face)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(x), float64(y-top-l.pad))
+		op.ColorScale.ScaleWithColor(c)
+		dst.DrawImage(img, op)
+		return
+	}
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(float64(x), float64(y-top))
 	op.ColorScale.ScaleWithColor(c)
@@ -250,6 +291,9 @@ func drawTextShadow(dst *ebiten.Image, s string, face text.Face, x, y int, c, sh
 
 // textWidth es el ancho de s en píxeles.
 func textWidth(s string, face text.Face) int {
+	if needsShaping(s) {
+		return shapeLine(s, face).w
+	}
 	return int(text.Advance(s, face) + 0.5)
 }
 

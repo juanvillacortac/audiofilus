@@ -1,0 +1,10 @@
+Silver-thai.ttf is a subset of "Silver" by Poppy Works (http://poppy.works/,
+https://poppyworks.itch.io/silver), with glyph design credited to Itou Hiro,
+Yoon Design and Wolfgang Wozniak.
+
+Silver is licensed under the Creative Commons Attribution 4.0 International
+license (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+
+Changes: only the Thai block (U+0E00-U+0E7F) and the dotted circle (U+25CC)
+were kept, and hinting was removed (fontTools subset), so that Audiofilus can
+show Thai text without embedding the whole 3.7 MB font.

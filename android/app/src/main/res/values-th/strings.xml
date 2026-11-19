@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">การเล่น</string>
+    <string name="folder_unreadable">อ่าน %1$s ไม่ได้ อนุญาตให้ Audiofilus เข้าถึงเพลงและเสียง หรือเลือกโฟลเดอร์อื่น</string>
+    <string name="need_audio_permission">Audiofilus ต้องได้รับสิทธิ์เข้าถึงเพลงและเสียงเพื่ออ่านโฟลเดอร์นั้น อนุญาตได้ในการตั้งค่าแอป</string>
+    <string name="folder_picked">โฟลเดอร์เพลง: %1$s (%2$d รายการ)</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">प्लेबैक</string>
+    <string name="folder_unreadable">%1$s पढ़ा नहीं जा सकता। Audiofilus को संगीत और ऑडियो की अनुमति दें, या कोई दूसरा फ़ोल्डर चुनें।</string>
+    <string name="need_audio_permission">वह फ़ोल्डर पढ़ने के लिए Audiofilus को संगीत और ऑडियो की अनुमति चाहिए। आप इसे ऐप की सेटिंग्स में दे सकते हैं।</string>
+    <string name="folder_picked">संगीत फ़ोल्डर: %1$s (%2$d आइटम)</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Uppspelning</string>
+    <string name="folder_unreadable">Kan inte läsa %1$s. Ge Audiofilus åtkomst till musik och ljud, eller välj en annan mapp.</string>
+    <string name="need_audio_permission">Audiofilus behöver behörighet för musik och ljud för att läsa mappen. Du kan ge den i appens inställningar.</string>
+    <string name="folder_picked">Musikmapp: %1$s (%2$d objekt)</string>
+</resources>

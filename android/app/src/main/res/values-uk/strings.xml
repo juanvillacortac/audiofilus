@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_playback">Відтворення</string>
+    <string name="folder_unreadable">Не вдається прочитати %1$s. Дозволь Audiofilus доступ до музики й аудіо або вибери іншу теку.</string>
+    <string name="need_audio_permission">Audiofilus потрібен дозвіл на музику й аудіо, щоб прочитати цю теку. Його можна надати в налаштуваннях застосунку.</string>
+    <string name="folder_picked">Тека з музикою: %1$s (елементів: %2$d)</string>
+</resources>
