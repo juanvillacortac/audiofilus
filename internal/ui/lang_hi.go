@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "विवरण पढ़ें",
 		"gx_g_search":         "खोजें",
 		"gx_g_spin":           "मॉडल घुमाएँ",
-		"gx_g_sub":            "सबमेन्यू खोलें",
+		"gx_g_sub":            "खोलें",
 		"gx_g_system":         "सिस्टम: Wi-Fi और Bluetooth",
 		"gx_g_zoom":           "ज़ूम करें",
 		"gx_global":           "ग्लोबल सेटिंग्स",

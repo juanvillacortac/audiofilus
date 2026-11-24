@@ -102,6 +102,14 @@ What the service touches on the console, how it cleans up, and the known risks a
 
 - **Documentation (`docs/`, READMEs, this file, skills) is in English.** Code comments are in Spanish, in full sentences: every type, function and constant says what it is and why. Doc comments start with the name (`// Load lee audiofilus.json...`). Match the comment density and language of the file you touch.
 - **Error messages (`fmt.Errorf`, `errors.New`), test messages (`t.Errorf`) and log lines (`log.Printf`) are in English.** Text the user sees in the interface comes from `internal/ui/lang.go` (Spanish, English, Turkish) and `lang_<code>.go` (the other eighteen); a new key goes in all twenty-one. Hindi and Arabic are shaped with HarfBuzz and Arabic runs right to left (`complex.go`), so check new strings in their screenshots too.
+- **Interface text reads like a person wrote it, not a model.** Users notice AI-written copy and it makes the app look careless. Keep the style the app already has:
+  - Short and concrete: say what happens, in the user's terms ("Music keeps playing", "Search is always there", "Switches to a USB DAC when you plug it in").
+  - A subtitle adds something the title doesn't (a consequence, a limit, where it applies). If it would only restate the title, leave it out. Not "Crossfade: smoothly fade out the current track while fading in the next".
+  - No marketing words (seamless, smoothly, effortlessly, instantly, powerful, enhance, experience) and no stacked redundancy ("seamless ... without any noticeable gaps").
+  - A switch is its name; don't start it with "Enable" or "Allow", the on/off value already says that.
+  - No section blurbs that list three things ("How the queue is built, what is allowed into it, and what comes back when...").
+  - Exclamation marks only in the games and greetings.
+  - The same goes for release notes and replies to issues: plain sentences, no filler or praise, no headings for a few lines of text.
 - The engine is called from two threads (`oto`'s audio thread and the commands): anything that touches its state holds `e.mu`, and callbacks go out through `emit`, never with the lock held. To change songs or seek, use `apply` (it flushes the audio buffer with `Player.Seek`).
 - **When killing processes in tests, don't use `pgrep -f`/`pkill -f` with a pattern that also appears in your own command**: it kills the shell running it. Match the exact name (`pgrep -x`) and filter by `/proc/<pid>/exe`.
 - One test per behavior, with a comment saying what it checks. Test audio is synthetic tones (see `internal/decode/testdata/README.md`); **never put real music in the repo**.

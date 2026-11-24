@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "Lees de beschrijving",
 		"gx_g_search":         "Zoeken",
 		"gx_g_spin":           "Model draaien",
-		"gx_g_sub":            "Submenu openen",
+		"gx_g_sub":            "Openen",
 		"gx_g_system":         "Systeem: Wi-Fi en Bluetooth",
 		"gx_g_zoom":           "Inzoomen",
 		"gx_global":           "Algemene instellingen",

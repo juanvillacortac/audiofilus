@@ -391,23 +391,23 @@ func (a *App) stepDrift(dt float64) {
 	// hacen saltar. Sin batería reconocida, cada golpe es un bombo.
 	dr := &a.beat.drums
 	kick := a.beatHit && !dr.any
-	if dr.last[drumKick] != d.seenKick {
-		d.seenKick, kick = dr.last[drumKick], true
+	if dr.det.last[drumKick] != d.seenKick {
+		d.seenKick, kick = dr.det.last[drumKick], true
 	}
 	if kick {
 		d.bounceV += 1.6
 		d.squash = 1
 	}
-	if dr.last[drumSnare] != d.seenSnare {
-		d.seenSnare = dr.last[drumSnare]
+	if dr.det.last[drumSnare] != d.seenSnare {
+		d.seenSnare = dr.det.last[drumSnare]
 		d.rollSide = -d.rollSide
 		if d.rollSide == 0 {
 			d.rollSide = 1
 		}
 		d.roll += 0.1 * d.rollSide
 	}
-	if dr.last[drumCrash] != d.seenCrash {
-		d.seenCrash = dr.last[drumCrash]
+	if dr.det.last[drumCrash] != d.seenCrash {
+		d.seenCrash = dr.det.last[drumCrash]
 		d.bounceV += 3.5
 	}
 	d.bounceV += (-60*d.bounceY - 7*d.bounceV) * dt

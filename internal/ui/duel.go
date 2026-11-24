@@ -313,9 +313,9 @@ func (a *App) duelDrums(g *duelGame, per, now float64) {
 	dr := &a.beat.drums
 	var hit [drumCount]bool
 	for k := range hit {
-		if dr.last[k] != g.seen[k] {
-			g.seen[k] = dr.last[k]
-			hit[k] = now-dr.last[k] < 0.15 // uno viejo (de otra fase) no cuenta
+		if dr.det.last[k] != g.seen[k] {
+			g.seen[k] = dr.det.last[k]
+			hit[k] = now-dr.det.last[k] < 0.15 // uno viejo (de otra fase) no cuenta
 		}
 	}
 	w, h := float64(duBoxW/2), float64(duBoxH/2)

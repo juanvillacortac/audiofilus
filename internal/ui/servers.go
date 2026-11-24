@@ -3,10 +3,12 @@ package ui
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -35,6 +37,7 @@ type remoteSource struct {
 	songs   map[string]remote.Song // por id, para descargarlas
 	cat     catalog                // el catálogo con que se armó (serverplaylists.go lo pone al día)
 	loading bool                   // pidiendo el catálogo al servidor
+	got     atomic.Int64           // canciones recibidas mientras carga
 	err     error                  // lo que falló la última vez
 }
 
@@ -86,12 +89,19 @@ func (a *App) loadCatalog(src *remoteSource) {
 			ebiten.ScheduleFrame()
 		}
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-	defer cancel()
+	// Sin plazo para el catálogo entero: uno grande (2000 álbumes en Jellyfin,
+	// #13) son cientos de páginas y tarda minutos. Cada petición tiene el
+	// suyo (el del cliente HTTP), así que un servidor caído no lo cuelga.
+	ctx := context.Background()
 	c := remote.New(src.srv)
 	var cat catalog
 	var err error
-	if cat.Songs, err = c.AllSongs(ctx, nil); err == nil {
+	src.got.Store(0)
+	progress := func(n int) {
+		src.got.Store(int64(n))
+		ebiten.ScheduleFrame()
+	}
+	if cat.Songs, err = c.AllSongs(ctx, progress); err == nil {
 		cat.Playlists, _ = c.Playlists(ctx)
 		if b, jerr := json.Marshal(cat); jerr == nil {
 			f := a.catalogFile(src.srv)
@@ -247,6 +257,9 @@ func (a *App) remoteState() string {
 	r := a.remotes[a.source-1]
 	switch {
 	case r.loading:
+		if n := r.got.Load(); n > 0 {
+			return fmt.Sprintf("%s %d", T("srv_loading", r.srv.Name), n)
+		}
 		return T("srv_loading", r.srv.Name)
 	case r.err != nil:
 		return T("srv_error", r.srv.Name, r.err)

@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "閱讀說明",
 		"gx_g_search":         "搜尋",
 		"gx_g_spin":           "旋轉模型",
-		"gx_g_sub":            "開啟子選單",
+		"gx_g_sub":            "開啟",
 		"gx_g_system":         "系統：Wi-Fi 與 Bluetooth",
 		"gx_g_zoom":           "放大",
 		"gx_global":           "全域設定",

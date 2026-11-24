@@ -315,7 +315,18 @@ func (e *Engine) Read(p []byte) (int, error) {
 	e.eq.process(buf[:n])
 	e.xfeed.process(buf[:n])
 	e.limit.process(buf[:n], e.boost, len(e.eq.bands) > 0 || e.gain > 1)
-	e.meter.add(buf[:n], time.Now().Add(e.meter.latency), e.rate)
+	start := time.Now().Add(e.meter.latency)
+	if e.src != nil && n > 0 && e.meter.spectrum {
+		// El segundo de la canción con que empieza buf, a la hora en que se
+		// oirá: con él, la interfaz sitúa en la canción lo que mide (el mapa
+		// de tempo está en segundos de la canción).
+		song := float64(n/2) / float64(e.rate)
+		if e.st != nil {
+			song *= e.speedLocked()
+		}
+		e.meter.sync(start, math.Max(e.readPosLocked()-song, 0))
+	}
+	e.meter.add(buf[:n], start, e.rate)
 	gainBuf(buf[:n], 1-e.cut) // después del medidor: como un volumen de hardware
 	for i := 0; i < n; i++ {
 		binary.LittleEndian.PutUint32(p[i*4:], math.Float32bits(buf[i]))
@@ -987,25 +998,32 @@ func (e *Engine) Status() Status {
 		s.State = "stopped"
 	}
 	if e.src != nil {
-		rate := float64(e.src.SampleRate())
 		buffered := float64(bufBytes) / bytesPerFrame / float64(e.rate)
-		pending := 0.0 // lo leído que espera en el remuestreo
-		if e.rs != nil {
-			pending = e.rs.Pending()
-		}
 		if e.st != nil {
-			// Lo que espera en el cambio de velocidad (a la frecuencia de
-			// salida), y lo que hay en el búfer, que es más (o menos) canción.
-			pending += e.st.Pending() * rate / float64(e.rate)
-			buffered *= e.speed
+			buffered *= e.speed // lo que hay en el búfer es más (o menos) canción
 		}
-		s.Position = math.Max((float64(e.src.Position())-pending)/rate-buffered, 0)
+		s.Position = math.Max(e.readPosLocked()-buffered, 0)
 		s.Speed = e.speedLocked()
 		if l := e.src.Length(); l > 0 {
-			s.Duration = float64(l) / rate
+			s.Duration = float64(l) / float64(e.src.SampleRate())
 		}
 	}
 	return s
+}
+
+// readPosLocked es el segundo de la canción que saldrá después de lo ya
+// mandado a oto: lo leído de la fuente, menos lo que espera en el remuestreo
+// y en el cambio de velocidad. e.src no puede ser nil.
+func (e *Engine) readPosLocked() float64 {
+	rate := float64(e.src.SampleRate())
+	pending := 0.0
+	if e.rs != nil {
+		pending = e.rs.Pending()
+	}
+	if e.st != nil {
+		pending += e.st.Pending() * rate / float64(e.rate) // está a la frecuencia de salida
+	}
+	return (float64(e.src.Position()) - pending) / rate
 }
 
 // Close para y libera el archivo actual.

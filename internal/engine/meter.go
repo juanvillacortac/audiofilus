@@ -53,6 +53,14 @@ type meter struct {
 	edges    [MeterBands + 1]int // la primera casilla de la FFT de cada banda
 	rate     int
 	key      *keyFinder // la tonalidad (key.go); se crea al medir por primera vez
+
+	syncAt  int64   // la hora (ms Unix) a la que se oye syncPos
+	syncPos float64 // un segundo de la canción: el del último trozo medido
+}
+
+// sync apunta que el segundo pos de la canción se oye a la hora at.
+func (m *meter) sync(at time.Time, pos float64) {
+	m.syncAt, m.syncPos = at.UnixMilli(), pos
 }
 
 func newMeter(rate int, latency time.Duration) meter {
@@ -123,6 +131,15 @@ func meterByte(rms, gain float64) uint8 {
 	return uint8(math.Min(255, rms*gain*255))
 }
 
+// MeterSync es la hora (ms Unix, la de los puntos del medidor) a la que se
+// oye el segundo pos de la canción, del último trozo medido; at es 0 si aún
+// no se midió nada.
+func (e *Engine) MeterSync() (at int64, pos float64) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.meter.syncAt, e.meter.syncPos
+}
+
 // Meter devuelve los puntos del medidor, del más viejo al más nuevo.
 func (e *Engine) Meter() []MeterPoint {
 	e.mu.Lock()
@@ -180,6 +197,22 @@ func (a *Analyzer) Add(buf []float32) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.m.add(buf, time.Now().Add(a.m.latency), a.rate)
+}
+
+// AddAt mide buf como Add, pero como si empezara a oírse a la hora at: para
+// medir un archivo entero más rápido que en tiempo real (ui/tempomap.go),
+// con at en la hora de la canción.
+func (a *Analyzer) AddAt(buf []float32, at time.Time) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.m.add(buf, at, a.rate)
+}
+
+// Last es el último punto medido (vacío si aún no hay ninguno).
+func (a *Analyzer) Last() MeterPoint {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.m.points[(a.m.next+meterPoints-1)%meterPoints]
 }
 
 // Points son los puntos medidos, del más viejo al más nuevo.

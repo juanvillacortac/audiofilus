@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "Đọc mô tả",
 		"gx_g_search":         "Tìm",
 		"gx_g_spin":           "Xoay mô hình",
-		"gx_g_sub":            "Mở menu con",
+		"gx_g_sub":            "Mở",
 		"gx_g_system":         "Hệ thống: Wi-Fi và Bluetooth",
 		"gx_g_zoom":           "Phóng to",
 		"gx_global":           "Cài đặt chung",

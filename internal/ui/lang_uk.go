@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "Читати опис",
 		"gx_g_search":         "Пошук",
 		"gx_g_spin":           "Обертати модель",
-		"gx_g_sub":            "Відкрити підменю",
+		"gx_g_sub":            "Відкрити",
 		"gx_g_system":         "Система: Wi-Fi і Bluetooth",
 		"gx_g_zoom":           "Збільшити",
 		"gx_global":           "Загальні налаштування",

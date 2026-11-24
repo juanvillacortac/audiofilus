@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "Läs beskrivningen",
 		"gx_g_search":         "Sök",
 		"gx_g_spin":           "Snurra modellen",
-		"gx_g_sub":            "Öppna undermenyn",
+		"gx_g_sub":            "Öppna",
 		"gx_g_system":         "System: Wi-Fi och Bluetooth",
 		"gx_g_zoom":           "Zooma in",
 		"gx_global":           "Globala inställningar",

@@ -43,6 +43,9 @@ type rhNote struct {
 type rhythmGame struct {
 	notes      []rhNote
 	nextBeat   float64 // desde dónde se busca la próxima corchea sin nota
+	chartPath  string  // la canción cuyo chart se está leyendo (chartNotes)
+	chartIdx   int     // la próxima nota del chart por poner
+	chartPos   float64 // el segundo de la canción de la última vez
 	lastLane   int
 	sameLane   int
 	score      int
@@ -175,7 +178,10 @@ func (a *App) updateRhythm() {
 	}
 	now := a.beatClock()
 	per, anchor := a.steadyBeat()
-	if per > 0 && a.hearing() {
+	// Con chart (tempomap.go), las notas son la batería que de verdad suena;
+	// sin él, la que sonó en esa corchea en los últimos compases.
+	charted := a.hearing() && a.chartNotes(g, now)
+	if !charted && per > 0 && a.hearing() {
 		// Notas para las corcheas que van a llegar en rhTravel: los
 		// instrumentos que sonaron en esa corchea en los últimos compases,
 		// cada uno en su carril (bombo, caja, charles, platillo). Hasta

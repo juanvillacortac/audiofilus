@@ -164,8 +164,8 @@ func (a *App) stepLake(dt float64) {
 	}
 	// El bombo hace saltar una rana (la que esté quieta) a otra hoja.
 	kick := a.beatHit && !dr.any
-	if dr.last[drumKick] != l.seenKick {
-		l.seenKick, kick = dr.last[drumKick], true
+	if dr.det.last[drumKick] != l.seenKick {
+		l.seenKick, kick = dr.det.last[drumKick], true
 	}
 	if kick && a.hearing() {
 		for i := range l.frogs {
@@ -186,8 +186,8 @@ func (a *App) stepLake(dt float64) {
 		}
 	}
 	// La caja: los patos meten la cabeza.
-	if dr.last[drumSnare] != l.seenSnare {
-		l.seenSnare = dr.last[drumSnare]
+	if dr.det.last[drumSnare] != l.seenSnare {
+		l.seenSnare = dr.det.last[drumSnare]
 		d := &l.ducks[l.rng.IntN(len(l.ducks))]
 		d.dipAt = t
 	}
@@ -195,8 +195,8 @@ func (a *App) stepLake(dt float64) {
 		l.ducks[i].ang += l.ducks[i].speed * dt * (0.5 + level)
 	}
 	// Los platillos: salta un pez.
-	if dr.last[drumCrash] != l.seenCrash || (a.beatHit && !dr.any && l.rng.IntN(6) == 0) {
-		l.seenCrash = dr.last[drumCrash]
+	if dr.det.last[drumCrash] != l.seenCrash || (a.beatHit && !dr.any && l.rng.IntN(6) == 0) {
+		l.seenCrash = dr.det.last[drumCrash]
 		ang, r := l.rng.Float64()*2*math.Pi, 2+l.rng.Float64()*(lkRadius-6)
 		x0, z0 := r*math.Cos(ang), r*math.Sin(ang)
 		da := l.rng.Float64() * 2 * math.Pi
@@ -213,8 +213,8 @@ func (a *App) stepLake(dt float64) {
 	}
 	l.fish = keptF
 	// El charles: las luciérnagas parpadean.
-	if dr.last[drumHat] != l.seenHat {
-		l.seenHat, l.blink = dr.last[drumHat], 1
+	if dr.det.last[drumHat] != l.seenHat {
+		l.seenHat, l.blink = dr.det.last[drumHat], 1
 	}
 	l.blink = math.Max(0, l.blink-dt*5)
 	// Las flores siguen a los medios.

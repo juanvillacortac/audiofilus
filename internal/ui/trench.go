@@ -188,16 +188,16 @@ func (a *App) stepTrench(dt float64) {
 	t.y += t.vy * dt
 	// El baile: la caja inclina a un lado y a otro; los platillos, un tonel.
 	dr := &a.beat.drums
-	if dr.last[drumSnare] != t.seenSnare {
-		t.seenSnare = dr.last[drumSnare]
+	if dr.det.last[drumSnare] != t.seenSnare {
+		t.seenSnare = dr.det.last[drumSnare]
 		if t.rollTo <= 0 {
 			t.rollTo = 0.45
 		} else {
 			t.rollTo = -0.45
 		}
 	}
-	if dr.last[drumCrash] != t.seenCrash {
-		t.seenCrash = dr.last[drumCrash]
+	if dr.det.last[drumCrash] != t.seenCrash {
+		t.seenCrash = dr.det.last[drumCrash]
 		if t.barrel == 0 {
 			t.barrel = 2 * math.Pi
 		}

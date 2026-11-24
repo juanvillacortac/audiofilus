@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"io"
+	"math"
 	"os"
 	"strings"
 	"sync"
@@ -123,6 +124,10 @@ func (a *App) soundFromInput() {
 	s.pending, s.prio = "", -1
 }
 
+// gameSoundBoost es cuánto más alto suenan los sonidos de Bloques y su
+// locutor que los de la música (con tope en 1).
+const gameSoundBoost = 2.5
+
 // musicSounds son los sonidos de la música (pausa, siguiente...), con su
 // propio volumen; los demás son los de la interfaz.
 var musicSounds = map[string]bool{sfx.Play: true, sfx.Pause: true, sfx.Next: true, sfx.Prev: true,
@@ -155,10 +160,16 @@ func (a *App) playSound(name string) {
 	level := a.cfg.UI.UISounds
 	// Los de los juegos van con el volumen de los de la música, como los de
 	// Cripta: los de Bloques y su locutor.
-	if musicSounds[name] || strings.HasPrefix(name, "bk_") || strings.HasPrefix(name, sfx.Voice) {
+	game := strings.HasPrefix(name, "bk_") || strings.HasPrefix(name, sfx.Voice)
+	if musicSounds[name] || game {
 		level = a.cfg.UI.Sounds
 	}
 	g := sfx.Gain(level)
+	if game {
+		// Suenan encima de la música a todo volumen: con la ganancia de los
+		// botones no se oían, ni el locutor.
+		g = math.Min(1, g*gameSoundBoost)
+	}
 	if g == 0 || a.offline {
 		return
 	}

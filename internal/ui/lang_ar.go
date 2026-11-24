@@ -185,7 +185,7 @@ func init() {
 		"gx_g_scroll":         "قراءة الوصف",
 		"gx_g_search":         "بحث",
 		"gx_g_spin":           "تدوير المجسم",
-		"gx_g_sub":            "فتح القائمة الفرعية",
+		"gx_g_sub":            "فتح",
 		"gx_g_system":         "النظام: Wi-Fi و Bluetooth",
 		"gx_g_zoom":           "تكبير",
 		"gx_global":           "الإعدادات العامة",

@@ -3,7 +3,6 @@ package ui
 import (
 	"math"
 	"math/rand/v2"
-	"sort"
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/engine"
@@ -89,9 +88,12 @@ func (a *App) meterNow() (level, bass float64, bands [engine.MeterBands]float64,
 //     ~21 ms, con su hora exacta), cuánto subieron las bandas graves y medias
 //     respecto al punto anterior (flujo espectral). Es un golpe si pasa de la
 //     media más 1,5 desviaciones del último segundo, con 0,25 s entre golpes.
-//   - Tempo: los intervalos entre golpes se pliegan a 70–180 BPM (un golpe
-//     perdido o uno de más no cambian el tempo) y se toma la mediana. Solo
-//     cambia si el nuevo se repite varias veces.
+//   - Tempo: la autocorrelación del flujo de los últimos 12 s, sumando la de
+//     cada periodo con la de sus múltiplos (el peine): el periodo cuyo
+//     golpe se repite más en la canción, de 60 a 180 BPM. Los golpes
+//     sincopados (una guitarra a contratiempo, el swing) no lo mueven, y un
+//     tempo que es el doble, la mitad o 3/2 del actual (el mismo compás) no
+//     lo cambia. Un tempo distinto solo entra si se mantiene unos segundos.
 //   - Rejilla: con el tempo, los golpes salen de una rejilla regular, que
 //     sigue aunque la música baje (no se pierde); los golpes detectados solo
 //     corrigen su fase. Sin tempo aún, cuenta cada golpe detectado.
@@ -107,9 +109,18 @@ type beat struct {
 	flux   []float64 // el flujo del último segundo, para el umbral
 	onsets []float64 // los últimos golpes detectados (beatClock)
 
+	env      []envPoint // el flujo de todas las bandas de los últimos segundos, para el tempo
+	acc      []float64  // la autocorrelación de env, promediada en la canción (tempo.go)
+	tempoT   float64    // cuándo se estimó el tempo por última vez
+	envStart float64    // el primer punto del flujo (para saber si ya hay bastante)
+
 	per     float64 // el tempo: segundos por golpe (0 si aún no se sabe)
 	cand    float64 // un tempo nuevo que se está confirmando
 	candN   int
+	jump    float64 // otro tempo que manda en la ventana (tempoJump)
+	jumpN   int
+	bar     int     // corcheas del compás (8 en 4/4, 6 en 3/4; 0: 8)
+	mapped  bool    // la rejilla la pone el mapa de tempo: el tempo en vivo no la toca
 	anchor  float64 // un golpe de la rejilla (beatClock)
 	matched float64 // el último golpe detectado que cuadró con la rejilla
 
@@ -131,30 +142,53 @@ const (
 // últimos compases es lo que viene, y de ahí salen las notas de Ritmo (que
 // tienen que aparecer antes de sonar).
 type drums struct {
-	flux    [drumCount][]float64  // el flujo del último segundo de cada uno
-	last    [drumCount]float64    // su último golpe
-	hit     [drumCount][8]float64 // cuándo sonó en cada corchea del compás
-	hatPeak float64               // la fuerza habitual de un golpe de charles
-	any     bool                  // ya se apuntó algo
+	det drumDetector
+	hit [drumCount][8]float64 // cuándo sonó en cada corchea del compás
+	any bool                  // ya se apuntó algo
 }
 
 // drumBands son las bandas de cada instrumento (de las 16 del medidor).
 var drumBands = [drumCount][2]int{{0, 3}, {4, 9}, {11, 16}, {11, 16}}
 
-// slot es la corchea del compás (0..7) en la que cae t, según la rejilla.
+// slot es la corchea del compás (0..7 en 4/4, 0..5 en 3/4: b.bar) en la que
+// cae t, según la rejilla.
 func (b *beat) slot(t float64) int {
+	n := b.bar
+	if n <= 0 {
+		n = 8
+	}
 	s := int(math.Round((t - b.anchor) / (b.per / 2)))
-	return ((s % 8) + 8) % 8
+	return ((s % n) + n) % n
 }
 
-// add mira un punto del medidor (cuánto subió cada banda) en la hora t.
+// add mira un punto del medidor (cuánto subió cada banda) en la hora t y
+// apunta en su corchea del compás los golpes que reconoce.
 func (d *drums) add(t float64, rise [engine.MeterBands]float64, b *beat) {
+	for _, kind := range d.det.feed(t, rise, b.per > 0) {
+		d.hit[kind][b.slot(t)] = t
+		d.any = true
+	}
+}
+
+// drumDetector reconoce los golpes de cada instrumento en el flujo de sus
+// bandas: cuando una sube bastante más que en el último segundo. Lo usan la
+// batería en vivo (drums) y el chart de la canción entera (tempomap.go).
+type drumDetector struct {
+	flux    [drumCount][]float64 // el flujo del último segundo de cada uno
+	last    [drumCount]float64   // su último golpe
+	hatPeak float64              // la fuerza habitual de un golpe de charles
+}
+
+// feed mira un punto (cuánto subió cada banda) en la hora t y devuelve los
+// instrumentos que sonaron. Sin ready (aún sin tempo), solo aprende el nivel.
+func (d *drumDetector) feed(t float64, rise [engine.MeterBands]float64, ready bool) []int {
 	var f [drumCount]float64
 	for k := 0; k < drumCrash; k++ {
 		for i := drumBands[k][0]; i < drumBands[k][1]; i++ {
 			f[k] += rise[i]
 		}
 	}
+	var out []int
 	for k := 0; k < drumCrash; k++ {
 		var mean, sd float64
 		for _, x := range d.flux[k] {
@@ -172,7 +206,7 @@ func (d *drums) add(t float64, rise [engine.MeterBands]float64, b *beat) {
 		if n+1 > 48 {
 			d.flux[k] = d.flux[k][1:]
 		}
-		if n < 12 || f[k] < mean+1.6*sd+0.015 || t-d.last[k] < 0.1 || b.per <= 0 {
+		if n < 12 || f[k] < mean+1.6*sd+0.015 || t-d.last[k] < 0.1 || !ready {
 			continue
 		}
 		kind := k
@@ -188,9 +222,9 @@ func (d *drums) add(t float64, rise [engine.MeterBands]float64, b *beat) {
 			}
 		}
 		d.last[k] = t
-		d.hit[kind][b.slot(t)] = t
-		d.any = true
+		out = append(out, kind)
 	}
+	return out
 }
 
 // at dice qué instrumentos sonaron en la corchea slot en los últimos dos
@@ -206,18 +240,6 @@ func (d *drums) at(slot int, t, per float64) [drumCount]bool {
 
 // resetBeat empieza el ritmo de cero (canción nueva).
 func (a *App) resetBeat() { a.beat = beat{} }
-
-// foldPeriod lleva un intervalo a 0,33–0,86 s (70–180 BPM) doblándolo o
-// partiéndolo.
-func foldPeriod(d float64) float64 {
-	for d > 0 && d < 0.33 {
-		d *= 2
-	}
-	for d > 0.86 {
-		d /= 2
-	}
-	return d
-}
 
 // period es el tempo (segundos por golpe), o 0 si aún no se sabe.
 func (b *beat) period() float64 { return b.per }
@@ -239,8 +261,7 @@ func (b *beat) onBeat(t, tol float64) bool {
 	return b.at > 0 && math.Abs(t-b.at) <= tol
 }
 
-// onset registra un golpe detectado en t: corrige la fase de la rejilla y
-// el tempo.
+// onset registra un golpe detectado en t: corrige la fase de la rejilla.
 func (b *beat) onset(t float64) {
 	b.onsets = append(b.onsets, t)
 	if len(b.onsets) > 12 {
@@ -256,36 +277,6 @@ func (b *beat) onset(t float64) {
 		case t-b.matched > 4: // hace rato que nada cuadra: se vuelve a anclar
 			b.anchor, b.matched = t, t
 		}
-	}
-	// El tempo: la mediana de los intervalos plegados.
-	var iv []float64
-	for i := 1; i < len(b.onsets); i++ {
-		if d := foldPeriod(b.onsets[i] - b.onsets[i-1]); d > 0 {
-			iv = append(iv, d)
-		}
-	}
-	if len(iv) < 4 {
-		return
-	}
-	sort.Float64s(iv)
-	c := iv[len(iv)/2]
-	// Afinado con todo el tramo: los puntos del medidor van cada ~21 ms, y un
-	// intervalo suelto lleva ese error; muchos golpes seguidos, no.
-	if span := t - b.onsets[0]; span > 4*c {
-		c = span / math.Round(span/c)
-	}
-	switch {
-	case b.per == 0:
-		b.per, b.anchor, b.matched = c, t, t
-	case math.Abs(c-b.per)/b.per < 0.06:
-		b.per += (c - b.per) * 0.2 // el mismo tempo: se afina
-		b.candN = 0
-	case b.cand > 0 && math.Abs(c-b.cand)/b.cand < 0.06:
-		if b.candN++; b.candN >= 4 { // otro tempo, confirmado: se cambia
-			b.per, b.anchor, b.matched, b.candN = c, t, t, 0
-		}
-	default:
-		b.cand, b.candN = c, 1
 	}
 }
 
@@ -310,11 +301,13 @@ func (a *App) updateBeat() bool {
 		bass := float64(p.Bass) / 255
 		var f float64
 		var rise [engine.MeterBands]float64 // cuánto subió cada banda
+		var all float64                     // lo que subieron todas: el flujo del tempo
 		if len(p.Bands) == engine.MeterBands {
 			for k := 0; k < engine.MeterBands; k++ {
 				v := float64(p.Bands[k]) / 255
 				rise[k] = math.Max(0, v-b.prev[k])
 				b.prev[k] = v
+				all += rise[k]
 				if k < 8 { // graves y medios: bombo, caja, bajo
 					f += rise[k]
 				}
@@ -339,6 +332,14 @@ func (a *App) updateBeat() bool {
 			b.flux = b.flux[1:]
 		}
 		t := float64(p.At) / 1000 // la hora a la que se oye
+		b.env = append(b.env, envPoint{t, all})
+		if b.envStart == 0 {
+			b.envStart = t
+		}
+		if t-b.tempoT >= tempoEvery {
+			b.tempoT = t
+			b.updateTempo()
+		}
 		b.drums.add(t, rise, b)
 		lastOnset := -1.0
 		if n := len(b.onsets); n > 0 {
@@ -349,6 +350,9 @@ func (a *App) updateBeat() bool {
 			detected = true
 		}
 	}
+	// El mapa de tempo de la canción (tempomap.go), si ya está, manda sobre
+	// el tempo que se adivina en vivo.
+	a.mapBeat(b, clock)
 	// Con tempo, el golpe lo marca la rejilla (sigue aunque la música baje);
 	// sin tempo, cada golpe detectado.
 	hit := false
