@@ -59,6 +59,11 @@ const (
 	setOrientation
 	setVControls
 	setOutput
+	setScreens
+	setTabs
+	setAlbumsFolder
+	setFormats
+	setVGMAccurate
 	setCount
 )
 
@@ -108,6 +113,9 @@ var settingSections = []settingSection{
 		{setServers, "server", tileAction},
 		{setRadioDir, "folder", tileAction},
 		{setMilkDir, "folder", tileAction},
+		{setTabs, "folder", tileAction},
+		{setAlbumsFolder, "folder", tileToggle},
+		{setFormats, "note", tileAction},
 	}},
 	{"sec_playback", []settingTile{
 		{setShuffle, "shuffle", tileToggle},
@@ -123,6 +131,7 @@ var settingSections = []settingSection{
 		{setRate, "headphones", tileChoice},
 		{setResampler, "headphones", tileChoice},
 		{setCrossfeed, "headphones", tileChoice},
+		{setVGMAccurate, "tracker", tileToggle},
 	}},
 	{"sec_online", []settingTile{
 		{setScrobble, "user", tileAction},
@@ -138,6 +147,7 @@ var settingSections = []settingSection{
 		{setThemeColor, "palette", tileChoice},
 		{setOrientation, "screen", tileChoice},
 		{setVControls, "screen", tileChoice},
+		{setScreens, "screen", tileAction},
 	}},
 	{"sec_system", []settingTile{
 		{setLanguage, "globe", tileChoice},
@@ -195,7 +205,9 @@ func (a *App) sections() []settingSection {
 		// macOS ni el móvil, que cambian solos).
 		setOutput: a.mobile() || len(a.status.Outputs) == 0,
 		// Cómo se maneja en vertical, solo si está en vertical.
-		setVControls: !handheldUI || a.mobile() || a.cfg.UI.Orientation == ""}
+		setVControls: !handheldUI || a.mobile() || a.cfg.UI.Orientation == "",
+		// Los VGM van con libvgm solo en Linux (las portátiles y el PC).
+		setVGMAccurate: runtime.GOOS != "linux"}
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -325,6 +337,12 @@ func (a *App) updateSettings() {
 			a.openMPDMenu() // mpdui.go
 		case setOutput:
 			a.openOutputMenu() // outputui.go
+		case setScreens:
+			a.openScreensMenu() // hide.go
+		case setTabs:
+			a.openTabsMenu()
+		case setFormats:
+			a.openFormatsMenu()
 		}
 	}
 }
@@ -410,6 +428,14 @@ func (a *App) changeSetting(id, step int) {
 	case setClock:
 		a.cfg.UI.Clock24 = !a.cfg.UI.Clock24
 		a.saveConfig()
+	case setAlbumsFolder:
+		a.cfg.UI.AlbumsByFolder = !a.cfg.UI.AlbumsByFolder
+		a.saveConfig()
+		a.regroupAlbums()
+	case setVGMAccurate:
+		a.cfg.VGMAccurate = !a.cfg.VGMAccurate
+		a.saveConfig()
+		a.send("vgmaccurate", onOffArg(a.cfg.VGMAccurate))
 	case setCloseBg:
 		on := !a.keepPlaying()
 		a.cfg.UI.CloseToBackground = &on
@@ -598,6 +624,28 @@ func (a *App) settingValue(i int) string {
 		return T("vc_" + orDefault(a.cfg.UI.VerticalControls, "two"))
 	case setClock:
 		return onOffLabel(a.cfg.UI.Clock24)
+	case setAlbumsFolder:
+		return onOffLabel(a.cfg.UI.AlbumsByFolder)
+	case setVGMAccurate:
+		if a.cfg.VGMAccurate {
+			return T("vgm_acc_on") // con el aviso de la CPU
+		}
+		return onOffLabel(false)
+	case setScreens:
+		n, on := 0, 0
+		for _, e := range dockEntries {
+			if e.id != "" {
+				n++
+				if !a.screenHidden(e.id) {
+					on++
+				}
+			}
+		}
+		return fmt.Sprintf("%d/%d", on, n)
+	case setTabs:
+		return fmt.Sprintf("%d/%d", len(a.visibleTabs())-1, tabCount-1)
+	case setFormats:
+		return a.formatsSummary()
 	case setSwapAB:
 		return onOffLabel(a.cfg.UI.SwapAB)
 	case setCloseBg:
@@ -653,7 +701,7 @@ func (a *App) settingValue(i int) string {
 	case setGitHub:
 		return projectURL[len("https://"):]
 	case setDonate:
-		return donateURL[len("https://"):]
+		return donateValue() // supporters.go
 	case setSounds:
 		return T("snd_" + orDefault(a.cfg.UI.Sounds, "mid"))
 	case setUISounds:
@@ -676,6 +724,10 @@ func (a *App) settingOn(id int) bool {
 		return a.status.Shuffle
 	case setClock:
 		return a.cfg.UI.Clock24
+	case setAlbumsFolder:
+		return a.cfg.UI.AlbumsByFolder
+	case setVGMAccurate:
+		return a.cfg.VGMAccurate
 	case setDLNAServer:
 		return a.cfg.DLNA.Server
 	case setDLNARenderer:
@@ -698,7 +750,7 @@ func settingNames() [setCount]string {
 		T("m_exit_bg"), T("m_exit_stop"), "GitHub", T("srv_title"), T("set_sounds"), T("set_ui_sounds"), T("set_donate"),
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
 		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"), T("set_orientation"), T("set_vcontrols"),
-		T("set_output"),
+		T("set_output"), T("set_screens"), T("set_tabs"), T("set_albums_folder"), T("set_formats"), T("set_vgm_acc"),
 	}
 }
 

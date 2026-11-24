@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/tags"
@@ -25,7 +26,16 @@ func Expand(paths []string) ([]string, error) {
 		}
 		info, err := os.Stat(p)
 		if err != nil {
-			return nil, err
+			// Quizá estropeada por JSON o en otra normalización Unicode
+			// (decode.FindFile); si no aparece, el error es el de la original.
+			fixed := decode.FindFile(p)
+			if fixed == p {
+				return nil, err
+			}
+			if info, err = os.Stat(fixed); err != nil {
+				return nil, err
+			}
+			p = fixed
 		}
 		switch {
 		case info.IsDir():
@@ -173,15 +183,48 @@ func readM3U(path string) ([]string, error) {
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		line = filepath.FromSlash(strings.ReplaceAll(line, `\`, "/"))
-		if !filepath.IsAbs(line) {
-			line = filepath.Join(dir, line)
-		}
+		line = m3uPath(dir, line)
 		if decode.IsAudioFile(line) || decode.IsVirtualPath(line) {
 			files = append(files, line)
 		}
 	}
 	return files, sc.Err()
+}
+
+// m3uPath es la ruta de una línea de una lista de dir: las relativas
+// contra dir, con barras de Windows o no. Si no está tal cual en el disco,
+// se prueba la línea como Windows-1252 (las .m3u sin el 8 hechas en Windows
+// lo son) y luego con decode.FindFile (NFC frente a NFD); si tampoco, queda
+// la de la línea.
+func m3uPath(dir, line string) string {
+	abs := func(l string) string {
+		l = filepath.FromSlash(strings.ReplaceAll(l, `\`, "/"))
+		if !filepath.IsAbs(l) {
+			l = filepath.Join(dir, l)
+		}
+		return l
+	}
+	p := abs(line)
+	ascii := strings.IndexFunc(line, func(r rune) bool { return r >= utf8.RuneSelf }) < 0
+	if ascii {
+		return p // nada que arreglar: sin mirar el disco, que en la consola es lento
+	}
+	if _, err := os.Stat(p); err == nil {
+		return p
+	}
+	cands := []string{p}
+	if !utf8.ValidString(line) {
+		cands = append([]string{abs(fromWindows1252([]byte(line)))}, cands...)
+	}
+	for _, c := range cands {
+		if f := decode.FindFile(c); f != c {
+			return f
+		}
+		if _, err := os.Stat(c); err == nil {
+			return c
+		}
+	}
+	return p
 }
 
 // Track son las etiquetas que se muestran de una canción.
@@ -215,7 +258,11 @@ func ReadTrack(path string) Track {
 	if g, _, ok := ReadGMETrack(path); ok {
 		return g
 	}
-	if f, err := os.Open(path); err == nil {
+	f, err := os.Open(path)
+	if err != nil {
+		f, err = os.Open(decode.FindFile(path))
+	}
+	if err == nil {
 		if m, err := tags.ReadFrom(f); err == nil {
 			t.Title, t.Artist, t.Album = m.Title(), m.Artist(), m.Album()
 			if t.Artist == "" {

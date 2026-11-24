@@ -33,6 +33,8 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 
 <p><a href="https://ko-fi.com/juanvillacortac"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-6fe3c4?logo=kofi&logoColor=white&style=for-the-badge" alt="Support on Ko-fi"></a></p>
 
+**Thank you to everyone who has supported Audiofilus:** pnga, the very first ♥. Supporters also show up in the app, under Settings → Buy me a coffee.
+
 ## Features
 
 ### Background play
@@ -58,6 +60,7 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 - **Resampling**: a light linear one on handhelds (battery) and a high-quality sinc one on the desktop, or pick one.
 - **Crossfade** of up to 12 seconds, which leaves consecutive songs of the same album gapless.
 - **Output rate** of 44.1, 48, 96 or 192 kHz.
+- **Make it yours:** hide the screens you don't use from the Select bar and the library tabs you don't need, build albums from your folders instead of the tags, and choose which file formats show up in each tab (Settings → Library and Settings → Screen).
 - **USB DACs:** plug one in and the music moves to it; unplug it and the music pauses and goes back to the previous output. Settings → Audio output can also pin any output. Works on Knulli, muOS, ROCKNIX, ArkOS, TrimUI, EmuELEC and desktop Linux; Windows, macOS, Android and iOS already switch on their own.
 
 <p align="center">
@@ -68,7 +71,7 @@ Audiofilus is free, with no ads or paywalls, and I make it in my spare time. If 
 ### Library
 
 - **Your own radio lists:** put `.m3u`/`.m3u8`/`.pls` station lists in the app's `radio/` folder (or any folder you pick in Settings → *Radio lists*) and they show up under Radio → My lists; or add a station by its address. Station addresses that are themselves a `.pls`/`.m3u` (like `listen.pls`) are followed to the stream. **HLS** stations (`.m3u8` split into segments: MPEG-TS, packed AAC/MP3 or fMP4, AES-128 encrypted too) play as well (thanks to volkybaba for the report and ideas).
-- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, WMA, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included. And **8-bit computer music**, emulated in Go with nothing to install: SID (Commodore 64, the HVSC's `.sid` files, PSID and RSID with digis), YM (Atari ST, with its SID-voice and digidrum effects), VTX and PT3 (ZX Spectrum, TurboSound included). A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
+- Formats: **MP3, AAC/M4A, ALAC, FLAC, Ogg Vorbis, Opus, WAV, AIFF, WMA, DSD (DSF and DFF)** tracker modules (**MOD, XM, IT, S3M**) and **console music**: NSF/NSFE (NES), SPC (SNES), GBS (Game Boy), VGM/VGZ and GYM, HES (PC Engine), KSS (MSX), AY and SAP, through libgme and libvgm, which the handheld and Linux packages bring. VGMs play with any chip, arcade boards (Out Run, CPS…) included, and Settings → Sound → Accurate VGM switches to the Nuked cores (OPN2, OPM, OPLL, OPL3) on Linux, at a higher CPU cost. And **8-bit computer music**, emulated in Go with nothing to install: SID (Commodore 64, the HVSC's `.sid` files, PSID and RSID with digis), YM (Atari ST, with its SID-voice and digidrum effects), VTX and PT3 (ZX Spectrum, TurboSound included). A file with a whole soundtrack shows up as one track per song. Albums ripped to one file with a **CUE sheet** show up as their tracks.
 - Songs, albums (cover grid), artists, folders and playlists (`.m3u` in your music folder plus your own, saved as `.m3u8`).
 - Search across the library, with an on-screen QWERTY keyboard.
 - The scan runs once and is cached; later runs only read new or changed files.

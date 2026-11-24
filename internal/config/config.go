@@ -25,7 +25,11 @@ type Config struct {
 	BufferMS int `json:"buffer_ms"`
 	// AudioOutput es la salida de audio elegida en Ajustes (el ID de
 	// platform.Output); vacía es automático: un DAC USB al conectarlo.
-	AudioOutput string  `json:"audio_output,omitempty"`
+	AudioOutput string `json:"audio_output,omitempty"`
+	// VGMAccurate toca los VGM con los núcleos Nuked de libvgm (OPN2, OPM,
+	// OPLL, OPL3): más fieles y bastante más caros en CPU (Ajustes > Sonido;
+	// decode.SetVGMAccurate).
+	VGMAccurate bool    `json:"vgm_accurate,omitempty"`
 	Volume      float64 `json:"volume"`
 	// Language es el idioma de la interfaz ("es", "en"); vacío lo elige por $LANG.
 	Language string  `json:"language"`
@@ -167,6 +171,22 @@ type UI struct {
 	RadioCountry string `json:"radio_country,omitempty"`
 	// GameBoy es el modo Game Boy (el código Konami): todo en cuatro verdes.
 	GameBoy bool `json:"game_boy,omitempty"`
+	// HiddenScreens son las pantallas que no salen en la barra de Select
+	// (Ajustes > Pantallas): "search", "radio", "podcasts", "modules",
+	// "queue", "visual", "downloads" o "games". El reproductor, la
+	// biblioteca y Ajustes no se pueden quitar.
+	HiddenScreens []string `json:"hidden_screens,omitempty"`
+	// HiddenTabs son las secciones de la biblioteca que no salen: "songs",
+	// "albums", "artists", "lists" o "folders" (Buscar siempre está).
+	HiddenTabs []string `json:"hidden_tabs,omitempty"`
+	// AlbumsByFolder arma los álbumes por carpeta en vez de por las
+	// etiquetas (artista del álbum y álbum): cada carpeta con música es un
+	// álbum, con su nombre.
+	AlbumsByFolder bool `json:"albums_by_folder,omitempty"`
+	// HiddenFormats son, por sección de la biblioteca ("songs", "albums",
+	// "artists", "folders"), las extensiones que no salen en ella ("mp3",
+	// "flac"...). Lo que no está, sale: un formato nuevo se ve.
+	HiddenFormats map[string][]string `json:"hidden_formats,omitempty"`
 	// CloseToBackground: al cerrar la interfaz (la ventana, o si muere), la
 	// música sigue sonando en segundo plano. Sin poner (nil), sí en el
 	// escritorio y no en las portátiles (ver ui.App.keepPlaying).

@@ -32,7 +32,51 @@ func ReadFrom(r io.ReadSeeker) (tag.Metadata, error) {
 	if n == 16 && magic == guidHeader {
 		return readASF(r)
 	}
-	return tag.ReadFrom(r)
+	// Un FLAC con un ID3v2 delante (lo ponen algunos etiquetadores): sus
+	// etiquetas buenas son las del FLAC, detrás; dhowden/tag solo vería el
+	// ID3, que a menudo está vacío o es relleno.
+	if n >= 10 && string(magic[:3]) == "ID3" {
+		off := int64(10 + synchsafe(magic[6:10]))
+		if magic[5]&0x10 != 0 {
+			off += 10 // pie del ID3v2
+		}
+		var sig [4]byte
+		if _, err := r.Seek(off, io.SeekStart); err == nil {
+			if _, err := io.ReadFull(r, sig[:]); err == nil && string(sig[:]) == "fLaC" {
+				fr := &offsetReader{r: r, off: off}
+				if _, err := fr.Seek(0, io.SeekStart); err == nil {
+					if m, err := tag.ReadFrom(fr); err == nil && (m.Title() != "" || m.Artist() != "") {
+						return withArtists(r, off, m), nil
+					}
+				}
+			}
+		}
+		if _, err := r.Seek(0, io.SeekStart); err != nil {
+			return nil, err
+		}
+	}
+	m, err := tag.ReadFrom(r)
+	if err != nil {
+		return nil, err
+	}
+	return withArtists(r, 0, m), nil
+}
+
+// offsetReader es r a partir del byte off: para dhowden/tag, el archivo
+// empieza ahí.
+type offsetReader struct {
+	r   io.ReadSeeker
+	off int64
+}
+
+func (o *offsetReader) Read(p []byte) (int, error) { return o.r.Read(p) }
+
+func (o *offsetReader) Seek(offset int64, whence int) (int64, error) {
+	if whence == io.SeekStart {
+		offset += o.off
+	}
+	n, err := o.r.Seek(offset, whence)
+	return n - o.off, err
 }
 
 // guid pasa un GUID escrito como texto a sus bytes en el archivo (los tres

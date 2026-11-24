@@ -20,22 +20,25 @@ type dockEntry struct {
 	label  string // clave de lang.go
 	source int    // en la biblioteca: 0 la tarjeta, i>0 el servidor i-1
 	name   string // el nombre, si no sale de lang.go (un servidor)
+	// id es como se guarda en UI.HiddenScreens; vacío en las que no se
+	// pueden quitar (el reproductor, la biblioteca, Ajustes).
+	id string
 }
 
 // dockEntries son los huecos, en orden: la música, lo visual, los juegos y
 // los ajustes.
 var dockEntries = []dockEntry{
-	{screen: NowPlaying, search: false, icon: "disc", label: "scr_now"},
-	{screen: LibraryScreen, search: false, icon: "folder", label: "scr_library"},
-	{screen: LibraryScreen, search: true, icon: "search", label: "tab_search"},
-	{screen: Radio, search: false, icon: "radio", label: "scr_radio"},
-	{screen: Podcasts, search: false, icon: "mic", label: "scr_podcasts"},
-	{screen: Modules, search: false, icon: "tracker", label: "scr_modules"},
-	{screen: Queue, search: false, icon: "list", label: "scr_queue"},
-	{screen: Visual, search: false, icon: "visual", label: "scr_visual"},
-	{screen: Downloads, search: false, icon: "download", label: "ytm_jobs"},
-	{screen: Games, search: false, icon: "pad", label: "scr_games"},
-	{screen: Settings, search: false, icon: "gear", label: "scr_settings"},
+	{screen: NowPlaying, icon: "disc", label: "scr_now"},
+	{screen: LibraryScreen, icon: "folder", label: "scr_library"},
+	{screen: LibraryScreen, search: true, icon: "search", label: "tab_search", id: "search"},
+	{screen: Radio, icon: "radio", label: "scr_radio", id: "radio"},
+	{screen: Podcasts, icon: "mic", label: "scr_podcasts", id: "podcasts"},
+	{screen: Modules, icon: "tracker", label: "scr_modules", id: "modules"},
+	{screen: Queue, icon: "list", label: "scr_queue", id: "queue"},
+	{screen: Visual, icon: "visual", label: "scr_visual", id: "visual"},
+	{screen: Downloads, icon: "download", label: "ytm_jobs", id: "downloads"},
+	{screen: Games, icon: "pad", label: "scr_games", id: "games"},
+	{screen: Settings, icon: "gear", label: "scr_settings"},
 }
 
 // dockState es la barra abierta o cerrada.
@@ -55,12 +58,13 @@ func dockIndex(s Screen) int {
 	return 0
 }
 
-// docks son los huecos que se ven: Descargas, solo con yt-dlp.
-// Los servidores van cada uno con su hueco tras la biblioteca.
+// docks son los huecos que se ven: Descargas, solo con yt-dlp, y no las
+// que se quitaron en Ajustes > Pantallas (screenHidden). Los servidores van
+// cada uno con su hueco tras la biblioteca.
 func (a *App) docks() []dockEntry {
 	var out []dockEntry
 	for _, e := range dockEntries {
-		if e.screen == Downloads && a.yt.bin == "" && len(a.remotes) == 0 {
+		if e.screen == Downloads && a.yt.bin == "" && len(a.remotes) == 0 || a.screenHidden(e.id) {
 			continue
 		}
 		out = append(out, e)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/dhowden/tag"
 
+	"github.com/juanvillacortac/audiofilus/internal/decode"
 	"github.com/juanvillacortac/audiofilus/internal/tags"
 )
 
@@ -27,7 +28,9 @@ type Gain struct {
 func ReadGain(path string) (Gain, bool) {
 	f, err := os.Open(path)
 	if err != nil {
-		return Gain{}, false
+		if f, err = os.Open(decode.FindFile(path)); err != nil {
+			return Gain{}, false
+		}
 	}
 	defer f.Close()
 	m, err := tags.ReadFrom(f)

@@ -61,6 +61,11 @@ func Open(path string) (Source, error) {
 	if file, song, ok := SplitGMEPath(path); ok {
 		return newGME(file, song)
 	}
+	// Una ruta que no está tal cual en el disco (estropeada por JSON, o en
+	// otra normalización Unicode): la del archivo que nombra (findfile.go).
+	if _, err := os.Stat(path); err != nil {
+		path = FindFile(path)
+	}
 	if IsGMEFile(path) {
 		return newGME(path, 1)
 	}
@@ -77,7 +82,7 @@ func Open(path string) (Source, error) {
 
 	var src Source
 	switch {
-	case n >= 4 && string(magic[:4]) == "fLaC":
+	case n >= 4 && string(magic[:4]) == "fLaC", isID3FLAC(f, magic[:n]):
 		src, err = newFLAC(f)
 	case n >= 36 && string(magic[:4]) == "OggS" && string(magic[28:36]) == "OpusHead":
 		src, err = newOpus(f, path)
@@ -110,6 +115,17 @@ func Open(path string) (Source, error) {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
 	return src, nil
+}
+
+// isID3FLAC dice si f es un FLAC con una etiqueta ID3v2 delante (la ponen
+// algunos etiquetadores): sin mirarlo, el "ID3" del principio lo haría pasar
+// por un MP3 y no se podría abrir.
+func isID3FLAC(f *os.File, magic []byte) bool {
+	if len(magic) < 10 || string(magic[:3]) != "ID3" {
+		return false
+	}
+	_, err := flacDataStart(f) // ya salta el ID3v2 y busca "fLaC" detrás
+	return err == nil
 }
 
 // isMP3Header reconoce una etiqueta ID3 o la palabra de sincronía de un frame MP3.

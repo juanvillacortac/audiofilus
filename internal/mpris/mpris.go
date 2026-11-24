@@ -13,8 +13,10 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -224,7 +226,7 @@ func (s *Server) metadata(st engine.Status) map[string]dbus.Variant {
 	m := map[string]dbus.Variant{
 		"mpris:trackid": dbus.MakeVariant(dbus.ObjectPath("/audiofilus/track/" + hex.EncodeToString(sum[:8]))),
 		"xesam:title":   dbus.MakeVariant(t.Title),
-		"xesam:url":     dbus.MakeVariant("file://" + t.Path),
+		"xesam:url":     dbus.MakeVariant(fileURL(t.Path)),
 	}
 	if t.Artist != "" {
 		m["xesam:artist"] = dbus.MakeVariant([]string{t.Artist})
@@ -239,6 +241,20 @@ func (s *Server) metadata(st engine.Status) map[string]dbus.Variant {
 		m["mpris:artUrl"] = dbus.MakeVariant("file://" + art)
 	}
 	return m
+}
+
+// fileURL es la URI file:// de path, con lo que no puede ir tal cual en una
+// URL (#, %, ?, espacios, letras no ASCII) escapado; las rutas remotas
+// (subsonic://...) ya son una URL y van tal cual.
+func fileURL(path string) string {
+	if strings.Contains(path, "://") {
+		return path
+	}
+	p := filepath.ToSlash(path)
+	if !strings.HasPrefix(p, "/") {
+		p = "/" + p // "C:/..." en Windows: file:///C:/...
+	}
+	return (&url.URL{Scheme: "file", Path: p}).String()
 }
 
 // art guarda la portada de la canción en un archivo temporal, para el widget.

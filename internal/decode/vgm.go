@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"unsafe"
 )
 
@@ -20,6 +21,27 @@ import (
 
 const vgmLoops = 2 // vueltas antes del fundido
 
+// vgmFlagAccurate es la bandera de vgm_open_ex (VGM_ACCURATE en
+// tools/libvgm/shim.cpp) que pide los núcleos más fieles.
+const vgmFlagAccurate = 0x01
+
+// vgmAccurate dice si los VGM que se abran a partir de ahora usan los
+// núcleos más fieles de libvgm (ver SetVGMAccurate).
+var vgmAccurate atomic.Bool
+
+// SetVGMAccurate elige los núcleos con los que libvgm emula los chips de los
+// VGM que se abran a partir de ahora (los que ya suenan siguen con los
+// suyos): con on, los de Nuked, que reproducen el chip ciclo a ciclo (Nuked
+// OPN2 para el YM2612/YM3438, Nuked OPM para el YM2151, Nuked OPLL para el
+// YM2413 y Nuked OPL3 para el YMF262, el YM3812 y la parte FM del YMF278B
+// (OPL4)); si no, los de siempre (Genesis Plus GX, MAME, EMU2413, AdLibEmu),
+// que suenan casi igual y gastan mucha menos CPU. Se puede llamar desde
+// cualquier hilo. Solo afecta a libvgm: con libgme no cambia nada.
+func SetVGMAccurate(on bool) { vgmAccurate.Store(on) }
+
+// VGMAccurate dice qué pidió el último SetVGMAccurate (false por defecto).
+func VGMAccurate() bool { return vgmAccurate.Load() }
+
 // vgmLibNames son los nombres de la biblioteca (los tests añaden delante la
 // que compila tools/libvgm en build/).
 var vgmLibNames = []string{"libvgmshim.so", "libvgmshim.dll"}
@@ -27,7 +49,7 @@ var vgmLibNames = []string{"libvgmshim.so", "libvgmshim.dll"}
 var vgmLib struct {
 	once   sync.Once
 	err    error
-	open   func(path *byte, rate, loops, fadeMs int32) uintptr
+	open   func(path *byte, rate, loops, fadeMs, flags int32) uintptr
 	render func(h uintptr, buf unsafe.Pointer, frames int32) int32
 	length func(h uintptr) int32
 	loops  func(h uintptr) int32
@@ -42,7 +64,7 @@ func loadVGM() error {
 	}
 	vgmLib.once.Do(func() {
 		vgmLib.err = openLib(vgmLibNames, []libFunc{
-			{&vgmLib.open, "vgm_open"}, {&vgmLib.render, "vgm_render"},
+			{&vgmLib.open, "vgm_open_ex"}, {&vgmLib.render, "vgm_render"},
 			{&vgmLib.length, "vgm_length_ms"}, {&vgmLib.loops, "vgm_loops"},
 			{&vgmLib.seek, "vgm_seek"}, {&vgmLib.tag, "vgm_tag"}, {&vgmLib.close, "vgm_close"},
 		})
@@ -60,12 +82,16 @@ func isVGMFile(path string) bool {
 	return ext == ".vgm" || ext == ".vgz"
 }
 
-// vgmOpen abre file con libvgm.
-func vgmOpen(file string) (uintptr, error) {
+// vgmOpen abre file con libvgm; con accurate, con los núcleos más fieles.
+func vgmOpen(file string, accurate bool) (uintptr, error) {
 	if err := loadVGM(); err != nil {
 		return 0, errNoLib(err)
 	}
-	h := vgmLib.open(cString(file), gmeRate, vgmLoops, gmeFade)
+	var flags int32
+	if accurate {
+		flags |= vgmFlagAccurate
+	}
+	h := vgmLib.open(cString(file), gmeRate, vgmLoops, gmeFade, flags)
 	if h == 0 {
 		return 0, fmt.Errorf("%w: %s: libvgm can't open it", ErrUnsupported, filepath.Base(file))
 	}
@@ -81,9 +107,10 @@ func vgmTag(h uintptr, key string) string {
 }
 
 // vgmTracks es la única canción de un VGM, con sus etiquetas, como las de
-// libgme (GMETracks).
+// libgme (GMETracks). Las etiquetas y la duración no dependen del núcleo, así
+// que se leen siempre con los rápidos.
 func vgmTracks(file string) ([]GMETrack, error) {
-	h, err := vgmOpen(file)
+	h, err := vgmOpen(file, false)
 	if err != nil {
 		return nil, err
 	}
@@ -100,9 +127,9 @@ type vgmSource struct {
 	buf    []int16
 }
 
-// newVGM abre file con libvgm.
+// newVGM abre file con libvgm, con los núcleos que pida SetVGMAccurate.
 func newVGM(file string) (Source, error) {
-	h, err := vgmOpen(file)
+	h, err := vgmOpen(file, vgmAccurate.Load())
 	if err != nil {
 		return nil, err
 	}

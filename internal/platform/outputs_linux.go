@@ -90,6 +90,7 @@ type pulseOutputs struct {
 	mu   sync.Mutex
 	list []Output
 	cur  string
+	def  string // la salida por defecto del servidor (cur puede ser otra)
 }
 
 // openPulseOutputs se conecta al servidor y lee las salidas.
@@ -164,14 +165,18 @@ func (o *pulseOutputs) watch() {
 		}
 		o.mu.Lock()
 		if len(o.list) != n {
-			log.Printf("audio outputs: %d available, playing on %q", len(o.list), o.cur)
+			log.Printf("audio outputs: %d available, playing on %q (default %q)", len(o.list), o.cur, o.def)
 		}
 		o.mu.Unlock()
 		signal(o.ch)
 	}
 }
 
-// refresh lee la salida por defecto y la lista de salidas.
+// refresh lee la lista de salidas y por cuál suena la música: la de este
+// proceso si hay, si no la salida por defecto. No basta con la por defecto:
+// la música que se movió a mano (Set) se queda en esa salida, y al quitar y
+// volver a poner un DAC, Knulli lo pone por defecto pero la música sigue en
+// el altavoz (#11).
 func (o *pulseOutputs) refresh() error {
 	var info proto.GetServerInfoReply
 	if err := o.c.Request(&proto.GetServerInfo{}, &info); err != nil {
@@ -197,8 +202,16 @@ func (o *pulseOutputs) refresh() error {
 		list = append(list, Output{ID: s.SinkName, Name: s.Device, USB: prop("device.bus") == "usb", HDMI: hdmi, card: card})
 	}
 	nameDuplicates(list)
+	cur := info.DefaultSinkName
+	if ins := o.ours(); len(ins) > 0 {
+		for _, s := range sinks {
+			if s.SinkIndex == ins[0].SinkIndex && s.SinkName != "auto_null" {
+				cur = s.SinkName
+			}
+		}
+	}
 	o.mu.Lock()
-	o.list, o.cur = list, info.DefaultSinkName
+	o.list, o.cur, o.def = list, cur, info.DefaultSinkName
 	o.mu.Unlock()
 	return nil
 }
@@ -237,19 +250,29 @@ func (o *pulseOutputs) Set(id string) error {
 	if err := o.c.Request(&proto.SetDefaultSink{SinkName: id}, nil); err != nil {
 		return fmt.Errorf("set default sink %s: %w", id, err)
 	}
-	var inputs proto.GetSinkInputInfoListReply
-	if err := o.c.Request(&proto.GetSinkInputInfoList{}, &inputs); err == nil {
-		pid := strconv.Itoa(os.Getpid())
-		for _, in := range inputs {
-			if p, ok := in.Properties["application.process.id"]; ok && p.String() == pid {
-				_ = o.c.Request(&proto.MoveSinkInput{SinkInputIndex: in.SinkInputIndex, DeviceIndex: proto.Undefined, DeviceName: id}, nil)
-			}
-		}
+	for _, in := range o.ours() {
+		_ = o.c.Request(&proto.MoveSinkInput{SinkInputIndex: in.SinkInputIndex, DeviceIndex: proto.Undefined, DeviceName: id}, nil)
 	}
 	o.mu.Lock()
 	o.cur = id
 	o.mu.Unlock()
 	return nil
+}
+
+// ours son las entradas del servidor (la música) de este proceso.
+func (o *pulseOutputs) ours() []*proto.GetSinkInputInfoReply {
+	var inputs proto.GetSinkInputInfoListReply
+	if err := o.c.Request(&proto.GetSinkInputInfoList{}, &inputs); err != nil {
+		return nil
+	}
+	pid := strconv.Itoa(os.Getpid())
+	var mine []*proto.GetSinkInputInfoReply
+	for _, in := range inputs {
+		if p, ok := in.Properties["application.process.id"]; ok && p.String() == pid {
+			mine = append(mine, in)
+		}
+	}
+	return mine
 }
 
 func (o *pulseOutputs) Restart() bool            { return false }

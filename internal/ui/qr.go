@@ -65,6 +65,12 @@ func (a *App) drawQR(dst *ebiten.Image) {
 	url := a.qrURL[len("https://"):]
 	pw := max(size, textWidth(url, SmallFace)) + 16
 	ph := size + 36
+	thanks := a.qrURL == donateURL && len(supporters) > 0
+	if thanks {
+		// Bajo el QR de las donaciones, quienes ya apoyaron (supporters.go).
+		pw = max(pw, textWidth(supportersLine(), SmallFace)+44)
+		ph += 16
+	}
 	px, py := (w-pw)/2, topH+(h-topH-bottomH-ph)/2
 	panel(dst, px, py, pw, ph, th.Bg2)
 	op := &ebiten.DrawImageOptions{}
@@ -73,4 +79,7 @@ func (a *App) drawQR(dst *ebiten.Image) {
 	dst.DrawImage(qr, op)
 	drawText(dst, url, SmallFace, (w-textWidth(url, SmallFace))/2, py+size+12, th.Text)
 	drawText(dst, T("qr_scan"), SmallFace, (w-textWidth(T("qr_scan"), SmallFace))/2, py+size+23, th.Dim)
+	if thanks {
+		a.drawSupporters(dst, w/2, py+size+39)
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -30,16 +31,29 @@ type flacSource struct {
 }
 
 func newFLAC(f *os.File) (Source, error) {
-	stream, err := flac.NewSeek(f)
+	st, err := f.Stat()
 	if err != nil {
 		return nil, err
+	}
+	// La librería lee desde "fLaC": un ID3v2 delante lo salta ella con un
+	// bufio que lee de más y se pierde, así que se le pasa el archivo ya
+	// a partir de ahí.
+	sig, err := id3v2End(f)
+	if err != nil {
+		return nil, err
+	}
+	stream, err := flac.NewSeek(io.NewSectionReader(f, sig, st.Size()-sig))
+	if err != nil {
+		return nil, err
+	}
+	// Los de 32 bits (libFLAC 1.4 en adelante) usan un código de tamaño de
+	// muestra que la librería toma por reservado: no se podría leer ni un
+	// bloque, así que se rechazan ya.
+	if bps := stream.Info.BitsPerSample; bps > 24 {
+		stream.Close()
+		return nil, fmt.Errorf("flac: %d bits per sample: %w", bps, ErrUnsupported)
 	}
 	start, err := flacDataStart(f)
-	if err != nil {
-		stream.Close()
-		return nil, err
-	}
-	st, err := f.Stat()
 	if err != nil {
 		stream.Close()
 		return nil, err
@@ -62,17 +76,9 @@ func newFLAC(f *os.File) (Source, error) {
 // flacDataStart lee la cabecera del archivo (un ID3v2 opcional, "fLaC" y los
 // bloques de metadatos) y devuelve dónde empieza el audio.
 func flacDataStart(f *os.File) (int64, error) {
-	var hdr [10]byte
-	if _, err := f.ReadAt(hdr[:], 0); err != nil {
+	off, err := id3v2End(f)
+	if err != nil {
 		return 0, err
-	}
-	off := int64(0)
-	if string(hdr[:3]) == "ID3" {
-		size := int64(hdr[6])<<21 | int64(hdr[7])<<14 | int64(hdr[8])<<7 | int64(hdr[9])
-		off = 10 + size
-		if hdr[5]&0x10 != 0 {
-			off += 10 // pie del ID3v2
-		}
 	}
 	var sig [4]byte
 	if _, err := f.ReadAt(sig[:], off); err != nil {
@@ -94,6 +100,24 @@ func flacDataStart(f *os.File) (int64, error) {
 	}
 }
 
+// id3v2End es dónde acaba el ID3v2 del principio de f, si lo tiene (0 si
+// no): donde debería estar "fLaC".
+func id3v2End(f *os.File) (int64, error) {
+	var hdr [10]byte
+	if _, err := f.ReadAt(hdr[:], 0); err != nil {
+		return 0, err
+	}
+	if string(hdr[:3]) != "ID3" {
+		return 0, nil
+	}
+	size := int64(hdr[6])<<21 | int64(hdr[7])<<14 | int64(hdr[8])<<7 | int64(hdr[9])
+	off := 10 + size
+	if hdr[5]&0x10 != 0 {
+		off += 10 // pie del ID3v2
+	}
+	return off, nil
+}
+
 // seekByte pone el lector en el byte off del archivo.
 func (s *flacSource) seekByte(off int64) error {
 	if _, err := s.f.Seek(off, io.SeekStart); err != nil {
@@ -109,6 +133,12 @@ func (s *flacSource) Read(dst []float32) (int, error) {
 	for n+1 < len(dst) {
 		if len(s.pending) == 0 {
 			if err := s.decodeFrame(); err != nil {
+				// Lo que haya detrás del último bloque (una etiqueta ID3v1 o
+				// APE que puso algún etiquetador) no es audio: la canción
+				// acabó.
+				if l := s.Length(); l >= 0 && s.pos+int64(n/2) >= l {
+					err = io.EOF
+				}
 				if n > 0 && err == io.EOF {
 					return n, nil
 				}

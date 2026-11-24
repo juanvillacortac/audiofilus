@@ -124,7 +124,7 @@ func (c *Client) get(ctx context.Context, method string, extra url.Values, out a
 	}
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return err
+		return netErr("subsonic: "+method, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
@@ -258,7 +258,7 @@ func getFile(ctx context.Context, u string) (*http.Response, error) {
 	cl := &http.Client{} // sin plazo total: una canción grande tarda
 	resp, err := cl.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, netErr("download", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()

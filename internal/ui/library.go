@@ -23,6 +23,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	xdraw "golang.org/x/image/draw"
 
@@ -158,6 +159,12 @@ func (l *Library) AlbumOf(path string) (*Album, int) {
 	return al, -1
 }
 
+// albumsByFolder es Ajustes > Álbumes por carpeta (config.UI.AlbumsByFolder):
+// buildLibrary arma un álbum por carpeta en vez de por las etiquetas. Es de
+// todo el paquete porque la biblioteca se arma también en segundo plano
+// (scan.go).
+var albumsByFolder atomic.Bool
+
 // buildLibrary agrupa las canciones escaneadas por álbum (álbum + artista del
 // álbum) y las ordena: los álbumes por artista y título, las canciones de cada
 // álbum por número de pista. Una canción sin álbum en sus etiquetas toma el
@@ -167,7 +174,9 @@ func buildLibrary(entries []entry, roots []string) *Library {
 	lib := &Library{byPath: map[string]*Album{}, song: map[string]Song{}, meta: map[string]songMeta{}}
 	byKey := map[string]*Album{}
 	for _, e := range entries {
-		s := Song{Path: e.Path, Title: e.Title, Artist: firstArtist(e.Artist), Album: e.Album, Track: e.Track}
+		// La canción muestra todos sus artistas ("A, B"); el álbum se
+		// archiva bajo el primero (abajo).
+		s := Song{Path: e.Path, Title: e.Title, Artist: e.Artist, Album: e.Album, Track: e.Track}
 		lib.meta[e.Path] = songMeta{genre: e.Genre, year: e.Year, added: e.ModTime, albumArtist: e.AlbumArtist}
 		file := audioFile(e.Path)
 		if s.Title == "" {
@@ -182,14 +191,25 @@ func buildLibrary(entries []entry, roots []string) *Library {
 		}
 		albumArtist := firstArtist(e.AlbumArtist)
 		if albumArtist == "" {
-			albumArtist = s.Artist
+			albumArtist = firstArtist(s.Artist)
 		}
 		key := strings.ToLower(albumArtist + "\x00" + s.Album)
+		title := s.Album
+		folder := albumsByFolder.Load() && !strings.Contains(e.Path, "://")
+		if folder {
+			// Por carpeta: la carpeta es el álbum, con su nombre (la canción
+			// conserva el de sus etiquetas); el artista es el de sus
+			// canciones si es uno solo, si no "Varios artistas".
+			dir := filepath.Dir(file)
+			key, title, noAlbum = "dir\x00"+dir, filepath.Base(dir), false
+		}
 		a := byKey[key]
 		if a == nil {
-			a = &Album{Title: s.Album, Artist: albumArtist, noAlbum: noAlbum, scaled: map[int]*coverImage{}}
+			a = &Album{Title: title, Artist: albumArtist, noAlbum: noAlbum, scaled: map[int]*coverImage{}}
 			byKey[key] = a
 			lib.Albums = append(lib.Albums, a)
+		} else if folder && !strings.EqualFold(a.Artist, albumArtist) {
+			a.Artist = T("various")
 		}
 		if e.Cover != "" && a.coverPath == "" {
 			a.coverPath = e.Cover

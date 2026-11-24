@@ -25,9 +25,10 @@ var trackPrefix = regexp.MustCompile(`^\s*(\d{1,2}[-.])?\d{1,3}\s*([.)_-]\s*)?\s
 
 // guessArtistTitle saca de una canción el artista y el título para buscarla:
 // los suyos, o, si su título es el nombre del archivo, lo que se lea en él
-// ("Artista - Título", sin el número de pista).
+// ("Artista - Título", sin el número de pista). De varios artistas ("A, B")
+// se busca con el primero, el que mejor encuentra MusicBrainz.
 func guessArtistTitle(s Song) (artist, title string) {
-	artist, title = strings.TrimSpace(s.Artist), strings.TrimSpace(s.Title)
+	artist, title = strings.TrimSpace(firstArtist(s.Artist)), strings.TrimSpace(s.Title)
 	title = trackPrefix.ReplaceAllString(title, "")
 	title = strings.NewReplacer("_", " ").Replace(title)
 	if artist == "" {

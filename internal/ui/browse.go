@@ -5,6 +5,7 @@ import (
 	"image"
 	"math"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -80,9 +81,9 @@ func (a *App) rootView(tab int) *view {
 	l := a.lib
 	switch tab {
 	case tabAlbums:
-		return &view{kind: vAlbums, title: T("tab_albums"), albums: l.Albums}
+		return &view{kind: vAlbums, title: T("tab_albums"), albums: a.keepAlbums(tab, l.Albums)}
 	case tabArtists:
-		return &view{kind: vArtists, title: T("tab_artists"), artists: l.Artists}
+		return &view{kind: vArtists, title: T("tab_artists"), artists: a.keepArtists(tab, l.Artists)}
 	case tabLists:
 		pls := l.Playlists
 		if l == a.local { // las que salen solas, en la biblioteca de aquí
@@ -95,16 +96,17 @@ func (a *App) rootView(tab int) *view {
 		}
 		return &view{kind: vFolder, title: T("tab_folders"), dirs: l.Roots}
 	}
-	return &view{kind: vSongs, title: T("tab_songs"), songs: l.Songs}
+	return &view{kind: vSongs, title: T("tab_songs"), songs: a.keepSongs(tab, l.Songs)}
 }
 
 func (a *App) folderView(dir string) *view {
 	dirs, songs := a.lib.Folder(dir)
+	songs = a.keepSongs(tabFolders, songs) // los formatos quitados de Carpetas
 	return &view{kind: vFolder, title: filepath.Base(dir), dir: dir, dirs: dirs, songs: songs}
 }
 
 func (a *App) albumView(al *Album) *view {
-	return &view{kind: vAlbum, title: al.Title, album: al, songs: al.Songs}
+	return &view{kind: vAlbum, title: al.Title, album: al, songs: a.keepSongs(a.libTab, al.Songs)}
 }
 
 // cur es la vista de arriba de la sección actual.
@@ -160,7 +162,7 @@ func (a *App) openArtist(name string) {
 	for i, ar := range root.artists {
 		if strings.EqualFold(ar.Name, name) {
 			root.sel = i
-			a.stacks[tabArtists] = []*view{root, {kind: vAlbums, title: ar.Name, albums: ar.Albums}}
+			a.stacks[tabArtists] = []*view{root, {kind: vAlbums, title: ar.Name, albums: a.keepAlbums(tabArtists, ar.Albums)}}
 			return
 		}
 	}
@@ -284,9 +286,9 @@ func (a *App) updateTabs() {
 	}
 	switch {
 	case in.Repeat(next):
-		a.libTab = (a.libTab + 1) % tabCount
+		a.libTab = a.stepTab(1)
 	case in.Repeat(prev):
-		a.libTab = (a.libTab - 1 + tabCount) % tabCount
+		a.libTab = a.stepTab(-1)
 	case in.Pressed(enter), in.Pressed(ActConfirm):
 		a.tabFocus = false
 		if a.libTab == tabSearch {
@@ -304,7 +306,7 @@ func (a *App) openItem(v *view) {
 		a.push(a.albumView(v.albums[v.sel]))
 	case vArtists:
 		ar := v.artists[v.sel]
-		a.push(&view{kind: vAlbums, title: ar.Name, albums: ar.Albums})
+		a.push(&view{kind: vAlbums, title: ar.Name, albums: a.keepAlbums(a.libTab, ar.Albums)})
 	case vPlaylists:
 		pl := v.playlists[v.sel]
 		if pl.stats {
@@ -402,23 +404,30 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 			drawText(dst, t, SmallFace, x+2, y, th.Dim)
 		}
 	}
+	names, vis := tabs(), a.visibleTabs()
 	if w >= 320 {
-		for i, t := range tabs() {
-			drawTab(margin, topH+8+i*16, 72, t, i)
+		for k, i := range vis {
+			drawTab(margin, topH+8+k*16, 72, names[i], i)
 		}
 		rect(dst, margin+75, topH+5, 1, h-topH-bottomH-44, withAlpha(th.Dim, 0x40))
 	} else if a.input.touch {
 		// En estrecho y con el dedo: un botón que abre las pestañas en un
 		// desplegable (la tira de abajo hay que arrastrarla).
-		top += a.tabsButton(dst, margin, top, w-2*margin, tabs(), a.libTab, func(i int) {
+		shown := make([]string, len(vis))
+		for k, i := range vis {
+			shown[k] = names[i]
+		}
+		top += a.tabsButton(dst, margin, top, w-2*margin, shown, max(slices.Index(vis, a.libTab), 0), func(k int) {
+			i := vis[k]
 			a.libTab, a.tabFocus = i, false
 			if i == tabSearch {
 				a.search.typing = true
 			}
 		}) - 2
 	} else {
-		x := margin - max(0, a.libTab-1)*56
-		for i, t := range tabs() {
+		x := margin - max(0, slices.Index(vis, a.libTab)-1)*56
+		for _, i := range vis {
+			t := names[i]
 			tw := textWidth(t, SmallFace) + 6
 			if x > -tw && x < w {
 				drawTab(x, top, tw, t, i)
@@ -465,7 +474,12 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 		if st := a.remoteState(); st != "" {
 			msg = st
 		}
-		drawText(dst, msg, SmallFace, x0+(cw-textWidth(msg, SmallFace))/2, top+30, th.Dim)
+		// En varias líneas y dentro del panel: un error de un servidor es
+		// largo y, en una sola, se salía por encima de las pestañas (#13).
+		lh := SmallFace.Metrics().HAscent + SmallFace.Metrics().HDescent + 2
+		for i, line := range wrapLines(msg, SmallFace, cw-16) {
+			drawText(dst, line, SmallFace, x0+(cw-textWidth(line, SmallFace))/2, top+30+i*int(lh), th.Dim)
+		}
 	}
 	a.drawHints(dst, hints)
 }

@@ -15,6 +15,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
+	"golang.org/x/text/unicode/norm"
 )
 
 // Cue es una hoja CUE: un álbum guardado en uno o varios archivos grandes,
@@ -210,17 +211,24 @@ func ResolveCueFile(dir, name string) (string, bool) {
 		}
 	}
 	for _, e := range ents {
-		if !e.IsDir() && strings.EqualFold(e.Name(), base) {
+		if !e.IsDir() && sameFold(e.Name(), base) {
 			return filepath.Join(dir, e.Name()), true
 		}
 	}
 	for _, e := range ents {
 		n := e.Name()
-		if !e.IsDir() && decode.IsAudioFile(n) && strings.EqualFold(strings.TrimSuffix(n, filepath.Ext(n)), stem) {
+		if !e.IsDir() && decode.IsAudioFile(n) && sameFold(strings.TrimSuffix(n, filepath.Ext(n)), stem) {
 			return filepath.Join(dir, n), true
 		}
 	}
 	return "", false
+}
+
+// sameFold dice si disk (un nombre en el disco) y want (el de la hoja) son
+// el mismo sin distinguir mayúsculas ni normalización Unicode: una hoja
+// hecha en Windows (NFC) junto a un archivo copiado desde macOS (NFD).
+func sameFold(disk, want string) bool {
+	return strings.EqualFold(disk, want) || strings.EqualFold(norm.NFC.String(disk), norm.NFC.String(want))
 }
 
 // cueField parte una línea en la primera palabra y el resto.

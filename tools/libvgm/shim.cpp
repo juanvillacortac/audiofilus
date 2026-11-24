@@ -24,6 +24,60 @@
 #include "player/playera.hpp"
 #include "utils/DataLoader.h"
 #include "utils/FileLoader.h"
+#include "emu/SoundDevs.h"
+#include "emu/EmuCores.h"
+
+// VGM_ACCURATE es la bandera de vgm_open_ex que pide los núcleos más fieles
+// (Nuked) en vez de los de siempre, más rápidos.
+#define VGM_ACCURATE 0x01
+
+// accurateCore es un chip con un núcleo más fiel que el que libvgm usa por
+// defecto: core va al chip, linked a su chip enlazado (0 = el de siempre).
+struct accurateCore {
+	DEV_ID dev;
+	UINT32 core;
+	UINT32 linked;
+};
+
+// accurateCores son los chips con un núcleo de Nuked en esta versión de
+// libvgm: el YM2612/YM3438 (Nuked OPN2, en vez de Genesis Plus GX), el YM2151
+// (Nuked OPM, en vez de MAME), el YM2413 (Nuked OPLL, en vez de EMU2413), el
+// YMF262 (Nuked OPL3, en vez de AdLibEmu), el YM3812 (también con Nuked OPL3,
+// que lo emula en su modo OPL2) y la parte FM del YMF278B (OPL4), que es un
+// YMF262 enlazado. Los demás chips o solo tienen un núcleo, o el de por
+// defecto ya es el más fiel (SN76496 de MAME, Game Boy de SameBoy, NES de
+// NSFPlay, QSound de superctr): se quedan como están. Pedir un núcleo que un
+// chip no tiene haría que no arrancase, por eso la lista es cerrada.
+static const accurateCore accurateCores[] = {
+	{DEVID_YM2612, FCC_NUKE, 0},
+	{DEVID_YM2151, FCC_NUKE, 0},
+	{DEVID_YM2413, FCC_NUKE, 0},
+	{DEVID_YMF262, FCC_NUKE, 0},
+	{DEVID_YM3812, FCC_NUKE, 0},
+	{DEVID_YMF278B, 0, FCC_NUKE},
+};
+
+// useAccurateCores pide a eng (ya con el archivo cargado y antes de Start,
+// que es cuando crea los chips) los núcleos de accurateCores, para las dos
+// instancias de cada chip. Los reproductores que no tienen un chip (el de GYM
+// solo tiene YM2612 y SN76496, el de DRO solo OPL2 y OPL3) dicen que no y se
+// sigue.
+static void useAccurateCores(PlayerBase* eng) {
+	for (size_t i = 0; i < sizeof(accurateCores) / sizeof(accurateCores[0]); i++) {
+		const accurateCore& c = accurateCores[i];
+		for (UINT32 inst = 0; inst < 2; inst++) {
+			UINT32 id = PLR_DEV_ID(c.dev, inst);
+			PLR_DEV_OPTS opts;
+			if (eng->GetDeviceOptions(id, opts))
+				continue;
+			if (c.core)
+				opts.emuCore[0] = c.core;
+			if (c.linked)
+				opts.emuCore[1] = c.linked;
+			eng->SetDeviceOptions(id, opts);
+		}
+	}
+}
 
 // vgmHandle es una canción abierta.
 struct vgmHandle {
@@ -38,9 +92,10 @@ struct vgmHandle {
 
 extern "C" {
 
-// vgm_open abre path a rate cuadros por segundo; loops son las vueltas antes
-// del fundido de fadeMs. NULL si no se puede.
-void* vgm_open(const char* path, int rate, int loops, int fadeMs) {
+// vgm_open_ex abre path a rate cuadros por segundo; loops son las vueltas
+// antes del fundido de fadeMs. flags: VGM_ACCURATE pide los núcleos más
+// fieles (ver accurateCores). NULL si no se puede.
+void* vgm_open_ex(const char* path, int rate, int loops, int fadeMs, int flags) {
 	vgmHandle* h = new vgmHandle();
 	h->rate = (UINT32)rate;
 	h->pos = 0;
@@ -71,6 +126,8 @@ void* vgm_open(const char* path, int rate, int loops, int fadeMs) {
 		return NULL;
 	}
 	PlayerBase* eng = h->player.GetPlayer();
+	if (flags & VGM_ACCURATE)
+		useAccurateCores(eng);
 	if (eng->GetPlayerType() == FCC_VGM) {
 		VGMPlayer* v = dynamic_cast<VGMPlayer*>(eng);
 		h->player.SetLoopCount(v->GetModifiedLoopCount((UINT32)loops));
@@ -81,6 +138,12 @@ void* vgm_open(const char* path, int rate, int loops, int fadeMs) {
 	if (h->loops)
 		h->total += h->player.GetFadeSamples();
 	return h;
+}
+
+// vgm_open es vgm_open_ex con los núcleos de siempre (lo que exportaban las
+// versiones anteriores de esta capa).
+void* vgm_open(const char* path, int rate, int loops, int fadeMs) {
+	return vgm_open_ex(path, rate, loops, fadeMs, 0);
 }
 
 // vgm_render llena buf con frames cuadros estéreo de 16 bits; devuelve los

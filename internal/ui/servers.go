@@ -3,6 +3,7 @@ package ui
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -102,6 +103,9 @@ func (a *App) loadCatalog(src *remoteSource) {
 			meta[s.ID] = remote.Meta{Title: s.Title, Artist: s.Artist, Album: s.Album}
 		}
 		_ = a.store.SaveMeta(src.srv.Name, meta)
+	}
+	if err != nil {
+		log.Printf("server %q: catalog: %v", src.srv.Name, err)
 	}
 	a.serversCh <- remoteLoaded{src: src, cat: cat, fresh: true, err: err}
 	ebiten.ScheduleFrame()

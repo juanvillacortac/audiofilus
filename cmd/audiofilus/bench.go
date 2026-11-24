@@ -6,6 +6,8 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/juanvillacortac/audiofilus/internal/decode"
@@ -32,6 +34,16 @@ func runBench(files []string) int {
 		fmt.Printf("  decode only:                 %s of one core\n", pct(dec))
 		fmt.Printf("  + resample to 48 kHz:        %s\n", pct(res))
 		fmt.Printf("  + float32 -> bytes (engine): %s\n", pct(full))
+		// Los VGM se miden también con los núcleos más fieles de libvgm
+		// (decode.SetVGMAccurate), que gastan bastante más.
+		if ext := strings.ToLower(filepath.Ext(f)); (ext == ".vgm" || ext == ".vgz") && decode.VGMFullChips() {
+			decode.SetVGMAccurate(true)
+			acc, _, err := stage(f, false, false)
+			decode.SetVGMAccurate(false)
+			if err == nil {
+				fmt.Printf("  decode, accurate VGM cores:  %s\n", pct(acc))
+			}
+		}
 	}
 	return 0
 }

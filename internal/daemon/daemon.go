@@ -145,6 +145,7 @@ func Run(paths config.Paths) error {
 	}
 	// Sin PipeWire/PulseAudio, oto abre una tarjeta al arrancar: se elige
 	// antes (outputs.go).
+	decode.SetVGMAccurate(cfg.VGMAccurate)
 	alsaOut := platform.PickALSAOutput(cfg.AudioOutput)
 	eng, err := engine.New(cfg.SampleRate, time.Duration(cfg.BufferMS)*time.Millisecond)
 	if err != nil {
@@ -943,6 +944,18 @@ func (d *Daemon) handle(req control.Request) (any, error) {
 		// de hacerlo); mientras, los controles que lee el servicio van a ella.
 		d.setRemote(len(req.Args) > 0 && req.Args[0] == "on")
 		return nil, nil
+	case "vgmaccurate":
+		// vgmaccurate on|off: los núcleos Nuked para los VGM (Ajustes). La
+		// interfaz ya lo guardó en audiofilus.json; vale desde la siguiente
+		// canción (reabrir la que suena la contaría como otra).
+		if len(req.Args) != 1 || req.Args[0] != "on" && req.Args[0] != "off" {
+			return nil, errors.New("usage: vgmaccurate on|off")
+		}
+		on := req.Args[0] == "on"
+		d.mu.Lock()
+		d.cfg.VGMAccurate = on
+		d.mu.Unlock()
+		decode.SetVGMAccurate(on)
 	case "output":
 		// output <id|auto>: la salida de audio (Ajustes).
 		if len(req.Args) != 1 {

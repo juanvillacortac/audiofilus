@@ -303,6 +303,7 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 		return nil, err
 	}
 	SetLanguage(cfg.Language)
+	albumsByFolder.Store(cfg.UI.AlbumsByFolder)
 	if !offline {
 		migrateGameFiles(paths.Data)
 	}
@@ -349,7 +350,8 @@ func NewApp(paths config.Paths, offline bool) (*App, error) {
 	if !offline && (sfx.Gain(cfg.UI.Sounds) > 0 || sfx.Gain(cfg.UI.UISounds) > 0) {
 		a.startSounds() // la salida de audio se prepara ya, en segundo plano
 	}
-	a.search.row = 1 // el teclado en pantalla empieza en la Q, no en los números
+	a.libTab = a.homeTab() // por si Canciones se quitó (Ajustes > Secciones)
+	a.search.row = 1       // el teclado en pantalla empieza en la Q, no en los números
 	if !hasMusicDir(cfg.MusicDirs) {
 		a.firstRun = true
 		a.picker = newPicker("")
@@ -1907,6 +1909,10 @@ func (a *App) writeShots() error {
 	}
 	a.settingsQR, a.qrURL = true, projectURL
 	if err := shot("ajustes-qr"); err != nil {
+		return err
+	}
+	a.qrURL = donateURL // con el agradecimiento (supporters.go)
+	if err := shot("ajustes-donar"); err != nil {
 		return err
 	}
 	a.settingsQR = false

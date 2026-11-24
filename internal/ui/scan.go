@@ -2,6 +2,7 @@ package ui
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -41,8 +42,9 @@ type libraryCache struct {
 
 // cacheVersion es la de las entradas de la caché: si la guardada es más
 // vieja, las etiquetas se vuelven a leer una vez (la 2 trajo el género y el
-// año, para las listas inteligentes).
-const cacheVersion = 2
+// año, para las listas inteligentes; la 3, los varios artistas de una
+// canción y las etiquetas de los FLAC con un ID3v2 delante).
+const cacheVersion = 3
 
 // Scan es un escaneo de la biblioteca en marcha. Leer las etiquetas de cada
 // archivo es lento en una portátil, así que se guardan en data/library.json y
@@ -112,19 +114,33 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 		entries = append(entries, readEntry(p, info))
 		s.Done.Add(1)
 	}
-	if err := os.MkdirAll(paths.Data, 0o755); err == nil {
-		if b, err := json.Marshal(libraryCache{Version: cacheVersion, Dirs: dirs, Entries: entries}); err == nil {
-			tmp := cachePath + ".tmp"
-			if os.WriteFile(tmp, b, 0o644) == nil {
-				_ = os.Rename(tmp, cachePath)
-			}
-		}
+	// Si no se puede guardar (la tarjeta llena o en solo lectura), el
+	// siguiente arranque escanea todo otra vez: queda en el log.
+	if err := saveLibraryCache(paths.Data, cachePath, libraryCache{Version: cacheVersion, Dirs: dirs, Entries: entries}); err != nil {
+		log.Printf("library cache: %v", err)
 	}
 	lib := buildLibrary(entries, dirs)
 	lib.Roots = dirs
 	// Las listas de la música y las propias (data/playlists, playlists.go).
 	lib.addPlaylists(library.FindPlaylists(append(slices.Clone(dirs), filepath.Join(paths.Data, "playlists"))))
 	s.finish(lib, nil)
+}
+
+// saveLibraryCache guarda c en cachePath (dentro de dir) de una vez: en un
+// temporal y luego renombrándolo, para no dejar una caché a medias.
+func saveLibraryCache(dir, cachePath string, c libraryCache) error {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	b, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+	tmp := cachePath + ".tmp"
+	if err := os.WriteFile(tmp, b, 0o644); err != nil {
+		return err
+	}
+	return os.Rename(tmp, cachePath)
 }
 
 // loadCachedLibrary arma la biblioteca de dirs solo con data/library.json,
@@ -135,10 +151,25 @@ func (s *Scan) run(paths config.Paths, dirs []string) {
 func loadCachedLibrary(paths config.Paths, dirs []string) *Library {
 	b, err := os.ReadFile(filepath.Join(paths.Data, "library.json"))
 	if err != nil {
+		if !os.IsNotExist(err) {
+			log.Printf("library cache: %v", err)
+		}
 		return nil
 	}
 	var c libraryCache
-	if json.Unmarshal(b, &c) != nil || c.Version < cacheVersion || !slices.Equal(c.Dirs, dirs) || len(c.Entries) == 0 {
+	// Una caché de una versión vieja también vale para enseñarla: le faltan
+	// datos (el género, los varios artistas) que el escaneo de fondo pone al
+	// día al releer las etiquetas, en vez de tapar la biblioteca con la
+	// pantalla de escaneo tras actualizar.
+	if err := json.Unmarshal(b, &c); err != nil {
+		log.Printf("library cache: corrupt (%d bytes): %v", len(b), err)
+		return nil
+	}
+	if !slices.Equal(c.Dirs, dirs) {
+		log.Printf("library cache: music folders changed (%q, now %q)", c.Dirs, dirs)
+		return nil
+	}
+	if len(c.Entries) == 0 {
 		return nil
 	}
 	lib := buildLibrary(c.Entries, dirs)

@@ -25,7 +25,6 @@ func init() {
 // GD3: el título en inglés y el juego solo en japonés.
 func writeYM2151(t *testing.T, path string, secs int) {
 	t.Helper()
-	const hdrLen = 0x80
 	reg := func(r, v byte) []byte { return []byte{0x54, r, v} }
 	var data []byte
 	data = append(data, reg(0x20, 0xC7)...) // canal 0: los dos lados, algoritmo 7
@@ -40,6 +39,38 @@ func writeYM2151(t *testing.T, path string, secs int) {
 		data = append(data, reg(0xE0+op, 0x0F)...)
 	}
 	data = append(data, reg(0x08, 0x78)...) // nota pulsada en los cuatro operadores
+	writeChipVGM(t, path, secs, 0x30, 3579545, data)
+}
+
+// writeYM2612 escribe un VGM de secs segundos con un tono del YM2612 (el FM
+// de la Mega Drive), con las mismas etiquetas que writeYM2151.
+func writeYM2612(t *testing.T, path string, secs int) {
+	t.Helper()
+	reg := func(r, v byte) []byte { return []byte{0x52, r, v} }
+	var data []byte
+	data = append(data, reg(0xB0, 0x07)...)  // canal 0: algoritmo 7
+	data = append(data, reg(0xB4, 0xC0)...)  // los dos lados
+	for _, op := range []byte{0, 4, 8, 12} { // los cuatro operadores del canal 0
+		data = append(data, reg(0x30+op, 0x01)...) // MUL 1
+		data = append(data, reg(0x40+op, 0x08)...) // TL alto (fuerte)
+		data = append(data, reg(0x50+op, 0x1F)...) // ataque instantáneo
+		data = append(data, reg(0x60+op, 0x00)...)
+		data = append(data, reg(0x70+op, 0x00)...)
+		data = append(data, reg(0x80+op, 0x0F)...)
+	}
+	data = append(data, reg(0xA4, 0x24)...) // bloque 4, F-number 1081: un La
+	data = append(data, reg(0xA0, 0x39)...)
+	data = append(data, reg(0x28, 0xF0)...) // nota pulsada en los cuatro operadores
+	writeChipVGM(t, path, secs, 0x2C, 7670453, data)
+}
+
+// writeChipVGM escribe en path un VGM 1.51 de secs segundos: un chip con reloj
+// clock (en la posición clockOfs de la cabecera), los comandos de data, la
+// espera hasta secs y las etiquetas GD3 de los tests.
+func writeChipVGM(t *testing.T, path string, secs, clockOfs int, clock uint32, data []byte) {
+	t.Helper()
+	const hdrLen = 0x80
+	data = append([]byte(nil), data...)
 	for left := 44100 * secs; left > 0; {
 		n := min(left, 65535)
 		data = append(data, 0x61, byte(n), byte(n>>8))
@@ -61,7 +92,7 @@ func writeYM2151(t *testing.T, path string, secs int) {
 	binary.LittleEndian.PutUint32(hdr[0x08:], 0x151)
 	binary.LittleEndian.PutUint32(hdr[0x14:], uint32(hdrLen+len(data)-0x14))
 	binary.LittleEndian.PutUint32(hdr[0x18:], uint32(44100*secs))
-	binary.LittleEndian.PutUint32(hdr[0x30:], 3579545) // YM2151
+	binary.LittleEndian.PutUint32(hdr[clockOfs:], clock)
 	binary.LittleEndian.PutUint32(hdr[0x34:], hdrLen-0x34)
 	file := append(append(hdr, data...), gd3...)
 	if err := os.WriteFile(path, file, 0o644); err != nil {
@@ -111,4 +142,53 @@ func TestVGMFullChips(t *testing.T) {
 		t.Errorf("after seek: %d frames, want 72000", len(rest)/2)
 	}
 	s.Close()
+}
+
+// TestVGMAccurate comprueba SetVGMAccurate (si libvgm está): con los núcleos
+// de Nuked, un tono del YM2151 y otro del YM2612 suenan, duran lo mismo y
+// salen distintos que con los de siempre (prueba de que cambió el núcleo);
+// al volver a apagarlo, sale igual que antes.
+func TestVGMAccurate(t *testing.T) {
+	if !VGMFullChips() {
+		t.Skip("libvgmshim not built (tools/libvgm/build.sh build/libvgm)")
+	}
+	t.Cleanup(func() { SetVGMAccurate(false) })
+	render := func(path string, accurate bool) []float32 {
+		t.Helper()
+		SetVGMAccurate(accurate)
+		s, err := Open(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer s.Close()
+		return readAll(t, s)
+	}
+	for name, write := range map[string]func(*testing.T, string, int){"ym2151": writeYM2151, "ym2612": writeYM2612} {
+		path := filepath.Join(t.TempDir(), name+".vgm")
+		write(t, path, 1)
+		fast, accurate, again := render(path, false), render(path, true), render(path, false)
+		if VGMAccurate() {
+			t.Errorf("%s: VGMAccurate() = true after SetVGMAccurate(false)", name)
+		}
+		if len(accurate) != len(fast) || len(again) != len(fast) {
+			t.Fatalf("%s: lengths fast %d, accurate %d, again %d", name, len(fast), len(accurate), len(again))
+		}
+		var sum, diff float64
+		same := true
+		for i, v := range accurate {
+			sum += float64(v) * float64(v)
+			d := float64(v - fast[i])
+			diff += d * d
+			same = same && again[i] == fast[i]
+		}
+		if rms := math.Sqrt(sum / float64(len(accurate))); rms < 0.01 {
+			t.Errorf("%s: accurate rms %.4f: silence", name, rms)
+		}
+		if diff == 0 {
+			t.Errorf("%s: accurate cores render the same samples as the default ones", name)
+		}
+		if !same {
+			t.Errorf("%s: default cores render differently after switching back", name)
+		}
+	}
 }

@@ -74,7 +74,7 @@ func (j *jellyfin) call(ctx context.Context, method, path string, body, out any)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := j.http.Do(req)
 	if err != nil {
-		return err
+		return netErr("jellyfin: "+apiPath(path), err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -176,7 +176,9 @@ func (j *jellyfin) AllSongs(ctx context.Context, progress func(n int)) ([]Song, 
 	if err := j.login(ctx); err != nil {
 		return nil, err
 	}
-	const page = 500
+	// Páginas de 250: una de 500 con MediaSources pesa y tarda, y tras un
+	// proxy inverso es más fácil que se corte (#13).
+	const page = 250
 	var out []Song
 	for start := 0; ; start += page {
 		q := url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"}, "StartIndex": {fmt.Sprint(start)},
@@ -263,4 +265,16 @@ func (j *jellyfin) CoverURL(id string, size int) string {
 
 func (j *jellyfin) fetch(ctx context.Context, u string) (*http.Response, error) {
 	return getFile(ctx, u)
+}
+
+// apiPath es path sin la consulta ni el ID del usuario, para los errores:
+// "/Users/<id>/Items?..." queda en "/Items".
+func apiPath(path string) string {
+	path, _, _ = strings.Cut(path, "?")
+	if rest, ok := strings.CutPrefix(path, "/Users/"); ok {
+		if _, after, ok := strings.Cut(rest, "/"); ok {
+			return "/" + after
+		}
+	}
+	return path
 }
