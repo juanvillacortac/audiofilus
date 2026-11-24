@@ -1,13 +1,16 @@
 package ui
 
 import (
+	"context"
 	"encoding/binary"
+	"errors"
 	"math"
 	"math/rand/v2"
 	"os"
 	"path/filepath"
 	"sort"
 	"testing"
+	"time"
 )
 
 // writeTestWAV guarda samples (mono, -1..1) como WAV de 16 bits estéreo.
@@ -100,7 +103,7 @@ func beatErrors(beats, kicks []float64) []float64 {
 func TestTempoMapOnTheKick(t *testing.T) {
 	const rate, bpm = 44100, 124.0
 	x, kicks := houseSong(60, rate, func(k int) float64 { return 0.5 + float64(k)*60/bpm })
-	beats, _, _, err := analyzeTempo(writeTestWAV(t, x, rate))
+	beats, _, _, err := analyzeTempo(context.Background(), writeTestWAV(t, x, rate))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,7 +135,7 @@ func TestTempoMapFollowsDrift(t *testing.T) {
 		tm += 60 / bpm
 	}
 	x, kicks := houseSong(60, rate, func(k int) float64 { return at[k] })
-	beats, _, _, err := analyzeTempo(writeTestWAV(t, x, rate))
+	beats, _, _, err := analyzeTempo(context.Background(), writeTestWAV(t, x, rate))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +244,7 @@ func TestMapBeatBar(t *testing.T) {
 func TestDrumChart(t *testing.T) {
 	const rate, bpm = 44100, 124.0
 	x, kicks := houseSong(60, rate, func(k int) float64 { return 0.5 + float64(k)*60/bpm })
-	beats, _, notes, err := analyzeTempo(writeTestWAV(t, x, rate))
+	beats, _, notes, err := analyzeTempo(context.Background(), writeTestWAV(t, x, rate))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -335,5 +338,27 @@ func TestSongACLengths(t *testing.T) {
 			b.tempoT = e.t
 			b.updateTempo()
 		}
+	}
+}
+
+// TestTempoMapCanceled comprueba que cambiar de canción antes de
+// tempoMapDelay no analiza ni guarda nada: pasando canciones se juntaban
+// varios análisis y la consola se arrastraba.
+func TestTempoMapCanceled(t *testing.T) {
+	const rate = 44100
+	x, _ := houseSong(20, rate, func(k int) float64 { return 0.5 + float64(k)*0.5 })
+	song := writeTestWAV(t, x, rate)
+	data := t.TempDir()
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() { time.Sleep(50 * time.Millisecond); cancel() }()
+	start := time.Now()
+	if _, err := loadTempoMap(ctx, data, song); !errors.Is(err, context.Canceled) {
+		t.Fatalf("err = %v, want context.Canceled", err)
+	}
+	if d := time.Since(start); d > time.Second {
+		t.Errorf("took %v to give up", d)
+	}
+	if _, err := os.Stat(tempoMapFile(data, song)); err == nil {
+		t.Error("a map was saved for a song that was skipped")
 	}
 }

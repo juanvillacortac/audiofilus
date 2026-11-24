@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
@@ -12,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -65,8 +67,9 @@ type chartNote struct {
 
 // tempoMapState es el mapa de lo que suena: el de path, cuando esté listo.
 type tempoMapState struct {
-	path  string
-	ready atomic.Pointer[tempoMap] // nil mientras se analiza (o si falló)
+	path   string
+	ready  atomic.Pointer[tempoMap] // nil mientras se analiza (o si falló)
+	cancel context.CancelFunc       // corta el análisis (otra canción)
 }
 
 // at es la rejilla en el segundo pos de la canción: el periodo (la mediana
@@ -124,9 +127,19 @@ func audioStat(path string) (size, mod int64, err error) {
 	return st.Size(), st.ModTime().Unix(), nil
 }
 
+// tempoMapDelay es cuánto tiene que sonar una canción antes de analizarla:
+// pasando canciones, cada una lanzaba un análisis de la canción entera, se
+// juntaban varios y la consola se arrastraba.
+const tempoMapDelay = 3 * time.Second
+
+// analyzeMu deja analizar una canción a la vez: el análisis de la anterior se
+// cancela al cambiar, pero tarda un trozo en enterarse.
+var analyzeMu sync.Mutex
+
 // loadTempoMap es el mapa de path: el guardado si sigue valiendo, o uno
-// nuevo (que se guarda). Tarda: va en una goroutine.
-func loadTempoMap(data, path string) (*tempoMap, error) {
+// nuevo (que se guarda) si la canción sigue sonando tras tempoMapDelay. Tarda:
+// va en una goroutine, y ctx lo corta (otra canción).
+func loadTempoMap(ctx context.Context, data, path string) (*tempoMap, error) {
 	size, mod, err := audioStat(path)
 	if err != nil {
 		return nil, err
@@ -138,8 +151,15 @@ func loadTempoMap(data, path string) (*tempoMap, error) {
 			return &m, nil
 		}
 	}
+	select {
+	case <-time.After(tempoMapDelay):
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+	analyzeMu.Lock()
+	defer analyzeMu.Unlock()
 	start := time.Now()
-	beats, pos, notes, err := analyzeTempo(path)
+	beats, pos, notes, err := analyzeTempo(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +182,7 @@ var errTempoMapLength = errors.New("length unknown or too long for a tempo map")
 // analyzeTempo encuentra los golpes del archivo path y su batería: lo mide
 // entero con el mismo medidor de la música en vivo, busca en el flujo los
 // golpes (tempoBeats) y en cada banda, la batería (drumChart).
-func analyzeTempo(path string) (beats []float64, pos []int, notes []chartNote, err error) {
+func analyzeTempo(ctx context.Context, path string) (beats []float64, pos []int, notes []chartNote, err error) {
 	src, err := decode.Open(path)
 	if err != nil {
 		return nil, nil, nil, err
@@ -173,12 +193,16 @@ func analyzeTempo(path string) (beats []float64, pos []int, notes []chartNote, e
 		return nil, nil, nil, errTempoMapLength
 	}
 	an := engine.NewAnalyzer(rate, 0)
+	an.NoKey()
 	buf := make([]float32, 2048) // una ventana del medidor (1024 frames): un punto
 	var env, kick []envPoint
 	var rises [][engine.MeterBands]float64 // cuánto subió cada banda en cada punto, para la batería
 	var prev [engine.MeterBands]float64
 	epoch := time.Unix(0, 0)
 	for k := 0; ; k++ {
+		if k%256 == 0 && ctx.Err() != nil { // cada ~6 s de canción
+			return nil, nil, nil, ctx.Err()
+		}
 		n := 0
 		for n < len(buf) {
 			got, err := src.Read(buf[n:])
@@ -627,13 +651,17 @@ func (a *App) currentTempoMap() *tempoMap {
 	}
 	st := a.tempoMap
 	if st == nil || st.path != path {
-		st = &tempoMapState{path: path}
+		if st != nil {
+			st.cancel() // la anterior ya no hace falta
+		}
+		ctx, cancel := context.WithCancel(context.Background())
+		st = &tempoMapState{path: path, cancel: cancel}
 		a.tempoMap = st
 		data := a.paths.Data
 		go func() {
-			m, err := loadTempoMap(data, path)
+			m, err := loadTempoMap(ctx, data, path)
 			if err != nil {
-				if !errors.Is(err, errTempoMapLength) && !errors.Is(err, decode.ErrUnsupported) {
+				if !errors.Is(err, errTempoMapLength) && !errors.Is(err, decode.ErrUnsupported) && !errors.Is(err, context.Canceled) {
 					log.Printf("tempo map: %s: %v", filepath.Base(path), err)
 				}
 				return

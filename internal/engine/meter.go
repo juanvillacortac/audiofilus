@@ -53,6 +53,7 @@ type meter struct {
 	edges    [MeterBands + 1]int // la primera casilla de la FFT de cada banda
 	rate     int
 	key      *keyFinder // la tonalidad (key.go); se crea al medir por primera vez
+	noKey    bool       // sin tonalidad: el mapa de tempo no la usa y era el 40 % de medir
 
 	syncAt  int64   // la hora (ms Unix) a la que se oye syncPos
 	syncPos float64 // un segundo de la canción: el del último trozo medido
@@ -98,13 +99,15 @@ func (m *meter) add(buf []float32, start time.Time, rate int) {
 	if !m.spectrum {
 		return // nadie mira el medidor (app cerrada o en sleep): ni se calcula
 	}
-	if m.key == nil {
+	if m.key == nil && !m.noKey {
 		k := newKeyFinder(m.rate)
 		m.key = &k
 	}
 	for i := 0; i+1 < len(buf); i += 2 {
 		x := float64(buf[i]+buf[i+1]) / 2
-		m.key.add(x)
+		if m.key != nil {
+			m.key.add(x)
+		}
 		m.low += m.alpha * (x - m.low)
 		m.sum += x * x
 		m.sumBass += m.low * m.low
@@ -197,6 +200,14 @@ func (a *Analyzer) Add(buf []float32) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.m.add(buf, time.Now().Add(a.m.latency), a.rate)
+}
+
+// NoKey deja de buscar la tonalidad (Key queda vacía): para medir un archivo
+// entero por el ritmo (ui/tempomap.go), donde era el 40 % del tiempo.
+func (a *Analyzer) NoKey() {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.m.noKey, a.m.key = true, nil
 }
 
 // AddAt mide buf como Add, pero como si empezara a oírse a la hora at: para
