@@ -64,6 +64,7 @@ const (
 	setAlbumsFolder
 	setFormats
 	setVGMAccurate
+	setLyricsKaraoke
 	setCount
 )
 
@@ -136,6 +137,7 @@ var settingSections = []settingSection{
 	{"sec_online", []settingTile{
 		{setScrobble, "user", tileAction},
 		{setLyricsWeb, "lyrics", tileToggle},
+		{setLyricsKaraoke, "lyrics", tileToggle},
 		{setDLNAServer, "server", tileToggle},
 		{setDLNARenderer, "speaker", tileToggle},
 		{setMPD, "server", tileAction},
@@ -446,6 +448,8 @@ func (a *App) changeSetting(id, step int) {
 	case setLyricsWeb:
 		a.cfg.UI.LyricsOffline = !a.cfg.UI.LyricsOffline
 		a.saveConfig()
+	case setLyricsKaraoke:
+		a.toggleKaraoke()
 	case setReplayGain:
 		n, i := a.settingChoice(id)
 		mode := rgModes[cycle(n, i)]
@@ -652,6 +656,8 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.keepPlaying())
 	case setLyricsWeb:
 		return onOffLabel(!a.cfg.UI.LyricsOffline)
+	case setLyricsKaraoke:
+		return onOffLabel(!a.cfg.UI.LyricsNoKaraoke)
 	case setReplayGain:
 		return T("rg_" + a.dspOf().ReplayGain)
 	case setCrossfade:
@@ -738,6 +744,8 @@ func (a *App) settingOn(id int) bool {
 		return a.keepPlaying()
 	case setLyricsWeb:
 		return !a.cfg.UI.LyricsOffline
+	case setLyricsKaraoke:
+		return !a.cfg.UI.LyricsNoKaraoke
 	}
 	return false
 }
@@ -751,6 +759,7 @@ func settingNames() [setCount]string {
 		T("set_close_bg"), T("set_lyrics_web"), T("set_rg"), T("set_eq"), T("set_crossfade"), T("set_scrobble"), T("set_rate"), T("set_update"), T("set_resampler"), T("set_dlna_server"), T("set_dlna_renderer"),
 		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"), T("set_orientation"), T("set_vcontrols"),
 		T("set_output"), T("set_screens"), T("set_tabs"), T("set_albums_folder"), T("set_formats"), T("set_vgm_acc"),
+		T("set_lyr_karaoke"),
 	}
 }
 

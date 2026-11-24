@@ -254,8 +254,22 @@ func (a *App) openLyricsMenu() {
 			value:  func() string { return offsetLabel(a.lyr.offset) },
 			active: func() bool { return a.lyr.offset != 0 }})
 	}
+	if a.lyr.opt.Lyrics.Synced {
+		m.items = append(m.items, menuItem{label: T("set_lyr_karaoke"), icon: "lyrics",
+			do:     a.toggleKaraoke,
+			value:  func() string { return onOffLabel(!a.cfg.UI.LyricsNoKaraoke) },
+			active: func() bool { return !a.cfg.UI.LyricsNoKaraoke }})
+	}
 	m.items = append(m.items, menuItem{label: T("lyr_hide"), icon: "arrow_l", do: func() { a.lyricsOn = false }})
 	a.menu = m
+}
+
+// toggleKaraoke enciende o apaga el karaoke de las letras sincronizadas (en
+// Ajustes y en el menú de Letras): sin él, la línea que suena sale entera en
+// el color de acento.
+func (a *App) toggleKaraoke() {
+	a.cfg.UI.LyricsNoKaraoke = !a.cfg.UI.LyricsNoKaraoke
+	a.saveConfig()
 }
 
 // findLyricsOptions busca todas las letras posibles (a mano y en internet)
@@ -498,6 +512,9 @@ func (a *App) drawLyrics(dst *ebiten.Image) {
 			sum += widths[j]
 		}
 		lit := int(frac * float64(sum))
+		if frac >= 0 && a.cfg.UI.LyricsNoKaraoke {
+			lit = sum // sin karaoke (#11): la línea entera, ya cantada
+		}
 		for j, r := range rows {
 			x := margin + 6 + (lw-widths[j])/2
 			y := top + j*lyrRowH - 2 // las mayúsculas, centradas en la fila

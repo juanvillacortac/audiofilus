@@ -194,6 +194,9 @@ type UI struct {
 	// LyricsOffline apaga la búsqueda de letras en internet (LRCLIB): solo
 	// se usan los .lrc y las etiquetas.
 	LyricsOffline bool `json:"lyrics_offline,omitempty"`
+	// LyricsNoKaraoke: la línea de la letra sincronizada que suena sale
+	// entera en el color de acento, sin irse tiñendo letra a letra (#11).
+	LyricsNoKaraoke bool `json:"lyrics_no_karaoke,omitempty"`
 	// MilkDropColors son los colores del visualizador MilkDrop: "" los de
 	// cada preset, "album" los del disco que suena (el tema).
 	MilkDropColors string `json:"milkdrop_colors,omitempty"`
