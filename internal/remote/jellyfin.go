@@ -2,6 +2,7 @@ package remote
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
@@ -11,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -171,32 +173,113 @@ func (j *jellyfin) items(ctx context.Context, q url.Values) ([]jfItem, int, erro
 	return r.Items, r.TotalRecordCount, err
 }
 
-// AllSongs saca todas las canciones, de 500 en 500.
+// Catálogo de Jellyfin (#13). Lo caro era pedir MediaSources (más del doble
+// de JSON y Jellyfin lo arma canción por canción) y ordenar por cuatro campos
+// en cada página. Ahora va sin Fields extra, ordenado solo por SortName, de
+// 1000 en 1000 y con varias páginas a la vez; el orden de álbum lo pone sortSongs.
+var (
+	jfPage    = 1000 // var para que las pruebas usen páginas chicas
+	jfWorkers = 4
+)
+
+// songsQuery es la consulta de una página de canciones.
+func songsQuery(start int, count bool) url.Values {
+	return url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"},
+		"StartIndex": {fmt.Sprint(start)}, "Limit": {fmt.Sprint(jfPage)}, "SortBy": {"SortName,Id"},
+		"EnableImageTypes": {"Primary"}, "ImageTypeLimit": {"1"},
+		"EnableTotalRecordCount": {fmt.Sprint(count)}}
+}
+
+// AllSongs saca todas las canciones: la primera página trae el total y el
+// resto se pide en paralelo.
 func (j *jellyfin) AllSongs(ctx context.Context, progress func(n int)) ([]Song, error) {
 	if err := j.login(ctx); err != nil {
 		return nil, err
 	}
-	// Páginas de 250: una de 500 con MediaSources pesa y tarda, y tras un
-	// proxy inverso es más fácil que se corte (#13).
-	const page = 250
-	var out []Song
-	for start := 0; ; start += page {
-		q := url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"}, "StartIndex": {fmt.Sprint(start)},
-			"Limit": {fmt.Sprint(page)}, "Fields": {"MediaSources"}, "SortBy": {"AlbumArtist,Album,ParentIndexNumber,IndexNumber"}}
-		items, total, err := j.items(ctx, q)
-		if err != nil {
-			return out, err
-		}
-		for _, it := range items {
-			out = append(out, it.song())
-		}
+	first, total, err := j.items(ctx, songsQuery(0, true))
+	if err != nil {
+		return nil, err
+	}
+	pages := make([][]jfItem, (max(total, len(first))+jfPage-1)/jfPage)
+	if len(pages) == 0 {
+		return nil, nil
+	}
+	pages[0] = first
+	// progress va con candado: así quien lo pasa no tiene que cuidarse de
+	// los hilos.
+	var mu sync.Mutex
+	got := len(first)
+	report := func(n int) {
+		mu.Lock()
+		defer mu.Unlock()
+		got += n
 		if progress != nil {
-			progress(len(out))
-		}
-		if len(items) < page || len(out) >= total {
-			return out, nil
+			progress(got)
 		}
 	}
+	report(0)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	next := make(chan int)
+	errc := make(chan error, jfWorkers)
+	var wg sync.WaitGroup
+	for range min(jfWorkers, len(pages)-1) {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for p := range next {
+				items, _, err := j.items(ctx, songsQuery(p*jfPage, false))
+				if err != nil {
+					errc <- err
+					cancel()
+					return
+				}
+				pages[p] = items
+				report(len(items))
+			}
+		}()
+	}
+feed:
+	for p := 1; p < len(pages); p++ {
+		select {
+		case next <- p:
+		case <-ctx.Done():
+			break feed
+		}
+	}
+	close(next)
+	wg.Wait()
+	select {
+	case err := <-errc:
+		return nil, err
+	default:
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	// Una canción puede caer en dos páginas si la biblioteca cambia mientras
+	// tanto: se queda la primera.
+	seen := make(map[string]bool, total)
+	out := make([]Song, 0, total)
+	for _, pg := range pages {
+		for _, it := range pg {
+			if !seen[it.ID] {
+				seen[it.ID] = true
+				out = append(out, it.song())
+			}
+		}
+	}
+	sortSongs(out)
+	return out, nil
+}
+
+// sortSongs deja las canciones por artista del álbum, álbum, disco y pista.
+func sortSongs(s []Song) {
+	slices.SortStableFunc(s, func(a, b Song) int {
+		return cmp.Or(cmp.Compare(strings.ToLower(a.AlbumArtist), strings.ToLower(b.AlbumArtist)),
+			cmp.Compare(strings.ToLower(a.Album), strings.ToLower(b.Album)),
+			cmp.Compare(a.Disc, b.Disc), cmp.Compare(a.Track, b.Track))
+	})
 }
 
 // Playlists son las listas del usuario, con sus canciones.

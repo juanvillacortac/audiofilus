@@ -90,7 +90,7 @@ func (a *App) loadCatalog(src *remoteSource) {
 		}
 	}
 	// Sin plazo para el catálogo entero: uno grande (2000 álbumes en Jellyfin,
-	// #13) son cientos de páginas y tarda minutos. Cada petición tiene el
+	// #13) son docenas de páginas y puede tardar. Cada petición tiene el
 	// suyo (el del cliente HTTP), así que un servidor caído no lo cuelga.
 	ctx := context.Background()
 	c := remote.New(src.srv)
