@@ -260,7 +260,7 @@ On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere a
 
 ### macOS
 
-Grab `audiofilus-macos-arm64.tar.gz` (Apple Silicon) or `audiofilus-macos-amd64.tar.gz` (Intel), unpack it and run `audiofilus`. The binary is unsigned, so clear the quarantine flag first: `xattr -d com.apple.quarantine audiofilus`. MP3, FLAC, Ogg Vorbis, WAV, AIFF and ALAC play as is. For Opus, AAC/M4A and AAC radio, tracker modules and console music, install the decoders with [Homebrew](https://brew.sh): `brew install mpg123 opusfile libxmp game-music-emu fdk-aac`. WMA and VGM don't play on macOS yet.
+Grab `Audiofilus-macos-arm64.dmg` (Apple Silicon) or `Audiofilus-macos-amd64.dmg` (Intel; macOS 12 or later), open it and drag Audiofilus to Applications. The app isn't notarized, so the first time right-click it and choose Open, or run `xattr -dr com.apple.quarantine /Applications/Audiofilus.app`. The decoders come inside the app (mpg123, opusfile, libxmp, libgme and fdk-aac from Homebrew); WMA and VGM don't play on macOS yet. Settings and data live in `~/Library/Application Support/Audiofilus`.
 
 ## Build
 

@@ -1,7 +1,7 @@
 # When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
-# release with the PortMaster port, the Linux, Windows and macOS binaries and the
-# unsigned iOS app and the Android app (built by ios.yml and android.yml, at
-# the same time).
+# release with the PortMaster port, the Linux and Windows binaries, the macOS
+# DMGs, the unsigned iOS app and the Android app (built by macos.yml, ios.yml
+# and android.yml, at the same time).
 name: Release
 on:
   push:
@@ -18,8 +18,12 @@ jobs:
     uses: ./.github/workflows/android.yml
     secrets: inherit
 
+  macos:
+    uses: ./.github/workflows/macos.yml
+    secrets: inherit
+
   release:
-    needs: [ios, android]
+    needs: [ios, android, macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -74,13 +78,6 @@ jobs:
           cp build/windows-dlls/*.dll "$d/"
           cp -r build/windows-dlls/licenses/. "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)
-          for arch in arm64 amd64; do
-            d=audiofilus-macos-$arch
-            mkdir -p "$d/licenses"
-            cp "dist/audiofilus-darwin-$arch" "$d/audiofilus"
-            cp LICENSE internal/ui/assets/fonts/OFL-*.txt internal/chip/LICENSE.* "$d/licenses/"
-            tar -czf "out/$d.tar.gz" "$d"
-          done
       - name: The iOS app
         uses: actions/download-artifact@v4
         with:
@@ -90,6 +87,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: audiofilus-android
+          path: out
+      - name: The macOS DMGs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: audiofilus-macos-*
+          merge-multiple: true
           path: out
       - name: Checksums
         run: (cd out && sha256sum * > SHA256SUMS)

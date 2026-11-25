@@ -1,0 +1,47 @@
+# The macOS app as a DMG per architecture (tools/macos/dmg.sh), ad-hoc signed.
+# Run by hand from the Actions tab, on pull requests, and from release.yml.
+name: macOS
+
+on:
+  workflow_dispatch:
+  pull_request:
+  workflow_call:
+    secrets:
+      LASTFM_KEY:
+        required: false
+      LASTFM_SECRET:
+        required: false
+
+jobs:
+  dmg:
+    strategy:
+      matrix:
+        # Each on its own Mac: the bundled libraries come from its Homebrew.
+        runner: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: brew install mpg123 opusfile libxmp game-music-emu fdk-aac dylibbundler
+      - name: The DMG
+        env:
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+        run: |
+          [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=$GITHUB_REF_NAME
+          tools/macos/dmg.sh out
+      - name: The app starts and its libraries don't point at Homebrew
+        run: |
+          hdiutil attach out/*.dmg -mountpoint /tmp/af -nobrowse
+          if otool -L /tmp/af/Audiofilus.app/Contents/Frameworks/*.dylib | grep -E '/(opt/homebrew|usr/local)/'; then exit 1; fi
+          codesign --verify --deep /tmp/af/Audiofilus.app
+          /tmp/af/Audiofilus.app/Contents/MacOS/audiofilus version
+          hdiutil detach /tmp/af
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiofilus-macos-${{ runner.arch }}
+          path: out/*.dmg
+          retention-days: 14

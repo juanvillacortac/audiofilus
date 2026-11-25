@@ -66,15 +66,17 @@ func cString(s string) *byte {
 
 var errDisabled = errors.New("native decoders disabled by AUDIOFILUS_DECODER=go")
 
-// dylibs are the macOS paths for names: next to the binary and in Homebrew
-// (Apple Silicon and Intel), since dlopen doesn't search /opt/homebrew/lib.
+// dylibs are the macOS paths for names: in the .app's Frameworks, next to the
+// binary and in Homebrew (Apple Silicon and Intel), since dlopen doesn't
+// search /opt/homebrew/lib.
 func dylibs(names []string) []string {
 	if runtime.GOOS != "darwin" {
 		return nil
 	}
 	dirs := []string{"/opt/homebrew/lib", "/usr/local/lib"}
 	if exe, err := os.Executable(); err == nil {
-		dirs = append([]string{filepath.Dir(exe)}, dirs...)
+		dir := filepath.Dir(exe)
+		dirs = append([]string{filepath.Join(dir, "..", "Frameworks"), dir}, dirs...)
 	}
 	var out []string
 	for _, n := range names {
