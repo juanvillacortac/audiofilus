@@ -464,7 +464,16 @@ func (a *App) drawLibrary(dst *ebiten.Image) {
 	}
 	a.drawMiniPlayer(dst)
 	title := a.sourceName() + " · " + tabs()[a.libTab]
+	load, loading := a.remoteLoad()
+	if loading {
+		title += fmt.Sprintf(" · %d%%", int(load*100))
+	}
 	a.drawTopBar(dst, title)
+	if loading {
+		// Un servidor grande tarda minutos: la raya de la barra de arriba
+		// se llena mientras llegan las canciones.
+		rect(dst, 0, topH, int(float64(w)*load), 2, th.Accent)
+	}
 	hints := []hint{{"A", T("h_open")}, {"X", T("h_shuffle")}, {"START", T("h_more")}, {"SEL", T("h_menu")}}
 	if a.tabFocus {
 		hints = []hint{{"A", T("h_open")}, {"B", T("now_short")}, {"SEL", T("h_menu")}}

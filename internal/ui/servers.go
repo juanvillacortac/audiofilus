@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -38,6 +39,7 @@ type remoteSource struct {
 	cat     catalog                // el catálogo con que se armó (serverplaylists.go lo pone al día)
 	loading bool                   // pidiendo el catálogo al servidor
 	got     atomic.Int64           // canciones recibidas mientras carga
+	total   atomic.Int64           // cuántas hay, si el servidor lo dice
 	err     error                  // lo que falló la última vez
 }
 
@@ -45,6 +47,9 @@ type remoteSource struct {
 type catalog struct {
 	Songs     []remote.Song     `json:"songs"`
 	Playlists []remote.Playlist `json:"playlists"`
+	// Synced es la hora del servidor de la última puesta al día (Jellyfin):
+	// la próxima vez se piden solo los cambios desde ahí.
+	Synced time.Time `json:"synced,omitzero"`
 }
 
 // remoteLoaded es un catálogo que llegó (del disco o del servidor).
@@ -52,7 +57,11 @@ type remoteLoaded struct {
 	src   *remoteSource
 	cat   catalog
 	fresh bool // del servidor (si no, de la caché)
-	err   error
+	// partial son las primeras que llegaron (las más nuevas) mientras se
+	// carga el resto: se muestran solo si no había catálogo guardado.
+	partial bool
+	same    bool // del servidor, pero igual al guardado: no hay que rearmar nada
+	err     error
 }
 
 // initServers prepara la caché de lo remoto y empieza a cargar cada servidor.
@@ -71,7 +80,7 @@ func (a *App) initServers() {
 func (a *App) addSource(srv config.Server) *remoteSource {
 	src := &remoteSource{srv: srv, lib: buildLibrary(nil, nil), loading: true}
 	a.remotes = append(a.remotes, src)
-	go a.loadCatalog(src)
+	go a.loadCatalog(src, false)
 	return src
 }
 
@@ -80,12 +89,15 @@ func (a *App) catalogFile(srv config.Server) string {
 	return filepath.Join(a.paths.Data, "cache", remote.Slug(srv.Name), "catalog.json")
 }
 
-// loadCatalog lee el catálogo guardado y luego lo pide al servidor.
-func (a *App) loadCatalog(src *remoteSource) {
+// loadCatalog lee el catálogo guardado y luego lo pone al día con el
+// servidor: si sabe decir qué cambió (Jellyfin, remote.Syncer), pide solo
+// eso; si no, o si full (Actualizar catálogo), o si se borró algo, lo pide
+// entero.
+func (a *App) loadCatalog(src *remoteSource, full bool) {
+	var saved catalog
 	if b, err := os.ReadFile(a.catalogFile(src.srv)); err == nil {
-		var cat catalog
-		if json.Unmarshal(b, &cat) == nil && len(cat.Songs) > 0 {
-			a.serversCh <- remoteLoaded{src: src, cat: cat}
+		if json.Unmarshal(b, &saved) == nil && len(saved.Songs) > 0 {
+			a.serversCh <- remoteLoaded{src: src, cat: saved}
 			ebiten.ScheduleFrame()
 		}
 	}
@@ -94,25 +106,47 @@ func (a *App) loadCatalog(src *remoteSource) {
 	// suyo (el del cliente HTTP), así que un servidor caído no lo cuelga.
 	ctx := context.Background()
 	c := remote.New(src.srv)
+	syncer, _ := c.(remote.Syncer)
+	if syncer != nil && !full && !saved.Synced.IsZero() && len(saved.Songs) > 0 {
+		ch, err := syncer.Changed(ctx, saved.Synced)
+		if err == nil {
+			songs, whole, changed := ch.Apply(saved.Songs)
+			if whole {
+				cat := catalog{Songs: songs, Playlists: saved.Playlists, Synced: ch.At}
+				if pls, perr := c.Playlists(ctx); perr == nil {
+					changed = changed || !samePlaylists(pls, saved.Playlists)
+					cat.Playlists = pls
+				}
+				a.saveCatalog(src, cat)
+				a.serversCh <- remoteLoaded{src: src, cat: cat, fresh: true, same: !changed}
+				ebiten.ScheduleFrame()
+				return
+			}
+			log.Printf("server %q: %d songs here, %d on the server: loading everything", src.srv.Name, len(songs), ch.Total)
+		} else {
+			log.Printf("server %q: sync: %v", src.srv.Name, err)
+		}
+	}
 	var cat catalog
 	var err error
 	src.got.Store(0)
-	progress := func(n int) {
-		src.got.Store(int64(n))
+	src.total.Store(0)
+	progress := func(p remote.Progress) {
+		src.got.Store(int64(p.Got))
+		src.total.Store(int64(p.Total))
+		if p.First != nil {
+			a.serversCh <- remoteLoaded{src: src, cat: catalog{Songs: p.First}, partial: true}
+		}
 		ebiten.ScheduleFrame()
+	}
+	var at time.Time
+	if syncer != nil {
+		at, _ = syncer.SyncPoint(ctx) // si falla, la próxima vez se pide todo
 	}
 	if cat.Songs, err = c.AllSongs(ctx, progress); err == nil {
 		cat.Playlists, _ = c.Playlists(ctx)
-		if b, jerr := json.Marshal(cat); jerr == nil {
-			f := a.catalogFile(src.srv)
-			_ = os.MkdirAll(filepath.Dir(f), 0o755)
-			_ = os.WriteFile(f, b, 0o644)
-		}
-		meta := make(map[string]remote.Meta, len(cat.Songs))
-		for _, s := range cat.Songs {
-			meta[s.ID] = remote.Meta{Title: s.Title, Artist: s.Artist, Album: s.Album}
-		}
-		_ = a.store.SaveMeta(src.srv.Name, meta)
+		cat.Synced = at
+		a.saveCatalog(src, cat)
 	}
 	if err != nil {
 		log.Printf("server %q: catalog: %v", src.srv.Name, err)
@@ -121,16 +155,45 @@ func (a *App) loadCatalog(src *remoteSource) {
 	ebiten.ScheduleFrame()
 }
 
+// saveCatalog guarda el catálogo de un servidor y el índice de etiquetas
+// que usa el servicio (meta.json).
+func (a *App) saveCatalog(src *remoteSource, cat catalog) {
+	if b, err := json.Marshal(cat); err == nil {
+		f := a.catalogFile(src.srv)
+		_ = os.MkdirAll(filepath.Dir(f), 0o755)
+		_ = os.WriteFile(f, b, 0o644)
+	}
+	meta := make(map[string]remote.Meta, len(cat.Songs))
+	for _, s := range cat.Songs {
+		meta[s.ID] = remote.Meta{Title: s.Title, Artist: s.Artist, Album: s.Album}
+	}
+	_ = a.store.SaveMeta(src.srv.Name, meta)
+}
+
+// samePlaylists dice si dos listas de playlists son iguales.
+func samePlaylists(x, y []remote.Playlist) bool {
+	return slices.EqualFunc(x, y, func(p, q remote.Playlist) bool {
+		return p.ID == q.ID && p.Name == q.Name && slices.Equal(p.Songs, q.Songs)
+	})
+}
+
 // updateServers recoge los catálogos que llegaron. Va en cada Update.
 func (a *App) updateServers() {
 	for {
 		select {
 		case r := <-a.serversCh:
+			if r.partial && len(r.src.cat.Songs) > 0 {
+				continue // ya se ve el catálogo guardado, que está entero
+			}
 			if r.fresh {
 				r.src.loading, r.src.err = false, r.err
 				if r.err != nil {
 					a.flash(T("srv_error", r.src.srv.Name, r.err))
 					continue
+				}
+				if r.same {
+					r.src.cat.Synced = r.cat.Synced
+					continue // lo que se ve ya está al día
 				}
 			}
 			r.src.lib, r.src.songs = buildRemoteLibrary(r.src.srv.Name, r.cat)
@@ -257,14 +320,32 @@ func (a *App) remoteState() string {
 	r := a.remotes[a.source-1]
 	switch {
 	case r.loading:
-		if n := r.got.Load(); n > 0 {
-			return fmt.Sprintf("%s %d", T("srv_loading", r.srv.Name), n)
+		got, total := r.got.Load(), r.total.Load()
+		switch {
+		case total > 0:
+			return fmt.Sprintf("%s %d / %d (%d%%)", T("srv_loading", r.srv.Name), got, total, got*100/total)
+		case got > 0:
+			return fmt.Sprintf("%s %d", T("srv_loading", r.srv.Name), got)
 		}
 		return T("srv_loading", r.srv.Name)
 	case r.err != nil:
 		return T("srv_error", r.srv.Name, r.err)
 	}
 	return ""
+}
+
+// remoteLoad dice cuánto lleva cargado el servidor que se ve (de 0 a 1), si
+// está cargando y se sabe cuántas canciones tiene.
+func (a *App) remoteLoad() (float64, bool) {
+	if a.source <= 0 || a.source > len(a.remotes) {
+		return 0, false
+	}
+	r := a.remotes[a.source-1]
+	total := r.total.Load()
+	if !r.loading || total <= 0 {
+		return 0, false
+	}
+	return min(1, float64(r.got.Load())/float64(total)), true
 }
 
 // pingResult es la prueba de un servidor que se está añadiendo o probando.
@@ -417,7 +498,7 @@ func (a *App) openServerMenu(i int) {
 		{label: T("srv_refresh"), icon: "repeat", do: func() {
 			if i < len(a.remotes) && !a.remotes[i].loading {
 				a.remotes[i].loading = true
-				go a.loadCatalog(a.remotes[i])
+				go a.loadCatalog(a.remotes[i], true)
 				a.flash(T("srv_loading", srv.Name))
 			}
 		}},

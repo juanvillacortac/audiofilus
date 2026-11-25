@@ -31,6 +31,7 @@ type jellyfin struct {
 	mu     sync.Mutex
 	token  string
 	userID string
+	date   time.Time // la hora del servidor en la última respuesta (cabecera Date)
 }
 
 func newJellyfin(srv config.Server) *jellyfin {
@@ -79,6 +80,11 @@ func (j *jellyfin) call(ctx context.Context, method, path string, body, out any)
 		return netErr("jellyfin: "+apiPath(path), err)
 	}
 	defer resp.Body.Close()
+	if d, err := http.ParseTime(resp.Header.Get("Date")); err == nil {
+		j.mu.Lock()
+		j.date = d
+		j.mu.Unlock()
+	}
 	if resp.StatusCode == http.StatusUnauthorized {
 		return fmt.Errorf("jellyfin: wrong user or password")
 	}
@@ -175,8 +181,10 @@ func (j *jellyfin) items(ctx context.Context, q url.Values) ([]jfItem, int, erro
 
 // Catálogo de Jellyfin (#13). Lo caro era pedir MediaSources (más del doble
 // de JSON y Jellyfin lo arma canción por canción) y ordenar por cuatro campos
-// en cada página. Ahora va sin Fields extra, ordenado solo por SortName, de
-// 1000 en 1000 y con varias páginas a la vez; el orden de álbum lo pone sortSongs.
+// en cada página. Ahora va sin Fields extra, de 1000 en 1000 y con varias
+// páginas a la vez; el orden de álbum lo pone sortSongs. Las páginas van de la
+// más nueva a la más vieja: la primera son las 1000 últimas que se agregaron,
+// y se muestran mientras llega el resto (con 60 000 canciones tarda minutos).
 var (
 	jfPage    = 1000 // var para que las pruebas usen páginas chicas
 	jfWorkers = 4
@@ -185,14 +193,14 @@ var (
 // songsQuery es la consulta de una página de canciones.
 func songsQuery(start int, count bool) url.Values {
 	return url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"},
-		"StartIndex": {fmt.Sprint(start)}, "Limit": {fmt.Sprint(jfPage)}, "SortBy": {"SortName,Id"},
+		"StartIndex": {fmt.Sprint(start)}, "Limit": {fmt.Sprint(jfPage)}, "SortBy": {"DateCreated,SortName"}, "SortOrder": {"Descending,Ascending"},
 		"EnableImageTypes": {"Primary"}, "ImageTypeLimit": {"1"},
 		"EnableTotalRecordCount": {fmt.Sprint(count)}}
 }
 
 // AllSongs saca todas las canciones: la primera página trae el total y el
 // resto se pide en paralelo.
-func (j *jellyfin) AllSongs(ctx context.Context, progress func(n int)) ([]Song, error) {
+func (j *jellyfin) AllSongs(ctx context.Context, progress func(Progress)) ([]Song, error) {
 	if err := j.login(ctx); err != nil {
 		return nil, err
 	}
@@ -205,19 +213,22 @@ func (j *jellyfin) AllSongs(ctx context.Context, progress func(n int)) ([]Song, 
 		return nil, nil
 	}
 	pages[0] = first
+	if len(pages) == 1 {
+		return jfSongs(pages, total), nil
+	}
 	// progress va con candado: así quien lo pasa no tiene que cuidarse de
 	// los hilos.
 	var mu sync.Mutex
 	got := len(first)
-	report := func(n int) {
+	report := func(n int, first []Song) {
 		mu.Lock()
 		defer mu.Unlock()
 		got += n
 		if progress != nil {
-			progress(got)
+			progress(Progress{Got: got, Total: total, First: first})
 		}
 	}
-	report(0)
+	report(0, jfSongs(pages[:1], len(first)))
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	next := make(chan int)
@@ -235,7 +246,7 @@ func (j *jellyfin) AllSongs(ctx context.Context, progress func(n int)) ([]Song, 
 					return
 				}
 				pages[p] = items
-				report(len(items))
+				report(len(items), nil)
 			}
 		}()
 	}
@@ -257,8 +268,13 @@ feed:
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	// Una canción puede caer en dos páginas si la biblioteca cambia mientras
-	// tanto: se queda la primera.
+	return jfSongs(pages, total), nil
+}
+
+// jfSongs junta las páginas en canciones ordenadas por álbum. Una canción
+// puede caer en dos páginas si la biblioteca cambia mientras tanto: se queda
+// la primera.
+func jfSongs(pages [][]jfItem, total int) []Song {
 	seen := make(map[string]bool, total)
 	out := make([]Song, 0, total)
 	for _, pg := range pages {
@@ -270,7 +286,77 @@ feed:
 		}
 	}
 	sortSongs(out)
-	return out, nil
+	return out
+}
+
+// Sincronizar sin bajar todo (#13). Jellyfin dice qué canciones se agregaron
+// o cambiaron desde una fecha (MinDateLastSaved, con la hora del servidor: la
+// de las portátiles suele estar mal), pero no cuáles se borraron ni los
+// favoritos (marcar uno no cambia la canción). Así que se pide también el
+// total, para saber si falta algo, y la lista de favoritos, que es corta.
+
+// audioCount pide cuántas canciones hay y devuelve también la hora del
+// servidor en ese momento.
+func (j *jellyfin) audioCount(ctx context.Context) (int, time.Time, error) {
+	if err := j.login(ctx); err != nil {
+		return 0, time.Time{}, err
+	}
+	_, total, err := j.items(ctx, url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"},
+		"Limit": {"0"}, "EnableTotalRecordCount": {"true"}})
+	j.mu.Lock()
+	at := j.date
+	j.mu.Unlock()
+	if at.IsZero() {
+		at = time.Now()
+	}
+	return total, at, err
+}
+
+// SyncPoint es la hora del servidor antes de una carga entera: lo que
+// cambie desde entonces sale en el próximo Changed.
+func (j *jellyfin) SyncPoint(ctx context.Context) (time.Time, error) {
+	_, at, err := j.audioCount(ctx)
+	return at, err
+}
+
+// Changed es lo que cambió desde since (ver Syncer).
+func (j *jellyfin) Changed(ctx context.Context, since time.Time) (Changes, error) {
+	var ch Changes
+	var err error
+	if ch.Total, ch.At, err = j.audioCount(ctx); err != nil {
+		return ch, err
+	}
+	for start := 0; ; start += jfPage {
+		q := songsQuery(start, false)
+		q.Set("MinDateLastSaved", since.UTC().Format(time.RFC3339))
+		items, _, err := j.items(ctx, q)
+		if err != nil {
+			return ch, err
+		}
+		for _, it := range items {
+			ch.Songs = append(ch.Songs, it.song())
+		}
+		if len(items) < jfPage {
+			break
+		}
+	}
+	ch.Favorites = map[string]bool{}
+	for start := 0; ; start += jfPage {
+		q := url.Values{"IncludeItemTypes": {"Audio"}, "Recursive": {"true"}, "Filters": {"IsFavorite"},
+			"StartIndex": {fmt.Sprint(start)}, "Limit": {fmt.Sprint(jfPage)}, "SortBy": {"SortName"},
+			"EnableImages": {"false"}, "EnableTotalRecordCount": {"false"}}
+		items, _, err := j.items(ctx, q)
+		if err != nil {
+			return ch, err
+		}
+		for _, it := range items {
+			ch.Favorites[it.ID] = true
+		}
+		if len(items) < jfPage {
+			break
+		}
+	}
+	return ch, nil
 }
 
 // sortSongs deja las canciones por artista del álbum, álbum, disco y pista.

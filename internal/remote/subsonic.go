@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -31,8 +32,9 @@ type Backend interface {
 	// Ping comprueba la dirección, el usuario y la contraseña (en Jellyfin,
 	// además, inicia la sesión: las URL de abajo la necesitan).
 	Ping(ctx context.Context) error
-	// AllSongs es todo el catálogo; progress recibe cuántas canciones van.
-	AllSongs(ctx context.Context, progress func(n int)) ([]Song, error)
+	// AllSongs es todo el catálogo; progress recibe cómo va (puede llamarse
+	// desde otro hilo, pero nunca a la vez).
+	AllSongs(ctx context.Context, progress func(Progress)) ([]Song, error)
 	// Playlists son las listas del servidor, con sus canciones.
 	Playlists(ctx context.Context) ([]Playlist, error)
 	// StreamURL es para escuchar (con la calidad del servidor), DownloadURL
@@ -158,9 +160,68 @@ func (c *Client) get(ctx context.Context, method string, extra url.Values, out a
 // Ping comprueba la dirección, el usuario y la contraseña.
 func (c *Client) Ping(ctx context.Context) error { return c.get(ctx, "ping", nil, nil) }
 
+// Syncer es un servidor que puede decir qué cambió en vez de mandar todo
+// el catálogo otra vez (Jellyfin).
+type Syncer interface {
+	// SyncPoint es la hora del servidor; se pide antes de una carga entera.
+	SyncPoint(ctx context.Context) (time.Time, error)
+	// Changed son las canciones agregadas o cambiadas desde since (una hora
+	// del servidor), los favoritos de ahora y cuántas canciones hay.
+	Changed(ctx context.Context, since time.Time) (Changes, error)
+}
+
+// Changes es lo que cambió en un servidor desde la última vez.
+type Changes struct {
+	Songs     []Song          // agregadas o cambiadas
+	Favorites map[string]bool // los ids de todas las favoritas
+	Total     int             // cuántas canciones hay
+	At        time.Time       // la hora del servidor al preguntar: el since de la próxima vez
+}
+
+// Apply pone los cambios sobre el catálogo songs. whole dice si el
+// resultado tiene tantas canciones como el servidor (si no, se borró algo y
+// hay que pedirlo todo); changed, si algo cambió.
+func (ch Changes) Apply(songs []Song) (out []Song, whole, changed bool) {
+	out = slices.Clone(songs)
+	at := make(map[string]int, len(out))
+	for i, s := range out {
+		at[s.ID] = i
+	}
+	for _, s := range ch.Songs {
+		if i, ok := at[s.ID]; ok {
+			changed = changed || out[i] != s
+			out[i] = s
+		} else {
+			at[s.ID] = len(out)
+			out = append(out, s)
+			changed = true
+		}
+	}
+	for i := range out {
+		star := ""
+		if ch.Favorites[out[i].ID] {
+			star = "1"
+		}
+		if out[i].Starred != star {
+			out[i].Starred, changed = star, true
+		}
+	}
+	if changed {
+		sortSongs(out)
+	}
+	return out, len(out) == ch.Total, changed
+}
+
+// Progress es cómo va la carga de un catálogo.
+type Progress struct {
+	Got   int    // canciones recibidas
+	Total int    // cuántas hay; 0 si el servidor no lo dice
+	First []Song // una sola vez: las más nuevas, para mostrarlas mientras llega el resto
+}
+
 // AllSongs saca todo el catálogo con search3 vacío, de 500 en 500 (OpenSubsonic
 // lo exige para sincronizar). progress recibe cuántas van.
-func (c *Client) AllSongs(ctx context.Context, progress func(n int)) ([]Song, error) {
+func (c *Client) AllSongs(ctx context.Context, progress func(Progress)) ([]Song, error) {
 	const page = 500
 	var out []Song
 	for off := 0; ; off += page {
@@ -175,7 +236,7 @@ func (c *Client) AllSongs(ctx context.Context, progress func(n int)) ([]Song, er
 		}
 		out = append(out, r.Res.Song...)
 		if progress != nil {
-			progress(len(out))
+			progress(Progress{Got: len(out)}) // search3 no dice cuántas hay
 		}
 		if len(r.Res.Song) < page {
 			return out, nil
