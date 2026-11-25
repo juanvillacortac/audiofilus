@@ -58,7 +58,7 @@ jobs:
 
   # No smoke test: the runner has no audio device.
   macos:
-    runs-on: macos-15
+    runs-on: macos-15-intel # arm64 runners often wait 15 min and get cancelled
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
