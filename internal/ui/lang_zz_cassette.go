@@ -39,6 +39,8 @@ func init() {
 			"Хром", "Хром", "Krom", "Crôm", "クローム", "铬银", "鉻銀", "크롬", "โครม", "क्रोम", "كروم"},
 		"tape_skin_cover": {"De la portada", "From the cover", "Da capa", "De la pochette", "Dalla copertina", "Vom Cover", "Van de hoes", "Från omslaget", "Z okładki", "Kapaktan",
 			"С обложки", "З обкладинки", "Dari sampul", "Theo bìa", "ジャケットから", "取自封面", "取自封面", "커버에서", "จากปก", "कवर से", "من الغلاف"},
+		"tape_skin_screen": {"Del color de pantalla", "From the screen color", "Da cor da tela", "De la couleur de l'écran", "Dal colore dello schermo", "Von der Bildschirmfarbe", "Van de schermkleur", "Från skärmens färg", "Z koloru ekranu", "Ekran renginden",
+			"Из цвета экрана", "З кольору екрана", "Dari warna layar", "Theo màu màn hình", "画面の色から", "取自屏幕颜色", "取自螢幕顏色", "화면 색에서", "จากสีหน้าจอ", "स्क्रीन के रंग से", "من لون الشاشة"},
 		"tape_label_cover": {"Portada", "Cover", "Capa", "Pochette", "Copertina", "Cover", "Hoes", "Omslag", "Okładka", "Kapak",
 			"Обложка", "Обкладинка", "Sampul", "Bìa", "ジャケット", "封面", "封面", "커버", "ปก", "कवर", "الغلاف"},
 		"tape_label_hand": {"Escrito a mano", "Handwritten", "Escrito à mão", "Manuscrite", "A mano", "Handschrift", "Handgeschreven", "Handskrivet", "Napis odręczny", "El yazısı",
@@ -81,6 +83,14 @@ func init() {
 		for i, l := range languages {
 			if strs[l] != nil {
 				strs[l][key] = vals[i]
+			}
+		}
+	}
+	// The solid skins are named like the papers of the same color.
+	for _, p := range tapePapers[1:] {
+		for _, l := range languages {
+			if strs[l] != nil {
+				strs[l]["tape_skin_"+p.id] = strs[l]["tape_paper_"+p.id]
 			}
 		}
 	}
