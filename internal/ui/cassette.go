@@ -157,12 +157,18 @@ type tapeSkin struct {
 	cols [4]uint32
 }
 
-// tapeSkins are the skins in Settings order: "" is the neon (tapeNeon),
-// "black" solid graphite plastic, then a solid one per label paper
-// (tapePapers), "screen" solid in Settings → Color's accent (tapeLayersFor)
-// and "cover" the cover's own colors.
+// tapeChrome is the chrome skin's colors, also what a gray cover gets
+// (coverColors4).
+var tapeChrome = [4]uint32{0x9fb4ff, 0xe8ecff, 0xb9bfd6, 0xffffff}
+
+// tapeSkins are the skins in Settings order: "screen" solid in Settings →
+// Color's accent (tapeLayersFor), "cover" the cover's own colors, "" the
+// neon (tapeNeon, the default), "black" solid graphite plastic, and after
+// the chrome a solid one per label paper (tapePapers).
 var tapeSkins = func() []tapeSkin {
 	s := []tapeSkin{
+		{"screen", [4]uint32{}},
+		{"cover", [4]uint32{}},
 		{"", [4]uint32{0x5b3cff, 0xff3fb0, 0xff7a2a, 0xffb61f}},
 		{"black", [4]uint32{}},
 		{"ocean", [4]uint32{0x19f5ff, 0x2f7bff, 0x6a4dff, 0xc04dff}},
@@ -170,12 +176,12 @@ var tapeSkins = func() []tapeSkin {
 		{"toxic", [4]uint32{0xc6ff00, 0x39ff14, 0x00e676, 0x00bfa5}},
 		{"cyber", [4]uint32{0x00f0ff, 0x7a5cff, 0xff2a6d, 0xfcee0a}},
 		{"vapor", [4]uint32{0x01cdfe, 0xb967ff, 0xff71ce, 0xfffb96}},
-		{"chrome", [4]uint32{0x9fb4ff, 0xe8ecff, 0xb9bfd6, 0xffffff}},
+		{"chrome", tapeChrome},
 	}
 	for _, p := range tapePapers[1:] {
 		s = append(s, tapeSkin{id: p.id})
 	}
-	return append(s, tapeSkin{id: "screen"}, tapeSkin{id: "cover"})
+	return s
 }()
 
 // tapePaletteFrom turns four colors into a palette: the shell's gradient
@@ -200,9 +206,10 @@ func tapeSolid(edge, mid, top, bot color.RGBA) tapePalette {
 	return p
 }
 
-// tapeSolidOf is c as solid plastic, darker towards the bottom.
+// tapeSolidOf is c as opaque plastic: barely shaded, with edges a little
+// darker than the body (lighter ones read as glass lit from inside).
 func tapeSolidOf(c color.RGBA) tapePalette {
-	return tapeSolid(mix(c, tapeWhite, 0.15), mix(c, tapeWhite, 0.25), c, mix(c, tapeBlack, 0.6))
+	return tapeSolid(mix(c, tapeBlack, 0.35), mix(c, tapeBlack, 0.25), mix(c, tapeWhite, 0.1), mix(c, tapeBlack, 0.2))
 }
 
 // tapeSkinPalette is skin's palette; cover is the album's four colors for
@@ -322,7 +329,7 @@ func coverColors4(img image.Image) [4]color.RGBA {
 	}
 	if len(picked) == 0 {
 		var c [4]color.RGBA
-		for i, v := range tapeSkins[7].cols { // chrome
+		for i, v := range tapeChrome {
 			c[i] = rgbHex(v)
 		}
 		return c
@@ -613,11 +620,15 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 			return mix(rgbHex(0x080512), gradAt(pal.shell, m.across(x)), 0.24), 1
 		})
 	}
+	shade := float32(0.3)
+	if pal.solid != nil {
+		shade = 0.1 // its own gradient already darkens it
+	}
 	c.paint(body, func(_, y float32) (color.RGBA, float32) {
 		if f := (y - y0) / (y1 - y0); f < 0.55 {
 			return tapeWhite, 0.06 * (1 - f/0.55)
 		} else {
-			return tapeBlack, 0.3 * (f - 0.55) / 0.45
+			return tapeBlack, shade * (f - 0.55) / 0.45
 		}
 	})
 	c.paint(body.stroke(lw), t.shell(0.35, 1))
@@ -739,7 +750,11 @@ func paintWindow(c, light *tapeCanvas, t tapeInks) {
 	lw := max(1, m.d(0.006))
 	label := tapeLabelForm(m)
 	c.paint(segment(m.x(0.68), m.y(tapeLabel[1])-m.d(0.03), m.x(0.6), m.y(tapeLabel[3])+m.d(0.03), m.d(0.06)).and(label), flat(tapeWhite, 0.08))
-	c.paint(label.stroke(max(1, m.d(0.007))), flat(rgbHex(0x1c0e52), 1))
+	edge := rgbHex(0x1c0e52)
+	if pal.solid != nil {
+		edge = mix(pal.solid[0], tapeBlack, 0.45) // the plastic's own shadow: gray on white
+	}
+	c.paint(label.stroke(max(1, m.d(0.007))), flat(edge, 1))
 
 	p0, q0, p1, q1 := m.x(tapePill[0]), m.y(tapePill[1]), m.x(tapePill[2]), m.y(tapePill[3])
 	pr, pw := (q1-q0)/2, max(1.5, m.d(0.008))
@@ -1155,27 +1170,45 @@ func tapeImage(img **ebiten.Image, w, h int) *ebiten.Image {
 	return *img
 }
 
+// tapeLook is the palette and the label's paper (nil for the skin's print)
+// for the skin and paper settings; accent is Settings → Color's, for the
+// "screen" skin, and black says that color is Black, whose accent is light
+// (to show on black): there "screen" is the black skin with a black label.
+// With "From the skin", a skin of one color gives the label that color, as
+// if it were chosen as the paper.
+func tapeLook(skin, paperID string, cover *[4]color.RGBA, accent color.RGBA, black bool) (tapePalette, *color.RGBA) {
+	pal, paper, own := tapeSkinPalette(skin, cover), tapePaper(paperID), tapePaper(skin)
+	if skin == "screen" {
+		pal, own = tapeSolidOf(accent), &accent
+		if black {
+			k := rgbHex(0x1a1b1f) // a little darker than the plastic around it
+			pal, own = tapeSkinPalette("black", nil), &k
+		}
+	}
+	if paper == nil {
+		paper = own
+	}
+	return pal, paper
+}
+
 // tapeLayersFor returns the layers for a cassette w pixels wide in the
 // current look, painting them again if something changed.
 func (a *App) tapeLayersFor(w int, cover *[4]color.RGBA) *tapeLayers {
-	cfg := a.cfg.UI.Tape
+	cfg, black := a.cfg.UI.Tape, a.themeColor() == "black"
 	key := fmt.Sprint(w, cfg.Skin, cfg.Paper, cfg.Glow != "off")
 	if cfg.Skin == "cover" && cover != nil {
 		key += fmt.Sprint(*cover)
 	}
 	if cfg.Skin == "screen" {
-		key += fmt.Sprint(a.theme.Accent) // follows the album when Color is "album"
+		key += fmt.Sprint(a.theme.Accent, black) // follows the album when Color is "album"
 	}
 	st := &tapeState
 	if st.layers == nil || st.layers.key != key {
 		if st.layers != nil {
 			st.layers.free()
 		}
-		pal := tapeSkinPalette(cfg.Skin, cover)
-		if cfg.Skin == "screen" {
-			pal = tapeSolidOf(a.theme.Accent)
-		}
-		st.layers = newTapeLayers(key, w, pal, tapePaper(cfg.Paper), cfg.Glow != "off")
+		pal, paper := tapeLook(cfg.Skin, cfg.Paper, cover, a.theme.Accent, black)
+		st.layers = newTapeLayers(key, w, pal, paper, cfg.Glow != "off")
 		st.textKey, st.coverKey = "", ""
 	}
 	return st.layers

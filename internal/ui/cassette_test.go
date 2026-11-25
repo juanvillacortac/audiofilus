@@ -225,6 +225,40 @@ func TestTapeShellPainted(t *testing.T) {
 	}
 }
 
+// TestTapeLookPaper checks the label's paper with "From the skin": a skin of
+// one color (a paper's, or the screen's) gives its color, so a navy label
+// gets the light ink; the others keep their print, and a chosen paper wins.
+// On the Black screen color (its accent is light) "screen" is the black skin
+// with a black label.
+func TestTapeLookPaper(t *testing.T) {
+	accent := rgbHex(0x123456)
+	for _, c := range []struct {
+		skin, paper string
+		want        *color.RGBA
+	}{
+		{"navy", "", tapePaper("navy")},
+		{"screen", "", &accent},
+		{"", "", nil},
+		{"black", "", nil},
+		{"navy", "white", tapePaper("white")},
+	} {
+		_, got := tapeLook(c.skin, c.paper, nil, accent, false)
+		if (got == nil) != (c.want == nil) || got != nil && *got != *c.want {
+			t.Errorf("skin %q, paper %q: got %v, want %v", c.skin, c.paper, got, c.want)
+		}
+	}
+	if _, p := tapeLook("navy", "", nil, accent, false); !tapeDarkPaper(p) {
+		t.Errorf("navy from the skin: want a dark paper (light ink)")
+	}
+	pal, p := tapeLook("screen", "", nil, rgbHex(0xe8e8ec), true)
+	if !tapeDarkPaper(p) || pal.solid == nil || *pal.solid != *tapeSkinPalette("black", nil).solid {
+		t.Errorf("screen on Black: got solid %v and paper %v, want the black skin with a black label", pal.solid, p)
+	}
+	if _, p := tapeLook("screen", "white", nil, rgbHex(0xe8e8ec), true); *p != *tapePaper("white") {
+		t.Errorf("screen on Black with white paper: got %v, want the white paper", p)
+	}
+}
+
 // TestTapeTooSmall checks that a cassette too narrow to draw (the warm-up
 // draws every screen on a 16×16 canvas) draws nothing instead of asking for
 // an image with no size, which crashed the app at startup.
