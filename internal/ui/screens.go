@@ -531,6 +531,20 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	}
 
 	var size, cx, cy, textW int
+	book := a.isBook(song.Path)
+	// artW is how far right of cx the art reaches at a given cover size:
+	// the cassette, or the cover with the vinyl (or the audiobook's tape)
+	// peeking out, so the text starts right after whichever is shown.
+	artW := func(size int) int {
+		slide, r := size*34/100, size/2-3
+		switch {
+		case a.cfg.UI.Cassette:
+			return size * 3 / 2
+		case book:
+			return size/2 + slide + r/3 + r
+		}
+		return size/2 + slide + r + 1
+	}
 	// En una ventana más apaisada que 21:9 (el escritorio, framed.go), la
 	// portada y los textos van centrados, con el ancho de texto de un bloque
 	// de 21:9 como mucho, en vez de quedar pegados a la izquierda; el
@@ -546,7 +560,7 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 			// Se centra lo que se ve: la portada con el vinilo y la línea
 			// de texto más larga (o los controles), no el bloque entero, que
 			// con un título corto dejaría el hueco a la derecha.
-			lead := size + size*34/100 + (size/2-3)/2 + 12
+			lead := artW(size) + 12
 			line := max(textWidth(song.Title, BigFace), textWidth(song.Artist, SmallFace), textWidth(song.Album, SmallFace), 90)
 			if al != nil {
 				line = max(line, textWidth(al.Title, SmallFace))
@@ -568,7 +582,6 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	r := size/2 - 3
 	turn := a.spinSpeed() // el vinilo solo gira mientras suena
 	a.spin += turn
-	book := a.isBook(song.Path)
 	progress := 0.0
 	if a.duration > 0 {
 		progress = a.shownPos / a.duration
@@ -586,9 +599,8 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 			// No wider than what is under it (the spectrum, the bar).
 			cw = max(min(cw, w-2*margin), 16)
 		}
-		lead := size + slide + r/2
 		ch := int(float64(cw) * cassetteRatio)
-		x := cx + (lead-cw)/2
+		x := cx
 		if !wide {
 			x = (w - cw) / 2 // centered, like the text under it (no vinyl to make room for)
 		}
@@ -668,7 +680,7 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	// Los textos.
 	var tx, tw, ty int
 	if wide {
-		tx = cx + size + slide + r/2 + 12
+		tx = cx + artW(size) + 12
 		tw = w - tx - margin
 		if off > 0 {
 			tw = textW
