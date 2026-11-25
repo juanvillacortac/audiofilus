@@ -67,7 +67,14 @@ jobs:
       - run: go vet ./...
       - run: go test ./...
       - name: Build without cgo, like the release
-        run: CGO_ENABLED=0 go build -o bin/audiofilus ./cmd/audiofilus
+        run: |
+          for arch in arm64 amd64; do
+            CGO_ENABLED=0 GOARCH=$arch go build -trimpath -ldflags="-s -w" -o bin/audiofilus-darwin-$arch ./cmd/audiofilus
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiofilus-macos
+          path: bin/
 
   # Las DLL que lleva el zip de Windows (tools/windows/dlls.sh), probadas en
   # Windows: tienen que cargar y decodificar MP3, AAC y Opus.
