@@ -1174,6 +1174,9 @@ func (a *App) tapeGlowLevel() float32 {
 // its reflection under it. flash is the song-change flash. It returns the
 // label's rectangle, so the icons (favorite, timer...) can go on top.
 func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float64, flash float32) image.Rectangle {
+	if w < 16 {
+		return image.Rectangle{} // nothing to draw (the warm-up's tiny canvas)
+	}
 	cfg, st := a.cfg.UI.Tape, &tapeState
 	var cover *[4]color.RGBA
 	if al != nil {

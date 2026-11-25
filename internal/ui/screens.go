@@ -582,6 +582,10 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 		// under the text below, drawn after it.
 		a.reels.turn(turn, progress)
 		cw := size * 3 / 2
+		if !wide {
+			// No wider than what is under it (the spectrum, the bar).
+			cw = max(min(cw, w-2*margin), 16)
+		}
 		lead := size + slide + r/2
 		ch := int(float64(cw) * cassetteRatio)
 		x := cx + (lead-cw)/2

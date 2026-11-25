@@ -224,3 +224,13 @@ func TestTapeShellPainted(t *testing.T) {
 		t.Errorf("no light on the left edge")
 	}
 }
+
+// TestTapeTooSmall checks that a cassette too narrow to draw (the warm-up
+// draws every screen on a 16×16 canvas) draws nothing instead of asking for
+// an image with no size, which crashed the app at startup.
+func TestTapeTooSmall(t *testing.T) {
+	a := &App{offline: true}
+	if r := a.drawTape(nil, nil, 0, 0, -4, 0.5, 0); !r.Empty() {
+		t.Errorf("got %v, want nothing drawn", r)
+	}
+}
