@@ -251,9 +251,10 @@ type App struct {
 	lastTrack   string
 	spin        float64 // ángulo del vinilo
 	spinVel     float64
-	konami      []Action // las últimas pulsaciones, por si son el código Konami (eggs.go)
-	celebrateAt float64  // cuándo empezó la celebración del día especial
-	shotDay     int      // en las capturas, el día especial que se finge
+	reels       cassetteReels // the cassette reels' rotation (cassette.go)
+	konami      []Action      // las últimas pulsaciones, por si son el código Konami (eggs.go)
+	celebrateAt float64       // cuándo empezó la celebración del día especial
+	shotDay     int           // en las capturas, el día especial que se finge
 
 	theme    Theme
 	themeFor *Album   // el tema se tiñe con este álbum en cuanto se lea su portada
@@ -1829,6 +1830,14 @@ func (a *App) writeShots() error {
 	if err := shot("reproduciendo"); err != nil {
 		return err
 	}
+	// The same with Settings → Cassette (cassette.go); the rest keep the
+	// configured one.
+	cassette := a.cfg.UI.Cassette
+	a.cfg.UI.Cassette = true
+	if err := shot("reproduciendo-casete"); err != nil {
+		return err
+	}
+	a.cfg.UI.Cassette = cassette
 	// Con el temporizador puesto (y el corazón, si la canción es favorita en
 	// la maqueta).
 	a.status.TimerLeft = 25 * 60
@@ -2796,6 +2805,11 @@ func (a *App) tweenPosition() {
 	// El vinilo acompaña al salto: gira hacia ese lado lo que giraría
 	// sonando esos segundos (1,4 radianes por segundo), como si se arrastrara.
 	a.spin += d * 0.22 * vinylSpin
+	// The cassette reels too: the tape runs that way, like fast-forward or
+	// rewind.
+	if a.duration > 0 {
+		a.reels.turn(d*0.22*vinylSpin, a.shownPos/a.duration)
+	}
 }
 
 // vinylSpin es lo que gira el vinilo por segundo de canción (radianes).

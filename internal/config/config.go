@@ -183,6 +183,11 @@ type UI struct {
 	// etiquetas (artista del álbum y álbum): cada carpeta con música es un
 	// álbum, con su nombre.
 	AlbumsByFolder bool `json:"albums_by_folder,omitempty"`
+	// Cassette shows a cassette in the player with the cover as its label,
+	// instead of the cover with the vinyl peeking out; Tape is how it looks
+	// (Settings → Cassette).
+	Cassette bool   `json:"cassette,omitempty"`
+	Tape     TapeUI `json:"tape,omitzero"`
 	// HiddenFormats son, por sección de la biblioteca ("songs", "albums",
 	// "artists", "folders"), las extensiones que no salen en ella ("mp3",
 	// "flac"...). Lo que no está, sale: un formato nuevo se ve.
@@ -220,6 +225,36 @@ type UI struct {
 	// normal); la música va siempre a la normal.
 	BookSpeed float64 `json:"book_speed,omitempty"`
 	RadioDir  string  `json:"radio_dir,omitempty"`
+}
+
+// TapeUI is how the player's cassette looks (Settings → Cassette). Every
+// zero value is the default, so an untouched cassette writes nothing.
+type TapeUI struct {
+	// Skin is its colors: "" neon, or "black", "ocean", "lava", "toxic",
+	// "cyber", "vapor", "chrome", or "cover" (the cover's four most vivid
+	// colors).
+	Skin string `json:"skin,omitempty"`
+	// Label is what goes on it: "" the cover (the title written by hand
+	// when there is none), "hand" always the title written by hand.
+	Label string `json:"label,omitempty"`
+	// Paper is the color of the label behind the handwriting: "" the
+	// skin's print, or "white", "yellow", "navy", "pink", "purple", "green",
+	// "orange", "red".
+	Paper string `json:"paper,omitempty"`
+	// Thin writes in the regular weight instead of bold.
+	Thin bool `json:"thin,omitempty"`
+	// HandSize is the handwriting's size in percent; 0 is 100.
+	HandSize int `json:"hand_size,omitempty"`
+	// Glow is the light at its edges: "" drifting specks of dust, "static"
+	// fixed light leaks, "off" none.
+	Glow string `json:"glow,omitempty"`
+	// GlowAnim moves the glow: "" or "breathe" breathing, "none" still,
+	// "orbit" (a light going round the edge) or "beat" (with the bass).
+	GlowAnim string `json:"glow_anim,omitempty"`
+	// DustSize is the size of the specks in percent; 0 is 200.
+	DustSize int `json:"dust_size,omitempty"`
+	// NoReflection hides its reflection on the floor under it.
+	NoReflection bool `json:"no_reflection,omitempty"`
 }
 
 // Input elige el mando. Lo normal es dejarlo vacío: el mando y su mapeo salen

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/juanvillacortac/audiofilus/internal/radio"
+	"image"
 	"image/color"
 	"math"
 	"strings"
@@ -565,33 +566,62 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	// El vinilo asoma por detrás de la portada y gira mientras suena.
 	slide := size * 34 / 100
 	r := size/2 - 3
-	a.spin += a.spinSpeed() // el vinilo solo gira mientras suena
+	turn := a.spinSpeed() // el vinilo solo gira mientras suena
+	a.spin += turn
 	book := a.isBook(song.Path)
-	if book {
-		// Un audiolibro: un casete en vez del vinilo (bookart.go), con la
-		// cinta pasando de un carrete al otro según lo escuchado.
-		progress := 0.0
-		if a.duration > 0 {
-			progress = a.shownPos / a.duration
+	progress := 0.0
+	if a.duration > 0 {
+		progress = a.shownPos / a.duration
+	}
+	// art is the cover's rectangle, where the icons go on top.
+	var art image.Rectangle
+	if a.cfg.UI.Cassette {
+		// Settings → Cassette: a whole cassette with the cover as its label
+		// (cassette.go), in the space of the cover and vinyl; it slides in
+		// from the side on song change, like the cover. Its reflection goes
+		// under the text below, drawn after it.
+		a.reels.turn(turn, progress)
+		cw := size * 3 / 2
+		lead := size + slide + r/2
+		ch := int(float64(cw) * cassetteRatio)
+		x := cx + (lead-cw)/2
+		if !wide {
+			x = (w - cw) / 2 // centered, like the text under it (no vinyl to make room for)
 		}
-		// Un poco más afuera que el vinilo: que se vea el carrete de la derecha.
-		drawCassette(dst, cx+size/2+slide+r/3, cy+size/2, r, a.spin, progress, th)
+		// Up against the top bar: its glow (the room above the body,
+		// cassette.go) starts right under it, with no gap.
+		y := min(cy+(size-ch)/2, topH+int(math.Ceil(float64(cw)*0.08))+2)
+		art = a.drawTape(dst, al, x+a.coverOffset(size), y, cw, progress, a.coverFlash())
+		a.prefetchCovers(al, art.Dx())
+		// A tap on the cassette goes back to the cover (and the other way).
+		a.tapZone(x, y, cw, ch, a.toggleCassette)
 	} else {
-		drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
+		if book {
+			// Un audiolibro: un casete en vez del vinilo (bookart.go), con la
+			// cinta pasando de un carrete al otro según lo escuchado.
+			// Un poco más afuera que el vinilo: que se vea el carrete de la derecha.
+			drawCassette(dst, cx+size/2+slide+r/3, cy+size/2, r, a.spin, progress, th)
+		} else {
+			drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
+		}
+		// La portada entra desde el lado al cambiar de canción, con un destello.
+		ox := a.coverOffset(size)
+		rect(dst, cx+2+ox, cy+2, size, size, th.Shadow)
+		if book && (al == nil || !al.HasCover()) {
+			drawBookArt(dst, cx+ox, cy, size, th) // sin portada: un librito
+		} else {
+			a.drawCover(dst, al, cx+ox, cy, size, 1)
+		}
+		if f := a.coverFlash(); f > 0 {
+			rect(dst, cx+ox, cy, size, size, withAlpha(th.Text, uint8(150*f)))
+		}
+		a.prefetchCovers(al, size)
+		frame(dst, cx-1+ox, cy-1, size+2, size+2, withAlpha(th.Text, 0x40))
+		art = image.Rect(cx+ox, cy, cx+ox+size, cy+size)
+		a.tapZone(cx, cy, size, size, a.toggleCassette)
 	}
-	// La portada entra desde el lado al cambiar de canción, con un destello.
-	ox := a.coverOffset(size)
-	rect(dst, cx+2+ox, cy+2, size, size, th.Shadow)
-	if book && (al == nil || !al.HasCover()) {
-		drawBookArt(dst, cx+ox, cy, size, th) // sin portada: un librito
-	} else {
-		a.drawCover(dst, al, cx+ox, cy, size, 1)
-	}
-	if f := a.coverFlash(); f > 0 {
-		rect(dst, cx+ox, cy, size, size, withAlpha(th.Text, uint8(150*f)))
-	}
-	a.prefetchCovers(al, size)
-	frame(dst, cx-1+ox, cy-1, size+2, size+2, withAlpha(th.Text, 0x40))
+	ax, ay, aw, ah := art.Min.X, art.Min.Y, art.Dx(), art.Dy()
+
 	// Lo de YouTube Music que suena sin guardar: su icono en la esquina de
 	// la portada.
 	_, streaming := a.streamTrack()
@@ -599,21 +629,21 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	pod := strings.HasPrefix(song.Path, a.podDir())
 	switch {
 	case pod:
-		panel(dst, cx+ox+3, cy+size-13, 13, 11, withAlpha(th.Shadow, 0xd0))
-		drawIcon(dst, "mic", cx+ox+6, cy+size-11, th.Accent)
+		panel(dst, ax+3, ay+ah-13, 13, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "mic", ax+6, ay+ah-11, th.Accent)
 	case streaming:
-		panel(dst, cx+ox+3, cy+size-13, 15, 10, withAlpha(th.Shadow, 0xd0))
-		drawIcon(dst, "ytm", cx+ox+6, cy+size-12, ytRed)
+		panel(dst, ax+3, ay+ah-13, 15, 10, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "ytm", ax+6, ay+ah-12, ytRed)
 	case live:
-		panel(dst, cx+ox+3, cy+size-13, 13, 11, withAlpha(th.Shadow, 0xd0))
-		drawIcon(dst, "radio", cx+ox+6, cy+size-11, th.Accent)
+		panel(dst, ax+3, ay+ah-13, 13, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "radio", ax+6, ay+ah-11, th.Accent)
 	}
 
 	// En las esquinas de arriba de la portada: el corazón si es favorita y
 	// lo que le queda al temporizador.
 	if a.isFavSong(song.Path) {
-		panel(dst, cx+ox+size-15, cy+3, 12, 11, withAlpha(th.Shadow, 0xd0))
-		drawIcon(dst, "heart", cx+ox+size-13, cy+5, th.Accent)
+		panel(dst, ax+aw-15, ay+3, 12, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "heart", ax+aw-13, ay+5, th.Accent)
 	}
 	if a.status.TimerLeft > 0 || a.status.StopAfter {
 		// La luna, y los minutos que quedan o una nota (al acabar la canción).
@@ -622,12 +652,12 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 		if a.status.StopAfter {
 			lw = 7
 		}
-		panel(dst, cx+ox+3, cy+3, lw+15, 11, withAlpha(th.Shadow, 0xd0))
-		drawIcon(dst, "moon", cx+ox+5, cy+5, th.Accent)
+		panel(dst, ax+3, ay+3, lw+15, 11, withAlpha(th.Shadow, 0xd0))
+		drawIcon(dst, "moon", ax+5, ay+5, th.Accent)
 		if a.status.StopAfter {
-			drawIcon(dst, "note", cx+ox+14, cy+5, th.Text)
+			drawIcon(dst, "note", ax+14, ay+5, th.Text)
 		} else {
-			drawText(dst, label, SmallFace, cx+ox+14, cy+5, th.Text)
+			drawText(dst, label, SmallFace, ax+14, ay+5, th.Text)
 		}
 	}
 
