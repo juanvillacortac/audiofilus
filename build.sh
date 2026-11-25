@@ -30,6 +30,13 @@ done
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w -H windowsgui $lfm" \
   -o dist/audiofilus-windows-amd64.exe ./cmd/audiofilus
 echo "dist/audiofilus-windows-amd64.exe"
+# macOS (Apple Silicon and Intel), without cgo: Ebitengine and oto reach Metal
+# and CoreAudio through purego, so it cross-compiles from any system.
+for arch in arm64 amd64; do
+  CGO_ENABLED=0 GOOS=darwin GOARCH=$arch go build -trimpath -ldflags="-s -w $lfm" \
+    -o "dist/audiofilus-darwin-$arch" ./cmd/audiofilus
+  echo "dist/audiofilus-darwin-$arch"
+done
 
 # Con cp + mv: si el servicio está corriendo, sobrescribir su binario falla
 # ("Text file busy"); reemplazarlo con mv sí se puede (el proceso sigue con el viejo).

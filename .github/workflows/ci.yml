@@ -56,6 +56,19 @@ jobs:
           ./bin/audiofilus.exe status
           ./bin/audiofilus.exe quit
 
+  # No smoke test: the runner has no audio device.
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Build without cgo, like the release
+        run: CGO_ENABLED=0 go build -o bin/audiofilus ./cmd/audiofilus
+
   # Las DLL que lleva el zip de Windows (tools/windows/dlls.sh), probadas en
   # Windows: tienen que cargar y decodificar MP3, AAC y Opus.
   windows-dlls:

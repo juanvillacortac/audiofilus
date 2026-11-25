@@ -1,5 +1,5 @@
 # When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
-# release with the PortMaster port, the Linux and Windows binaries and the
+# release with the PortMaster port, the Linux, Windows and macOS binaries and the
 # unsigned iOS app and the Android app (built by ios.yml and android.yml, at
 # the same time).
 name: Release
@@ -74,6 +74,13 @@ jobs:
           cp build/windows-dlls/*.dll "$d/"
           cp -r build/windows-dlls/licenses/. "$d/licenses/"
           (cd "$d" && zip -qr "../out/$d.zip" .)
+          for arch in arm64 amd64; do
+            d=audiofilus-macos-$arch
+            mkdir -p "$d/licenses"
+            cp "dist/audiofilus-darwin-$arch" "$d/audiofilus"
+            cp LICENSE internal/ui/assets/fonts/OFL-*.txt internal/chip/LICENSE.* "$d/licenses/"
+            tar -czf "out/$d.tar.gz" "$d"
+          done
       - name: The iOS app
         uses: actions/download-artifact@v4
         with:

@@ -258,6 +258,10 @@ Every release has an unsigned `audiofilus-ios-unsigned.ipa`. Install it with [Si
 
 On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. Everything plays out of the box, AAC/M4A, Opus, tracker modules, console music and AAC/HLS radio included: the zip carries the decoder DLLs next to the `.exe` (mpg123, opusfile, libxmp and libgme from MSYS2, and fdk-aac and a cut-down FFmpeg for WMA built with zig; their licenses are in `licenses/`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
 
+### macOS
+
+Grab `audiofilus-macos-arm64.tar.gz` (Apple Silicon) or `audiofilus-macos-amd64.tar.gz` (Intel), unpack it and run `audiofilus`. The binary is unsigned, so clear the quarantine flag first: `xattr -d com.apple.quarantine audiofilus`. MP3, FLAC, Ogg Vorbis, WAV, AIFF and ALAC play; Opus, AAC/M4A, WMA, tracker modules and console music don't yet, because the decoders for those are C libraries that aren't loaded on macOS.
+
 ## Build
 
 With Docker, nothing else needed:
@@ -278,6 +282,7 @@ Both leave in `dist/`:
 |---|---|
 | `audiofilus-amd64`, `audiofilus-arm64` | Everything in one binary: the player (run it with no arguments), the audio service (`audiofilus daemon`, which the player starts itself) and the CLI |
 | `audiofilus-windows-amd64.exe` | The same for Windows |
+| `audiofilus-darwin-arm64`, `audiofilus-darwin-amd64` | The same for macOS |
 | `audiofilus.zip` | The PortMaster port |
 
 The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile, libxmp and the FFmpeg layer for WMA (`libavshim`) are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend, and audio goes through [a fork of oto](https://github.com/juanvillacortac/oto/tree/alsa-device) that can open a chosen ALSA card.
