@@ -1,6 +1,10 @@
 package ui
 
-import "github.com/juanvillacortac/audiofilus/internal/milkdrop"
+import (
+	"slices"
+
+	"github.com/juanvillacortac/audiofilus/internal/milkdrop"
+)
 
 // Las carpetas que se eligen en Ajustes con el explorador: la de la música
 // (lo de siempre), la de los presets de MilkDrop y la de las listas de radio.
@@ -32,4 +36,16 @@ func (a *App) pickedDir(dir string) {
 	a.saveConfig()
 	a.pickFor = pickMusic
 	a.mode = modeMain
+}
+
+// closeLibPicker sale del explorador de la biblioteca: si cambiaron las
+// carpetas, las guarda y vuelve a leer la música.
+func (a *App) closeLibPicker() {
+	a.mode, a.pickFor = modeMain, pickMusic
+	if a.picker.lib == nil || slices.Equal(a.picker.lib, a.cfg.MusicDirs) {
+		return
+	}
+	a.cfg.MusicDirs = slices.Clone(a.picker.lib)
+	a.saveConfig()
+	a.startScan()
 }

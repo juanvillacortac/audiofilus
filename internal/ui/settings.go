@@ -306,7 +306,7 @@ func (a *App) updateSettings() {
 				PickFolder()
 				return
 			}
-			a.picker = newPicker(firstOr(a.cfg.MusicDirs, ""))
+			a.picker = newLibPicker(a.cfg.MusicDirs)
 			a.pickFor = pickMusic
 			a.mode = modePicker
 		case setMilkDir:
@@ -595,6 +595,9 @@ func onOffArg(b bool) string {
 func (a *App) settingValue(i int) string {
 	switch i {
 	case setFolder:
+		if n := len(a.cfg.MusicDirs); n > 1 {
+			return T("pick_n", n)
+		}
 		return firstOr(a.cfg.MusicDirs, "-")
 	case setMilkDir:
 		return a.milkDir()

@@ -3,6 +3,7 @@ package ui
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -14,12 +15,18 @@ import (
 // Picker es el explorador de carpetas para elegir dónde está la música: se
 // abre la primera vez y desde Ajustes. Se maneja con la cruceta: A entra, B
 // sube, X usa la carpeta actual.
+//
+// Desde Ajustes, la música puede estar en varias carpetas (lib, no nil): X
+// agrega o quita la carpeta actual y los cambios se aplican al salir (B en
+// los lugares, o Start).
 type Picker struct {
 	scr     scroller // el desplazamiento con el dedo
 	dir     string   // carpeta actual; "" es la lista de lugares
 	entries []pickEntry
 	sel     int
-	songs   int // canciones directamente en dir
+	songs   int      // canciones directamente en dir
+	lib     []string // las carpetas de la biblioteca, si se eligen varias
+	done    bool     // se pulsó Start: terminar
 }
 
 type pickEntry struct {
@@ -66,12 +73,78 @@ func newPicker(start string) *Picker {
 	return p
 }
 
+// newLibPicker abre el explorador para las carpetas de la biblioteca: con
+// una sola empieza en ella, con varias en los lugares (donde salen todas).
+func newLibPicker(dirs []string) *Picker {
+	p := &Picker{lib: slices.Clone(dirs)}
+	start := ""
+	if len(dirs) == 1 {
+		start = dirs[0]
+	}
+	p.open(start)
+	return p
+}
+
+// Lo que es una carpeta para la biblioteca.
+const (
+	libOut    = iota
+	libIn     // es una de sus carpetas
+	libInside // está dentro de una de ellas
+)
+
+// libState dice qué es dir para la biblioteca.
+func (p *Picker) libState(dir string) int {
+	for _, d := range p.lib {
+		switch {
+		case d == dir:
+			return libIn
+		case strings.HasPrefix(dir, strings.TrimSuffix(d, "/")+"/"):
+			return libInside
+		}
+	}
+	return libOut
+}
+
+// toggle agrega dir a las carpetas de la biblioteca, o la quita si ya estaba
+// (menos la última). Al agregar una carpeta, las que tenía dentro sobran.
+func (p *Picker) toggle(dir string) {
+	switch p.libState(dir) {
+	case libIn:
+		if len(p.lib) > 1 {
+			p.lib = slices.DeleteFunc(p.lib, func(d string) bool { return d == dir })
+		}
+	case libOut:
+		inside := &Picker{lib: []string{dir}}
+		p.lib = slices.DeleteFunc(p.lib, func(d string) bool { return inside.libState(d) == libInside })
+		p.lib = append(p.lib, dir)
+	}
+}
+
+// canToggle dice si X hace algo en la carpeta actual.
+func (p *Picker) canToggle() bool {
+	switch p.libState(p.dir) {
+	case libIn:
+		return len(p.lib) > 1
+	case libOut:
+		return p.dir != ""
+	}
+	return false
+}
+
 // open muestra las subcarpetas de dir ("" = lugares) y cuenta sus canciones.
 func (p *Picker) open(dir string) {
 	p.dir, p.sel, p.songs = dir, 0, 0
 	p.entries = nil
 	if dir == "" {
-		p.entries = pickRoots()
+		// Las carpetas de la biblioteca primero, para encontrarlas y quitarlas.
+		for _, d := range p.lib {
+			p.entries = append(p.entries, pickEntry{d, d})
+		}
+		for _, r := range pickRoots() {
+			if !slices.Contains(p.lib, r.path) {
+				p.entries = append(p.entries, r)
+			}
+		}
 		return
 	}
 	des, err := os.ReadDir(dir)
@@ -135,6 +208,8 @@ func (p *Picker) update(in *Input) string {
 		p.up()
 	case in.Pressed(ActShuffle) && p.dir != "":
 		return p.dir
+	case in.Pressed(ActMenu) && p.lib != nil:
+		p.done = true
 	}
 	return ""
 }
@@ -150,9 +225,17 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 	}
 	use := a.btn("X")
 	if a.input.touch {
-		use = "\"" + T("h_use") + "\"" // con el dedo, el botón de abajo
+		label := T("h_use")
+		if p.lib != nil {
+			label = T("h_add")
+		}
+		use = "\"" + label + "\"" // con el dedo, el botón de abajo
 	}
-	drawText(dst, T("pick_hint", use), SmallFace, margin, y, th.Accent)
+	hintText := T("pick_hint", use)
+	if p.lib != nil {
+		hintText = T("pick_hint_multi", use)
+	}
+	drawText(dst, hintText, SmallFace, margin, y, th.Accent)
 	y += 13
 
 	// La ruta, recortada por el principio si no cabe.
@@ -188,7 +271,12 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 			col = th.Dim
 		}
 		drawIcon(dst, "folder", margin+2, ry-1, th.Accent)
-		drawTextW(dst, e.name, SmallFace, margin+12, ry, w-2*margin-16, col)
+		tw := w - 2*margin - 16
+		if p.lib != nil && p.libState(e.path) == libIn {
+			drawIcon(dst, "check", w-margin-10, ry-1, th.Accent2)
+			tw -= 12
+		}
+		drawTextW(dst, e.name, SmallFace, margin+12, ry, tw, col)
 	}
 	dst = whole
 
@@ -197,14 +285,25 @@ func (a *App) drawPicker(dst *ebiten.Image, p *Picker, first bool) {
 	if p.songs > 0 {
 		count = T("pick_here", p.songs)
 	}
+	if p.lib != nil && p.libState(p.dir) != libOut {
+		count = T("pick_in_lib") + " · " + count
+	}
 	if p.dir != "" {
 		drawIcon(dst, "note", margin, listBottom+3, th.Accent2)
 		drawText(dst, count, SmallFace, margin+10, listBottom+4, th.Text)
 	}
 	a.drawTopBar(dst, T("pick_title"))
 	hints := []hint{{"A", T("h_open")}, {"B", T("h_up")}}
-	if p.dir != "" {
+	switch {
+	case p.lib == nil && p.dir != "":
 		hints = append(hints, hint{"X", T("h_use")})
+	case p.lib != nil && p.canToggle() && p.libState(p.dir) == libIn:
+		hints = append(hints, hint{"X", T("h_remove")})
+	case p.lib != nil && p.canToggle():
+		hints = append(hints, hint{"X", T("h_add")})
+	}
+	if p.lib != nil {
+		hints = append(hints, hint{"START", T("h_done")})
 	}
 	a.drawHints(dst, hints)
 }

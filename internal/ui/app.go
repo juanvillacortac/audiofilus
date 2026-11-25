@@ -577,15 +577,19 @@ func (a *App) Update() error {
 		}
 		return nil
 	case modePicker:
-		if dir := a.picker.update(&a.input); dir != "" && a.pickFor != pickMusic {
+		dir := a.picker.update(&a.input)
+		switch {
+		case dir != "" && a.pickFor != pickMusic:
 			a.pickedDir(dir) // la de MilkDrop o la de radio
-		} else if dir != "" {
+		case dir != "" && a.picker.lib != nil:
+			a.picker.toggle(dir) // varias carpetas: se aplica al salir
+		case dir != "":
 			a.cfg.MusicDirs = []string{dir}
 			a.firstRun = false
 			a.saveConfig()
 			a.startScan()
-		} else if a.lib != nil && !a.firstRun && a.picker.dir == "" && a.input.Pressed(ActBack) {
-			a.mode, a.pickFor = modeMain, pickMusic // salir del explorador sin cambiar nada
+		case a.lib != nil && !a.firstRun && (a.picker.done || a.picker.dir == "" && a.input.Pressed(ActBack)):
+			a.closeLibPicker()
 		}
 		return nil
 	}
@@ -2148,6 +2152,16 @@ func (a *App) writeShots() error {
 	for _, asp := range Aspects {
 		a.w, a.h = asp.W, asp.H
 		if err := a.renderShot(filepath.Join(a.ShotsDir, fmt.Sprintf("carpeta-%s.png", asp.Name)), asp.W); err != nil {
+			return err
+		}
+	}
+	// Desde Ajustes, con dos carpetas en la biblioteca: los lugares, con las
+	// de la biblioteca primero y marcadas.
+	a.firstRun = false
+	a.picker = newLibPicker(append(slices.Clone(a.cfg.MusicDirs), filepath.Dir(firstOr(a.cfg.MusicDirs, "/"))+"/otra"))
+	for _, asp := range Aspects {
+		a.w, a.h = asp.W, asp.H
+		if err := a.renderShot(filepath.Join(a.ShotsDir, fmt.Sprintf("carpetas-%s.png", asp.Name)), asp.W); err != nil {
 			return err
 		}
 	}
