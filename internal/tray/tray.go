@@ -15,6 +15,7 @@ import (
 	"image/color"
 	"image/png"
 	"log"
+	"math"
 	"os"
 	"os/exec"
 	"strings"
@@ -161,6 +162,29 @@ func iconAt(size int) *image.NRGBA {
 		for x := 0; x < size; x++ {
 			c := color.NRGBAModel.Convert(src.At(r.Min.X+x*r.Dx()/size+r.Dx()/size/2, r.Min.Y+y*r.Dy()/size+r.Dy()/size/2))
 			out.Set(x, y, c)
+		}
+	}
+	return out
+}
+
+// monoIcon is the menu bar CD for macOS: one colour with transparency (a
+// template image, which macOS tints for light and dark bars), drawn on an
+// 18×18 grid like the pixel-art icon and scaled to size.
+func monoIcon(size int) *image.NRGBA {
+	const n = 18
+	out := image.NewNRGBA(image.Rect(0, 0, size, size))
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
+			gx, gy := float64(x*n/size)+0.5-n/2, float64(y*n/size)+0.5-n/2
+			r := math.Hypot(gx, gy)
+			a := math.Atan2(gy, gx) * 180 / math.Pi
+			on := r < 8.2 && // the disc
+				r > 1.8 && // the hole
+				(r < 3.2 || r > 4.2) && // around the hub
+				!(r > 5.6 && r < 6.6 && a > -150 && a < -110) // the glint
+			if on {
+				out.Set(x, y, color.NRGBA{A: 255})
+			}
 		}
 	}
 	return out

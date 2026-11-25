@@ -201,7 +201,7 @@ On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy]
 - **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch) and from the Files app on iPhone.
 - **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
 - **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
-- **System tray** (also on Windows, and in the macOS menu bar): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit.
+- **System tray** (also on Windows and macOS): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit. On macOS it's a one-colour CD in the menu bar and a click opens the menu; opening Audiofilus again also brings the player back.
 - **Closing the window keeps the music playing** (a setting, on by default on the desktop); Quit stops everything.
 
 Details in [docs/linux-desktop.md](docs/linux-desktop.md).

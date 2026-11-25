@@ -109,7 +109,7 @@ func (t *Tray) setup() error {
 	item := objc.ID(objc.GetClass("NSStatusBar")).Send(sel("systemStatusBar")).Send(sel("statusItemWithLength:"), float64(-1))
 	item.Send(sel("retain"))
 	var buf bytes.Buffer
-	if err := png.Encode(&buf, iconAt(36)); err != nil {
+	if err := png.Encode(&buf, monoIcon(36)); err != nil {
 		return err
 	}
 	b := buf.Bytes()
@@ -117,6 +117,7 @@ func (t *Tray) setup() error {
 	runtime.KeepAlive(b)
 	img := objc.ID(objc.GetClass("NSImage")).Send(sel("alloc")).Send(sel("initWithData:"), data)
 	img.Send(sel("setSize:"), nsSize{18, 18}) // 36 px for Retina
+	img.Send(sel("setTemplate:"), true)       // tinted by macOS for light and dark bars
 	item.Send(sel("button")).Send(sel("setImage:"), img)
 
 	menu := objc.ID(objc.GetClass("NSMenu")).Send(sel("alloc")).Send(sel("initWithTitle:"), nsString("Audiofilus"))
