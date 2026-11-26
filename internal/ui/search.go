@@ -46,7 +46,8 @@ type searchResult struct {
 	al   *Album
 	song Song
 	yt   ytm.Track
-	have bool // de YouTube Music, y probablemente ya está en la biblioteca
+	ytAl *ytm.Album // un álbum de YouTube Music (si no, yt es una canción)
+	have bool       // de YouTube Music, y probablemente ya está en la biblioteca
 	mod  modsrc.Item
 }
 
@@ -303,6 +304,10 @@ func (a *App) searchDone() {
 // openResult abre un resultado: el artista, el álbum o la canción (que suena
 // con el resto de su álbum detrás).
 func (a *App) openResult(r searchResult) {
+	if r.kind == resYT && r.ytAl != nil {
+		a.ytOpenAlbum(*r.ytAl)
+		return
+	}
 	switch r.kind {
 	case resYT:
 		a.ytMenu(r)
@@ -324,6 +329,10 @@ func (a *App) openResult(r searchResult) {
 
 // resultMenu es el menú (Y) de un resultado.
 func (a *App) resultMenu(r searchResult) {
+	if r.kind == resYT && r.ytAl != nil {
+		a.ytOpenAlbum(*r.ytAl)
+		return
+	}
 	switch r.kind {
 	case resYT:
 		a.ytMenu(r)
@@ -459,7 +468,11 @@ func (a *App) drawSearch(dst *ebiten.Image, x, top, w, bottom int) {
 		if r.kind == resYT {
 			ic = ytRed
 		}
-		drawIcon(dst, icons[r.kind], x-1, ry-1, ic)
+		icon := icons[r.kind]
+		if r.ytAl != nil {
+			icon = "disc"
+		}
+		drawIcon(dst, icon, x-1, ry-1, ic)
 		mainW := w * 58 / 100
 		drawTextW(dst, r.main, SmallFace, x+10, ry, mainW-14, th.Text)
 		sx := x + mainW

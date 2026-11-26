@@ -26,3 +26,32 @@ func TestSearchLive(t *testing.T) {
 		t.Errorf("incomplete first result: %+v", res[0])
 	}
 }
+
+// TestAlbumLive busca un álbum y trae sus canciones (con red, como
+// TestSearchLive).
+func TestAlbumLive(t *testing.T) {
+	if os.Getenv("AUDIOFILUS_NET_TESTS") == "" {
+		t.Skip("set AUDIOFILUS_NET_TESTS=1")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	als, err := SearchAlbums(ctx, "vespertine bjork")
+	if err != nil || len(als) == 0 {
+		t.Fatalf("search albums: %v (%d results)", err, len(als))
+	}
+	al := als[0]
+	t.Logf("%s | %s | %s | %s", al.ID, al.Title, al.Artist, al.Year)
+	if al.Title != "Vespertine" || al.Year == "" || al.Artist == "" {
+		t.Errorf("first album: %+v", al)
+	}
+	tracks, err := AlbumTracks(ctx, al)
+	if err != nil || len(tracks) < 10 {
+		t.Fatalf("album tracks: %v (%d tracks)", err, len(tracks))
+	}
+	for _, tr := range tracks[:3] {
+		t.Logf("%s | %s | %s | %s | %s", tr.ID, tr.Title, tr.Artist(), tr.Album, tr.Duration)
+	}
+	if tr := tracks[0]; tr.Title != "Hidden Place" || tr.Artist() == "" || tr.Album != "Vespertine" || tr.Duration == "" || tr.Thumb == "" {
+		t.Errorf("first track: %+v", tr)
+	}
+}

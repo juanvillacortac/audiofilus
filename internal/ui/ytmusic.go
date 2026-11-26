@@ -125,14 +125,23 @@ type ytState struct {
 	query   string // lo último que se buscó allí
 	pending bool   // esperando la respuesta de esa búsqueda
 	tracks  []ytm.Track
+	albums  []ytm.Album // los álbumes de esa búsqueda (van arriba)
 	results chan ytSearchDone
-	events  chan ytEvent
-	queue   chan *ytJob        // las descargas, para el trabajador
-	jobs    []*ytJob           // los trabajos, el último al final
-	cancel  context.CancelFunc // para la escucha en curso
-	bgScan  *Scan              // la biblioteca, poniéndose al día tras descargar
-	sel     int                // la fila elegida en Descargas
-	scr     scroller           // su desplazamiento con el dedo
+	album   chan ytAlbumDone // las canciones de un álbum abierto
+	// play es el álbum que se escucha sin guardar: suena play[next-1] (o
+	// está cargando) y la siguiente se pide cuando esa empieza a sonar, así
+	// en la caché solo hay una o dos de más.
+	play     []ytm.Track
+	next     int
+	fetching bool
+	added    chan string // la siguiente ya está en la caché: se pone a la cola
+	events   chan ytEvent
+	queue    chan *ytJob        // las descargas, para el trabajador
+	jobs     []*ytJob           // los trabajos, el último al final
+	cancel   context.CancelFunc // para la escucha en curso
+	bgScan   *Scan              // la biblioteca, poniéndose al día tras descargar
+	sel      int                // la fila elegida en Descargas
+	scr      scroller           // su desplazamiento con el dedo
 	// Para "ya la tienes": los youtube_id de .library.json y las canciones por
 	// artista y título, de la biblioteca keysOf.
 	ids    map[string]bool
@@ -143,12 +152,21 @@ type ytState struct {
 type ytSearchDone struct {
 	query  string
 	tracks []ytm.Track
+	albums []ytm.Album
+	err    error
+}
+
+type ytAlbumDone struct {
+	al     ytm.Album
+	tracks []ytm.Track
 	err    error
 }
 
 // initYT busca el yt-dlp del usuario y arranca el trabajador de descargas.
 func (a *App) initYT() {
 	a.yt.results = make(chan ytSearchDone, 4)
+	a.yt.album = make(chan ytAlbumDone, 4)
+	a.yt.added = make(chan string, 4)
 	a.yt.events = make(chan ytEvent, 256)
 	a.yt.queue = make(chan *ytJob, 128)
 	a.yt.ids = map[string]bool{}
@@ -237,13 +255,25 @@ func (a *App) ytSearch(q string) {
 	if a.yt.bin == "" || q == "" || q == a.yt.query {
 		return
 	}
-	a.yt.query, a.yt.tracks, a.yt.pending = q, nil, true
+	a.yt.query, a.yt.tracks, a.yt.albums, a.yt.pending = q, nil, nil, true
 	a.loadHaveIDs()
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
+		// Las canciones y los álbumes a la vez; sin álbumes (falló esa
+		// petición) quedan las canciones.
+		var albums []ytm.Album
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			var err error
+			if albums, err = ytm.SearchAlbums(ctx, q); err != nil {
+				log.Printf("youtube music album search: %v", err)
+			}
+		}()
 		res, err := ytm.Search(ctx, q)
-		a.yt.results <- ytSearchDone{q, res, err}
+		<-done
+		a.yt.results <- ytSearchDone{q, res, albums, err}
 		ebiten.ScheduleFrame() // la interfaz puede estar esperando eventos
 	}()
 }
@@ -263,13 +293,21 @@ func (a *App) updateYT() {
 				log.Printf("youtube music search: %v", r.err)
 				continue
 			}
-			a.yt.tracks = r.tracks
+			a.yt.tracks, a.yt.albums = r.tracks, r.albums
 			a.search.lastQuery = "" // vuelve a juntar los resultados
 			a.updateSearchResults()
 		case e := <-a.yt.events:
 			a.ytEvent(e)
+		case r := <-a.yt.album:
+			a.ytAlbumMenu(r)
+		case path := <-a.yt.added:
+			a.yt.fetching = false
+			if path != "" {
+				a.send("add", path)
+			}
 		default:
 			a.ytScanDone()
+			a.ytAlbumNext()
 			return
 		}
 	}
@@ -352,6 +390,7 @@ func (a *App) addJob(j *ytJob) {
 // ytPlay baja t a la caché y la pone a sonar. Si se estaba bajando otra para
 // escuchar, se cancela.
 func (a *App) ytPlay(t ytm.Track) {
+	a.yt.play = nil // lo que se escuchaba de un álbum ya no sigue
 	if a.yt.cancel != nil {
 		a.yt.cancel()
 	}
@@ -712,6 +751,17 @@ func (a *App) ytResults(q string) []searchResult {
 		return nil
 	}
 	var out []searchResult
+	// Primero los álbumes (los tres primeros, los que más casan): buscar
+	// "vespertine bjork" es querer el álbum entero, no canciones sueltas.
+	for _, al := range a.yt.albums[:min(3, len(a.yt.albums))] {
+		sub := T("ytm_album")
+		for _, s := range []string{al.Artist, al.Year} {
+			if s != "" {
+				sub += " · " + s
+			}
+		}
+		out = append(out, searchResult{kind: resYT, main: al.Title, sub: sub, ytAl: &al})
+	}
 	for _, t := range a.yt.tracks {
 		_, own := a.ownSong(t)
 		have := a.yt.ids[t.ID] || own
@@ -796,4 +846,127 @@ func lowMemory() bool {
 		}
 	}
 	return kb > 0 && kb <= 1536*1024
+}
+
+// ytOpenAlbum pide las canciones de un álbum de YouTube Music; su menú se
+// abre al llegar (ytAlbumMenu).
+func (a *App) ytOpenAlbum(al ytm.Album) {
+	a.flash(T("srv_loading", al.Title))
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+		tracks, err := ytm.AlbumTracks(ctx, al)
+		a.yt.album <- ytAlbumDone{al, tracks, err}
+		ebiten.ScheduleFrame()
+	}()
+}
+
+// ytAlbumMenu es el menú de un álbum de YouTube Music: escucharlo entero,
+// descargarlo entero y, debajo, cada canción con su menú de siempre.
+func (a *App) ytAlbumMenu(r ytAlbumDone) {
+	if r.err != nil || len(r.tracks) == 0 {
+		if r.err != nil {
+			a.flash(T("ytm_error", r.err))
+		}
+		return
+	}
+	if a.screen != LibraryScreen || a.libTab != tabSearch {
+		return // se fue de Buscar mientras cargaba
+	}
+	al, tracks := r.al, r.tracks
+	sub := al.Artist
+	for _, s := range []string{al.Year, N("n_songs", len(tracks))} {
+		if s != "" {
+			sub = strings.TrimPrefix(sub+" · "+s, " · ")
+		}
+	}
+	m := &menu{title: al.Title, subtitle: sub, cols: 2, items: []menuItem{
+		{label: T("ytm_listen"), icon: "play", do: func() { a.ytPlayAlbum(tracks) }},
+		{label: T("ytm_download_all"), icon: "download", do: func() { a.ytDownloadAll(tracks) }},
+	}}
+	for i, t := range tracks {
+		_, own := a.ownSong(t)
+		have := a.yt.ids[t.ID] || own
+		m.items = append(m.items, menuItem{label: fmt.Sprintf("%d. %s", i+1, t.Title), icon: "note", note: t.Duration,
+			do: func() { a.ytMenu(searchResult{kind: resYT, main: t.Title, yt: t, have: have}) }})
+	}
+	a.menu = m
+}
+
+// ytPlayAlbum escucha un álbum sin guardarlo: la primera ya, y cada una de
+// las siguientes se pide cuando empieza a sonar la anterior (ytAlbumNext).
+func (a *App) ytPlayAlbum(tracks []ytm.Track) {
+	a.ytPlay(tracks[0])
+	a.yt.play, a.yt.next, a.yt.fetching = tracks, 1, false
+}
+
+// ytAlbumNext pide la siguiente canción del álbum que se escucha cuando ya
+// suena la última que se puso en la cola.
+func (a *App) ytAlbumNext() {
+	y := &a.yt
+	if y.fetching || y.next >= len(y.play) {
+		return
+	}
+	if t, ok := a.streamTrack(); !ok || t.ID != y.play[y.next-1].ID {
+		return
+	}
+	t, bin, dir := y.play[y.next], y.bin, ytCacheDir()
+	y.next++
+	y.fetching = true
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+		defer cancel()
+		path, err := ytm.Fetch(ctx, bin, t, dir, ytCacheKeep, nil)
+		if err != nil {
+			log.Printf("youtube music album, next song: %v", err)
+			path = ""
+		}
+		a.yt.added <- path
+		ebiten.ScheduleFrame()
+	}()
+}
+
+// ytDownloadAll pone en la cola de descargas las canciones de un álbum que
+// no estén ya, con la misma pregunta del formato que una sola (ytDownload).
+func (a *App) ytDownloadAll(tracks []ytm.Track) {
+	if len(a.cfg.MusicDirs) == 0 {
+		return
+	}
+	var todo []ytm.Track
+	for _, t := range tracks {
+		_, own := a.ownSong(t)
+		queued := false
+		for _, j := range a.yt.jobs {
+			if !j.listen && j.track.ID == t.ID && (j.active() || j.state == jobDone) {
+				queued = true
+			}
+		}
+		if !own && !a.yt.ids[t.ID] && !queued {
+			todo = append(todo, t)
+		}
+	}
+	if len(todo) == 0 {
+		a.openDownloads()
+		return
+	}
+	queue := func(mp3 bool) {
+		for _, t := range todo {
+			j := &ytJob{track: t, state: jobWaiting, mp3: mp3}
+			a.addJob(j)
+			a.yt.queue <- j
+		}
+		a.flash(T("srv_queued", N("n_songs", len(todo))))
+	}
+	if _, err := exec.LookPath("ffmpeg"); err != nil {
+		queue(false)
+		return
+	}
+	keepNote, mp3Note := T("ytm_fmt_quality"), ""
+	if lowMemory() {
+		keepNote, mp3Note = T("ytm_fmt_recommended"), T("ytm_fmt_memory")
+	}
+	a.menu = &menu{title: T("ytm_download_all"), subtitle: N("n_songs", len(todo)), cols: 1, items: []menuItem{
+		{label: T("ytm_fmt_keep"), icon: "download", note: keepNote, close: true, do: func() { queue(false) }},
+		{label: T("ytm_fmt_mp3"), icon: "download", note: mp3Note, close: true, do: func() { queue(true) }},
+	}}
 }

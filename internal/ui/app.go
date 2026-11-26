@@ -1982,6 +1982,7 @@ func (a *App) writeShots() error {
 		{ID: "c", Title: "Rabbit Hole (Cowards, Pt. 1)", Artists: []string{"Chevelle"}, Album: "Bright as Blasphemy", Duration: "4:10"},
 		{ID: "d", Title: "Hats off to the Bull", Artists: []string{"Chevelle"}, Album: "Hats off to the Bull", Duration: "3:42"},
 	}
+	a.yt.albums = []ytm.Album{{ID: "MPREb_a", Title: "Wonder What's Next", Artist: "Chevelle", Year: "2002"}}
 	a.search.query, a.search.typing, a.search.lastQuery, a.search.sel = []rune("Chevelle"), false, "", 2
 	a.updateSearchResults()
 	tr := a.yt.tracks
@@ -1995,6 +1996,12 @@ func (a *App) writeShots() error {
 	if err := shot("buscar-youtube"); err != nil {
 		return err
 	}
+	// El menú de un álbum de YouTube Music.
+	a.ytAlbumMenu(ytAlbumDone{al: a.yt.albums[0], tracks: tr})
+	if err := shot("buscar-youtube-album"); err != nil {
+		return err
+	}
+	a.menu = nil
 	a.screen, a.yt.sel = Downloads, 1
 	if err := shot("descargas"); err != nil {
 		return err
