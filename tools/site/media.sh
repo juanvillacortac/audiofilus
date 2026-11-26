@@ -13,6 +13,10 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 out=site/img
 ./build.sh >/dev/null
+# Una configuración vacía: si no, las capturas salen con el tema, el reloj y
+# demás ajustes del audiofilus.json que haya junto al binario.
+export AUDIOFILUS_HOME="$tmp/home"
+mkdir -p "$AUDIOFILUS_HOME"
 dist/audiofilus -music "$music" -album "$album" -lang en -shots "$tmp/s" -frames "$tmp/f"
 
 # Capturas fijas, a ×4 (1440×960).
