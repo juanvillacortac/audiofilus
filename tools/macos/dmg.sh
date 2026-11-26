@@ -23,6 +23,11 @@ CGO_ENABLED=0 go build -trimpath \
 # link to (libogg, libopus...), with paths relative to the app.
 prefix=$(brew --prefix)
 for lib in libmpg123.0 libopusfile.0 libxmp.4 libgme.0 libfdk-aac.2; do
+  # Homebrew dropped fdk-aac (license policy): without it M4A/AAC don't play.
+  if [ ! -f "$prefix/lib/$lib.dylib" ]; then
+    echo "$lib missing in Homebrew: the app goes without it" >&2
+    continue
+  fi
   cp "$prefix/lib/$lib.dylib" "$app/Contents/Frameworks/"
   chmod u+w "$app/Contents/Frameworks/$lib.dylib"
   install_name_tool -id "@rpath/$lib.dylib" "$app/Contents/Frameworks/$lib.dylib"
@@ -58,9 +63,24 @@ cat >"$app/Contents/Info.plist" <<EOF
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>LSApplicationCategoryType</key><string>public.app-category.music</string>
   <key>NSHighResolutionCapable</key><true/>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key><string>Audio</string>
+      <key>CFBundleTypeRole</key><string>Viewer</string>
+      <key>LSHandlerRank</key><string>Alternate</string>
+      <key>LSItemContentTypes</key>
+      <array>
+        <string>public.audio</string>
+        <string>public.folder</string>
+        <string>public.m3u-playlist</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
 EOF
+plutil -lint "$app/Contents/Info.plist" >/dev/null
 
 # Ad-hoc: no Apple account, but Apple Silicon won't run unsigned code.
 codesign --force --deep --sign - "$app"

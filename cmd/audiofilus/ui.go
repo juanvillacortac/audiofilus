@@ -32,7 +32,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/juanvillacortac/audiofilus/internal/config"
+	"github.com/juanvillacortac/audiofilus/internal/control"
 	"github.com/juanvillacortac/audiofilus/internal/desktop"
+	"github.com/juanvillacortac/audiofilus/internal/tray"
 	"github.com/juanvillacortac/audiofilus/internal/ui"
 )
 
@@ -106,6 +108,15 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 		if exe, err := os.Executable(); err == nil {
 			go desktop.EnsureRegistered(exe)
 		}
+		// En macOS, los abiertos desde el Finder llegan como evento, no como
+		// argumentos: suenan como con "audiofilus <rutas>" (open.go).
+		tray.OpenDocuments(func(urls []string) {
+			if files, ok := openArgs(urls); ok {
+				if _, err := control.CallReady(paths.Socket, control.Request{Cmd: "open", Args: files}); err != nil {
+					log.Printf("open: %v", err)
+				}
+			}
+		})
 	}
 	ebiten.SetWindowTitle("Audiofilus")
 	ebiten.SetWindowSize(960, 720)

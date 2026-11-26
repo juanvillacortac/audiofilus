@@ -6,11 +6,13 @@ import (
 	"bytes"
 	"errors"
 	"image/png"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"sync/atomic"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"github.com/ebitengine/purego"
@@ -28,7 +30,9 @@ func init() { runtime.LockOSThread() } // keeps main() on the main thread
 var (
 	mainq     = make(chan func())
 	mainReady atomic.Bool
-	cur       *Tray // the one tray, for the Objective-C callbacks
+	cur       *Tray   // the one tray, for the Objective-C callbacks
+	target    objc.ID // its AudiofilusTray object
+	started   time.Time
 )
 
 // RunWithMain runs the service (run) in a goroutine and serves AppKit on the
@@ -54,6 +58,7 @@ func Start(eng *engine.Engine, opt Options) (*Tray, error) {
 	if !mainReady.Load() {
 		return nil, errors.New("no AppKit main thread")
 	}
+	started = time.Now()
 	t := &Tray{base: base{eng: eng, opt: opt}}
 	ready := make(chan error, 1)
 	mainq <- func() {
@@ -66,8 +71,11 @@ func Start(eng *engine.Engine, opt Options) (*Tray, error) {
 	return t, <-ready
 }
 
-// Update does nothing: the menu reads the state each time it opens.
-func (t *Tray) Update() {}
+// Update refreshes Now Playing on the main thread; the menu reads the state
+// each time it opens.
+func (t *Tray) Update() {
+	target.Send(sel("performSelectorOnMainThread:withObject:waitUntilDone:"), sel("nowPlayingUpdate:"), objc.ID(0), false)
+}
 
 // Close does nothing: the icon goes away with the process.
 func (t *Tray) Close() {}
@@ -96,12 +104,18 @@ func (t *Tray) setup() error {
 		// Opening Audiofilus.app while only the service runs reaches the
 		// service (same bundle): it opens the interface.
 		{Cmd: sel("applicationShouldHandleReopen:hasVisibleWindows:"), Fn: reopen},
+		{Cmd: sel("application:openURLs:"), Fn: openURLs},
+		{Cmd: sel("remoteCommand:"), Fn: remoteCommand},
+		{Cmd: sel("nowPlayingUpdate:"), Fn: nowPlayingUpdate},
 	})
 	if err != nil {
 		return err
 	}
 	cur = t
-	target := objc.ID(cls).Send(sel("new"))
+	target = objc.ID(cls).Send(sel("new"))
+	if err := setupNowPlaying(target); err != nil {
+		log.Printf("media keys disabled: %v", err)
+	}
 	app := objc.ID(objc.GetClass("NSApplication")).Send(sel("sharedApplication"))
 	app.Send(sel("setActivationPolicy:"), 1) // accessory: no Dock icon
 	app.Send(sel("setDelegate:"), target)

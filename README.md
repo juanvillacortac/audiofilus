@@ -198,7 +198,7 @@ On **Knulli Scarab** (for now the only system and version it is built and tested
 On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy](https://omarchy.org):
 
 - **App launcher:** Audiofilus shows up with its icon, with Play/Pause, Next and Previous actions.
-- **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch) and from the Files app on iPhone.
+- **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch), from the Finder on macOS and from the Files app on iPhone.
 - **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
 - **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
 - **System tray** (also on Windows and macOS): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit. On macOS it's a one-colour CD in the menu bar and a click opens the menu; opening Audiofilus again also brings the player back.
@@ -261,6 +261,8 @@ On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere a
 ### macOS
 
 Grab `Audiofilus-macos-arm64.dmg` (Apple Silicon) or `Audiofilus-macos-amd64.dmg` (Intel; macOS 12 or later), open it and drag Audiofilus to Applications. The app isn't notarized, so the first time right-click it and choose Open, or run `xattr -dr com.apple.quarantine /Applications/Audiofilus.app`. The decoders come inside the app (mpg123, opusfile, libxmp, libgme and fdk-aac from Homebrew); WMA and VGM don't play on macOS yet. Settings and data live in `~/Library/Application Support/Audiofilus`.
+
+The keyboard's media keys, AirPods and headphone buttons control it, and Control Center shows the song with its cover, also with the window closed. When the sound falls back to the Mac's speakers (headphones unplugged, Bluetooth gone, a DAC removed) the music pauses; picking the speakers by hand while it plays pauses it too. In the Finder, Open With → Audiofilus plays audio files, folders and `.m3u` lists; tracker modules and console music still open from the player.
 
 ## Build
 

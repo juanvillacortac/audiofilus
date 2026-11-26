@@ -6,7 +6,10 @@
 //
 // En Linux, con el estándar StatusNotifierItem por D-Bus (la barra de Omarchy,
 // Waybar, KDE, GNOME con AppIndicator; tray_linux.go); en Windows, en el área
-// de notificación (Shell_NotifyIcon; tray_windows.go). Lo común está aquí.
+// de notificación (Shell_NotifyIcon; tray_windows.go); en macOS, en la barra
+// de menús (tray_darwin.go), que además atiende las teclas multimedia, el
+// Centro de control (nowplaying_darwin.go) y los archivos abiertos desde el
+// Finder. Lo común está aquí.
 package tray
 
 import (
@@ -22,6 +25,7 @@ import (
 
 	"github.com/juanvillacortac/audiofilus/internal/desktop"
 	"github.com/juanvillacortac/audiofilus/internal/engine"
+	"github.com/juanvillacortac/audiofilus/internal/library"
 )
 
 // Options es lo que la bandeja necesita del servicio.
@@ -30,6 +34,9 @@ type Options struct {
 	UIOpen func() bool // si hay una interfaz conectada
 	Quit   func()      // salir del todo (como "Salir" en la interfaz)
 	Lang   string      // el de la interfaz ("es", "pl"...); "" lo elige por $LANG
+	// Remote, si dice que sí, se quedó con la orden de las teclas multimedia
+	// (macOS): la interfaz manda la música a otro aparato (daemon/remote.go).
+	Remote func(cmd string) bool
 }
 
 // Los elementos del menú, en orden.
@@ -59,10 +66,7 @@ func (b *base) nowPlaying() string {
 	if st.Track.Path == "" {
 		return b.tr(sNothing)
 	}
-	s := st.Track.Title
-	if s == "" {
-		s = st.Track.Path[strings.LastIndexAny(st.Track.Path, `/\`)+1:]
-	}
+	s := title(st.Track)
 	if st.Track.Artist != "" {
 		s = st.Track.Artist + " — " + s
 	}
@@ -73,6 +77,40 @@ func (b *base) nowPlaying() string {
 		s += b.tr(sPaused)
 	}
 	return s
+}
+
+// title es el título de t o, si no tiene, el nombre del archivo.
+func title(t library.Track) string {
+	if t.Title != "" {
+		return t.Title
+	}
+	return t.Path[strings.LastIndexAny(t.Path, `/\`)+1:]
+}
+
+// media hace una orden de las teclas multimedia ("resume", "pause",
+// "toggle", "next", "prev" o "seek" a pos segundos): a Remote si se la
+// queda, si no al motor. El salto va siempre al motor, como SetPosition de
+// MPRIS.
+func (b *base) media(cmd string, pos float64) {
+	if cmd == "seek" {
+		b.eng.SeekTo(pos)
+		return
+	}
+	if b.opt.Remote != nil && b.opt.Remote(cmd) {
+		return
+	}
+	switch cmd {
+	case "resume":
+		b.eng.Play()
+	case "pause":
+		b.eng.Pause()
+	case "toggle":
+		b.eng.Toggle()
+	case "next":
+		b.eng.Next()
+	case "prev":
+		b.eng.Prev()
+	}
 }
 
 // tr es el texto i del menú en el idioma de la interfaz (lang.go).
@@ -130,8 +168,10 @@ func (b *base) do(id int) (changed bool) {
 
 // open abre la interfaz (este mismo binario, sin argumentos), si no está ya
 // abierta, separada del servicio (detach, en cada sistema): es del usuario.
-func (b *base) open() {
-	if b.opt.UIOpen() {
+// Con files (abiertos desde el Finder) lanza "audiofilus <files>", que los
+// hace sonar y abre la interfaz si hace falta (cmd/audiofilus/open.go).
+func (b *base) open(files ...string) {
+	if len(files) == 0 && b.opt.UIOpen() {
 		return
 	}
 	exe, err := os.Executable()
@@ -139,7 +179,7 @@ func (b *base) open() {
 		log.Printf("tray: %v", err)
 		return
 	}
-	cmd := exec.Command(exe)
+	cmd := exec.Command(exe, files...)
 	cmd.Env = append(os.Environ(), "AUDIOFILUS_HOME="+b.opt.Home)
 	detach(cmd)
 	if err := cmd.Start(); err != nil {

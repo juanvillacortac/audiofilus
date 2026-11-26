@@ -179,3 +179,15 @@ func Call(socket string, req Request) (Response, error) {
 	}
 	return resp, nil
 }
+
+// CallReady es Call esperando, hasta 20 s, a que el servicio conteste: al
+// abrir la app por unos archivos, el servicio tarda un momento en arrancar.
+func CallReady(socket string, req Request) (Response, error) {
+	for i := 0; ; i++ {
+		resp, err := Call(socket, req)
+		if !errors.Is(err, ErrNotRunning) || i == 79 {
+			return resp, err
+		}
+		time.Sleep(250 * time.Millisecond)
+	}
+}
