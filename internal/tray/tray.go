@@ -28,7 +28,7 @@ type Options struct {
 	Home   string      // AUDIOFILUS_HOME, para abrir la interfaz con la misma carpeta
 	UIOpen func() bool // si hay una interfaz conectada
 	Quit   func()      // salir del todo (como "Salir" en la interfaz)
-	Lang   string      // "es" o "en"
+	Lang   string      // el de la interfaz ("es", "pl"...); "" lo elige por $LANG
 }
 
 // Los elementos del menú, en orden.
@@ -56,7 +56,7 @@ type base struct {
 func (b *base) nowPlaying() string {
 	st := b.eng.Status()
 	if st.Track.Path == "" {
-		return b.tr("Nada sonando", "Nothing playing")
+		return b.tr(sNothing)
 	}
 	s := st.Track.Title
 	if s == "" {
@@ -69,18 +69,13 @@ func (b *base) nowPlaying() string {
 		s = string(r[:59]) + "…"
 	}
 	if st.State != "playing" {
-		s += b.tr(" (en pausa)", " (paused)")
+		s += b.tr(sPaused)
 	}
 	return s
 }
 
-// tr elige el texto del idioma de la interfaz.
-func (b *base) tr(es, en string) string {
-	if b.opt.Lang == "en" || b.opt.Lang == "" && !strings.HasPrefix(os.Getenv("LANG"), "es") {
-		return en
-	}
-	return es
-}
+// tr es el texto i del menú en el idioma de la interfaz (lang.go).
+func (b *base) tr(i int) string { return trayStrs[trayLang(b.opt.Lang)][i] }
 
 // label es el texto de un elemento del menú ("" en los separadores).
 func (b *base) label(id int) string {
@@ -89,19 +84,19 @@ func (b *base) label(id int) string {
 		return b.nowPlaying()
 	case idToggle:
 		if b.eng.Status().State == "playing" {
-			return b.tr("Pausar", "Pause")
+			return b.tr(sPause)
 		}
-		return b.tr("Reproducir", "Play")
+		return b.tr(sPlay)
 	case idNext:
-		return b.tr("Siguiente", "Next")
+		return b.tr(sNext)
 	case idPrev:
-		return b.tr("Anterior", "Previous")
+		return b.tr(sPrev)
 	case idShuffle:
-		return b.tr("Aleatorio", "Shuffle")
+		return b.tr(sShuffle)
 	case idOpen:
-		return b.tr("Abrir Audiofilus", "Open Audiofilus")
+		return b.tr(sOpen)
 	case idQuit:
-		return b.tr("Salir", "Quit")
+		return b.tr(sQuit)
 	}
 	return ""
 }
