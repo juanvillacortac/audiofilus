@@ -115,6 +115,7 @@ Remote songs are cached on the SD card (400 MB by default, least recently used g
   <img src="site/img/search-youtube.png" alt="Search with YouTube results" width="360">
   <img src="site/img/radio.png" alt="Internet radio" width="360">
   <img src="site/img/audiobook.png" alt="An audiobook playing: a cassette with the title written on its label and the current chapter" width="360">
+  <img src="site/img/cassette.png" alt="Now Playing with a cassette instead of the vinyl" width="360">
 </p>
 
 ### Visualizers and games
@@ -169,6 +170,7 @@ More in [docs/milkdrop.md](docs/milkdrop.md).
 - Mouse and touch: tap rows, covers, tabs, menus and the player's buttons; drag lists with your finger (with momentum) or use the wheel; long-press for the More menu, right-click to go back; even the button hints at the bottom can be tapped.
 - The left analog stick works like the D-pad everywhere, menus and games included.
 - On Now Playing, `↑`/`↓` scratch the vinyl, and the song itself scratches back and forth like a record under your hand.
+- Settings → Cassette swaps the vinyl for a cassette with the cover as its label (or the song written by hand), its reels turning with the song; on a touch screen, tap it to switch back. Audiobooks always play on one.
 - The layout follows the screen's real shape: any width from 1:1 to 21:9 in landscape, and portrait (phone-like, down to 9:21) with its own Now Playing layout.
 - Optional chiptune sounds, with separate switches for menus and for music actions. Game sounds are low thumps and soft hits, made to sit under any music, metal included.
 - 21 languages: English, Spanish, Portuguese, French, Italian, German, Dutch, Swedish, Polish, Turkish (thanks to volkybaba), Russian, Ukrainian, Indonesian, Vietnamese, Japanese, Simplified and Traditional Chinese, Korean, Thai, Hindi and Arabic. Japanese, Chinese and Korean text (song titles too) shows in a pixel font, Fusion Pixel, and Thai in Silver (Poppy Works); Vietnamese letters the pixel fonts lack are assembled from their own accents; Hindi and Arabic are shaped properly (conjuncts, joined letters, right to left) and drawn with crisp pixels. 12 h (AM/PM) or 24 h clock.
