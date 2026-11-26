@@ -51,7 +51,7 @@ func TestAlbumLive(t *testing.T) {
 	for _, tr := range tracks[:3] {
 		t.Logf("%s | %s | %s | %s | %s", tr.ID, tr.Title, tr.Artist(), tr.Album, tr.Duration)
 	}
-	if tr := tracks[0]; tr.Title != "Hidden Place" || tr.Artist() == "" || tr.Album != "Vespertine" || tr.Duration == "" || tr.Thumb == "" {
+	if tr := tracks[0]; tr.Title != "Hidden Place" || tr.Artist() == "" || tr.Album != "Vespertine" || tr.Duration == "" || tr.Thumb == "" || tr.Track != 1 || tr.TrackTotal != len(tracks) || tr.Year != al.Year {
 		t.Errorf("first track: %+v", tr)
 	}
 }

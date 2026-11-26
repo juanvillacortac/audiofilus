@@ -934,7 +934,10 @@ func (a *App) ytDownloadAll(tracks []ytm.Track) {
 	}
 	var todo []ytm.Track
 	for _, t := range tracks {
-		_, own := a.ownSong(t)
+		// Ya la tienes si está en este mismo álbum: la de un recopilatorio
+		// no cuenta, que al álbum le faltaría.
+		s, own := a.ownSong(t)
+		own = own && strings.EqualFold(s.Album, t.Album)
 		queued := false
 		for _, j := range a.yt.jobs {
 			if !j.listen && j.track.ID == t.ID && (j.active() || j.state == jobDone) {

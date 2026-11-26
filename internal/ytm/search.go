@@ -23,6 +23,11 @@ type Track struct {
 	Album    string   `json:"album"`
 	Duration string   `json:"duration"` // "3:59"
 	Thumb    string   `json:"thumb"`    // la miniatura más grande (cuadrada)
+	// Track, TrackTotal y Year, solo si viene de un álbum (AlbumTracks): se
+	// escriben al descargarla.
+	Track      int    `json:"track,omitempty"`
+	TrackTotal int    `json:"track_total,omitempty"`
+	Year       string `json:"year,omitempty"`
 }
 
 // Artist son los artistas juntos ("A, B").
@@ -162,6 +167,9 @@ func AlbumTracks(ctx context.Context, al Album) ([]Track, error) {
 			out = append(out, t)
 		}
 	})
+	for i := range out {
+		out[i].Track, out[i].TrackTotal, out[i].Year = i+1, len(out), al.Year
+	}
 	return out, nil
 }
 

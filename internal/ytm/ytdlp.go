@@ -10,6 +10,7 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -17,6 +18,7 @@ import (
 	"regexp"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -288,6 +290,20 @@ func prune(dir string, keep int) {
 // ffmpeg (o solo ffmpeg, desde la caché: fromCache). Sin ffmpeg no se puede:
 // se guarda el .m4a.
 func Download(ctx context.Context, bin string, t Track, musicDir, cacheDir string, mp3 bool, progress func(Progress)) (string, error) {
+	path, err := download(ctx, bin, t, musicDir, cacheDir, mp3, progress)
+	if err == nil && (t.Track > 0 || t.Year != "") {
+		// De un álbum (AlbumTracks): su número y el año, para que en la
+		// biblioteca salgan en orden. Sin ellos, por título.
+		year, _ := strconv.Atoi(t.Year)
+		if werr := tagwrite.Write(path, tagwrite.Tags{Track: t.Track, TrackTotal: t.TrackTotal, Year: year}); werr != nil {
+			log.Printf("youtube music: track number for %s: %v", path, werr)
+		}
+	}
+	return path, err
+}
+
+// download es Download sin el número de pista.
+func download(ctx context.Context, bin string, t Track, musicDir, cacheDir string, mp3 bool, progress func(Progress)) (string, error) {
 	lib := LoadLibrary(musicDir)
 	if rel, ok := lib[t.ID]; ok {
 		if _, err := os.Stat(filepath.Join(musicDir, rel)); err == nil {
