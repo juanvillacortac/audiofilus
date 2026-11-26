@@ -1,6 +1,6 @@
-# The macOS app, universal (Apple Silicon and Intel in one), as a DMG
-# (tools/macos/dmg.sh), ad-hoc signed. Run by hand from the Actions tab, on pull requests, and from
-# release.yml.
+# The macOS app, universal (Apple Silicon and Intel in one), as a DMG and as
+# the zip that Settings → Update installs (tools/macos/dmg.sh), ad-hoc signed.
+# Run by hand from the Actions tab, on pull requests, and from release.yml.
 name: macOS
 
 on:
@@ -62,8 +62,13 @@ jobs:
           $mnt/Audiofilus.app/Contents/MacOS/audiofilus version
           $mnt/Audiofilus.app/Contents/MacOS/audiofilus bench "$PWD/internal/decode/testdata/tone.m4a"
           hdiutil detach $mnt
+      - name: The updater's zip, unpacked file by file like internal/update, is still signed and starts
+        run: |
+          unzip -q out/Audiofilus-macos.zip -d /tmp/afzip
+          codesign --verify --deep --strict /tmp/afzip/Audiofilus.app
+          /tmp/afzip/Audiofilus.app/Contents/MacOS/audiofilus version
       - uses: actions/upload-artifact@v4
         with:
           name: audiofilus-macos
-          path: out/*.dmg
+          path: out/*
           retention-days: 14

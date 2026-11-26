@@ -211,6 +211,68 @@ func TestInstallLinux(t *testing.T) {
 	}
 }
 
+// macApp arma una Audiofilus.app vieja, sola en su carpeta (como en
+// /Applications), con una lib que la versión nueva ya no trae.
+func macApp(t *testing.T) (apps, exe string) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("macOS only")
+	}
+	apps = t.TempDir()
+	contents := filepath.Join(apps, "Audiofilus.app", "Contents")
+	os.MkdirAll(filepath.Join(contents, "MacOS"), 0o755)
+	os.MkdirAll(filepath.Join(contents, "Frameworks"), 0o755)
+	exe = filepath.Join(contents, "MacOS", "audiofilus")
+	os.WriteFile(exe, []byte("old binary"), 0o755)
+	os.WriteFile(filepath.Join(contents, "Frameworks", "libold.dylib"), []byte("old lib"), 0o644)
+	if k := Detect(exe); k != MacOS {
+		t.Fatalf("Detect = %v, want MacOS", k)
+	}
+	return apps, exe
+}
+
+// La actualización de la app de macOS la cambia entera: entra lo nuevo, se
+// va lo que ya no viene y junto a ella no queda nada.
+func TestInstallMacOS(t *testing.T) {
+	apps, exe := macApp(t)
+	fakeGitHub(t, "Audiofilus-macos.zip", zipOf(t, map[string]string{
+		"Audiofilus.app/Contents/MacOS/audiofilus":        "#!/bin/sh\necho audiofilus v9.9.9\n",
+		"Audiofilus.app/Contents/Frameworks/libnew.dylib": "new lib",
+	}), "")
+	rel, _ := Latest(context.Background())
+	if err := Install(context.Background(), rel, exe, nil); err != nil {
+		t.Fatal(err)
+	}
+	frameworks := filepath.Join(apps, "Audiofilus.app", "Contents", "Frameworks")
+	if b, _ := os.ReadFile(filepath.Join(frameworks, "libnew.dylib")); string(b) != "new lib" {
+		t.Errorf("new lib = %q", b)
+	}
+	if _, err := os.Stat(filepath.Join(frameworks, "libold.dylib")); err == nil {
+		t.Error("a lib the new version doesn't ship is still in the app")
+	}
+	if left, _ := os.ReadDir(apps); len(left) != 1 {
+		t.Errorf("next to the app: %v", left)
+	}
+}
+
+// Si la versión nueva no arranca, la app vieja queda como estaba y no se deja
+// nada junto a ella.
+func TestInstallMacOSBroken(t *testing.T) {
+	apps, exe := macApp(t)
+	fakeGitHub(t, "Audiofilus-macos.zip", zipOf(t, map[string]string{
+		"Audiofilus.app/Contents/MacOS/audiofilus": "#!/bin/sh\nexit 1\n",
+	}), "")
+	rel, _ := Latest(context.Background())
+	if err := Install(context.Background(), rel, exe, nil); err == nil {
+		t.Fatal("installed a version that doesn't start")
+	}
+	if b, _ := os.ReadFile(exe); string(b) != "old binary" {
+		t.Errorf("binary = %q", b)
+	}
+	if left, _ := os.ReadDir(apps); len(left) != 1 {
+		t.Errorf("next to the app: %v", left)
+	}
+}
+
 // Detect reconoce la app de muOS y una copia suelta (sin actualizaciones).
 func TestDetect(t *testing.T) {
 	dir := t.TempDir()

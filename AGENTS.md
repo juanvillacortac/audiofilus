@@ -65,7 +65,7 @@ GOOS=windows go vet ./...
 | `internal/cast/`, `internal/dlna/`, `internal/mpd/`, `internal/mdns/`, `internal/fetch/` | The local network: sending to Chromecast, DLNA and MPD ([docs/cast.md](docs/cast.md)), the DLNA server and renderer ([docs/dlna.md](docs/dlna.md)), the MPD server and client ([docs/mpd.md](docs/mpd.md)), mDNS browse and announce, and the downloader for songs that arrive as URLs |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
 | `internal/tray/` | The desktop tray icon: StatusNotifierItem over D-Bus on Linux, `Shell_NotifyIcon` on Windows; on macOS the menu bar icon, plus the media keys and Control Center (`MPRemoteCommandCenter`, `MPNowPlayingInfoCenter`) and files opened from the Finder |
-| `internal/update/`, `internal/version/` | Self-update from the GitHub releases (detects PortMaster, muOS, Linux or Windows from the files next to the binary, checks SHA256SUMS, swaps files atomically) and the version baked in at build time (`-X .../version.Version`, `dev` otherwise) |
+| `internal/update/`, `internal/version/` | Self-update from the GitHub releases (detects PortMaster, muOS, Linux, Windows or the macOS app from where the binary is, checks SHA256SUMS, swaps files atomically; the macOS app is swapped whole) and the version baked in at build time (`-X .../version.Version`, `dev` otherwise) |
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |

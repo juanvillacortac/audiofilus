@@ -3,11 +3,13 @@ package ui
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -198,7 +200,12 @@ func (a *App) finishUpdate(err error) {
 	if err != nil {
 		log.Printf("update install: %v", err)
 		u.err = err.Error()
-		a.flash(T("upd_failed", err))
+		msg := T("upd_failed", err)
+		if u.kind == update.MacOS && errors.Is(err, syscall.EROFS) {
+			// Abierta desde el DMG o trasladada por Gatekeeper (App Translocation).
+			msg = T("upd_move")
+		}
+		a.flash(msg)
 		return
 	}
 	if a.mobile() {

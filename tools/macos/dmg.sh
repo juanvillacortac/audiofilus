@@ -2,7 +2,8 @@
 # Builds Audiofilus-macos.dmg on a Mac (either kind): a universal
 # Audiofilus.app, for Apple Silicon and Intel in one, with the C decoders in
 # Contents/Frameworks and their licenses in Contents/Resources/licenses,
-# ad-hoc signed, next to an Applications link.
+# ad-hoc signed, next to an Applications link. Also Audiofilus-macos.zip, the
+# same app for Settings → Update (internal/update), which unpacks it in Go.
 #   tools/macos/libs.sh build/macos   # the decoders, with zig, once
 #   tools/macos/dmg.sh <out dir>
 # Every Mach-O file has both parts (lipo), so each Mac runs its own, without
@@ -87,6 +88,11 @@ plutil -lint "$app/Contents/Info.plist" >/dev/null
 
 # Ad-hoc: no Apple account, but Apple Silicon won't run unsigned code.
 codesign --force --deep --sign - "$app"
+
+# Without resource forks or extended attributes: in the zip they'd be ._ files,
+# which the updater would write into the app, breaking its signature.
+ditto -c -k --norsrc --noextattr --keepParent "$app" "$out/Audiofilus-macos.zip"
+echo "$out/Audiofilus-macos.zip"
 
 ln -s /Applications "$work/dmg/Applications"
 dmg=$out/Audiofilus-macos.dmg

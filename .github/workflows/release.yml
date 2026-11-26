@@ -1,7 +1,7 @@
 # When a vX.Y.Z tag is pushed, builds with the Dockerfile and publishes a
 # release with the PortMaster port, the Linux and Windows binaries, the macOS
-# DMG, the unsigned iOS app and the Android app (built by macos.yml, ios.yml
-# and android.yml, at the same time).
+# DMG and updater zip, the unsigned iOS app and the Android app (built by
+# macos.yml, ios.yml and android.yml, at the same time).
 name: Release
 on:
   push:
@@ -88,7 +88,7 @@ jobs:
         with:
           name: audiofilus-android
           path: out
-      - name: The macOS DMG
+      - name: The macOS DMG and zip
         uses: actions/download-artifact@v4
         with:
           pattern: audiofilus-macos*

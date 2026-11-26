@@ -1,9 +1,10 @@
 // Package update busca versiones nuevas de audiofilus en las releases de
 // GitHub y las instala encima de la que corre: baja el paquete que le toca a
-// esta instalación (el port de PortMaster, la app de muOS, el tar.gz de Linux
-// o el zip de Windows), comprueba su SHA256 contra el SHA256SUMS de la
-// release y cambia los archivos uno a uno (cada uno se escribe aparte y se
-// renombra encima, así un corte no deja nada a medias). La configuración
+// esta instalación (el port de PortMaster, la app de muOS, el tar.gz de Linux,
+// el zip de Windows o el de la app de macOS), comprueba su SHA256 contra el
+// SHA256SUMS de la release y cambia los archivos uno a uno (cada uno se
+// escribe aparte y se renombra encima, así un corte no deja nada a medias);
+// la app de macOS se cambia entera (placeApp). La configuración
 // (audiofilus.json, data/) no viene en los paquetes y no se toca.
 package update
 
@@ -22,6 +23,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -125,11 +127,13 @@ const (
 	MuOS                   // la app de muOS: audiofilus.muxapp
 	Linux                  // el escritorio Linux: audiofilus-linux-<arch>.tar.gz
 	Windows                // audiofilus-windows-amd64.zip
+	MacOS                  // Audiofilus.app: Audiofilus-macos.zip (Apple Silicon e Intel en uno)
 )
 
 // Detect mira la carpeta del ejecutable para saber cómo se instaló: la app de
-// muOS tiene mux_launch.sh, el port de PortMaster port.json; si no, el
-// escritorio, si el ejecutable se llama como en su paquete.
+// muOS tiene mux_launch.sh, el port de PortMaster port.json, la de macOS es
+// Audiofilus.app/Contents/MacOS; si no, el escritorio, si el ejecutable se
+// llama como en su paquete.
 func Detect(exe string) Kind {
 	dir, base := filepath.Dir(exe), filepath.Base(exe)
 	exists := func(name string) bool { _, err := os.Stat(filepath.Join(dir, name)); return err == nil }
@@ -138,6 +142,8 @@ func Detect(exe string) Kind {
 		return MuOS
 	case exists("port.json"):
 		return PortMaster
+	case runtime.GOOS == "darwin" && strings.HasSuffix(filepath.ToSlash(dir), ".app/Contents/MacOS"):
+		return MacOS
 	case runtime.GOOS == "windows" && strings.EqualFold(base, "audiofilus.exe"):
 		return Windows
 	case runtime.GOOS == "linux" && base == "audiofilus":
@@ -157,17 +163,22 @@ func Asset(k Kind) string {
 		return "audiofilus-linux-" + runtime.GOARCH + ".tar.gz"
 	case Windows:
 		return "audiofilus-windows-amd64.zip"
+	case MacOS:
+		return "Audiofilus-macos.zip"
 	}
 	return ""
 }
 
-// prefix es la carpeta del paquete cuyo contenido va en la del ejecutable.
+// prefix es la carpeta del paquete cuyo contenido va en la del ejecutable
+// (en macOS, en la app).
 func prefix(k Kind) string {
 	switch k {
 	case PortMaster, MuOS:
 		return "audiofilus/"
 	case Linux:
 		return "audiofilus-linux-" + runtime.GOARCH + "/"
+	case MacOS:
+		return "Audiofilus.app/"
 	}
 	return ""
 }
@@ -175,7 +186,8 @@ func prefix(k Kind) string {
 // Progress recibe cuánto se lleva bajado del paquete (total puede ser -1).
 type Progress func(done, total int64)
 
-// Install baja e instala rel en la carpeta del ejecutable exe.
+// Install baja e instala rel en la carpeta del ejecutable exe (en macOS, la
+// app entera).
 func Install(ctx context.Context, rel *Release, exe string, progress Progress) error {
 	k := Detect(exe)
 	name := Asset(k)
@@ -190,7 +202,31 @@ func Install(ctx context.Context, rel *Release, exe string, progress Progress) e
 	if err != nil {
 		return err
 	}
+	if k == MacOS {
+		return placeApp(ctx, filepath.Dir(filepath.Dir(filepath.Dir(exe))), files)
+	}
 	return place(k, filepath.Dir(exe), files)
+}
+
+// placeApp cambia la app de macOS entera: archivo por archivo rompería el
+// sello de su firma (_CodeSignature) y dejaría dentro lo que la versión nueva
+// ya no trae. La nueva se arma junto a la vieja, oculta y en el mismo disco
+// (si no, no se pueden intercambiar), tiene que arrancar (en Apple Silicon el
+// sistema mata un binario con la firma rota) y las dos se intercambian de una
+// vez.
+func placeApp(ctx context.Context, app string, files []file) error {
+	tmp := filepath.Join(filepath.Dir(app), "."+filepath.Base(app)+".new")
+	os.RemoveAll(tmp)       // lo que haya dejado una actualización cortada
+	defer os.RemoveAll(tmp) // tras el intercambio, es la app vieja
+	if err := place(MacOS, tmp, files); err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+	if out, err := exec.CommandContext(ctx, filepath.Join(tmp, "Contents", "MacOS", "audiofilus"), "version").CombinedOutput(); err != nil {
+		return fmt.Errorf("the new version doesn't start: %v: %s", err, bytes.TrimSpace(out))
+	}
+	return swap(tmp, app)
 }
 
 // APK es el paquete de la app de Android (la de GitHub: la de Google Play
