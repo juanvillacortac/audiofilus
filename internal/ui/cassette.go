@@ -878,38 +878,59 @@ type tapeLayers struct {
 	dot         *ebiten.Image
 }
 
-// newTapeLayers pinta las capas de un casete de w píxeles de ancho. Los
-// desenfoques la hacen la parte lenta: solo pasa cuando cambian el tamaño o
-// el aspecto.
+// tapePainted son las capas de un casete pintadas en la CPU, aún sin subir
+// a la GPU (tapeLayers.upload).
+type tapePainted struct {
+	shell, window, over, glow, spots, mask, reel, dot *tapeCanvas
+}
+
+// newTapeLayers pinta las capas de un casete de w píxeles de ancho y las
+// sube. Los desenfoques son la parte lenta (unos 15 ms en el PC, más de
+// 100 en una H700): cuando solo cambia el aspecto se pintan en segundo
+// plano (tapeLayersFor).
 func newTapeLayers(key string, w int, pal tapePalette, paper *color.RGBA, glow bool) *tapeLayers {
+	L, cpu := paintTapeLayers(key, w, pal, paper, glow)
+	L.upload(cpu)
+	return L
+}
+
+// paintTapeLayers pinta las capas en la CPU; no toca la GPU, así que puede
+// ir en otra goroutine.
+func paintTapeLayers(key string, w int, pal tapePalette, paper *color.RGBA, glow bool) (*tapeLayers, *tapePainted) {
 	p := int(math.Ceil(float64(w)*0.08)) + 2
 	bodyH := int(math.Round(tapeH * float64(w)))
 	L := &tapeLayers{key: key, m: tapeMap{float32(p), float32(w)}, cw: w + 2*p, ch: bodyH + 2*p,
 		floor: p + bodyH, refl: int(math.Round(tapeFloor * float64(w))), pal: pal, dark: tapeDarkPaper(paper)}
 	t := tapeInks{L.m, pal}
-	shell, window, over := newTapeCanvas(L.cw, L.ch), newTapeCanvas(L.cw, L.ch), newTapeCanvas(L.cw, L.ch)
+	c := &tapePainted{shell: newTapeCanvas(L.cw, L.ch), window: newTapeCanvas(L.cw, L.ch), over: newTapeCanvas(L.cw, L.ch)}
 	light, leaks := newTapeCanvas(L.cw, L.ch), newTapeCanvas(L.cw, L.ch)
-	paintShell(shell, light, leaks, t, paper)
-	paintWindow(window, light, t)
-	paintOver(over, t)
-	L.shell, L.window, L.over = shell.image(), window.image(), over.image()
+	paintShell(c.shell, light, leaks, t, paper)
+	paintWindow(c.window, light, t)
+	paintOver(c.over, t)
 	if glow {
-		g, s := newTapeCanvas(L.cw, L.ch), newTapeCanvas(L.cw, L.ch)
+		c.glow, c.spots = newTapeCanvas(L.cw, L.ch), newTapeCanvas(L.cw, L.ch)
 		for _, b := range []struct {
 			r int
 			k float32
 		}{{max(1, int(math.Round(float64(w)*0.008))), 0.9}, {max(2, int(math.Round(float64(w)*0.02))), 0.55}} {
-			light.bloom(g, b.r, b.k*pal.glow)
-			leaks.bloom(s, b.r, b.k*pal.glow)
+			light.bloom(c.glow, b.r, b.k*pal.glow)
+			leaks.bloom(c.spots, b.r, b.k*pal.glow)
 		}
-		L.glow, L.spots = g.image(), s.image()
 	}
-	mask := newTapeCanvas(L.cw, L.ch)
-	mask.paint(tapeLabelForm(L.m), flat(tapeWhite, 1))
-	L.mask = mask.image()
-	L.reel = paintReel(L.m.d(tapeHubR), L.m.d(tapeHoleR)).image()
-	L.dot = paintDot().image()
-	return L
+	c.mask = newTapeCanvas(L.cw, L.ch)
+	c.mask.paint(tapeLabelForm(L.m), flat(tapeWhite, 1))
+	c.reel = paintReel(L.m.d(tapeHubR), L.m.d(tapeHoleR))
+	c.dot = paintDot()
+	return L, c
+}
+
+// upload sube a la GPU las capas pintadas (en el hilo de la interfaz).
+func (L *tapeLayers) upload(c *tapePainted) {
+	L.shell, L.window, L.over = c.shell.image(), c.window.image(), c.over.image()
+	if c.glow != nil {
+		L.glow, L.spots = c.glow.image(), c.spots.image()
+	}
+	L.mask, L.reel, L.dot = c.mask.image(), c.reel.image(), c.dot.image()
 }
 
 // free devuelve la memoria de las capas.
@@ -1171,8 +1192,12 @@ func writeLabel(dst *ebiten.Image, L *tapeLayers, title, artist string, bold boo
 
 // tapeState es lo que el casete guarda de un frame a otro. Solo lo toca el
 // hilo de la interfaz.
-var tapeState struct {
+var tapeState tapeStateT
+
+type tapeStateT struct {
 	layers   *tapeLayers
+	painting bool               // unas capas pintándose en segundo plano
+	painted  chan tapePaintDone // y aquí llegan
 	textKey  string
 	text     *ebiten.Image // la etiqueta escrita a mano
 	coverKey string
@@ -1180,6 +1205,21 @@ var tapeState struct {
 	frame    *ebiten.Image // el casete montado en este frame
 	refl     *ebiten.Image // su parte de abajo boca abajo, para el reflejo
 	dust     *tapeDust
+}
+
+// tapePaintDone son unas capas pintadas en segundo plano.
+type tapePaintDone struct {
+	L   *tapeLayers
+	cpu *tapePainted
+}
+
+// swap pone L como las capas del casete y libera las de antes.
+func (st *tapeStateT) swap(L *tapeLayers) {
+	if st.layers != nil {
+		st.layers.free()
+	}
+	st.layers = L
+	st.textKey, st.coverKey = "", ""
 }
 
 // tapeImage mantiene img a w×h, y la vuelve a crear si cambió el tamaño.
@@ -1226,13 +1266,39 @@ func (a *App) tapeLayersFor(w int, cover *[4]color.RGBA) *tapeLayers {
 		key += fmt.Sprint(a.theme.Accent, black) // sigue al disco cuando Color es "album"
 	}
 	st := &tapeState
-	if st.layers == nil || st.layers.key != key {
-		if st.layers != nil {
-			st.layers.free()
+	// Lo que se pintó en segundo plano: se sube y reemplaza a las de antes.
+	select {
+	case r := <-st.painted:
+		st.painting = false
+		if st.layers != nil && r.L.cw == st.layers.cw {
+			r.L.upload(r.cpu)
+			st.swap(r.L)
 		}
-		pal, paper := tapeLook(cfg.Skin, cfg.Paper, cover, a.theme.Accent, black)
-		st.layers = newTapeLayers(key, w, pal, paper, cfg.Glow != "off")
-		st.textKey, st.coverKey = "", ""
+	default:
+	}
+	if st.layers != nil && st.layers.key == key {
+		return st.layers
+	}
+	pal, paper := tapeLook(cfg.Skin, cfg.Paper, cover, a.theme.Accent, black)
+	glow := cfg.Glow != "off"
+	if st.layers == nil || st.layers.m.w != float32(w) {
+		// La primera vez o con otro tamaño, ya: no hay nada que enseñar.
+		st.swap(newTapeLayers(key, w, pal, paper, glow))
+		return st.layers
+	}
+	// Solo cambian los colores (el aspecto sigue al disco): se pintan en
+	// segundo plano y, mientras, sigue el casete de antes; si cambian otra
+	// vez entretanto, al terminar se pinta lo último.
+	if !st.painting {
+		st.painting = true
+		if st.painted == nil {
+			st.painted = make(chan tapePaintDone, 1)
+		}
+		go func() {
+			L, cpu := paintTapeLayers(key, w, pal, paper, glow)
+			st.painted <- tapePaintDone{L, cpu}
+			ebiten.ScheduleFrame()
+		}()
 	}
 	return st.layers
 }

@@ -29,12 +29,14 @@ The port lives in `/userdata/roms/ports/audiofilus` (installed through PortMaste
 ./build.sh                                   # dist/audiofilus-arm64
 D=/userdata/roms/ports/audiofilus
 kcp dist/audiofilus-arm64 root@knulli.local:$D/audiofilus.aarch64.new
-k "cd $D && mv -f audiofilus.aarch64.new audiofilus.aarch64 && chmod +x audiofilus.aarch64 && rm -f audiofilus-ui.aarch64"
+k "cd $D && ./audiofilus.aarch64 quit; sleep 1; for p in \$(pgrep audiofilus); do kill \$p; done; sleep 2; \
+   rm -f audiofilus.aarch64 && mv audiofilus.aarch64.new audiofilus.aarch64 && chmod +x audiofilus.aarch64 && rm -f audiofilus-ui.aarch64 && sync; \
+   md5sum audiofilus.aarch64; ./audiofilus.aarch64 version"
 ```
 
-Check the upload with `md5sum` on both sides. If the service is running, `./audiofilus quit` makes the next launch use the new binary.
+Check the upload with `md5sum` on both sides, and again after the swap.
 
-Upload as `.new` and then `mv`: this does not corrupt a running service. The configuration (`audiofilus.json`, `data/`) lives in that same folder.
+Close **both** the service and the interface first (the `quit` only stops the service; the interface keeps the old binary open), and always end with `sync`. On 2026-11-25 a `mv` over the binary while the interface was open looked fine (`version` said the new one), but the author then restarted the console and the old binary came back, with the new one still as `.new`: the rename hadn't reached the SD card. Tell the author they need to open Audiofilus again afterwards. The configuration (`audiofilus.json`, `data/`) lives in that same folder.
 
 ## Testing
 
