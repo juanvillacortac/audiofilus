@@ -15,7 +15,7 @@ FDK_VERSION=2.0.3
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-curl -sSfL "https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v$FDK_VERSION.tar.gz" | tar xz -C "$work"
+curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v$FDK_VERSION.tar.gz" | tar xz -C "$work"
 src="$work/fdk-aac-$FDK_VERSION"
 bin="$work/bin"
 mkdir -p "$bin"

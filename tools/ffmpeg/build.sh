@@ -33,8 +33,19 @@ FORMATS="--enable-protocol=file --enable-demuxer=asf
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-curl -sSfL "https://ffmpeg.org/releases/ffmpeg-$FFMPEG_VERSION.tar.xz" | tar xJ -C "$work"
+# Se baja a un archivo y no por tubería, para que los reintentos de curl no
+# mezclen datos. Si ffmpeg.org no responde (pasó en CI), se usa el tag de
+# GitHub: el mismo código, en .tar.gz y con la carpeta FFmpeg-n<versión>.
 src="$work/ffmpeg-$FFMPEG_VERSION"
+get="curl -sSfL --retry 5 --retry-all-errors --retry-delay 5"
+if $get "https://ffmpeg.org/releases/ffmpeg-$FFMPEG_VERSION.tar.xz" -o "$work/ffmpeg.tar.xz"; then
+  tar xJf "$work/ffmpeg.tar.xz" -C "$work"
+else
+  echo "ffmpeg.org failed, using the GitHub mirror" >&2
+  $get "https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n$FFMPEG_VERSION.tar.gz" -o "$work/ffmpeg.tar.gz"
+  tar xzf "$work/ffmpeg.tar.gz" -C "$work"
+  mv "$work/FFmpeg-n$FFMPEG_VERSION" "$src"
+fi
 
 # zigTools <target de zig> deja en $bin el cc, ar, ranlib y nm con zig.
 zigTools() {

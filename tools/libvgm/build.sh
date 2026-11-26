@@ -24,8 +24,8 @@ ZLIB_VERSION=1.3.1
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-curl -sSfL "https://github.com/ValleyBell/libvgm/archive/$VGM_COMMIT.tar.gz" | tar xz -C "$work"
-curl -sSfL "https://github.com/madler/zlib/releases/download/v$ZLIB_VERSION/zlib-$ZLIB_VERSION.tar.gz" | tar xz -C "$work"
+curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/ValleyBell/libvgm/archive/$VGM_COMMIT.tar.gz" | tar xz -C "$work"
+curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/madler/zlib/releases/download/v$ZLIB_VERSION/zlib-$ZLIB_VERSION.tar.gz" | tar xz -C "$work"
 src="$work/libvgm-$VGM_COMMIT"
 
 for arch in aarch64 x86_64; do

@@ -21,7 +21,7 @@ repo=https://repo.msys2.org/mingw/mingw64
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-curl -sSfL "$repo/mingw64.db" -o "$work/db.tar.zst"
+curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "$repo/mingw64.db" -o "$work/db.tar.zst"
 mkdir "$work/db"
 tar --zstd -xf "$work/db.tar.zst" -C "$work/db"
 
@@ -67,7 +67,7 @@ EOF
 # juntos en root.
 mkdir "$work/root" "$work/pkg"
 while read -r name file version; do
-  curl -sSfL "$repo/$file" -o "$work/pkg.tar.zst"
+  curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "$repo/$file" -o "$work/pkg.tar.zst"
   mkdir "$work/pkg/$name"
   tar --zstd -xf "$work/pkg.tar.zst" -C "$work/pkg/$name" 2>/dev/null
   cp -r "$work/pkg/$name/." "$work/root/"
@@ -114,7 +114,7 @@ mkdir -p "$out/licenses"
     elif [ "$name" = mingw-w64-x86_64-libxmp ]; then
       # Su paquete no trae la licencia (MIT): la de su código, de esa versión.
       mkdir -p "$out/licenses/libxmp"
-      curl -sSfL "https://raw.githubusercontent.com/libxmp/libxmp/libxmp-${version%-*}/docs/COPYING" -o "$out/licenses/libxmp/COPYING"
+      curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://raw.githubusercontent.com/libxmp/libxmp/libxmp-${version%-*}/docs/COPYING" -o "$out/licenses/libxmp/COPYING"
     else
       echo "no license text for $name" >&2
       exit 1
