@@ -3,17 +3,21 @@
 # y HLS; ver internal/decode/aac.go) para las portátiles y el PC, para llevarla
 # dentro del port de PortMaster y de la app de muOS: Knulli la trae, muOS y
 # otros no, y sin ella los M4A y M4B no suenan.
-#   tools/fdk-aac/build.sh <carpeta de salida>
-# deja <salida>/libs.aarch64/libfdk-aac.so.2, <salida>/libs.x86_64/libfdk-aac.so.2,
-# la licencia y de dónde sale el código. build.sh los mete en los paquetes si
-# están en build/fdk-aac.
+#   tools/fdk-aac/build.sh <carpeta de salida> [linux|macos]
+# linux (por defecto) deja <salida>/libs.aarch64/libfdk-aac.so.2 y
+# <salida>/libs.x86_64/libfdk-aac.so.2; macos, en un Mac,
+# <salida>/macos/libfdk-aac.2.dylib para su arquitectura (Homebrew ya no la
+# trae). Además, la licencia y de dónde sale el código. build.sh los mete en
+# los paquetes si están en build/fdk-aac; tools/macos/dmg.sh, en la app.
 #
 # Como tools/libgme/build.sh: con zig (mise install zig) contra una glibc
 # vieja (2.17), con libc++ dentro: solo depende de la libc. Necesita zig (en
-# el PATH, o ZIG), cmake, curl y tar.
+# el PATH, o ZIG), cmake, curl y tar; para macos, el clang de Xcode en vez de zig.
 set -eu
-mkdir -p "${1:?usage: tools/fdk-aac/build.sh <output dir>}"
+mkdir -p "${1:?usage: tools/fdk-aac/build.sh <output dir> [linux|macos]}"
 out=$(cd "$1" && pwd)
+target=${2:-linux}
+case $target in linux | macos) ;; *) echo "unknown target $target (linux or macos)" >&2; exit 2 ;; esac
 ZIG=${ZIG:-zig}
 real=$("$ZIG" env | sed -n 's/.*zig_exe"\{0,1\} *[:=] *"\([^"]*\)".*/\1/p' | head -1)
 [ -n "$real" ] && ZIG=$real
@@ -24,7 +28,20 @@ trap 'rm -rf "$work"' EXIT
 curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v$FDK_VERSION.tar.gz" | tar xz -C "$work"
 src="$work/fdk-aac-$FDK_VERSION"
 
-for arch in aarch64 x86_64; do
+# En macOS, con el clang del sistema para la arquitectura del Mac: una
+# .dylib con todo dentro, que solo depende de las bibliotecas del sistema.
+if [ "$target" = macos ]; then
+  b="$work/build-macos"
+  cmake -S "$src" -B "$b" -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 -DBUILD_SHARED_LIBS=OFF -DBUILD_PROGRAMS=OFF >/dev/null 2>&1
+  cmake --build "$b" -j"$(sysctl -n hw.ncpu)" >"$work/build-macos.log" 2>&1 || { grep -B2 -A4 "error:" "$work/build-macos.log" | head -40 >&2; exit 1; }
+  mkdir -p "$out/macos"
+  c++ -dynamiclib -O2 -mmacosx-version-min=12.0 -install_name @rpath/libfdk-aac.2.dylib \
+    -o "$out/macos/libfdk-aac.2.dylib" -Wl,-force_load,"$(find "$b" -name 'libfdk-aac*.a' | head -1)"
+  echo "$out/macos/libfdk-aac.2.dylib"
+fi
+
+[ "$target" = linux ] && for arch in aarch64 x86_64; do
   target="$arch-linux-gnu.2.17"
   bin="$work/bin-$arch"
   mkdir -p "$bin"

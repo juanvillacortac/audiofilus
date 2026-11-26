@@ -13,7 +13,11 @@ import (
 // (si está), además de la que haya junto al binario.
 func init() {
 	arch := map[string]string{"arm64": "aarch64", "amd64": "x86_64"}[runtime.GOARCH]
-	lib, err := filepath.Abs(filepath.Join("..", "..", "build", "ffmpeg", "libs."+arch, "libavshim.so"))
+	rel := filepath.Join("libs."+arch, "libavshim.so")
+	if runtime.GOOS == "darwin" {
+		rel = filepath.Join("macos", "libavshim.dylib") // tools/ffmpeg/build.sh ... macos
+	}
+	lib, err := filepath.Abs(filepath.Join("..", "..", "build", "ffmpeg", rel))
 	if _, serr := os.Stat(lib); err == nil && serr == nil {
 		avLibNames = append([]string{lib}, avLibNames...)
 	}

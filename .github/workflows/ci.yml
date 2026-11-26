@@ -65,7 +65,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: The C decoders from Homebrew, so the decoder tests use them
-        run: brew install mpg123 opusfile libxmp game-music-emu fdk-aac
+        run: brew install mpg123 opusfile libxmp game-music-emu
       - run: go vet ./...
       - run: go test ./...
       - name: Build without cgo, like the release

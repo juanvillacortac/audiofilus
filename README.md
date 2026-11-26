@@ -260,7 +260,7 @@ On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere a
 
 ### macOS
 
-Grab `Audiofilus-macos-arm64.dmg` (Apple Silicon) or `Audiofilus-macos-amd64.dmg` (Intel; macOS 12 or later), open it and drag Audiofilus to Applications. The app isn't notarized, so the first time right-click it and choose Open, or run `xattr -dr com.apple.quarantine /Applications/Audiofilus.app`. The decoders come inside the app (mpg123, opusfile, libxmp, libgme and fdk-aac from Homebrew); WMA and VGM don't play on macOS yet. Settings and data live in `~/Library/Application Support/Audiofilus`.
+Grab `Audiofilus-macos-arm64.dmg` (Apple Silicon) or `Audiofilus-macos-amd64.dmg` (Intel; macOS 12 or later), open it and drag Audiofilus to Applications. The app isn't notarized, so the first time right-click it and choose Open, or run `xattr -dr com.apple.quarantine /Applications/Audiofilus.app`. Everything plays out of the box, AAC/M4A, WMA, Opus, tracker modules and console music included: the decoders come inside the app (mpg123, opusfile, libxmp and libgme from Homebrew; fdk-aac, a cut-down FFmpeg for WMA and libvgm built from source; their licenses are in `Contents/Resources/licenses`). Settings and data live in `~/Library/Application Support/Audiofilus`.
 
 The keyboard's media keys, AirPods and headphone buttons control it, and Control Center shows the song with its cover, also with the window closed. When the sound falls back to the Mac's speakers (headphones unplugged, Bluetooth gone, a DAC removed) the music pauses; picking the speakers by hand while it plays pauses it too. In the Finder, Open With → Audiofilus plays audio files, folders and `.m3u` lists; tracker modules and console music still open from the player.
 

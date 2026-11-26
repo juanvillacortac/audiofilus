@@ -14,7 +14,11 @@ import (
 // (si está), además de la que haya junto al binario o en el sistema.
 func init() {
 	arch := map[string]string{"arm64": "aarch64", "amd64": "x86_64"}[runtime.GOARCH]
-	lib, err := filepath.Abs(filepath.Join("..", "..", "build", "libvgm", "libs."+arch, "libvgmshim.so"))
+	rel := filepath.Join("libs."+arch, "libvgmshim.so")
+	if runtime.GOOS == "darwin" {
+		rel = filepath.Join("macos", "libvgmshim.dylib") // tools/libvgm/build.sh ... macos
+	}
+	lib, err := filepath.Abs(filepath.Join("..", "..", "build", "libvgm", rel))
 	if _, serr := os.Stat(lib); err == nil && serr == nil {
 		vgmLibNames = append([]string{lib}, vgmLibNames...)
 	}

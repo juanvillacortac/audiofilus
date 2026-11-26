@@ -4,7 +4,12 @@
 # they don't need Homebrew), ad-hoc signed, next to an Applications link.
 #   tools/macos/dmg.sh <out dir>
 # It builds for the Mac's own architecture, since the libraries are Homebrew's.
-# Needs: brew install mpg123 opusfile libxmp game-music-emu fdk-aac dylibbundler
+# Needs: brew install mpg123 opusfile libxmp game-music-emu dylibbundler
+# fdk-aac (M4A, AAC), libavshim (WMA) and libvgmshim (every VGM chip) aren't in
+# Homebrew: they go in when they were built first, for this Mac, with
+#   tools/fdk-aac/build.sh build/fdk-aac macos
+#   tools/ffmpeg/build.sh build/ffmpeg macos
+#   tools/libvgm/build.sh build/libvgm macos
 set -eu
 cd "$(dirname "$0")/../.."
 out=$1
@@ -22,8 +27,7 @@ CGO_ENABLED=0 go build -trimpath \
 # The decoders, under the names internal/decode looks for, and whatever they
 # link to (libogg, libopus...), with paths relative to the app.
 prefix=$(brew --prefix)
-for lib in libmpg123.0 libopusfile.0 libxmp.4 libgme.0 libfdk-aac.2; do
-  # Homebrew dropped fdk-aac (license policy): without it M4A/AAC don't play.
+for lib in libmpg123.0 libopusfile.0 libxmp.4 libgme.0; do
   if [ ! -f "$prefix/lib/$lib.dylib" ]; then
     echo "$lib missing in Homebrew: the app goes without it" >&2
     continue
@@ -34,6 +38,22 @@ for lib in libmpg123.0 libopusfile.0 libxmp.4 libgme.0 libfdk-aac.2; do
   dylibbundler -of -b -cd -x "$app/Contents/Frameworks/$lib.dylib" \
     -d "$app/Contents/Frameworks" -p @loader_path/
 done
+
+# The ones built by tools/: they only link to the system's libraries, so they
+# need no rewiring. Their licenses go in Resources/licenses, as in the Windows
+# zip (libvgm's GPL asks for it).
+lic=$app/Contents/Resources/licenses
+for d in fdk-aac:libfdk-aac.2 ffmpeg:libavshim libvgm:libvgmshim; do
+  dir=build/${d%%:*} lib=${d#*:}
+  if [ ! -f "$dir/macos/$lib.dylib" ]; then
+    echo "$dir/macos/$lib.dylib missing: the app goes without it (tools/${d%%:*}/build.sh $dir macos)" >&2
+    continue
+  fi
+  cp "$dir/macos/$lib.dylib" "$app/Contents/Frameworks/"
+  mkdir -p "$lic"
+  cp "$dir"/*-LICENSE.txt "$dir"/*-SOURCE.txt "$lic/"
+done
+[ -f build/libvgm/macos/libvgmshim.dylib ] && cp tools/libvgm/GPL-2.0.txt "$lic/"
 
 # The icon, from the iOS one (1024 px).
 set=$work/icon.iconset

@@ -25,7 +25,12 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: brew install mpg123 opusfile libxmp game-music-emu fdk-aac dylibbundler
+      - run: brew install mpg123 opusfile libxmp game-music-emu dylibbundler cmake
+      - name: The decoders Homebrew doesn't have (AAC, WMA, every VGM chip)
+        run: |
+          tools/fdk-aac/build.sh build/fdk-aac macos
+          tools/ffmpeg/build.sh build/ffmpeg macos
+          tools/libvgm/build.sh build/libvgm macos
       - name: The DMG
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}

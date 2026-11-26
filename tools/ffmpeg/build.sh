@@ -3,13 +3,14 @@
 # con lo que audiofilus no decodifica por su cuenta: WMA en su contenedor
 # ASF) con la capa en C de shim.c, como una sola biblioteca (libavshim; ver
 # internal/decode/av.go):
-#   tools/ffmpeg/build.sh <carpeta de salida> [linux|windows|android]...
+#   tools/ffmpeg/build.sh <carpeta de salida> [linux|windows|android|macos]...
 # linux (por defecto) deja <salida>/libs.aarch64/libavshim.so y
 # <salida>/libs.x86_64/libavshim.so; windows, <salida>/libavshim.dll;
-# android, <salida>/<abi>/libavshim.so (como en jniLibs). Además, la
+# android, <salida>/<abi>/libavshim.so (como en jniLibs); macos, en un Mac,
+# <salida>/macos/libavshim.dylib para su arquitectura. Además, la
 # licencia y de dónde sale el código. build.sh mete las de Linux en los
 # paquetes si están en build/ffmpeg; tools/windows/dlls.sh, la de Windows;
-# android/libs.sh, las de Android.
+# android/libs.sh, las de Android; tools/macos/dmg.sh, la de macOS.
 #
 # Es FFmpeg sin las partes GPL ni las "nonfree": LGPL-2.1 o posterior.
 # Ampliar los formatos es añadir decodificadores y demuxers a $FORMATS (y
@@ -18,9 +19,9 @@
 # Como tools/libgme/build.sh: con zig (mise install zig), en Linux contra
 # una glibc vieja (2.17): solo depende de la libc. Necesita zig (en el PATH,
 # o ZIG), make, nm, curl y tar con xz; para android, el NDK
-# (ANDROID_NDK_HOME) en vez de zig.
+# (ANDROID_NDK_HOME) en vez de zig; para macos, el clang de Xcode.
 set -eu
-mkdir -p "${1:?usage: tools/ffmpeg/build.sh <output dir> [linux|windows|android]...}"
+mkdir -p "${1:?usage: tools/ffmpeg/build.sh <output dir> [linux|windows|android|macos]...}"
 out=$(cd "$1" && pwd)
 shift
 [ $# -eq 0 ] && set -- linux
@@ -86,6 +87,18 @@ ndkTools() {
   for t in ar ranlib nm; do ln -sf "$tc/llvm-$t" "$bin/$t"; done
 }
 
+# macTools deja en $bin las herramientas del sistema: las de /usr/bin, que
+# saben dónde está el SDK de macOS (el clang de Xcode a secas, no).
+macTools() {
+  bin="$work/bin-macos"
+  mkdir -p "$bin"
+  for t in cc ar ranlib nm; do printf '#!/bin/sh\nexec /usr/bin/%s "$@"\n' "$t" >"$bin/$t"; done
+  chmod +x "$bin"/*
+}
+
+# jobs es cuántas compilaciones a la vez: nproc no existe en macOS.
+jobs=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
 # build <nombre> <arch de FFmpeg> <target-os de FFmpeg> <biblioteca>, con
 # las herramientas de $bin.
 build() {
@@ -95,6 +108,9 @@ build() {
   # PIC para la .so; en Windows no hace falta.
   pic=--enable-pic
   [ "$os" = mingw32 ] && pic=--disable-pic
+  # En macOS, para la misma versión mínima que la app (Info.plist).
+  minos=
+  [ "$os" = darwin ] && minos="--extra-cflags=-mmacosx-version-min=12.0 --extra-ldflags=-mmacosx-version-min=12.0"
   # Estáticas, sin programas, sin nada que no sea decodificar audio, y sin
   # buscar bibliotecas del sistema (--disable-autodetect): así no depende de
   # nada. Sin el ensamblador de x86 (nasm): para WMA no hace falta.
@@ -104,12 +120,15 @@ build() {
     --disable-everything --disable-programs --disable-doc --disable-autodetect \
     --disable-network --disable-avdevice --disable-avfilter --disable-swscale \
     --disable-swresample --disable-x86asm --disable-debug \
-    --enable-static --disable-shared $pic $FORMATS) >"$b/configure.log" 2>&1 ||
+    --enable-static --disable-shared $pic $minos $FORMATS) >"$b/configure.log" 2>&1 ||
     { tail -30 "$b/ffbuild/config.log" >&2; exit 1; }
   # configure encuentra sysctl() en la libc pero zig (y Android) no traen
-  # sys/sysctl.h: sin él (solo sirve para contar CPUs en BSD).
-  sed -i 's/^#define HAVE_SYSCTL 1/#define HAVE_SYSCTL 0/' "$b/config.h"
-  make -C "$b" -j"$(nproc)" >"$b/build.log" 2>&1 || { grep -B2 -A4 "error:" "$b/build.log" | head -40 >&2; exit 1; }
+  # sys/sysctl.h: sin él (solo sirve para contar CPUs en BSD). macOS sí lo
+  # trae.
+  if [ "$os" != darwin ]; then
+    sed -i 's/^#define HAVE_SYSCTL 1/#define HAVE_SYSCTL 0/' "$b/config.h"
+  fi
+  make -C "$b" -j"$jobs" >"$b/build.log" 2>&1 || { grep -B2 -A4 "error:" "$b/build.log" | head -40 >&2; exit 1; }
   # La capa en C y todo dentro de una biblioteca: el orden importa
   # (avformat usa avcodec, y los dos avutil).
   set -- -I"$src" -I"$b" "$here/shim.c" \
@@ -119,6 +138,9 @@ build() {
   # -Bsymbolic como en las .so de FFmpeg: su ensamblador de ARM apunta a sus
   # tablas sin pasar por la GOT. En Android, páginas de 16 KB (Android 15).
   android) "$bin/cc" -shared -O2 -fPIC -s -o "$lib" "$@" -Wl,-Bsymbolic -Wl,--no-undefined -Wl,-z,max-page-size=16384 -lm ;;
+  # En macOS el enlazador ya resuelve los símbolos dentro de la biblioteca
+  # (espacio de nombres de dos niveles): no hace falta -Bsymbolic.
+  darwin) "$bin/cc" -dynamiclib -O2 -mmacosx-version-min=12.0 -install_name @rpath/libavshim.dylib -o "$lib" "$@" ;;
   *) "$bin/cc" -shared -O2 -fPIC -s -o "$lib" "$@" -Wl,-Bsymbolic -Wl,--no-undefined -lm -lpthread ;;
   esac
   rm -f "${lib%.dll}.lib" "$(dirname "$lib")/shim.lib" # en Windows, la biblioteca de importación, que no sirve
@@ -151,7 +173,13 @@ for t in "$@"; do
       build "android-$abi" "$arch" android "$out/$abi/libavshim.so"
     done
     ;;
-  *) echo "unknown target $t (linux, windows or android)" >&2; exit 2 ;;
+  macos)
+    mkdir -p "$out/macos"
+    macTools
+    arch=$(uname -m)
+    build macos "$arch" darwin "$out/macos/libavshim.dylib"
+    ;;
+  *) echo "unknown target $t (linux, windows, android or macos)" >&2; exit 2 ;;
   esac
 done
 # La licencia (FFmpeg así compilado es LGPL-2.1 o posterior) y de dónde sale
