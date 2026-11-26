@@ -143,12 +143,17 @@ const (
 // tienen que aparecer antes de sonar).
 type drums struct {
 	det drumDetector
-	hit [drumCount][8]float64 // cuándo sonó en cada corchea del compás
-	any bool                  // ya se apuntó algo
+	hit [drumCount][barSlots]float64 // cuándo sonó en cada corchea del compás
+	any bool                         // ya se apuntó algo
 }
 
 // drumBands son las bandas de cada instrumento (de las 16 del medidor).
 var drumBands = [drumCount][2]int{{0, 3}, {4, 9}, {11, 16}, {11, 16}}
+
+// barSlots son las corcheas que caben en un compás: 8 en 4/4, pero una
+// sección del mapa de tempo puede ir a 6 golpes por compás (12 corcheas), y
+// con eso Audiofilus se cerraba (index out of range [8]).
+const barSlots = 16
 
 // slot es la corchea del compás (0..7 en 4/4, 0..5 en 3/4: b.bar) en la que
 // cae t, según la rejilla.
@@ -157,6 +162,7 @@ func (b *beat) slot(t float64) int {
 	if n <= 0 {
 		n = 8
 	}
+	n = min(n, barSlots)
 	s := int(math.Round((t - b.anchor) / (b.per / 2)))
 	return ((s % n) + n) % n
 }

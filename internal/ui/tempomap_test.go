@@ -362,3 +362,22 @@ func TestTempoMapCanceled(t *testing.T) {
 		t.Error("a map was saved for a song that was skipped")
 	}
 }
+
+// TestDrumsLongBar comprueba que un compás de 6 golpes (12 corcheas, una
+// sección del mapa de tempo) no se sale de la batería apuntada: con 8
+// casillas, Audiofilus se cerraba.
+func TestDrumsLongBar(t *testing.T) {
+	b := &beat{per: 0.5, bar: 12}
+	for s := range 12 {
+		tt := float64(s) * b.per / 2
+		if got := b.slot(tt); got != s {
+			t.Fatalf("slot(%v) = %d, want %d", tt, got, s)
+		}
+		b.drums.hit[drumKick][b.slot(tt)] = tt
+		_ = b.drums.at(b.slot(tt), tt, b.per)
+	}
+	b.bar = 40 // más de lo que cabe: se recorta, sin salirse
+	if s := b.slot(39 * b.per / 2); s >= barSlots {
+		t.Fatalf("slot %d out of %d", s, barSlots)
+	}
+}
