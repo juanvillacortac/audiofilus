@@ -25,13 +25,23 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+      # The decoders take ~13 minutes on this runner: they're only rebuilt when
+      # the scripts that build them change.
+      - name: The decoders, from the cache
+        id: libs
+        uses: actions/cache@v4
+        with:
+          path: build/macos
+          key: macos-libs-zig0.15.2-${{ hashFiles('tools/macos/libs.sh', 'tools/libgme/build.sh', 'tools/fdk-aac/build.sh', 'tools/ffmpeg/build.sh', 'tools/ffmpeg/shim.c', 'tools/libvgm/build.sh', 'tools/libvgm/shim.cpp', 'tools/libvgm/libiconv.tbd') }}
       - name: zig, for the decoders
+        if: steps.libs.outputs.cache-hit != 'true'
         uses: jdx/mise-action@v2
         with:
           mise_toml: |
             [tools]
             zig = "0.15.2"
       - name: The decoders (tools/macos/libs.sh)
+        if: steps.libs.outputs.cache-hit != 'true'
         run: tools/macos/libs.sh build/macos
       - name: The DMGs
         env:
