@@ -251,7 +251,7 @@ type App struct {
 	lastTrack   string
 	spin        float64 // ángulo del vinilo
 	spinVel     float64
-	reels       cassetteReels // the cassette reels' rotation (cassette.go)
+	reels       cassetteReels // el giro de los carretes del casete (cassette.go)
 	konami      []Action      // las últimas pulsaciones, por si son el código Konami (eggs.go)
 	celebrateAt float64       // cuándo empezó la celebración del día especial
 	shotDay     int           // en las capturas, el día especial que se finge
@@ -1804,6 +1804,11 @@ func (a *App) requestShotCovers() {
 			a.libTab = tab
 			a.drawScreen(tmp, LibraryScreen)
 		}
+		// Y con el casete, que pide la portada a otro tamaño (su etiqueta).
+		cassette := a.cfg.UI.Cassette
+		a.cfg.UI.Cassette = true
+		a.drawScreen(tmp, NowPlaying)
+		a.cfg.UI.Cassette = cassette
 		tmp.Deallocate()
 	}
 	a.h = ScreenH
@@ -1834,8 +1839,8 @@ func (a *App) writeShots() error {
 	if err := shot("reproduciendo"); err != nil {
 		return err
 	}
-	// The same with Settings → Cassette (cassette.go); the rest keep the
-	// configured one.
+	// La misma con Ajustes → Casete (cassette.go); las demás, con lo que
+	// esté puesto.
 	cassette := a.cfg.UI.Cassette
 	a.cfg.UI.Cassette = true
 	if err := shot("reproduciendo-casete"); err != nil {
@@ -2819,8 +2824,8 @@ func (a *App) tweenPosition() {
 	// El vinilo acompaña al salto: gira hacia ese lado lo que giraría
 	// sonando esos segundos (1,4 radianes por segundo), como si se arrastrara.
 	a.spin += d * 0.22 * vinylSpin
-	// The cassette reels too: the tape runs that way, like fast-forward or
-	// rewind.
+	// Los carretes del casete también: la cinta corre hacia ese lado, como
+	// al adelantar o rebobinar.
 	if a.duration > 0 {
 		a.reels.turn(d*0.22*vinylSpin, a.shownPos/a.duration)
 	}

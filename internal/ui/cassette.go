@@ -17,37 +17,39 @@ import (
 	"golang.org/x/image/font/sfnt"
 )
 
-// The player's cassette (Settings → Cassette): instead of the cover with the
-// vinyl peeking out, a neon cassette with the cover as its label, or with
-// the song written on it by hand when there is no cover. The reels turn
-// while playing and the tape moves from the left reel to the right one as
-// the song goes on, like a real tape: the tape runs at a fixed speed, so the
-// reel with less tape turns faster. Under it, its reflection on a glossy
-// floor. Audiobooks with the cassette off keep their usual one (bookart.go).
+// El casete del reproductor (Ajustes → Casete): en vez de la portada con el
+// vinilo asomando, un casete de neón con la portada de etiqueta, o con la
+// canción escrita a mano encima cuando no hay portada. Los carretes giran
+// mientras suena y la cinta pasa del carrete izquierdo al derecho según
+// avanza la canción, como en una cinta de verdad: la cinta corre a velocidad
+// fija, así que el carrete con menos cinta gira más rápido. Debajo, su
+// reflejo en un suelo brillante. Los audiolibros van siempre en casete,
+// esté o no puesto.
 //
-// What never moves is painted once per size and look on the CPU (tapeCanvas:
-// shapes as signed distances, anti-aliased, with gradients and a blurred
-// glow); each frame only puts those layers together with the tape (tapeSrc),
-// the reels, the specks of light and the label, then dithers it all like the
-// covers and adds the reflection (tapeMixSrc).
+// Lo que nunca se mueve se pinta una vez por tamaño y aspecto en la CPU
+// (tapeCanvas: formas como distancias con signo, suavizadas, con degradados
+// y un brillo difuminado); cada frame solo junta esas capas con la cinta
+// (tapeSrc), los carretes, las motas de luz y la etiqueta, y luego le pone
+// trama a todo como a las portadas y suma el reflejo (tapeMixSrc).
 
-// The cassette's parts, in fractions of the body's width (u across, v
-// down), measured on the reference picture; the body is 1 × tapeH.
+// Las piezas del casete, en fracciones del ancho del cuerpo (u a lo ancho,
+// v hacia abajo), medidas sobre la imagen de referencia; el cuerpo mide
+// 1 × tapeH.
 const (
-	tapeH       = 0.603 // the body's height
-	tapeCorner  = 0.044 // its corners' radius
-	tapeEar     = 0.016 // the lower half is this much wider on each side,
-	tapeEarV    = 0.395 // from here down, after a 45° step
+	tapeH       = 0.603 // el alto del cuerpo
+	tapeCorner  = 0.044 // el radio de sus esquinas
+	tapeEar     = 0.016 // la mitad de abajo es esto más ancha por cada lado,
+	tapeEarV    = 0.395 // de aquí para abajo, tras un escalón a 45°
 	tapeScrewR  = 0.022
-	tapeChamfer = 0.026 // the label's cut corners
+	tapeChamfer = 0.026 // las esquinas cortadas de la etiqueta
 	tapeReelV   = 0.2937
 	tapeRingR   = 0.0754
 	tapeHubR    = 0.062
 	tapeHoleR   = 0.045
 	tapeViewR   = 0.012
-	tapeFull    = 0.25 // the radius of a full roll of tape
+	tapeFull    = 0.25 // el radio de un rollo de cinta lleno
 	tapeLedge   = 0.452
-	tapeFloor   = 0.13 // the reflection's height
+	tapeFloor   = 0.13 // el alto del reflejo
 )
 
 var (
@@ -56,52 +58,56 @@ var (
 	tapeSlots  = [2][4]float32{{0.103, 0.016, 0.167, 0.04}, {0.829, 0.016, 0.893, 0.04}}
 	tapeLabel  = [4]float32{0.0516, 0.0675, 0.944, 0.44}
 	tapeLines  = [2]float32{0.128, 0.178}
-	tapeLinesU = [2]float32{0.2, 0.795} // centered on the label
+	tapeLinesU = [2]float32{0.2, 0.795} // centradas en la etiqueta
 	tapePill   = [4]float32{0.1825, 0.2024, 0.8056, 0.385}
 	tapeReelU  = [2]float32{0.2738, 0.7143}
 	tapeView   = [4]float32{0.3532, 0.2222, 0.631, 0.3611}
-	// The trapezoid at the bottom, narrower at the top: its top and bottom,
-	// and where each of them starts and ends.
+	// El trapecio de abajo, más estrecho arriba: su borde de arriba y el de
+	// abajo, y dónde empieza y acaba cada uno.
 	tapeTrap  = struct{ top, bot, tl, tr, bl, br float32 }{0.448, 0.6, 0.1786, 0.8135, 0.1349, 0.8611}
 	tapeHoles = [4][3]float32{{0.25, 0.567, 0.022}, {0.3452, 0.5437, 0.019}, {0.6429, 0.5437, 0.019}, {0.742, 0.567, 0.022}}
 	tapeBlock = [4]float32{0.4246, 0.5159, 0.5675, 0.603}
 	tapeSlot  = [4]float32{0.4706, 0.4722, 0.5214, 0.5016}
-	// The light leaking out at the edges (u, v, radius): the static glow.
+	// La luz que se escapa por los bordes (u, v, radio): el resplandor quieto.
 	tapeLeaks = [9][3]float32{{0.55, 0, 0.08}, {0.4, 0.005, 0.05}, {0.97, 0.12, 0.05}, {1, 0.33, 0.045}, {0, 0.3, 0.05}, {0.03, 0.5, 0.04}, {0.22, tapeH, 0.06}, {0.62, tapeH, 0.05}, {0.9, tapeH - 0.01, 0.05}}
 )
 
-// cassetteRatio is the body's height over its width (screens.go centers it
-// in the cover's place).
+// cassetteSpin es cuántas veces más rápido que el vinilo giran los carretes.
+const cassetteSpin = 4
+
+// cassetteRatio es el alto del cuerpo entre su ancho (screens.go lo centra
+// en el sitio de la portada).
 const cassetteRatio = tapeH
 
-// reelCore is the radius of an empty reel's core, as a fraction of a full
-// reel's.
+// reelCore es el radio del núcleo de un carrete vacío, como fracción del de
+// uno lleno.
 const reelCore = 0.3
 
-// cassetteReels holds each reel's rotation: each turns at its own speed,
-// depending on how much tape it holds, so the vinyl's angle is not enough.
+// cassetteReels guarda el giro de cada carrete: cada uno gira a su propia
+// velocidad, según cuánta cinta tenga, así que el ángulo del vinilo no basta.
 type cassetteReels struct {
 	left, right float64
 }
 
-// reelRadii returns the radius of the tape wound on each reel (1 is full,
-// reelCore empty) after progress (0..1) has played. The tape is an area:
-// what moves from one side to the other goes with the square of the radius.
+// reelRadii devuelve el radio de la cinta enrollada en cada carrete (1 es
+// lleno, reelCore vacío) cuando ha sonado progress (0..1). La cinta es un
+// área: lo que pasa de un lado al otro va con el cuadrado del radio.
 func reelRadii(progress float64) (l, r float64) {
 	p := math.Max(0, math.Min(1, progress))
 	c := reelCore * reelCore
 	return math.Sqrt(c + (1-c)*(1-p)), math.Sqrt(c + (1-c)*p)
 }
 
-// turn rotates the reels by what the vinyl turned this frame (d radians),
-// each inversely to its radius: the one with less tape turns faster.
+// turn gira los carretes lo que giró el vinilo en este frame (d radianes),
+// cada uno en proporción inversa a su radio: el que tiene menos cinta gira
+// más rápido.
 func (c *cassetteReels) turn(d, progress float64) {
 	l, r := reelRadii(progress)
 	c.left += d * cassetteSpin * reelCore / l
 	c.right += d * cassetteSpin * reelCore / r
 }
 
-// rgbHex is the opaque color 0xRRGGBB.
+// rgbHex es el color opaco 0xRRGGBB.
 func rgbHex(v uint32) color.RGBA {
 	return color.RGBA{uint8(v >> 16), uint8(v >> 8), uint8(v), 0xff}
 }
@@ -111,13 +117,13 @@ var (
 	tapeBlack = color.RGBA{0, 0, 0, 0xff}
 )
 
-// tapeStop is a color at a point t (0..1) of a gradient.
+// tapeStop es un color en un punto t (0..1) de un degradado.
 type tapeStop struct {
 	t float32
 	c color.RGBA
 }
 
-// gradAt is the gradient's color at t (0..1).
+// gradAt es el color del degradado en t (0..1).
 func gradAt(stops []tapeStop, t float32) color.RGBA {
 	t = max(0, min(1, t))
 	for i := 1; i < len(stops); i++ {
@@ -129,10 +135,10 @@ func gradAt(stops []tapeStop, t float32) color.RGBA {
 	return stops[len(stops)-1].c
 }
 
-// tapePalette is a skin's colors: the gradient across the shell (its edges
-// and its light), the label's print, a glow on the print (none if spot is
-// transparent) and how strong the glow is. A solid skin has an opaque body,
-// from solid[0] at the top to solid[1] at the bottom.
+// tapePalette son los colores de un aspecto: el degradado a lo ancho de la
+// carcasa (sus bordes y su luz), el estampado de la etiqueta, un brillo sobre
+// el estampado (ninguno si spot es transparente) y la fuerza del brillo. Un
+// aspecto liso tiene el cuerpo opaco, de solid[0] arriba a solid[1] abajo.
 type tapePalette struct {
 	shell, label []tapeStop
 	spot         color.RGBA
@@ -140,8 +146,8 @@ type tapePalette struct {
 	solid        *[2]color.RGBA
 }
 
-// tapeNeon is the reference picture's neon, with finer gradients than four
-// colors give.
+// tapeNeon es el neón de la imagen de referencia, con degradados más finos
+// de los que dan cuatro colores.
 var tapeNeon = tapePalette{
 	shell: []tapeStop{{0, rgbHex(0x4f3bff)}, {0.22, rgbHex(0x8f3dff)}, {0.42, rgbHex(0xff3fb0)}, {0.6, rgbHex(0xff7a2a)}, {0.82, rgbHex(0xffb61f)}, {1, rgbHex(0xff8c14)}},
 	label: []tapeStop{{0, rgbHex(0x9440ff)}, {0.17, rgbHex(0x6f5bff)}, {0.25, rgbHex(0x63a2ff)}, {0.33, rgbHex(0xa65dff)}, {0.43, rgbHex(0xff7fae)}, {0.52, rgbHex(0xffb347)}, {0.8, rgbHex(0xffc42a)}, {1, rgbHex(0xffa01e)}},
@@ -149,22 +155,23 @@ var tapeNeon = tapePalette{
 	glow:  1,
 }
 
-// tapeSkin is a skin's id (config.TapeUI.Skin) and its four colors from
-// left to right; the solid skins and "cover" have none here, tapeSkinPalette
-// works theirs out.
+// tapeSkin es el id de un aspecto (config.TapeUI.Skin) y sus cuatro colores
+// de izquierda a derecha; los lisos y "cover" no tienen aquí, los calcula
+// tapeSkinPalette.
 type tapeSkin struct {
 	id   string
 	cols [4]uint32
 }
 
-// tapeChrome is the chrome skin's colors, also what a gray cover gets
-// (coverColors4).
+// tapeChrome son los colores del aspecto cromo, que es también lo que le
+// toca a una portada gris (coverColors4).
 var tapeChrome = [4]uint32{0x9fb4ff, 0xe8ecff, 0xb9bfd6, 0xffffff}
 
-// tapeSkins are the skins in Settings order: "screen" solid in Settings →
-// Color's accent (tapeLayersFor), "cover" the cover's own colors, "" the
-// neon (tapeNeon, the default), "black" solid graphite plastic, and after
-// the chrome a solid one per label paper (tapePapers).
+// tapeSkins son los aspectos en el orden de Ajustes: "screen" liso con el
+// acento de Ajustes > Color (tapeLayersFor), "cover" los colores de la propia
+// portada, "" el neón (tapeNeon, el de por defecto), "black" plástico
+// grafito liso, y tras el cromo uno liso por cada papel de etiqueta
+// (tapePapers).
 var tapeSkins = func() []tapeSkin {
 	s := []tapeSkin{
 		{"screen", [4]uint32{}},
@@ -184,8 +191,8 @@ var tapeSkins = func() []tapeSkin {
 	return s
 }()
 
-// tapePaletteFrom turns four colors into a palette: the shell's gradient
-// and, lighter, the print's.
+// tapePaletteFrom convierte cuatro colores en una paleta: el degradado de la
+// carcasa y, más claro, el del estampado.
 func tapePaletteFrom(c [4]color.RGBA) tapePalette {
 	t := [4]float32{0, 0.35, 0.65, 1}
 	p := tapePalette{spot: mix(c[1], tapeWhite, 0.2), glow: 1}
@@ -196,8 +203,8 @@ func tapePaletteFrom(c [4]color.RGBA) tapePalette {
 	return p
 }
 
-// tapeSolid is a solid skin: edge and mid tint the shell's edges and light,
-// the body runs from top to bot, with a paper label and only a little glow.
+// tapeSolid es un aspecto liso: edge y mid tiñen los bordes y la luz de la
+// carcasa, el cuerpo va de top a bot, con etiqueta de papel y poco brillo.
 func tapeSolid(edge, mid, top, bot color.RGBA) tapePalette {
 	p := tapePaletteFrom([4]color.RGBA{edge, mid, mid, edge})
 	p.solid = &[2]color.RGBA{top, bot}
@@ -206,14 +213,15 @@ func tapeSolid(edge, mid, top, bot color.RGBA) tapePalette {
 	return p
 }
 
-// tapeSolidOf is c as opaque plastic: barely shaded, with edges a little
-// darker than the body (lighter ones read as glass lit from inside).
+// tapeSolidOf es c como plástico opaco: apenas sombreado, con los bordes un
+// poco más oscuros que el cuerpo (más claros parecen cristal iluminado por
+// dentro).
 func tapeSolidOf(c color.RGBA) tapePalette {
 	return tapeSolid(mix(c, tapeBlack, 0.35), mix(c, tapeBlack, 0.25), mix(c, tapeWhite, 0.1), mix(c, tapeBlack, 0.2))
 }
 
-// tapeSkinPalette is skin's palette; cover is the album's four colors for
-// the "cover" skin (nil while there are none: then the neon).
+// tapeSkinPalette es la paleta de skin; cover son los cuatro colores del
+// álbum para el aspecto "cover" (nil mientras no los haya: entonces el neón).
 func tapeSkinPalette(skin string, cover *[4]color.RGBA) tapePalette {
 	switch skin {
 	case "":
@@ -224,7 +232,7 @@ func tapeSkinPalette(skin string, cover *[4]color.RGBA) tapePalette {
 		}
 		return tapePaletteFrom(*cover)
 	case "black":
-		// The app's old graphite.
+		// El grafito que usaba antes la app.
 		return tapeSolid(rgbHex(0x4d5058), rgbHex(0x5b5f68), rgbHex(0x3b3e44), rgbHex(0x0e0f11))
 	}
 	if c := tapePaper(skin); c != nil {
@@ -242,25 +250,27 @@ func tapeSkinPalette(skin string, cover *[4]color.RGBA) tapePalette {
 	return tapeNeon
 }
 
-// tapePapers are the label's colors behind the handwriting, in Settings
-// order (config.TapeUI.Paper); "" is the skin's print.
+// tapePapers son los colores de la etiqueta detrás de la letra, en el orden
+// de Ajustes (config.TapeUI.Paper); "" es el estampado del aspecto.
 var tapePapers = []struct {
 	id string
 	c  uint32
 }{{"", 0}, {"white", 0xffffff}, {"yellow", 0xffc800}, {"navy", 0x0300a3}, {"pink", 0xd100a4}, {"purple", 0x8d3db9}, {"green", 0x85d228}, {"orange", 0xd28b28}, {"red", 0xdd2222}}
 
-// The cassette's defaults where the config leaves them at zero: the size of
-// the handwriting and of the specks, in percent. (Its glow breathes by
-// default: config.TapeUI.GlowAnim "" is "breathe", "none" is still.)
+// Los valores por defecto del casete donde la configuración los deja a cero:
+// el tamaño de la letra y el de las motas, en porcentaje. (Su resplandor
+// respira por defecto: config.TapeUI.GlowAnim "" es "breathe", "none" es
+// quieto.)
 const (
 	tapeHandDefault = 100
 	tapeDustDefault = 200
 )
 
-// tapeAnim is the glow's animation, with "" (the default) as "breathe".
+// tapeAnim es la animación del resplandor, con "" (la de por defecto) como
+// "breathe".
 func tapeAnim(id string) string { return orDefault(id, "breathe") }
 
-// tapePaper is the paper's color, or nil for the skin's print.
+// tapePaper es el color del papel, o nil para el estampado del aspecto.
 func tapePaper(id string) *color.RGBA {
 	for _, p := range tapePapers {
 		if p.id == id && id != "" {
@@ -271,16 +281,16 @@ func tapePaper(id string) *color.RGBA {
 	return nil
 }
 
-// tapeDarkPaper says whether c is dark enough to need a light ink.
+// tapeDarkPaper dice si c es lo bastante oscuro para pedir tinta clara.
 func tapeDarkPaper(c *color.RGBA) bool {
 	return c != nil && (0.2126*float64(c.R)+0.7152*float64(c.G)+0.0722*float64(c.B))/255 < 0.45
 }
 
-// coverColors4 picks a cover's four most vivid colors for the "cover" skin,
-// as accentColors picks two: the heaviest hues (vivid, bright pixels weigh
-// most) at least 45° apart, brightened for the neon and put in order around
-// the color wheel, so the gradient across the cassette flows. A gray cover
-// gets the chrome.
+// coverColors4 elige los cuatro colores más vivos de una portada para el
+// aspecto "cover", como accentColors elige dos: los tonos con más peso (los
+// píxeles vivos y claros pesan más) separados al menos 45°, aclarados para el
+// neón y ordenados alrededor de la rueda de color, para que el degradado a
+// lo ancho del casete fluya. A una portada gris le toca el cromo.
 func coverColors4(img image.Image) [4]color.RGBA {
 	small := image.NewRGBA(image.Rect(0, 0, 48, 48))
 	xdraw.ApproxBiLinear.Scale(small, small.Bounds(), img, img.Bounds(), xdraw.Src, nil)
@@ -366,15 +376,15 @@ func coverColors4(img image.Image) [4]color.RGBA {
 	return out
 }
 
-// TapeColors are the cover's four colors for the cassette's "cover" skin;
-// ok is false while the cover has not been read.
+// TapeColors son los cuatro colores de la portada para el aspecto "cover"
+// del casete; ok es false mientras no se haya leído la portada.
 func (a *Album) TapeColors() (c [4]color.RGBA, ok bool) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.tapeCols, a.hasColor
 }
 
-// tapeCanvas is a layer painted on the CPU: premultiplied RGBA, 0..1.
+// tapeCanvas es una capa pintada en la CPU: RGBA premultiplicado, de 0 a 1.
 type tapeCanvas struct {
 	w, h int
 	px   []float32
@@ -384,33 +394,34 @@ func newTapeCanvas(w, h int) *tapeCanvas {
 	return &tapeCanvas{w, h, make([]float32, w*h*4)}
 }
 
-// form is a shape, as its signed distance in pixels from a point to its
-// edge (negative inside), and the box it lies in (x0, y0, x1, y1).
+// form es una figura, como su distancia con signo en píxeles de un punto a
+// su borde (negativa dentro), y la caja que la contiene (x0, y0, x1, y1).
 type form struct {
 	sd  func(x, y float32) float32
 	box [4]float32
 }
 
-// ink is the straight color and the alpha laid at a point.
+// ink es el color sin premultiplicar y el alfa que se ponen en un punto.
 type ink func(x, y float32) (color.RGBA, float32)
 
-// flat is one color everywhere.
+// flat es un mismo color en todas partes.
 func flat(c color.RGBA, a float32) ink {
 	return func(float32, float32) (color.RGBA, float32) { return c, a }
 }
 
 func hypot32(x, y float32) float32 { return float32(math.Sqrt(float64(x*x + y*y))) }
 
-// circle is a disk.
+// circle es un disco.
 func circle(cx, cy, r float32) form {
 	return form{func(x, y float32) float32 { return hypot32(x-cx, y-cy) - r }, [4]float32{cx - r, cy - r, cx + r, cy + r}}
 }
 
-// roundBox is a rectangle with its corners rounded to r.
+// roundBox es un rectángulo con las esquinas redondeadas a r.
 func roundBox(x0, y0, x1, y1, r float32) form { return roundBox4(x0, y0, x1, y1, r, r, r, r) }
 
-// roundBox4 is a rectangle with each corner rounded to its own radius: top
-// left, top right, bottom right, bottom left.
+// roundBox4 es un rectángulo con cada esquina redondeada a su propio radio:
+// arriba a la izquierda, arriba a la derecha, abajo a la derecha, abajo a la
+// izquierda.
 func roundBox4(x0, y0, x1, y1, tl, tr, br, bl float32) form {
 	cx, cy, hw, hh := (x0+x1)/2, (y0+y1)/2, (x1-x0)/2, (y1-y0)/2
 	return form{func(x, y float32) float32 {
@@ -429,7 +440,8 @@ func roundBox4(x0, y0, x1, y1, tl, tr, br, bl float32) form {
 	}, [4]float32{x0, y0, x1, y1}}
 }
 
-// polygon is a convex polygon, its corners clockwise on the screen.
+// polygon es un polígono convexo, con las esquinas en el sentido de las
+// agujas del reloj en pantalla.
 func polygon(pts ...[2]float32) form {
 	box := [4]float32{pts[0][0], pts[0][1], pts[0][0], pts[0][1]}
 	type edge struct{ ax, ay, nx, ny float32 }
@@ -450,7 +462,7 @@ func polygon(pts ...[2]float32) form {
 	}, box}
 }
 
-// segment is a line w pixels wide with round ends.
+// segment es una línea de w píxeles de ancho con los extremos redondos.
 func segment(ax, ay, bx, by, w float32) form {
 	dx, dy := bx-ax, by-ay
 	l2 := max(dx*dx+dy*dy, 1e-6)
@@ -460,19 +472,19 @@ func segment(ax, ay, bx, by, w float32) form {
 	}, [4]float32{min(ax, bx) - w, min(ay, by) - w, max(ax, bx) + w, max(ay, by) + w}}
 }
 
-// stroke is the outline of f, w pixels wide.
+// stroke es el contorno de f, de w píxeles de ancho.
 func (f form) stroke(w float32) form {
 	sd := f.sd
 	return form{func(x, y float32) float32 { return abs32(sd(x, y)) - w/2 }, [4]float32{f.box[0] - w, f.box[1] - w, f.box[2] + w, f.box[3] + w}}
 }
 
-// and is where f and g overlap.
+// and es donde f y g se solapan.
 func (f form) and(g form) form {
 	a, b := f.sd, g.sd
 	return form{func(x, y float32) float32 { return max(a(x, y), b(x, y)) }, f.box}
 }
 
-// or is f and g together.
+// or es f y g juntas.
 func (f form) or(g form) form {
 	a, b := f.sd, g.sd
 	return form{func(x, y float32) float32 { return min(a(x, y), b(x, y)) },
@@ -486,7 +498,7 @@ func abs32(x float32) float32 {
 	return x
 }
 
-// paint lays in over f, anti-aliased over a pixel.
+// paint pone in sobre f, suavizado a lo largo de un píxel.
 func (c *tapeCanvas) paint(f form, in ink) {
 	for y := max(0, int(f.box[1])-2); y < min(c.h, int(f.box[3])+2); y++ {
 		for x := max(0, int(f.box[0])-2); x < min(c.w, int(f.box[2])+2); x++ {
@@ -508,8 +520,8 @@ func (c *tapeCanvas) paint(f form, in ink) {
 	}
 }
 
-// bloom blurs c (three box blurs, close to a gaussian, r pixels each) and
-// adds it, times k, onto dst: the neon glow.
+// bloom difumina c (tres desenfoques de caja, casi un gaussiano, de r
+// píxeles cada uno) y lo suma, por k, sobre dst: el brillo del neón.
 func (c *tapeCanvas) bloom(dst *tapeCanvas, r int, k float32) {
 	a, b := slices.Clone(c.px), make([]float32, len(c.px))
 	for range 3 {
@@ -521,8 +533,8 @@ func (c *tapeCanvas) bloom(dst *tapeCanvas, r int, k float32) {
 	}
 }
 
-// boxBlur averages each pixel of src with its r neighbors on each side,
-// across or down, into dst; outside the layer counts as clear.
+// boxBlur promedia en dst cada píxel de src con sus r vecinos a cada lado,
+// a lo ancho o a lo alto; fuera de la capa cuenta como transparente.
 func boxBlur(src, dst []float32, w, h, r int, across bool) {
 	lines, length, stride, step := h, w, w*4, 4
 	if !across {
@@ -549,7 +561,7 @@ func boxBlur(src, dst []float32, w, h, r int, across bool) {
 	}
 }
 
-// image uploads the layer.
+// image sube la capa a la GPU.
 func (c *tapeCanvas) image() *ebiten.Image {
 	img := image.NewRGBA(image.Rect(0, 0, c.w, c.h))
 	for i, v := range c.px {
@@ -558,19 +570,20 @@ func (c *tapeCanvas) image() *ebiten.Image {
 	return ebiten.NewImageFromImage(img)
 }
 
-// tapeMap places the body's units on a layer, with p pixels of room around
-// the body for the glow.
+// tapeMap pasa las unidades del cuerpo a una capa, con p píxeles de margen
+// alrededor del cuerpo para el brillo.
 type tapeMap struct{ p, w float32 }
 
 func (m tapeMap) x(u float32) float32 { return m.p + u*m.w }
 func (m tapeMap) y(v float32) float32 { return m.p + v*m.w }
 func (m tapeMap) d(d float32) float32 { return d * m.w }
 
-// across is how far across the body pixel x is (0..1), for the gradients.
+// across es a qué altura del ancho del cuerpo cae el píxel x (0..1), para
+// los degradados.
 func (m tapeMap) across(x float32) float32 { return (x - m.p) / m.w }
 
-// tapeBody is the body's shape: rounded corners, and the lower half a
-// little wider, with a 45° step on each side.
+// tapeBody es la forma del cuerpo: esquinas redondeadas, y la mitad de abajo
+// un poco más ancha, con un escalón a 45° por cada lado.
 func tapeBody(m tapeMap) form {
 	R, e := m.d(tapeCorner), m.d(tapeEar)
 	x0, x1, y0, y1, a := m.x(0), m.x(1), m.y(0), m.y(tapeH), m.y(tapeEarV)
@@ -580,15 +593,15 @@ func tapeBody(m tapeMap) form {
 		or(polygon([2]float32{x1, a}, [2]float32{x1 + e, a + e}, [2]float32{x1, a + e}))
 }
 
-// tapeLabelForm is the label's shape, with its corners cut at 45°.
+// tapeLabelForm es la forma de la etiqueta, con las esquinas cortadas a 45°.
 func tapeLabelForm(m tapeMap) form {
 	x0, y0, x1, y1, k := m.x(tapeLabel[0]), m.y(tapeLabel[1]), m.x(tapeLabel[2]), m.y(tapeLabel[3]), m.d(tapeChamfer)
 	return polygon([2]float32{x0 + k, y0}, [2]float32{x1 - k, y0}, [2]float32{x1, y0 + k}, [2]float32{x1, y1 - k},
 		[2]float32{x1 - k, y1}, [2]float32{x0 + k, y1}, [2]float32{x0, y1 - k}, [2]float32{x0, y0 + k})
 }
 
-// tapeInks are what the painters share: the map, the palette, and the
-// shell's gradient mixed with white by k at alpha a.
+// tapeInks es lo que comparten las funciones que pintan: el mapa, la paleta
+// y el degradado de la carcasa mezclado con blanco en k, con alfa a.
 type tapeInks struct {
 	m   tapeMap
 	pal tapePalette
@@ -600,18 +613,19 @@ func (t tapeInks) shell(k, a float32) ink {
 	}
 }
 
-// paintShell paints what lies under the label's contents: the body, its
-// edges, rail, ledge, trapezoid, holes and screws, and the label's paper
-// (the skin's print or the paper color) with its two lines. On light it
-// paints what glows, and on leaks the light leaking out at the edges.
+// paintShell pinta lo que queda debajo del contenido de la etiqueta: el
+// cuerpo, sus bordes, el riel, la repisa, el trapecio, los agujeros y los
+// tornillos, y el papel de la etiqueta (el estampado del aspecto o el color
+// del papel) con sus dos líneas. En light pinta lo que brilla, y en leaks la
+// luz que se escapa por los bordes.
 func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	m, pal := t.m, t.pal
 	lw := max(1, m.d(0.006))
 	body := tapeBody(m)
 	y0, y1 := m.y(0), m.y(tapeH)
 
-	// The shell: tinted plastic (or solid graphite), darker towards the
-	// bottom, with a lit edge and a bevel just inside it.
+	// La carcasa: plástico tintado (o grafito liso), más oscuro hacia abajo,
+	// con el borde iluminado y un bisel justo por dentro.
 	if pal.solid != nil {
 		top, bot := pal.solid[0], pal.solid[1]
 		c.paint(body, func(_, y float32) (color.RGBA, float32) { return mix(top, bot, float64((y-y0)/(y1-y0))), 1 })
@@ -622,7 +636,7 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	}
 	shade := float32(0.3)
 	if pal.solid != nil {
-		shade = 0.1 // its own gradient already darkens it
+		shade = 0.1 // su propio degradado ya lo oscurece
 	}
 	c.paint(body, func(_, y float32) (color.RGBA, float32) {
 		if f := (y - y0) / (y1 - y0); f < 0.55 {
@@ -635,7 +649,8 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	light.paint(body.stroke(lw*1.6), t.shell(0.2, 1))
 	c.paint(roundBox(m.x(0.02), m.y(0.02), m.x(0.98), m.y(tapeH-0.02), m.d(0.03)).stroke(1), t.shell(0.1, 0.35))
 
-	// The top rail and its two slots, the ledge where the lower half starts.
+	// El riel de arriba y sus dos ranuras, y la repisa donde empieza la mitad
+	// de abajo.
 	for i, r := range [][4]float32{tapeBar, tapeSlots[0], tapeSlots[1]} {
 		round := m.d(0.008)
 		if i == 0 {
@@ -649,7 +664,8 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	c.paint(segment(m.x(0.012), ly, m.x(tapeTrap.tl-0.015), ly, 1), t.shell(0.3, 0.7))
 	c.paint(segment(m.x(tapeTrap.tr+0.015), ly, m.x(0.988), ly, 1), t.shell(0.3, 0.7))
 
-	// Light leaking out at the edges of the plastic, and a hot streak on top.
+	// Luz que se escapa por los bordes del plástico, y una raya caliente
+	// arriba.
 	for _, l := range tapeLeaks {
 		x, y, r := m.x(l[0]), m.y(l[1]), m.d(l[2])
 		col := mix(gradAt(pal.shell, l[0]), tapeWhite, 0.4)
@@ -659,7 +675,7 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	}
 	light.paint(segment(m.x(0.56), y0+0.5, m.x(0.68), y0+0.5, 1.5), flat(color.RGBA{255, 240, 220, 255}, 0.95*pal.glow))
 
-	// The trapezoid at the bottom, narrower at the top, with its double edge.
+	// El trapecio de abajo, más estrecho arriba, con su borde doble.
 	tr := tapeTrap
 	trap := func(k float32) form {
 		return polygon([2]float32{m.x(tr.tl) + k, m.y(tr.top) + k}, [2]float32{m.x(tr.tr) - k, m.y(tr.top) + k},
@@ -687,12 +703,13 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 		c.paint(hole.stroke(lw), flat(mix(gradAt(pal.shell, h[0]), tapeWhite, 0.55), 1))
 		light.paint(hole.stroke(lw), flat(gradAt(pal.shell, h[0]), 1))
 	}
-	// Light glancing off its slopes.
+	// Luz que roza sus laderas.
 	for _, s := range [][2]float32{{0.79, 0.745}, {0.81, 0.765}, {0.27, 0.23}} {
 		c.paint(segment(m.x(s[0]), m.y(0.462), m.x(s[1]), m.y(0.53), max(1, m.d(0.004))), flat(tapeWhite, 0.35))
 	}
 
-	// The corner screws: silver, with a cross, and a ring of light.
+	// Los tornillos de las esquinas: plateados, con una cruz y un anillo de
+	// luz.
 	for _, s := range tapeScrews {
 		x, y, r := m.x(s[0]), m.y(s[1]), m.d(tapeScrewR)
 		c.paint(circle(x, y, r+1), flat(rgbHex(0x120a26), 1))
@@ -707,8 +724,9 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 		light.paint(circle(x, y, r+1.5).stroke(1.2), flat(mix(gradAt(pal.shell, s[0]), tapeWhite, 0.3), 1))
 	}
 
-	// The label's paper: the skin's print, with a glow at the bottom left and
-	// light from the top, or one color; and its two lines to write on.
+	// El papel de la etiqueta: el estampado del aspecto, con un brillo abajo a
+	// la izquierda y luz desde arriba, o un solo color; y sus dos líneas para
+	// escribir.
 	label := tapeLabelForm(m)
 	lx0, lx1, ly0, ly1 := m.x(tapeLabel[0]), m.x(tapeLabel[2]), m.y(tapeLabel[1]), m.y(tapeLabel[3])
 	printAt := func(x, _ float32) (color.RGBA, float32) { return gradAt(pal.label, (x-lx0)/(lx1-lx0)), 1 }
@@ -742,9 +760,10 @@ func paintShell(c, light, leaks *tapeCanvas, t tapeInks, paper *color.RGBA) {
 	}
 }
 
-// paintWindow paints what lies over the label's contents: a soft sheen and
-// the label's dark edge, the window (a pill with a lit edge, dark inside),
-// the rings around the reels and the tape glass, dark behind the rolls.
+// paintWindow pinta lo que queda encima del contenido de la etiqueta: un
+// brillo suave y el borde oscuro de la etiqueta, la ventana (una píldora con
+// el borde iluminado, oscura por dentro), los anillos alrededor de los
+// carretes y la ventanilla de la cinta, oscura detrás de los rollos.
 func paintWindow(c, light *tapeCanvas, t tapeInks) {
 	m, pal := t.m, t.pal
 	lw := max(1, m.d(0.006))
@@ -752,7 +771,7 @@ func paintWindow(c, light *tapeCanvas, t tapeInks) {
 	c.paint(segment(m.x(0.68), m.y(tapeLabel[1])-m.d(0.03), m.x(0.6), m.y(tapeLabel[3])+m.d(0.03), m.d(0.06)).and(label), flat(tapeWhite, 0.08))
 	edge := rgbHex(0x1c0e52)
 	if pal.solid != nil {
-		edge = mix(pal.solid[0], tapeBlack, 0.45) // the plastic's own shadow: gray on white
+		edge = mix(pal.solid[0], tapeBlack, 0.45) // la sombra del propio plástico: gris sobre blanco
 	}
 	c.paint(label.stroke(max(1, m.d(0.007))), flat(edge, 1))
 
@@ -780,8 +799,8 @@ func paintWindow(c, light *tapeCanvas, t tapeInks) {
 	c.paint(roundBox(m.x(tapeView[0]), m.y(tapeView[1]), m.x(tapeView[2]), m.y(tapeView[3]), m.d(tapeViewR)), flat(bg, 1))
 }
 
-// paintOver paints what lies over the tape: the glass's shading and
-// reflections, and its frame.
+// paintOver pinta lo que queda encima de la cinta: el sombreado y los
+// reflejos de la ventanilla, y su marco.
 func paintOver(c *tapeCanvas, t tapeInks) {
 	m, pal := t.m, t.pal
 	a0, b0, a1, b1, r := m.x(tapeView[0]), m.y(tapeView[1]), m.x(tapeView[2]), m.y(tapeView[3]), m.d(tapeViewR)
@@ -800,8 +819,8 @@ func paintOver(c *tapeCanvas, t tapeInks) {
 	})
 }
 
-// paintReel paints a reel at angle 0, centered: a white disk with a ring,
-// a dark center and six teeth.
+// paintReel pinta un carrete en el ángulo 0, centrado: un disco blanco con
+// un anillo, el centro oscuro y seis dientes.
 func paintReel(hub, hole float32) *tapeCanvas {
 	s := int(math.Ceil(float64(2*hub+4))) + 2
 	c, o := newTapeCanvas(s, s), float32(s)/2
@@ -823,11 +842,11 @@ func paintReel(hub, hole float32) *tapeCanvas {
 	return c
 }
 
-// tapeDotSize is the size of the soft dot of light the specks and the
-// orbiting light are drawn with.
+// tapeDotSize es el tamaño del punto de luz suave con el que se dibujan las
+// motas y la luz que da vueltas.
 const tapeDotSize = 32
 
-// paintDot paints that dot: bright in the middle, fading out.
+// paintDot pinta ese punto: brillante en el centro y apagándose hacia fuera.
 func paintDot() *tapeCanvas {
 	const h = tapeDotSize / 2
 	c := newTapeCanvas(tapeDotSize, tapeDotSize)
@@ -841,26 +860,27 @@ func paintDot() *tapeCanvas {
 	return c
 }
 
-// tapeLayers are the cassette's still layers for one size and look.
+// tapeLayers son las capas quietas del casete para un tamaño y un aspecto.
 type tapeLayers struct {
 	key         string
 	m           tapeMap
-	cw, ch      int // the layers' size: the body and room for the glow around it
-	floor, refl int // the floor line (the body's bottom) and the reflection's height
+	cw, ch      int // el tamaño de las capas: el cuerpo y margen para el brillo alrededor
+	floor, refl int // la línea del suelo (la base del cuerpo) y el alto del reflejo
 	pal         tapePalette
-	dark        bool // light ink, on a dark paper
+	dark        bool // tinta clara, sobre papel oscuro
 	shell       *ebiten.Image
 	window      *ebiten.Image
 	over        *ebiten.Image
-	glow        *ebiten.Image // the edges' glow; nil without glow
-	spots       *ebiten.Image // the static light leaks
-	mask        *ebiten.Image // the label's shape, white
+	glow        *ebiten.Image // el brillo de los bordes; nil sin resplandor
+	spots       *ebiten.Image // las fugas de luz quietas
+	mask        *ebiten.Image // la forma de la etiqueta, en blanco
 	reel        *ebiten.Image
 	dot         *ebiten.Image
 }
 
-// newTapeLayers paints the layers of a cassette w pixels wide. The blurs
-// make it the slow part: it only happens when the size or the look change.
+// newTapeLayers pinta las capas de un casete de w píxeles de ancho. Los
+// desenfoques la hacen la parte lenta: solo pasa cuando cambian el tamaño o
+// el aspecto.
 func newTapeLayers(key string, w int, pal tapePalette, paper *color.RGBA, glow bool) *tapeLayers {
 	p := int(math.Ceil(float64(w)*0.08)) + 2
 	bodyH := int(math.Round(tapeH * float64(w)))
@@ -892,7 +912,7 @@ func newTapeLayers(key string, w int, pal tapePalette, paper *color.RGBA, glow b
 	return L
 }
 
-// free gives the layers' memory back.
+// free devuelve la memoria de las capas.
 func (L *tapeLayers) free() {
 	for _, img := range []*ebiten.Image{L.shell, L.window, L.over, L.glow, L.spots, L.mask, L.reel, L.dot} {
 		if img != nil {
@@ -901,10 +921,11 @@ func (L *tapeLayers) free() {
 	}
 }
 
-// tapeEdgePath is the body's outline as a closed polyline in body units,
-// clockwise from the top left (rounded corners, the wider lower half), with
-// the distance along it at each point: what the dust and the orbiting
-// light travel on.
+// tapeEdgePath es el contorno del cuerpo como una polilínea cerrada en
+// unidades del cuerpo, en el sentido de las agujas del reloj desde arriba a
+// la izquierda (esquinas redondeadas, la mitad de abajo más ancha), con la
+// distancia recorrida en cada punto: por donde viajan el polvo y la luz que
+// da vueltas.
 type tapeEdgePath struct {
 	pts [][2]float64
 	cum []float64
@@ -946,8 +967,8 @@ var tapeEdge = func() tapeEdgePath {
 	return tapeEdgePath{pts, cum}
 }()
 
-// at is the point a fraction p of the way around the edge (in body units)
-// and the outward normal there.
+// at es el punto a una fracción p de la vuelta al borde (en unidades del
+// cuerpo) y la normal hacia fuera en ese punto.
 func (e tapeEdgePath) at(p float64) (u, v, nx, ny float64) {
 	s := (math.Mod(p, 1) + 1)
 	s = math.Mod(s, 1) * e.cum[len(e.cum)-1]
@@ -960,7 +981,7 @@ func (e tapeEdgePath) at(p float64) (u, v, nx, ny float64) {
 	return a[0] + (b[0]-a[0])*f, a[1] + (b[1]-a[1])*f, ty, -tx
 }
 
-// sortSearch is the index of the first value in cum greater than s.
+// sortSearch es el índice del primer valor de cum mayor que s.
 func sortSearch(cum []float64, s float64) int {
 	i, _ := slices.BinarySearch(cum, s)
 	for i < len(cum) && cum[i] <= s {
@@ -969,21 +990,21 @@ func sortSearch(cum []float64, s float64) int {
 	return i
 }
 
-// tapeSpeck is one speck of dust of light drifting along the edge: where it
-// is (p, a fraction of the way around, and off, out of the edge), its
-// speed, how big and how white it is, its twinkle and how long it lives.
+// tapeSpeck es una mota de polvo de luz que flota a lo largo del borde:
+// dónde está (p, una fracción de la vuelta, y off, hacia fuera del borde),
+// su velocidad, lo grande y lo blanca que es, su parpadeo y cuánto vive.
 type tapeSpeck struct {
 	big                     bool
 	p, v, off, ph, life     float64
 	r, vmax, white, tw, end float64
 }
 
-// tapeDust is the specks of light, always the same (a fixed seed): six big
-// ones (the light leaks, drifting slower) and twelve small ones.
+// tapeDust son las motas de luz, siempre las mismas (una semilla fija): seis
+// grandes (las fugas de luz, que flotan más despacio) y doce pequeñas.
 type tapeDust struct {
 	specks []tapeSpeck
 	rnd    *rand.Rand
-	t      float64 // the app's time it was moved to
+	t      float64 // el tiempo de la app hasta el que se movió
 }
 
 func newTapeDust() *tapeDust {
@@ -1002,9 +1023,9 @@ func newTapeDust() *tapeDust {
 	return d
 }
 
-// step moves the dust by one app frame (1/60 s): each speck's speed takes a
-// random kick, so it keeps changing direction; it fades out at the end of
-// its life and comes back somewhere else.
+// step mueve el polvo un frame de la app (1/60 s): la velocidad de cada mota
+// recibe un empujón al azar, así que no para de cambiar de dirección; al
+// acabar su vida se apaga y vuelve en otro sitio.
 func (d *tapeDust) step() {
 	const dt = 1.0 / 60
 	for i := range d.specks {
@@ -1023,8 +1044,8 @@ func (d *tapeDust) step() {
 	}
 }
 
-// moveTo moves the dust to the app's time t, a frame at a time (at most a
-// second's worth, after a pause).
+// moveTo lleva el polvo hasta el tiempo t de la app, de frame en frame (como
+// mucho un segundo, tras una pausa).
 func (d *tapeDust) moveTo(t float64) {
 	for n := 0; d.t < t && n < 60; n++ {
 		d.step()
@@ -1033,9 +1054,10 @@ func (d *tapeDust) moveTo(t float64) {
 	d.t = max(d.t, t-1.0/60)
 }
 
-// fitHand fits s in maxW the way a hand does: written tighter as it runs
-// out of room, down to minSq of its width, then cut with an ellipsis. width
-// measures a string; it returns what to write and how much to squeeze it.
+// fitHand encaja s en maxW como lo haría una mano: más apretado según se
+// queda sin sitio, hasta minSq de su ancho, y luego cortado con puntos
+// suspensivos. width mide un texto; devuelve qué escribir y cuánto
+// apretarlo.
 func fitHand(s string, maxW, minSq float64, width func(string) float64) (string, float64) {
 	s = strings.TrimSpace(s)
 	w := width(s)
@@ -1053,16 +1075,17 @@ func fitHand(s string, maxW, minSq float64, width func(string) float64) (string,
 	return strings.TrimRight(string(r), " ") + "…", sq
 }
 
-// tapeFonts are the handwriting fonts (Caveat, OFL), read the first time a
-// label is written: regular and bold, and their faces by size.
+// tapeFonts son las fuentes de letra a mano (Caveat, OFL), que se leen la
+// primera vez que se escribe una etiqueta: normal y negrita, y sus caras por
+// tamaño.
 var tapeFonts struct {
 	read  bool
 	fonts [2]*opentype.Font
 	faces map[[2]int]text.Face
 }
 
-// handFace is Caveat at px pixels, smooth (unlike the pixel fonts); nil if
-// it could not be read.
+// handFace es Caveat a px píxeles, suavizada (al contrario que las fuentes
+// de píxeles); nil si no se pudo leer.
 func handFace(bold bool, px int) (text.Face, *opentype.Font) {
 	tf := &tapeFonts
 	if !tf.read {
@@ -1090,8 +1113,8 @@ func handFace(bold bool, px int) (text.Face, *opentype.Font) {
 	return tf.faces[[2]int{w, px}], f
 }
 
-// handCovers says whether f has every letter of s: Caveat has Latin and
-// Cyrillic, not Chinese, Japanese, Korean, Arabic, Hindi or Thai.
+// handCovers dice si f tiene todas las letras de s: Caveat tiene latino y
+// cirílico, no chino, japonés, coreano, árabe, hindi ni tailandés.
 func handCovers(f *opentype.Font, s string) bool {
 	var buf sfnt.Buffer
 	for _, r := range s {
@@ -1105,9 +1128,9 @@ func handCovers(f *opentype.Font, s string) bool {
 	return true
 }
 
-// writeLabel writes the song's title and artist by hand on the label's two
-// lines, centered and a little tilted. What Caveat cannot write goes in the
-// app's own font, upright.
+// writeLabel escribe a mano el título y el artista de la canción en las dos
+// líneas de la etiqueta, centrados y un poco inclinados. Lo que Caveat no
+// puede escribir va con la fuente de la app, derecho.
 func writeLabel(dst *ebiten.Image, L *tapeLayers, title, artist string, bold bool, scale float64) {
 	m := L.m
 	ink := rgbHex(0x1a1170)
@@ -1146,20 +1169,20 @@ func writeLabel(dst *ebiten.Image, L *tapeLayers, title, artist string, bold boo
 	}
 }
 
-// tapeState is what the cassette keeps between frames. Only the UI thread
-// touches it.
+// tapeState es lo que el casete guarda de un frame a otro. Solo lo toca el
+// hilo de la interfaz.
 var tapeState struct {
 	layers   *tapeLayers
 	textKey  string
-	text     *ebiten.Image // the label written by hand
+	text     *ebiten.Image // la etiqueta escrita a mano
 	coverKey string
-	cover    *ebiten.Image // the cover cut to the label's shape
-	frame    *ebiten.Image // the cassette put together this frame
-	refl     *ebiten.Image // its lower part upside down, for the reflection
+	cover    *ebiten.Image // la portada recortada con la forma de la etiqueta
+	frame    *ebiten.Image // el casete montado en este frame
+	refl     *ebiten.Image // su parte de abajo boca abajo, para el reflejo
 	dust     *tapeDust
 }
 
-// tapeImage keeps img at w×h, making it again if the size changed.
+// tapeImage mantiene img a w×h, y la vuelve a crear si cambió el tamaño.
 func tapeImage(img **ebiten.Image, w, h int) *ebiten.Image {
 	if *img == nil || (*img).Bounds().Dx() != w || (*img).Bounds().Dy() != h {
 		if *img != nil {
@@ -1170,18 +1193,18 @@ func tapeImage(img **ebiten.Image, w, h int) *ebiten.Image {
 	return *img
 }
 
-// tapeLook is the palette and the label's paper (nil for the skin's print)
-// for the skin and paper settings; accent is Settings → Color's, for the
-// "screen" skin, and black says that color is Black, whose accent is light
-// (to show on black): there "screen" is the black skin with a black label.
-// With "From the skin", a skin of one color gives the label that color, as
-// if it were chosen as the paper.
+// tapeLook es la paleta y el papel de la etiqueta (nil para el estampado del
+// aspecto) según los ajustes de aspecto y papel; accent es el de Ajustes →
+// Color, para el aspecto "screen", y black dice que ese color es Negro, cuyo
+// acento es claro (para verse sobre negro): ahí "screen" es el aspecto negro
+// con la etiqueta negra. Con "Del aspecto", un aspecto de un solo color le
+// da ese color a la etiqueta, como si se hubiera elegido de papel.
 func tapeLook(skin, paperID string, cover *[4]color.RGBA, accent color.RGBA, black bool) (tapePalette, *color.RGBA) {
 	pal, paper, own := tapeSkinPalette(skin, cover), tapePaper(paperID), tapePaper(skin)
 	if skin == "screen" {
 		pal, own = tapeSolidOf(accent), &accent
 		if black {
-			k := rgbHex(0x1a1b1f) // a little darker than the plastic around it
+			k := rgbHex(0x1a1b1f) // un poco más oscuro que el plástico de alrededor
 			pal, own = tapeSkinPalette("black", nil), &k
 		}
 	}
@@ -1191,8 +1214,8 @@ func tapeLook(skin, paperID string, cover *[4]color.RGBA, accent color.RGBA, bla
 	return pal, paper
 }
 
-// tapeLayersFor returns the layers for a cassette w pixels wide in the
-// current look, painting them again if something changed.
+// tapeLayersFor devuelve las capas de un casete de w píxeles de ancho con el
+// aspecto actual, y las vuelve a pintar si algo cambió.
 func (a *App) tapeLayersFor(w int, cover *[4]color.RGBA) *tapeLayers {
 	cfg, black := a.cfg.UI.Tape, a.themeColor() == "black"
 	key := fmt.Sprint(w, cfg.Skin, cfg.Paper, cfg.Glow != "off")
@@ -1200,7 +1223,7 @@ func (a *App) tapeLayersFor(w int, cover *[4]color.RGBA) *tapeLayers {
 		key += fmt.Sprint(*cover)
 	}
 	if cfg.Skin == "screen" {
-		key += fmt.Sprint(a.theme.Accent, black) // follows the album when Color is "album"
+		key += fmt.Sprint(a.theme.Accent, black) // sigue al disco cuando Color es "album"
 	}
 	st := &tapeState
 	if st.layers == nil || st.layers.key != key {
@@ -1214,15 +1237,15 @@ func (a *App) tapeLayersFor(w int, cover *[4]color.RGBA) *tapeLayers {
 	return st.layers
 }
 
-// toggleCassette switches the player between the cover with the vinyl and
-// the cassette (a tap on either, or Settings → Cassette).
+// toggleCassette cambia el reproductor entre la portada con el vinilo y el
+// casete (tocando cualquiera de los dos, o en Ajustes → Casete).
 func (a *App) toggleCassette() {
 	a.cfg.UI.Cassette = !a.cfg.UI.Cassette
 	a.saveConfig()
 }
 
-// tapeGlowLevel is how brightly the glow is added now: steady, breathing
-// every 4 s, or with the bass (like the background).
+// tapeGlowLevel es con cuánta fuerza se suma ahora el resplandor: fijo,
+// respirando cada 4 s, o con los graves (como el fondo).
 func (a *App) tapeGlowLevel() float32 {
 	switch tapeAnim(a.cfg.UI.Tape.GlowAnim) {
 	case "breathe":
@@ -1233,14 +1256,15 @@ func (a *App) tapeGlowLevel() float32 {
 	return 1
 }
 
-// drawTape draws the cassette with its body's corner at (x, y), w pixels
-// wide: al's cover as the label (or the song written by hand), the reels
-// turned by a.reels and the tape split according to progress, its glow and
-// its reflection under it. flash is the song-change flash. It returns the
-// label's rectangle, so the icons (favorite, timer...) can go on top.
+// drawTape dibuja el casete con la esquina del cuerpo en (x, y), de w
+// píxeles de ancho: la portada de al de etiqueta (o la canción escrita a
+// mano), los carretes girados según a.reels y la cinta repartida según
+// progress, su resplandor y su reflejo debajo. flash es el destello del
+// cambio de canción. Devuelve el rectángulo de la etiqueta, para que los
+// iconos (favorito, temporizador...) vayan encima.
 func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float64, flash float32) image.Rectangle {
 	if w < 16 {
-		return image.Rectangle{} // nothing to draw (the warm-up's tiny canvas)
+		return image.Rectangle{} // nada que dibujar (el lienzo diminuto de warmUp)
 	}
 	cfg, st := a.cfg.UI.Tape, &tapeState
 	var cover *[4]color.RGBA
@@ -1255,8 +1279,8 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 	f.Clear()
 	f.DrawImage(L.shell, nil)
 
-	// The label: the song written by hand, then the cover over it as it
-	// loads.
+	// La etiqueta: la canción escrita a mano, y encima la portada según va
+	// cargando.
 	lx0, ly0 := int(math.Round(float64(m.x(tapeLabel[0])))), int(math.Round(float64(m.y(tapeLabel[1]))))
 	iw, ih := int(math.Round(float64(m.d(tapeLabel[2]-tapeLabel[0])))), int(math.Round(float64(m.d(tapeLabel[3]-tapeLabel[1]))))
 	art := image.Rect(x-int(m.p)+lx0, y-int(m.p)+ly0, x-int(m.p)+lx0+iw, y-int(m.p)+ly0+ih)
@@ -1282,7 +1306,7 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 			c.Clear()
 			b := img.Bounds()
 			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(float64(lx0), float64(ly0-(b.Dy()-ih)/8)) // the top strip, where titles usually are
+			op.GeoM.Translate(float64(lx0), float64(ly0-(b.Dy()-ih)/8)) // la franja de arriba, donde suelen ir los títulos
 			c.DrawImage(img, op)
 			c.DrawImage(L.mask, &ebiten.DrawImageOptions{Blend: ebiten.BlendDestinationIn})
 			st.coverKey = key
@@ -1298,14 +1322,15 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 	}
 	f.DrawImage(L.window, nil)
 
-	// The glow, the light leaks or the dust, and the orbiting light, as
-	// light added on top.
+	// El resplandor, las fugas de luz o el polvo, y la luz que da vueltas,
+	// sumados encima como luz.
 	if L.glow != nil {
 		lv := a.tapeGlowLevel()
 		light := &ebiten.DrawImageOptions{Blend: ebiten.BlendLighter}
 		light.ColorScale.Scale(lv, lv, lv, lv)
 		f.DrawImage(L.glow, light)
-		// dot adds a soft dot of light of radius r (in body widths) at (u, v).
+		// dot suma un punto de luz suave de radio r (en anchos del cuerpo) en
+		// (u, v).
 		dot := func(u, v, r float64, c color.RGBA, k float32) {
 			op := &ebiten.DrawImageOptions{Blend: ebiten.BlendLighter, Filter: ebiten.FilterLinear}
 			s := 2 * r * float64(m.w) / tapeDotSize
@@ -1343,7 +1368,7 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 		}
 	}
 
-	// The tape on each reel, seen through the glass.
+	// La cinta de cada carrete, vista por la ventanilla.
 	full := float64(m.d(tapeFull))
 	rl, rr := reelRadii(progress)
 	sop := &ebiten.DrawRectShaderOptions{}
@@ -1359,7 +1384,8 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 	}
 	f.DrawRectShader(int(math.Ceil(float64(vx1)))-int(vx0)+1, int(math.Ceil(float64(vy1)))-int(vy0)+1, tapeShader, sop)
 
-	// The reels, turning (both the same way, like playing side A).
+	// Los carretes, girando (los dos hacia el mismo lado, como sonando la
+	// cara A).
 	half := float64(L.reel.Bounds().Dx()) / 2
 	for i, u := range tapeReelU {
 		ang := a.reels.left
@@ -1374,8 +1400,8 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 	}
 	f.DrawImage(L.over, nil)
 
-	// On the screen, dithered: the cassette cut at the floor (the floor
-	// hides its glow below), and its reflection added under it.
+	// En pantalla, con trama: el casete cortado en el suelo (el suelo tapa su
+	// brillo de debajo), y su reflejo sumado debajo.
 	ox, oy := float64(x)-float64(m.p), float64(y)-float64(m.p)
 	h := L.floor
 	if cfg.NoReflection {
@@ -1402,7 +1428,7 @@ func (a *App) drawTape(dst *ebiten.Image, al *Album, x, y, w int, progress float
 	return art
 }
 
-// cmp0 is v, or def when v is 0 (a setting left at its default).
+// cmp0 es v, o def cuando v es 0 (un ajuste que se dejó por defecto).
 func cmp0(v, def int) int {
 	if v == 0 {
 		return def

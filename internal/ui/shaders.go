@@ -131,11 +131,12 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 }
 `
 
-// tapeSrc paints the tape wound on the cassette's reels (cassette.go), seen
-// through its glass (View, a rectangle with corners rounded to ViewR): on
-// each reel (centers Left and Right, radii Radii) amber, darker towards the
-// core (radius Core), with a groove every 3 px from the core outward and a
-// lit edge. One draw per frame at any radius, so seeking costs nothing extra.
+// tapeSrc pinta la cinta enrollada en los carretes del casete (cassette.go),
+// vista por su ventanilla (View, un rectángulo con las esquinas redondeadas a
+// ViewR): en cada carrete (centros Left y Right, radios Radii) ámbar, más
+// oscura hacia el núcleo (radio Core), con un surco cada 3 px desde el núcleo
+// hacia fuera y el borde iluminado. Un solo dibujo por frame con cualquier
+// radio, así que buscar no cuesta nada más.
 const tapeSrc = `//kage:unit pixels
 package main
 
@@ -146,8 +147,8 @@ var Core float
 var View vec4
 var ViewR float
 
-// roll lays over c the tape on the reel centered at center, of radius r,
-// with an anti-aliased edge; each groove is a line one pixel wide.
+// roll pone sobre c la cinta del carrete con centro center y radio r, con
+// el borde suavizado; cada surco es una línea de un píxel de ancho.
 func roll(c vec4, p vec2, center vec2, r float) vec4 {
 	d := length(p - center)
 	t := clamp((d-Core)/max(r-Core, 0.001), 0, 1)
@@ -175,11 +176,11 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 }
 `
 
-// tapeMixSrc puts the cassette on the screen (cassette.go), dithered like
-// the covers (ditherCover: each channel down to 16 levels with the 4×4
-// Bayer pattern). With Reflect, it is the reflection under it, Height rows
-// of its lower part already upside down, added as light: fading out, with
-// faint streaks two rows high, smeared sideways only further down.
+// tapeMixSrc pone el casete en pantalla (cassette.go) con trama, como las
+// portadas (ditherCover: cada canal a 16 niveles con la trama de Bayer 4×4).
+// Con Reflect es el reflejo de debajo, Height filas de su parte de abajo ya
+// dadas la vuelta, sumadas como luz: se va apagando, con rayas tenues de dos
+// filas de alto, y solo más abajo se emborrona de lado.
 const tapeMixSrc = `//kage:unit pixels
 package main
 

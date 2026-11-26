@@ -57,7 +57,7 @@ type Album struct {
 	mu       sync.Mutex
 	decoded  bool // ya se leyó la portada una vez (para sus colores)
 	accent   [2]color.RGBA
-	tapeCols [4]color.RGBA // the cover's four colors, for the cassette's "cover" skin (cassette.go)
+	tapeCols [4]color.RGBA // los cuatro colores de la portada, para el aspecto "cover" del casete (cassette.go)
 	hasColor bool          // accent ya sale de la portada
 
 	scaled  map[int]*coverImage // solo se toca desde el hilo de la interfaz

@@ -9,9 +9,9 @@ import (
 	"unicode/utf8"
 )
 
-// TestReelRadiiKeepTape checks that the cassette's tape is neither gained nor
-// lost: it starts all on the left, ends all on the right and, in between,
-// the total on both reels (the area) stays the same.
+// TestReelRadiiKeepTape comprueba que la cinta del casete ni se gana ni se
+// pierde: empieza toda a la izquierda, acaba toda a la derecha y, entre
+// medias, el total de los dos carretes (el área) no cambia.
 func TestReelRadiiKeepTape(t *testing.T) {
 	area := func(r float64) float64 { return r*r - reelCore*reelCore }
 	if l, r := reelRadii(0); l != 1 || math.Abs(r-reelCore) > 1e-9 {
@@ -28,8 +28,8 @@ func TestReelRadiiKeepTape(t *testing.T) {
 	}
 }
 
-// TestReelsEmptyTurnsFaster checks that the reel with less tape turns faster
-// (the tape runs at a fixed speed).
+// TestReelsEmptyTurnsFaster comprueba que el carrete con menos cinta gira
+// más rápido (la cinta corre a velocidad fija).
 func TestReelsEmptyTurnsFaster(t *testing.T) {
 	var c cassetteReels
 	c.turn(0.1, 0.1)
@@ -43,9 +43,10 @@ func TestReelsEmptyTurnsFaster(t *testing.T) {
 	}
 }
 
-// TestCoverColors4 checks that a cover's four most vivid colors come out one
-// per hue and in order around the color wheel (so the cassette's gradient
-// flows), and that a gray cover gets the chrome skin.
+// TestCoverColors4 comprueba que los cuatro colores más vivos de una portada
+// salen uno por tono y en orden alrededor de la rueda de color (para que el
+// degradado del casete fluya), y que una portada gris se queda con el aspecto
+// cromo.
 func TestCoverColors4(t *testing.T) {
 	stripes := []color.RGBA{{255, 40, 40, 255}, {40, 255, 40, 255}, {40, 40, 255, 255}, {255, 220, 40, 255}}
 	img := image.NewRGBA(image.Rect(0, 0, 64, 64))
@@ -94,8 +95,8 @@ func TestCoverColors4(t *testing.T) {
 	}
 }
 
-// TestTapeEdgeOutward checks the outline the specks of light travel on:
-// each point lies on the body's edge and its normal points out of it.
+// TestTapeEdgeOutward comprueba el contorno por el que viajan las motas de
+// luz: cada punto está en el borde del cuerpo y su normal apunta hacia fuera.
 func TestTapeEdgeOutward(t *testing.T) {
 	const w = 1000
 	body := tapeBody(tapeMap{0, w})
@@ -111,9 +112,9 @@ func TestTapeEdgeOutward(t *testing.T) {
 	}
 }
 
-// TestDustStaysOnEdge checks that the specks of light keep to the edge as
-// they drift for two minutes, and that each one, at the end of its life,
-// comes back somewhere else.
+// TestDustStaysOnEdge comprueba que las motas de luz no se salen del borde
+// mientras flotan durante dos minutos, y que cada una, al acabar su vida,
+// vuelve en otro sitio.
 func TestDustStaysOnEdge(t *testing.T) {
 	d := newTapeDust()
 	reborn := 0
@@ -134,9 +135,9 @@ func TestDustStaysOnEdge(t *testing.T) {
 	}
 }
 
-// TestFitHand checks how a long title is written by hand: tighter first,
-// down to 78% of its width, then cut with an ellipsis; with no squeezing
-// (the app's pixel fonts) it is only cut.
+// TestFitHand comprueba cómo se escribe a mano un título largo: primero más
+// apretado, hasta el 78% de su ancho, y luego cortado con puntos suspensivos;
+// sin apretar (las fuentes de píxeles de la app) solo se corta.
 func TestFitHand(t *testing.T) {
 	width := func(s string) float64 { return float64(utf8.RuneCountInString(s)) }
 	if s, sq := fitHand("abcdefghij", 10, 0.78, width); s != "abcdefghij" || sq != 1 {
@@ -155,10 +156,10 @@ func TestFitHand(t *testing.T) {
 	}
 }
 
-// TestTapeSettings checks the cassette's section in Settings: with the
-// cassette off only its switch shows; its choices cycle and land in the
-// config; the glow's animation hides with no glow, the specks' size with
-// no specks.
+// TestTapeSettings comprueba la sección del casete en Ajustes: con el casete
+// apagado solo se ve su interruptor; sus opciones se recorren y acaban en la
+// configuración; la animación del resplandor se oculta sin resplandor, y el
+// tamaño de las motas sin motas.
 func TestTapeSettings(t *testing.T) {
 	a := &App{offline: true}
 	shown := func() map[int]bool {
@@ -190,9 +191,9 @@ func TestTapeSettings(t *testing.T) {
 	}
 }
 
-// TestTapeStringsFilled checks that no text of the cassette is empty in any
-// language: its table has a slot per language, and one left out would show
-// nothing.
+// TestTapeStringsFilled comprueba que ningún texto del casete está vacío en
+// ningún idioma: su tabla tiene un hueco por idioma, y uno olvidado no
+// mostraría nada.
 func TestTapeStringsFilled(t *testing.T) {
 	for l, m := range strs {
 		for k, v := range m {
@@ -203,8 +204,9 @@ func TestTapeStringsFilled(t *testing.T) {
 	}
 }
 
-// TestTapeShellPainted checks the body painted on the CPU: solid in the
-// middle, clear outside its rounded corner, and its light along the edge.
+// TestTapeShellPainted comprueba el cuerpo pintado en la CPU: opaco en el
+// centro, transparente fuera de su esquina redondeada, y con su luz a lo
+// largo del borde.
 func TestTapeShellPainted(t *testing.T) {
 	const w, p = 192, 20
 	m := tapeMap{p, w}
@@ -225,11 +227,12 @@ func TestTapeShellPainted(t *testing.T) {
 	}
 }
 
-// TestTapeLookPaper checks the label's paper with "From the skin": a skin of
-// one color (a paper's, or the screen's) gives its color, so a navy label
-// gets the light ink; the others keep their print, and a chosen paper wins.
-// On the Black screen color (its accent is light) "screen" is the black skin
-// with a black label.
+// TestTapeLookPaper comprueba el papel de la etiqueta con "Del aspecto": un
+// aspecto de un solo color (el de un papel, o el de la pantalla) le da su
+// color, así que una etiqueta azul marino lleva la tinta clara; los demás
+// conservan su estampado, y un papel elegido manda. Con el color de pantalla
+// Negro (su acento es claro), "screen" es el aspecto negro con la etiqueta
+// negra.
 func TestTapeLookPaper(t *testing.T) {
 	accent := rgbHex(0x123456)
 	for _, c := range []struct {
@@ -259,9 +262,10 @@ func TestTapeLookPaper(t *testing.T) {
 	}
 }
 
-// TestTapeTooSmall checks that a cassette too narrow to draw (the warm-up
-// draws every screen on a 16×16 canvas) draws nothing instead of asking for
-// an image with no size, which crashed the app at startup.
+// TestTapeTooSmall comprueba que un casete demasiado estrecho para dibujarse
+// (el calentamiento dibuja todas las pantallas en un lienzo de 16×16) no
+// dibuja nada en vez de pedir una imagen sin tamaño, que tumbaba la app al
+// arrancar.
 func TestTapeTooSmall(t *testing.T) {
 	a := &App{offline: true}
 	if r := a.drawTape(nil, nil, 0, 0, -4, 0.5, 0); !r.Empty() {

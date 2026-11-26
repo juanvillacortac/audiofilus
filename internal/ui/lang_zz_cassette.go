@@ -1,8 +1,8 @@
 package ui
 
-// The texts of the player's cassette (Settings → Cassette, cassette.go):
-// its section, its tiles and their choices, in all twenty-one languages, in
-// the order of languages.
+// Los textos del casete del reproductor (Ajustes → Casete, cassette.go): su
+// sección, sus casillas y sus opciones, en los veintiún idiomas, en el orden
+// de los idiomas.
 func init() {
 	for key, vals := range map[string][21]string{
 		"set_cassette": {"Casete", "Cassette", "Cassete", "Cassette", "Cassetta", "Kassette", "Cassette", "Kassett", "Kaseta", "Kaset",
@@ -86,7 +86,7 @@ func init() {
 			}
 		}
 	}
-	// The solid skins are named like the papers of the same color.
+	// Los aspectos de un solo color se llaman como el papel de ese color.
 	for _, p := range tapePapers[1:] {
 		for _, l := range languages {
 			if strs[l] != nil {
@@ -94,7 +94,7 @@ func init() {
 			}
 		}
 	}
-	// The skins named after a style, the same in every language.
+	// Los aspectos con nombre de estilo, iguales en todos los idiomas.
 	for key, v := range map[string]string{"tape_skin_neon": "Neon", "tape_skin_cyber": "Cyberpunk", "tape_skin_vapor": "Vaporwave"} {
 		for _, l := range languages {
 			if strs[l] != nil {

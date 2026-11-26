@@ -290,7 +290,7 @@ var iconArt = map[string]string{
 ##...##
 .#####.
 ..###..`,
-	// tape is the player's cassette icon (Settings → Cassette).
+	// tape es el icono del casete del reproductor (Ajustes → Casete).
 	"tape": `
 #########
 #.......#

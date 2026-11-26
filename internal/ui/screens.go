@@ -531,19 +531,18 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	}
 
 	var size, cx, cy, textW int
+	// Un audiolibro va siempre en casete (cassette.go), esté o no puesto en
+	// Ajustes → Casete.
 	book := a.isBook(song.Path)
-	// artW is how far right of cx the art reaches at a given cover size:
-	// the cassette, or the cover with the vinyl (or the audiobook's tape)
-	// peeking out, so the text starts right after whichever is shown.
+	tape := a.cfg.UI.Cassette || book
+	// artW es hasta dónde llega a la derecha de cx lo que se dibuja con una
+	// portada de ese tamaño: el casete, o la portada con el vinilo asomando;
+	// el texto empieza justo después.
 	artW := func(size int) int {
-		slide, r := size*34/100, size/2-3
-		switch {
-		case a.cfg.UI.Cassette:
+		if tape {
 			return size * 3 / 2
-		case book:
-			return size/2 + slide + r/3 + r
 		}
-		return size/2 + slide + r + 1
+		return size/2 + size*34/100 + size/2 - 3 + 1
 	}
 	// En una ventana más apaisada que 21:9 (el escritorio, framed.go), la
 	// portada y los textos van centrados, con el ancho de texto de un bloque
@@ -586,48 +585,40 @@ func (a *App) drawNowPlaying(dst *ebiten.Image) {
 	if a.duration > 0 {
 		progress = a.shownPos / a.duration
 	}
-	// art is the cover's rectangle, where the icons go on top.
+	// art es el rectángulo de la portada, donde van encima los iconos.
 	var art image.Rectangle
-	if a.cfg.UI.Cassette {
-		// Settings → Cassette: a whole cassette with the cover as its label
-		// (cassette.go), in the space of the cover and vinyl; it slides in
-		// from the side on song change, like the cover. Its reflection goes
-		// under the text below, drawn after it.
+	if tape {
+		// Un casete entero con la portada de etiqueta (cassette.go), en el
+		// sitio de la portada y el vinilo; entra desde el lado al cambiar de
+		// canción, como la portada. Su reflejo queda bajo el texto de abajo,
+		// que se dibuja después.
 		a.reels.turn(turn, progress)
 		cw := size * 3 / 2
 		if !wide {
-			// No wider than what is under it (the spectrum, the bar).
+			// No más ancho que lo de debajo (el espectro, la barra).
 			cw = max(min(cw, w-2*margin), 16)
 		}
 		ch := int(float64(cw) * cassetteRatio)
 		x := cx
 		if !wide {
-			x = (w - cw) / 2 // centered, like the text under it (no vinyl to make room for)
+			x = (w - cw) / 2 // centrado, como el texto de debajo (no hay vinilo al que dejar sitio)
 		}
-		// Up against the top bar: its glow (the room above the body,
-		// cassette.go) starts right under it, with no gap.
+		// Pegado a la barra de arriba: su brillo (el margen sobre el cuerpo,
+		// cassette.go) empieza justo debajo, sin hueco.
 		y := min(cy+(size-ch)/2, topH+int(math.Ceil(float64(cw)*0.08))+2)
 		art = a.drawTape(dst, al, x+a.coverOffset(size), y, cw, progress, a.coverFlash())
 		a.prefetchCovers(al, art.Dx())
-		// A tap on the cassette goes back to the cover (and the other way).
-		a.tapZone(x, y, cw, ch, a.toggleCassette)
-	} else {
-		if book {
-			// Un audiolibro: un casete en vez del vinilo (bookart.go), con la
-			// cinta pasando de un carrete al otro según lo escuchado.
-			// Un poco más afuera que el vinilo: que se vea el carrete de la derecha.
-			drawCassette(dst, cx+size/2+slide+r/3, cy+size/2, r, a.spin, progress, th)
-		} else {
-			drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
+		// Con pantalla táctil, tocar el casete vuelve al vinilo (y al revés).
+		// En un audiolibro no: sería siempre casete.
+		if !book {
+			a.tapZone(x, y, cw, ch, a.toggleCassette)
 		}
+	} else {
+		drawVinyl(dst, cx+size/2+slide, cy+size/2, r, a.spin, th.Accent)
 		// La portada entra desde el lado al cambiar de canción, con un destello.
 		ox := a.coverOffset(size)
 		rect(dst, cx+2+ox, cy+2, size, size, th.Shadow)
-		if book && (al == nil || !al.HasCover()) {
-			drawBookArt(dst, cx+ox, cy, size, th) // sin portada: un librito
-		} else {
-			a.drawCover(dst, al, cx+ox, cy, size, 1)
-		}
+		a.drawCover(dst, al, cx+ox, cy, size, 1)
 		if f := a.coverFlash(); f > 0 {
 			rect(dst, cx+ox, cy, size, size, withAlpha(th.Text, uint8(150*f)))
 		}

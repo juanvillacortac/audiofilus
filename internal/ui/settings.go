@@ -161,7 +161,7 @@ var settingSections = []settingSection{
 		{setVControls, "screen", tileChoice},
 		{setScreens, "screen", tileAction},
 	}},
-	// The player's cassette (cassette.go): with it off, only the switch.
+	// El casete del reproductor (cassette.go): apagado, solo el interruptor.
 	{"sec_cassette", []settingTile{
 		{setCassette, "tape", tileToggle},
 		{setTapeSkin, "palette", tileChoice},
@@ -233,8 +233,9 @@ func (a *App) sections() []settingSection {
 		setVControls: !handheldUI || a.mobile() || a.cfg.UI.Orientation == "",
 		// Los VGM van con libvgm solo en Linux (las portátiles y el PC).
 		setVGMAccurate: runtime.GOOS != "linux"}
-	// The cassette's look only with the cassette on; its glow's animation
-	// only with a glow, and the specks' size only with the specks.
+	// El aspecto del casete solo con el casete puesto; la animación del
+	// resplandor solo si hay resplandor, y el tamaño de las motas solo con
+	// las motas.
 	tape := a.cfg.UI.Tape
 	for id := setTapeSkin; id <= setTapeReflect; id++ {
 		hide[id] = !a.cfg.UI.Cassette
@@ -596,8 +597,8 @@ var (
 	// vControls son los de config.UI.VerticalControls: dos manos o una.
 	vControls   = []string{"", "one"}
 	soundLevels = []string{"off", "low", "", "high"} // "" es el medio, el de por defecto
-	// The cassette's choices (config.TapeUI), in order; the skins and the
-	// papers are tapeSkins and tapePapers (cassette.go).
+	// Las opciones del casete (config.TapeUI), en orden; los aspectos y los
+	// papeles son tapeSkins y tapePapers (cassette.go).
 	tapeLabelModes = []string{"", "hand"}
 	tapeHands      = []int{80, 100, 120, 140, 160}
 	tapeGlows      = []string{"", "static", "off"}

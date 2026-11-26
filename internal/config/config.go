@@ -183,9 +183,9 @@ type UI struct {
 	// etiquetas (artista del álbum y álbum): cada carpeta con música es un
 	// álbum, con su nombre.
 	AlbumsByFolder bool `json:"albums_by_folder,omitempty"`
-	// Cassette shows a cassette in the player with the cover as its label,
-	// instead of the cover with the vinyl peeking out; Tape is how it looks
-	// (Settings → Cassette).
+	// Cassette muestra en el reproductor un casete con la portada de
+	// etiqueta, en vez de la portada con el vinilo asomando; Tape es su
+	// aspecto (Ajustes > Casete).
 	Cassette bool   `json:"cassette,omitempty"`
 	Tape     TapeUI `json:"tape,omitzero"`
 	// HiddenFormats son, por sección de la biblioteca ("songs", "albums",
@@ -227,33 +227,33 @@ type UI struct {
 	RadioDir  string  `json:"radio_dir,omitempty"`
 }
 
-// TapeUI is how the player's cassette looks (Settings → Cassette). Every
-// zero value is the default, so an untouched cassette writes nothing.
+// TapeUI es el aspecto del casete del reproductor (Ajustes > Casete). Cada
+// valor cero es el de por defecto: un casete sin tocar no escribe nada.
 type TapeUI struct {
-	// Skin is its colors: "" neon, or "black", "ocean", "lava", "toxic",
-	// "cyber", "vapor", "chrome", or "cover" (the cover's four most vivid
-	// colors).
+	// Skin son sus colores: "" neón, o "black", "ocean", "lava", "toxic",
+	// "cyber", "vapor", "chrome", o "cover" (los cuatro colores más vivos
+	// de la portada).
 	Skin string `json:"skin,omitempty"`
-	// Label is what goes on it: "" the cover (the title written by hand
-	// when there is none), "hand" always the title written by hand.
+	// Label es lo que lleva pegado: "" la portada (el título escrito a mano
+	// si no hay), "hand" siempre el título escrito a mano.
 	Label string `json:"label,omitempty"`
-	// Paper is the color of the label behind the handwriting: "" the
-	// skin's print, or "white", "yellow", "navy", "pink", "purple", "green",
+	// Paper es el color de la etiqueta detrás de la letra: "" el estampado
+	// del aspecto, o "white", "yellow", "navy", "pink", "purple", "green",
 	// "orange", "red".
 	Paper string `json:"paper,omitempty"`
-	// Thin writes in the regular weight instead of bold.
+	// Thin escribe con el grosor normal en vez de en negrita.
 	Thin bool `json:"thin,omitempty"`
-	// HandSize is the handwriting's size in percent; 0 is 100.
+	// HandSize es el tamaño de la letra en porcentaje; 0 es 100.
 	HandSize int `json:"hand_size,omitempty"`
-	// Glow is the light at its edges: "" drifting specks of dust, "static"
-	// fixed light leaks, "off" none.
+	// Glow es la luz de sus bordes: "" motas de polvo flotando, "static"
+	// fugas de luz quietas, "off" nada.
 	Glow string `json:"glow,omitempty"`
-	// GlowAnim moves the glow: "" or "breathe" breathing, "none" still,
-	// "orbit" (a light going round the edge) or "beat" (with the bass).
+	// GlowAnim mueve el resplandor: "" o "breathe" respira, "none" quieto,
+	// "orbit" (una luz que recorre el borde) o "beat" (con los graves).
 	GlowAnim string `json:"glow_anim,omitempty"`
-	// DustSize is the size of the specks in percent; 0 is 200.
+	// DustSize es el tamaño de las motas en porcentaje; 0 es 200.
 	DustSize int `json:"dust_size,omitempty"`
-	// NoReflection hides its reflection on the floor under it.
+	// NoReflection quita su reflejo en el suelo, debajo.
 	NoReflection bool `json:"no_reflection,omitempty"`
 }
 
