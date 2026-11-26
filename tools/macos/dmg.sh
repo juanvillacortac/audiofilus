@@ -1,12 +1,13 @@
 #!/bin/sh
-# Builds Audiofilus-macos-arm64.dmg and Audiofilus-macos-amd64.dmg on a Mac
-# (either kind): Audiofilus.app with the C decoders in Contents/Frameworks and
-# their licenses in Contents/Resources/licenses, ad-hoc signed, next to an
-# Applications link.
+# Builds Audiofilus-macos.dmg on a Mac (either kind): a universal
+# Audiofilus.app, for Apple Silicon and Intel in one, with the C decoders in
+# Contents/Frameworks and their licenses in Contents/Resources/licenses,
+# ad-hoc signed, next to an Applications link.
 #   tools/macos/libs.sh build/macos   # the decoders, with zig, once
 #   tools/macos/dmg.sh <out dir>
-# The decoders only link to the system's libraries, so both apps come out of
-# the same Mac, and no Homebrew is needed.
+# Every Mach-O file has both parts (lipo), so each Mac runs its own, without
+# Rosetta on Apple Silicon. The decoders only link to the system's libraries,
+# so no Homebrew is needed.
 set -eu
 cd "$(dirname "$0")/../.."
 out=$1
@@ -34,20 +35,22 @@ iconutil -c icns "$set" -o "$work/icon.icns"
 short=${version#v}
 [ "$short" = dev ] && short=0.0.0
 
+app=$work/dmg/Audiofilus.app
+mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources/licenses" "$app/Contents/Frameworks"
 for arch in arm64 amd64; do
-  # The decoders' folders use the other names for the same thing.
-  larch=$([ "$arch" = arm64 ] && echo aarch64 || echo x86_64)
-  app=$work/$arch/Audiofilus.app
-  mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources/licenses" "$app/Contents/Frameworks"
-
   CGO_ENABLED=0 GOOS=darwin GOARCH=$arch go build -trimpath \
     -ldflags="-s -w -X $pkg/version.Version=$version -X $pkg/scrobble.DefaultLastFMKey=${LASTFM_KEY:-} -X $pkg/scrobble.DefaultLastFMSecret=${LASTFM_SECRET:-}" \
-    -o "$app/Contents/MacOS/audiofilus" ./cmd/audiofilus
-  cp "$libs/$larch"/*.dylib "$app/Contents/Frameworks/"
-  cp "$libs/licenses"/* "$app/Contents/Resources/licenses/"
-  cp "$work/icon.icns" "$app/Contents/Resources/icon.icns"
+    -o "$work/audiofilus-$arch" ./cmd/audiofilus
+done
+lipo -create "$work/audiofilus-arm64" "$work/audiofilus-amd64" -output "$app/Contents/MacOS/audiofilus"
+for f in "$libs/aarch64"/*.dylib; do
+  lib=$(basename "$f")
+  lipo -create "$f" "$libs/x86_64/$lib" -output "$app/Contents/Frameworks/$lib"
+done
+cp "$libs/licenses"/* "$app/Contents/Resources/licenses/"
+cp "$work/icon.icns" "$app/Contents/Resources/icon.icns"
 
-  cat >"$app/Contents/Info.plist" <<EOF
+cat >"$app/Contents/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -80,13 +83,12 @@ for arch in arm64 amd64; do
 </dict>
 </plist>
 EOF
-  plutil -lint "$app/Contents/Info.plist" >/dev/null
+plutil -lint "$app/Contents/Info.plist" >/dev/null
 
-  # Ad-hoc: no Apple account, but Apple Silicon won't run unsigned code.
-  codesign --force --deep --sign - "$app"
+# Ad-hoc: no Apple account, but Apple Silicon won't run unsigned code.
+codesign --force --deep --sign - "$app"
 
-  ln -s /Applications "$work/$arch/Applications"
-  dmg=$out/Audiofilus-macos-$arch.dmg
-  hdiutil create -volname Audiofilus -srcfolder "$work/$arch" -ov -format UDZO "$dmg" >/dev/null
-  echo "$dmg"
-done
+ln -s /Applications "$work/dmg/Applications"
+dmg=$out/Audiofilus-macos.dmg
+hdiutil create -volname Audiofilus -srcfolder "$work/dmg" -ov -format UDZO "$dmg" >/dev/null
+echo "$dmg"

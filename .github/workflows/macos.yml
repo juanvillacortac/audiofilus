@@ -1,5 +1,5 @@
-# The macOS apps, Apple Silicon and Intel, as one DMG each (tools/macos/dmg.sh),
-# ad-hoc signed. Run by hand from the Actions tab, on pull requests, and from
+# The macOS app, universal (Apple Silicon and Intel in one), as a DMG
+# (tools/macos/dmg.sh), ad-hoc signed. Run by hand from the Actions tab, on pull requests, and from
 # release.yml.
 name: macOS
 
@@ -15,7 +15,7 @@ on:
 
 jobs:
   dmg:
-    # Both from one Intel Mac: zig builds the decoders for both
+    # On an Intel Mac: zig builds the decoders for both CPUs
     # (tools/macos/libs.sh). The arm64 runners often wait 15 minutes and get
     # cancelled.
     runs-on: macos-15-intel
@@ -43,29 +43,25 @@ jobs:
       - name: The decoders (tools/macos/libs.sh)
         if: steps.libs.outputs.cache-hit != 'true'
         run: tools/macos/libs.sh build/macos
-      - name: The DMGs
+      - name: The DMG
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
         run: |
           [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=$GITHUB_REF_NAME
           tools/macos/dmg.sh out
-      - name: Signed, for the right CPU, only the system's libraries, and the Intel one starts
+      - name: Signed, for both CPUs, only the system's libraries, and it starts
         run: |
-          for arch in arm64 amd64; do
-            mnt=/tmp/af-$arch
-            hdiutil attach out/Audiofilus-macos-$arch.dmg -mountpoint $mnt -nobrowse
-            codesign --verify --deep $mnt/Audiofilus.app
-            want=$([ $arch = arm64 ] && echo arm64 || echo x86_64)
-            for f in $mnt/Audiofilus.app/Contents/MacOS/audiofilus $mnt/Audiofilus.app/Contents/Frameworks/*.dylib; do
-              file -b "$f" | grep -q "$want" || { echo "$f is not $want"; exit 1; }
-            done
-            if otool -L $mnt/Audiofilus.app/Contents/Frameworks/*.dylib | grep -v -E '^/|@rpath|/usr/lib/lib(System.B|iconv.2)'; then exit 1; fi
+          mnt=/tmp/af
+          hdiutil attach out/Audiofilus-macos.dmg -mountpoint $mnt -nobrowse
+          codesign --verify --deep $mnt/Audiofilus.app
+          for f in $mnt/Audiofilus.app/Contents/MacOS/audiofilus $mnt/Audiofilus.app/Contents/Frameworks/*.dylib; do
+            [ "$(lipo -archs "$f")" = "x86_64 arm64" ] || { echo "$f is $(lipo -archs "$f"), not x86_64 and arm64"; exit 1; }
           done
-          /tmp/af-amd64/Audiofilus.app/Contents/MacOS/audiofilus version
-          /tmp/af-amd64/Audiofilus.app/Contents/MacOS/audiofilus bench "$PWD/internal/decode/testdata/tone.m4a"
-          hdiutil detach /tmp/af-arm64
-          hdiutil detach /tmp/af-amd64
+          if otool -L $mnt/Audiofilus.app/Contents/Frameworks/*.dylib | grep -v -E '^/|@rpath|/usr/lib/lib(System.B|iconv.2)'; then exit 1; fi
+          $mnt/Audiofilus.app/Contents/MacOS/audiofilus version
+          $mnt/Audiofilus.app/Contents/MacOS/audiofilus bench "$PWD/internal/decode/testdata/tone.m4a"
+          hdiutil detach $mnt
       - uses: actions/upload-artifact@v4
         with:
           name: audiofilus-macos
