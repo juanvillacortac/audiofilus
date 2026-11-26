@@ -290,6 +290,15 @@ var iconArt = map[string]string{
 ##...##
 .#####.
 ..###..`,
+	// tape is the player's cassette icon (Settings → Cassette).
+	"tape": `
+#########
+#.......#
+#.##.##.#
+#.......#
+#.#####.#
+##.....##
+#########`,
 	"user": `
 ..###..
 ..###..

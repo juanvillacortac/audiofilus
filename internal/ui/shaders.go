@@ -131,6 +131,85 @@ func Fragment(dst vec4, src vec2, color vec4) vec4 {
 }
 `
 
+// tapeSrc paints the tape wound on the cassette's reels (cassette.go), seen
+// through its glass (View, a rectangle with corners rounded to ViewR): on
+// each reel (centers Left and Right, radii Radii) amber, darker towards the
+// core (radius Core), with a groove every 3 px from the core outward and a
+// lit edge. One draw per frame at any radius, so seeking costs nothing extra.
+const tapeSrc = `//kage:unit pixels
+package main
+
+var Left vec2
+var Right vec2
+var Radii vec2
+var Core float
+var View vec4
+var ViewR float
+
+// roll lays over c the tape on the reel centered at center, of radius r,
+// with an anti-aliased edge; each groove is a line one pixel wide.
+func roll(c vec4, p vec2, center vec2, r float) vec4 {
+	d := length(p - center)
+	t := clamp((d-Core)/max(r-Core, 0.001), 0, 1)
+	col := mix(vec3(0.431, 0.204, 0.035), vec3(0.769, 0.455, 0.122), clamp(t/0.75, 0, 1))
+	if t > 0.75 {
+		col = mix(vec3(0.769, 0.455, 0.122), vec3(0.949, 0.651, 0.267), (t-0.75)/0.25)
+	}
+	g := (d - Core - 2) / 3
+	n := floor(g + 0.5)
+	if n >= 0 && Core+2+3*n < r-1 {
+		col = mix(col, vec3(0.227, 0.078, 0), 0.6*clamp(1-3*abs(g-n), 0, 1))
+	}
+	col = mix(col, vec3(1, 0.839, 0.588), 0.85*clamp(1-abs(d-(r-0.5)), 0, 1))
+	a := clamp(r-d+0.5, 0, 1)
+	return vec4(col, 1)*a + c*(1-a)
+}
+
+func Fragment(dst vec4, src vec2, color vec4) vec4 {
+	p := dst.xy - imageDstOrigin()
+	half := (View.zw - View.xy) / 2
+	q := abs(p-(View.xy+View.zw)/2) - half + ViewR
+	edge := length(max(q, 0)) + min(max(q.x, q.y), 0) - ViewR
+	c := roll(roll(vec4(0), p, Left, Radii.x), p, Right, Radii.y)
+	return c * clamp(0.5-edge, 0, 1)
+}
+`
+
+// tapeMixSrc puts the cassette on the screen (cassette.go), dithered like
+// the covers (ditherCover: each channel down to 16 levels with the 4×4
+// Bayer pattern). With Reflect, it is the reflection under it, Height rows
+// of its lower part already upside down, added as light: fading out, with
+// faint streaks two rows high, smeared sideways only further down.
+const tapeMixSrc = `//kage:unit pixels
+package main
+
+var Reflect float
+var Height float
+` + bayerKage + `
+func Fragment(dst vec4, src vec2, color vec4) vec4 {
+	b := bayer(dst.xy - imageDstOrigin())
+	if Reflect == 0 {
+		c := imageSrc0At(src)
+		a := floor(c.a*15+1-b) / 15
+		return vec4(min(floor(c.rgb*15+1-b)/15, vec3(a)), a)
+	}
+	k := floor(src.y - imageSrc0Origin().y)
+	f := 0.62 * pow(max(1-k/Height, 0), 1.3)
+	if mod(floor(k/2), 2) == 1 {
+		f *= 0.75
+	}
+	r := min(3, floor(k/6))
+	sum := vec4(0)
+	for i := -3; i <= 3; i++ {
+		if abs(float(i)) <= r {
+			sum += imageSrc0At(src + vec2(float(i), 0))
+		}
+	}
+	c := sum / (2*r + 1) * f
+	return vec4(floor(c.rgb*15+1-b)/15, 0)
+}
+`
+
 // fadeSrc dibuja un texto ya pintado con sus bordes desvanecidos: en los
 // últimos píxeles el texto se apaga hacia el fondo en ocho escalones de un
 // octavo, columna a columna (tan suave como un degradado, pero sin pasos
@@ -367,6 +446,8 @@ var (
 	bgShader       *ebiten.Shader
 	shineShader    *ebiten.Shader
 	vinylShader    *ebiten.Shader
+	tapeShader     *ebiten.Shader
+	tapeMixShader  *ebiten.Shader
 	fadeShader     *ebiten.Shader
 	dissolveShader *ebiten.Shader
 	rhythmShader   *ebiten.Shader
@@ -382,7 +463,7 @@ func LoadShaders() error {
 	for _, s := range []struct {
 		dst **ebiten.Shader
 		src string
-	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&consoleShader, consoleSrc}, {&plasmaShader, plasmaSrc}, {&gbShader, gbSrc}} {
+	}{{&bgShader, bgSrc}, {&shineShader, shineSrc}, {&vinylShader, vinylSrc}, {&tapeShader, tapeSrc}, {&tapeMixShader, tapeMixSrc}, {&fadeShader, fadeSrc}, {&dissolveShader, dissolveSrc}, {&rhythmShader, rhythmSrc}, {&paletteShader, paletteSrc}, {&consoleShader, consoleSrc}, {&plasmaShader, plasmaSrc}, {&gbShader, gbSrc}} {
 		if *s.dst, err = ebiten.NewShader([]byte(s.src)); err != nil {
 			return err
 		}

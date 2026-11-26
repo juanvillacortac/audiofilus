@@ -57,7 +57,8 @@ type Album struct {
 	mu       sync.Mutex
 	decoded  bool // ya se leyó la portada una vez (para sus colores)
 	accent   [2]color.RGBA
-	hasColor bool // accent ya sale de la portada
+	tapeCols [4]color.RGBA // the cover's four colors, for the cassette's "cover" skin (cassette.go)
+	hasColor bool          // accent ya sale de la portada
 
 	scaled  map[int]*coverImage // solo se toca desde el hilo de la interfaz
 	missing bool                // no tiene portada: se dibuja la de relleno
@@ -297,7 +298,7 @@ func (a *Album) decodeCover() image.Image {
 		if !a.decoded {
 			a.decoded = true
 			if img != nil {
-				a.accent = accentColors(img)
+				a.accent, a.tapeCols = accentColors(img), coverColors4(img)
 				a.hasColor = true
 			}
 		}
@@ -326,7 +327,7 @@ func (a *Album) decodeCover() image.Image {
 	if !a.decoded {
 		a.decoded = true
 		if err == nil {
-			a.accent = accentColors(img)
+			a.accent, a.tapeCols = accentColors(img), coverColors4(img)
 			a.hasColor = true
 		}
 	}
@@ -543,7 +544,7 @@ func (a *Album) decodeRemoteCover() image.Image {
 	defer a.mu.Unlock()
 	if !a.decoded && err == nil {
 		a.decoded = true
-		a.accent = accentColors(img)
+		a.accent, a.tapeCols = accentColors(img), coverColors4(img)
 		a.hasColor = true
 	}
 	if err != nil {

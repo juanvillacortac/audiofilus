@@ -65,6 +65,16 @@ const (
 	setFormats
 	setVGMAccurate
 	setLyricsKaraoke
+	setCassette
+	setTapeSkin
+	setTapeLabel
+	setTapePaper
+	setTapeFont
+	setTapeHand
+	setTapeGlow
+	setTapeAnim
+	setTapeDust
+	setTapeReflect
 	setCount
 )
 
@@ -151,6 +161,19 @@ var settingSections = []settingSection{
 		{setVControls, "screen", tileChoice},
 		{setScreens, "screen", tileAction},
 	}},
+	// The player's cassette (cassette.go): with it off, only the switch.
+	{"sec_cassette", []settingTile{
+		{setCassette, "tape", tileToggle},
+		{setTapeSkin, "palette", tileChoice},
+		{setTapeLabel, "tape", tileChoice},
+		{setTapePaper, "palette", tileChoice},
+		{setTapeFont, "lyrics", tileChoice},
+		{setTapeHand, "lyrics", tileChoice},
+		{setTapeGlow, "bg", tileChoice},
+		{setTapeAnim, "bg", tileChoice},
+		{setTapeDust, "bg", tileChoice},
+		{setTapeReflect, "screen", tileToggle},
+	}},
 	{"sec_system", []settingTile{
 		{setLanguage, "globe", tileChoice},
 		{setSounds, "speaker", tileChoice},
@@ -210,6 +233,14 @@ func (a *App) sections() []settingSection {
 		setVControls: !handheldUI || a.mobile() || a.cfg.UI.Orientation == "",
 		// Los VGM van con libvgm solo en Linux (las portátiles y el PC).
 		setVGMAccurate: runtime.GOOS != "linux"}
+	// The cassette's look only with the cassette on; its glow's animation
+	// only with a glow, and the specks' size only with the specks.
+	tape := a.cfg.UI.Tape
+	for id := setTapeSkin; id <= setTapeReflect; id++ {
+		hide[id] = !a.cfg.UI.Cassette
+	}
+	hide[setTapeAnim] = hide[setTapeAnim] || tape.Glow == "off"
+	hide[setTapeDust] = hide[setTapeDust] || tape.Glow != ""
 	var out []settingSection
 	for _, sec := range settingSections {
 		s := settingSection{title: sec.title}
@@ -434,6 +465,35 @@ func (a *App) changeSetting(id, step int) {
 		a.cfg.UI.AlbumsByFolder = !a.cfg.UI.AlbumsByFolder
 		a.saveConfig()
 		a.regroupAlbums()
+	case setCassette:
+		a.cfg.UI.Cassette = !a.cfg.UI.Cassette
+		a.saveConfig()
+	case setTapeSkin, setTapeLabel, setTapePaper, setTapeFont, setTapeHand, setTapeGlow, setTapeAnim, setTapeDust:
+		n, i := a.settingChoice(id)
+		i = cycle(n, i)
+		t := &a.cfg.UI.Tape
+		switch id {
+		case setTapeSkin:
+			t.Skin = tapeSkins[i].id
+		case setTapeLabel:
+			t.Label = tapeLabelModes[i]
+		case setTapePaper:
+			t.Paper = tapePapers[i].id
+		case setTapeFont:
+			t.Thin = i == 1
+		case setTapeHand:
+			t.HandSize = tapeHands[i]
+		case setTapeGlow:
+			t.Glow = tapeGlows[i]
+		case setTapeAnim:
+			t.GlowAnim = tapeAnims[i]
+		case setTapeDust:
+			t.DustSize = tapeDusts[i]
+		}
+		a.saveConfig()
+	case setTapeReflect:
+		a.cfg.UI.Tape.NoReflection = !a.cfg.UI.Tape.NoReflection
+		a.saveConfig()
 	case setVGMAccurate:
 		a.cfg.VGMAccurate = !a.cfg.VGMAccurate
 		a.saveConfig()
@@ -536,6 +596,13 @@ var (
 	// vControls son los de config.UI.VerticalControls: dos manos o una.
 	vControls   = []string{"", "one"}
 	soundLevels = []string{"off", "low", "", "high"} // "" es el medio, el de por defecto
+	// The cassette's choices (config.TapeUI), in order; the skins and the
+	// papers are tapeSkins and tapePapers (cassette.go).
+	tapeLabelModes = []string{"", "hand"}
+	tapeHands      = []int{80, 100, 120, 140, 160}
+	tapeGlows      = []string{"", "static", "off"}
+	tapeAnims      = []string{"none", "breathe", "orbit", "beat"}
+	tapeDusts      = []int{50, 75, 100, 150, 200, 300}
 )
 
 // settingChoice dice cuántas opciones tiene una elección y cuál está puesta.
@@ -548,7 +615,24 @@ func (a *App) settingChoice(id int) (n, cur int) {
 		}
 		return n, 0
 	}
+	tape := a.cfg.UI.Tape
 	switch id {
+	case setTapeSkin:
+		return find(len(tapeSkins), func(i int) bool { return tapeSkins[i].id == tape.Skin })
+	case setTapeLabel:
+		return find(len(tapeLabelModes), func(i int) bool { return tapeLabelModes[i] == tape.Label })
+	case setTapePaper:
+		return find(len(tapePapers), func(i int) bool { return tapePapers[i].id == tape.Paper })
+	case setTapeFont:
+		return find(2, func(i int) bool { return (i == 1) == tape.Thin })
+	case setTapeHand:
+		return find(len(tapeHands), func(i int) bool { return tapeHands[i] == cmp0(tape.HandSize, tapeHandDefault) })
+	case setTapeGlow:
+		return find(len(tapeGlows), func(i int) bool { return tapeGlows[i] == tape.Glow })
+	case setTapeAnim:
+		return find(len(tapeAnims), func(i int) bool { return tapeAnims[i] == tapeAnim(tape.GlowAnim) })
+	case setTapeDust:
+		return find(len(tapeDusts), func(i int) bool { return tapeDusts[i] == cmp0(tape.DustSize, tapeDustDefault) })
 	case setLanguage:
 		return find(len(languages), func(i int) bool { return languages[i] == lang })
 	case setRepeat:
@@ -633,6 +717,13 @@ func (a *App) settingValue(i int) string {
 		return onOffLabel(a.cfg.UI.Clock24)
 	case setAlbumsFolder:
 		return onOffLabel(a.cfg.UI.AlbumsByFolder)
+	case setCassette:
+		return onOffLabel(a.cfg.UI.Cassette)
+	case setTapeReflect:
+		return onOffLabel(!a.cfg.UI.Tape.NoReflection)
+	case setTapeSkin, setTapeLabel, setTapePaper, setTapeFont, setTapeHand, setTapeGlow, setTapeAnim, setTapeDust:
+		_, c := a.settingChoice(i)
+		return choiceLabel(i, c)
 	case setVGMAccurate:
 		if a.cfg.VGMAccurate {
 			return T("vgm_acc_on") // con el aviso de la CPU
@@ -735,6 +826,10 @@ func (a *App) settingOn(id int) bool {
 		return a.cfg.UI.Clock24
 	case setAlbumsFolder:
 		return a.cfg.UI.AlbumsByFolder
+	case setCassette:
+		return a.cfg.UI.Cassette
+	case setTapeReflect:
+		return !a.cfg.UI.Tape.NoReflection
 	case setVGMAccurate:
 		return a.cfg.VGMAccurate
 	case setDLNAServer:
@@ -763,6 +858,8 @@ func settingNames() [setCount]string {
 		T("set_milk_dir"), T("set_radio_dir"), T("set_theme_color"), T("set_crossfeed"), T("al_title"), T("set_vibration"), T("set_mpd"), T("set_orientation"), T("set_vcontrols"),
 		T("set_output"), T("set_screens"), T("set_tabs"), T("set_albums_folder"), T("set_formats"), T("set_vgm_acc"),
 		T("set_lyr_karaoke"),
+		T("set_cassette"), T("set_tape_skin"), T("set_tape_label"), T("set_tape_paper"), T("set_tape_font"), T("set_tape_hand"),
+		T("set_tape_glow"), T("set_tape_anim"), T("set_tape_dust"), T("set_tape_reflect"),
 	}
 }
 
@@ -976,6 +1073,28 @@ func (a *App) saveConfig() {
 // choiceLabel es el texto de la opción i de una elección.
 func choiceLabel(id, i int) string {
 	switch id {
+	case setTapeSkin:
+		return T("tape_skin_" + orDefault(tapeSkins[i].id, "neon"))
+	case setTapeLabel:
+		return T("tape_label_" + orDefault(tapeLabelModes[i], "cover"))
+	case setTapePaper:
+		return T("tape_paper_" + orDefault(tapePapers[i].id, "skin"))
+	case setTapeFont:
+		if i == 1 {
+			return T("tape_font_thin")
+		}
+		return T("tape_font_bold")
+	case setTapeHand:
+		return fmt.Sprintf("%d%%", tapeHands[i])
+	case setTapeGlow:
+		if tapeGlows[i] == "off" {
+			return onOffLabel(false)
+		}
+		return T("tape_glow_" + orDefault(tapeGlows[i], "dust"))
+	case setTapeAnim:
+		return T("tape_anim_" + orDefault(tapeAnims[i], "none"))
+	case setTapeDust:
+		return fmt.Sprintf("%d%%", tapeDusts[i])
 	case setLanguage:
 		return langNames[languages[i]]
 	case setRepeat:

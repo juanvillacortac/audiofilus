@@ -307,7 +307,7 @@ Releases are built by GitHub Actions when a `v*` tag is pushed.
 
 ## License
 
-[MIT](LICENSE). The bundled fonts, Jersey 10, Tiny5 and Fusion Pixel, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`). The AY chip emulation follows [ayumi](https://github.com/true-grue/ayumi) and the PT3 player is a port of [pt3player](https://github.com/Volutar/pt3player), both MIT (`internal/chip/LICENSE.*`). The packages also ship two libraries loaded at runtime, each under its own license: libgme (LGPL) and libvgmshim, built from [libvgm](https://github.com/ValleyBell/libvgm) plus `tools/libvgm/shim.cpp`, which as a whole is **GPL-2.0** (`tools/libvgm/GPL-2.0.txt`; the list of each source file's license and the exact libvgm commit go in `licenses/` of every package). Audiofilus itself stays MIT and doesn't link them at build time.
+[MIT](LICENSE). The bundled fonts, Jersey 10, Tiny5, Fusion Pixel and Caveat, are under the SIL Open Font License (`internal/ui/assets/fonts/OFL-*.txt`). The AY chip emulation follows [ayumi](https://github.com/true-grue/ayumi) and the PT3 player is a port of [pt3player](https://github.com/Volutar/pt3player), both MIT (`internal/chip/LICENSE.*`). The packages also ship two libraries loaded at runtime, each under its own license: libgme (LGPL) and libvgmshim, built from [libvgm](https://github.com/ValleyBell/libvgm) plus `tools/libvgm/shim.cpp`, which as a whole is **GPL-2.0** (`tools/libvgm/GPL-2.0.txt`; the list of each source file's license and the exact libvgm commit go in `licenses/` of every package). Audiofilus itself stays MIT and doesn't link them at build time.
 
 ## Docs
 
