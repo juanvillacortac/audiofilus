@@ -264,8 +264,6 @@ Grab `Audiofilus-macos-arm64.dmg` (Apple Silicon) or `Audiofilus-macos-amd64.dmg
 
 The keyboard's media keys, AirPods and headphone buttons control it, and Control Center shows the song with its cover, also with the window closed. When the sound falls back to the Mac's speakers (headphones unplugged, Bluetooth gone, a DAC removed) the music pauses; picking the speakers by hand while it plays pauses it too. In the Finder, Open With → Audiofilus plays audio files, folders and `.m3u` lists; tracker modules and console music still open from the player.
 
-Known issue: while the pointer rests on the window's green button and its tiling menu is showing, the player's animations stop; the music keeps playing and everything moves again once the menu closes. The cause is in the window layer, not in Audiofilus: macOS shows that menu from inside `sendEvent` in its own mouse-tracking loop, and the Ebitengine fork only draws a new frame after its event polling (`platformPollEvents` in `internal/glfw/cocoa_window_darwin.go`) returns, so no frames are drawn until the menu closes. Unity and other GLFW-based apps freeze the same way. A fix belongs in the Ebitengine fork (drawing from a timer in `NSRunLoopCommonModes` or from a `CVDisplayLink` while AppKit tracks the mouse).
-
 ## Build
 
 With Docker, nothing else needed:
