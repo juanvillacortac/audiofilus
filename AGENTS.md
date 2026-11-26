@@ -74,6 +74,7 @@ GOOS=windows go vet ./...
 | `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/fdk-aac/` | `build.sh`: the same for libfdk-aac (M4A, M4B, AAC radio), which muOS and others don't ship |
 | `tools/ffmpeg/` | `build.sh` and `shim.c`: libavshim, FFmpeg cut down to WMA with a small C layer, for Linux, Windows and Android |
+| `tools/macos/` | `libs.sh`: every C decoder for the macOS app, built with zig for Apple Silicon and Intel; `dmg.sh`: the two DMGs with them inside, on any Mac |
 | `tools/windows/` | `dlls.sh`: the decoder DLLs for the Windows zip (MSYS2 builds plus fdk-aac compiled with zig by `fdk-aac.sh`), with their licenses |
 | `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
 | `site/` | The website (GitHub Pages); its screenshots and GIFs come from `-shots`/`-frames` with `-lang en` |

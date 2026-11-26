@@ -2,18 +2,24 @@
 # Compila libgme (Game_Music_Emu, la música de consolas viejas: ver
 # internal/decode/gme.go) para las portátiles y el PC, para llevarla dentro
 # del port de PortMaster y de la app de muOS, que no la traen:
-#   tools/libgme/build.sh <carpeta de salida>
-# deja <salida>/libs.aarch64/libgme.so.0, <salida>/libs.x86_64/libgme.so.0,
-# la licencia y de dónde sale el código. build.sh los mete en los paquetes si
-# están en build/libgme.
+#   tools/libgme/build.sh <carpeta de salida> [linux|macos]
+# linux (por defecto) deja <salida>/libs.aarch64/libgme.so.0 y
+# <salida>/libs.x86_64/libgme.so.0; macos, <salida>/macos.aarch64/ y
+# <salida>/macos.x86_64/libgme.0.dylib. Además, la licencia y de dónde sale el
+# código. build.sh los mete en los paquetes si están en build/libgme;
+# tools/macos/libs.sh junta las de macOS.
 #
 # Con zig como compilador (mise install zig): compila contra una glibc vieja
 # (2.17), así la biblioteca carga en cualquier sistema, también en los
-# antiguos como ArkOS, y lleva dentro libc++ y zlib (para VGZ): solo depende
-# de la libc. Necesita zig (en el PATH, o ZIG), cmake, curl y tar.
+# antiguos como ArkOS, o contra macOS 12, y lleva dentro libc++ y zlib (para
+# VGZ): solo depende de la libc. Desde cualquier sistema, para los dos.
+# Necesita zig (en el PATH, o ZIG), cmake, curl y tar.
 set -eu
-mkdir -p "${1:?usage: tools/libgme/build.sh <output dir>}"
+mkdir -p "${1:?usage: tools/libgme/build.sh <output dir> [linux|macos]}"
 out=$(cd "$1" && pwd)
+os=${2:-linux}
+case $os in linux | macos) ;; *) echo "unknown target $os (linux or macos)" >&2; exit 2 ;; esac
+jobs=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 ZIG=${ZIG:-zig}
 # La ruta de verdad de zig: si es un shim de mise, desde las carpetas
 # temporales de cmake no sabría qué versión usar.
@@ -28,7 +34,13 @@ curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/libg
 curl -sSfL --retry 5 --retry-all-errors --retry-delay 5 "https://github.com/madler/zlib/releases/download/v$ZLIB_VERSION/zlib-$ZLIB_VERSION.tar.gz" | tar xz -C "$work"
 
 for arch in aarch64 x86_64; do
-  target="$arch-linux-gnu.2.17"
+  if [ "$os" = macos ]; then
+    target="$arch-macos.12.0-none" dir="$out/macos.$arch" lib=libgme.0.dylib
+    set -- -DCMAKE_SYSTEM_NAME=Darwin
+  else
+    target="$arch-linux-gnu.2.17" dir="$out/libs.$arch" lib=libgme.so.0
+    set -- -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SHARED_LINKER_FLAGS=-s
+  fi
   bin="$work/bin-$arch"
   mkdir -p "$bin"
   # cmake quiere cada herramienta como un solo programa: envoltorios de zig.
@@ -37,26 +49,34 @@ for arch in aarch64 x86_64; do
   printf '#!/bin/sh\nexec %s ar "$@"\n' "$ZIG" >"$bin/ar"
   printf '#!/bin/sh\nexec %s ranlib "$@"\n' "$ZIG" >"$bin/ranlib"
   chmod +x "$bin"/*
-  set -- -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR="$arch" \
+  set -- "$@" -DCMAKE_SYSTEM_PROCESSOR="$arch" \
     -DCMAKE_C_COMPILER="$bin/cc" -DCMAKE_CXX_COMPILER="$bin/c++" \
     -DCMAKE_AR="$bin/ar" -DCMAKE_RANLIB="$bin/ranlib" \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_SHARED_LINKER_FLAGS=-s
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
   # zlib, estática, para meterla dentro de libgme.
   zb="$work/zlib-$arch"
   cmake -S "$work/zlib-$ZLIB_VERSION" -B "$zb" "$@" -DZLIB_BUILD_EXAMPLES=OFF >/dev/null
-  cmake --build "$zb" --target zlibstatic -j"$(nproc)" >/dev/null
+  cmake --build "$zb" --target zlibstatic -j"$jobs" >/dev/null
   zlib_a=$(find "$zb" -name 'libz*.a' | head -1)
 
   gb="$work/gme-$arch"
   cmake -S "$work/game-music-emu-$GME_VERSION" -B "$gb" "$@" -DBUILD_SHARED_LIBS=ON -DENABLE_UBSAN=OFF \
     -DGME_BUILD_TESTING=OFF -DGME_BUILD_EXAMPLES=OFF -DGME_ZLIB=ON \
     -DZLIB_INCLUDE_DIR="$work/zlib-$ZLIB_VERSION;$zb" -DZLIB_LIBRARY="$zlib_a" >/dev/null
-  cmake --build "$gb" -j"$(nproc)" >/dev/null
-  so=$(find "$gb" -name 'libgme.so.0*' -type f | head -1)
-  mkdir -p "$out/libs.$arch"
-  cp "$so" "$out/libs.$arch/libgme.so.0"
-  echo "$out/libs.$arch/libgme.so.0"
+  mkdir -p "$dir"
+  if [ "$os" = macos ]; then
+    # El enlazador de zig no entiende el -exported_symbols_list que pone
+    # cmake en macOS: la estática y una .dylib con ella dentro, con el
+    # install name con @rpath, como el resto de la app.
+    cmake --build "$gb" --target gme_static -j"$jobs" >/dev/null
+    "$bin/c++" -shared -Wl,-install_name,@rpath/$lib -o "$dir/$lib" \
+      -Wl,-force_load,"$(find "$gb" -name 'libgme.a' | head -1)" "$zlib_a"
+  else
+    cmake --build "$gb" -j"$jobs" >/dev/null
+    cp "$(find "$gb" -name 'libgme.so.0*' -type f | head -1)" "$dir/$lib"
+  fi
+  echo "$dir/$lib"
 done
 # La licencia (LGPL 2.1) y de dónde sale el código, para llevarlas con ella.
 src="$work/game-music-emu-$GME_VERSION"

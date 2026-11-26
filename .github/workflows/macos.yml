@@ -1,5 +1,6 @@
-# The macOS app as a DMG per architecture (tools/macos/dmg.sh), ad-hoc signed.
-# Run by hand from the Actions tab, on pull requests, and from release.yml.
+# The macOS apps, Apple Silicon and Intel, as one DMG each (tools/macos/dmg.sh),
+# ad-hoc signed. Run by hand from the Actions tab, on pull requests, and from
+# release.yml.
 name: macOS
 
 on:
@@ -14,39 +15,49 @@ on:
 
 jobs:
   dmg:
-    strategy:
-      matrix:
-        # Each on its own Mac: the bundled libraries come from its Homebrew.
-        runner: [macos-15, macos-15-intel]
-    runs-on: ${{ matrix.runner }}
+    # Both from one Intel Mac: zig builds the decoders for both
+    # (tools/macos/libs.sh). The arm64 runners often wait 15 minutes and get
+    # cancelled.
+    runs-on: macos-15-intel
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: brew install mpg123 opusfile libxmp game-music-emu dylibbundler cmake
-      - name: The decoders Homebrew doesn't have (AAC, WMA, every VGM chip)
-        run: |
-          tools/fdk-aac/build.sh build/fdk-aac macos
-          tools/ffmpeg/build.sh build/ffmpeg macos
-          tools/libvgm/build.sh build/libvgm macos
-      - name: The DMG
+      - name: zig, for the decoders
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            zig = "0.15.2"
+      - name: The decoders (tools/macos/libs.sh)
+        run: tools/macos/libs.sh build/macos
+      - name: The DMGs
         env:
           LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
         run: |
           [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=$GITHUB_REF_NAME
           tools/macos/dmg.sh out
-      - name: The app starts and its libraries don't point at Homebrew
+      - name: Signed, for the right CPU, only the system's libraries, and the Intel one starts
         run: |
-          hdiutil attach out/*.dmg -mountpoint /tmp/af -nobrowse
-          if otool -L /tmp/af/Audiofilus.app/Contents/Frameworks/*.dylib | grep -E '/(opt/homebrew|usr/local)/'; then exit 1; fi
-          codesign --verify --deep /tmp/af/Audiofilus.app
-          /tmp/af/Audiofilus.app/Contents/MacOS/audiofilus version
-          hdiutil detach /tmp/af
+          for arch in arm64 amd64; do
+            mnt=/tmp/af-$arch
+            hdiutil attach out/Audiofilus-macos-$arch.dmg -mountpoint $mnt -nobrowse
+            codesign --verify --deep $mnt/Audiofilus.app
+            want=$([ $arch = arm64 ] && echo arm64 || echo x86_64)
+            for f in $mnt/Audiofilus.app/Contents/MacOS/audiofilus $mnt/Audiofilus.app/Contents/Frameworks/*.dylib; do
+              file -b "$f" | grep -q "$want" || { echo "$f is not $want"; exit 1; }
+            done
+            if otool -L $mnt/Audiofilus.app/Contents/Frameworks/*.dylib | grep -v -E '^/|@rpath|/usr/lib/lib(System.B|iconv.2)'; then exit 1; fi
+          done
+          /tmp/af-amd64/Audiofilus.app/Contents/MacOS/audiofilus version
+          /tmp/af-amd64/Audiofilus.app/Contents/MacOS/audiofilus bench "$PWD/internal/decode/testdata/tone.m4a"
+          hdiutil detach /tmp/af-arm64
+          hdiutil detach /tmp/af-amd64
       - uses: actions/upload-artifact@v4
         with:
-          name: audiofilus-macos-${{ runner.arch }}
+          name: audiofilus-macos
           path: out/*.dmg
           retention-days: 14
