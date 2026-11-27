@@ -1689,7 +1689,10 @@ func (a *App) DrawFinalScreen(screen ebiten.FinalScreen, offscreen *ebiten.Image
 func rotatedGeoM(rot, sw, sh, ow, oh int) ebiten.GeoM {
 	fw, fh, w, h := float64(sw), float64(sh), float64(ow), float64(oh)
 	s := math.Min(fw/h, fh/w)
-	x, y := math.Floor((fw-h*s)/2), math.Floor((fh-w*s)/2)
+	// float64() redondea el producto: sin él, en arm64 Go lo junta con la
+	// resta en un FMA y, cuando el lienzo llena justo un lado, sale -4e-14 y
+	// Floor da -1 (un píxel fuera de la pantalla).
+	x, y := math.Floor((fw-float64(h*s))/2), math.Floor((fh-float64(w*s))/2)
 	var g ebiten.GeoM
 	if rot == rotLeft {
 		g.Rotate(math.Pi / 2)

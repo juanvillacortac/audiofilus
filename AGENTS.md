@@ -64,8 +64,8 @@ GOOS=windows go vet ./...
 | `internal/desktop/` | The Linux launcher entry and icon (`audiofilus desktop install`); see [docs/linux-desktop.md](docs/linux-desktop.md) |
 | `internal/cast/`, `internal/dlna/`, `internal/mpd/`, `internal/mdns/`, `internal/fetch/` | The local network: sending to Chromecast, DLNA and MPD ([docs/cast.md](docs/cast.md)), the DLNA server and renderer ([docs/dlna.md](docs/dlna.md)), the MPD server and client ([docs/mpd.md](docs/mpd.md)), mDNS browse and announce, and the downloader for songs that arrive as URLs |
 | `internal/mpris/` | MPRIS on the session bus: desktop media keys and bars (Omarchy, GNOME, KDE...) |
-| `internal/tray/` | The desktop tray icon: StatusNotifierItem over D-Bus on Linux, `Shell_NotifyIcon` on Windows |
-| `internal/update/`, `internal/version/` | Self-update from the GitHub releases (detects PortMaster, muOS, Linux or Windows from the files next to the binary, checks SHA256SUMS, swaps files atomically) and the version baked in at build time (`-X .../version.Version`, `dev` otherwise) |
+| `internal/tray/` | The desktop tray icon: StatusNotifierItem over D-Bus on Linux, `Shell_NotifyIcon` on Windows; on macOS the menu bar icon, plus the media keys and Control Center (`MPRemoteCommandCenter`, `MPNowPlayingInfoCenter`) and files opened from the Finder |
+| `internal/update/`, `internal/version/` | Self-update from the GitHub releases (detects PortMaster, muOS, Linux, Windows or the macOS app from where the binary is, checks SHA256SUMS, swaps files atomically; the macOS app is swapped whole) and the version baked in at build time (`-X .../version.Version`, `dev` otherwise) |
 | `internal/proc/` | Per-OS process details: `.exe` names and hidden console windows on Windows |
 | `internal/ui/` | The Ebitengine interface: screens, service client, cached library, background cover loading, languages |
 | `internal/config/` | `audiofilus.json` and `data/`, **next to the binary** |
@@ -74,6 +74,7 @@ GOOS=windows go vet ./...
 | `tools/libgme/` | `build.sh`: compiles libgme (console music) for the handhelds with zig, to bundle in the packages |
 | `tools/fdk-aac/` | `build.sh`: the same for libfdk-aac (M4A, M4B, AAC radio), which muOS and others don't ship |
 | `tools/ffmpeg/` | `build.sh` and `shim.c`: libavshim, FFmpeg cut down to WMA with a small C layer, for Linux, Windows and Android |
+| `tools/macos/` | `libs.sh`: every C decoder for the macOS app, built with zig for Apple Silicon and Intel; `dmg.sh`: the universal DMG with them inside, on any Mac |
 | `tools/windows/` | `dlls.sh`: the decoder DLLs for the Windows zip (MSYS2 builds plus fdk-aac compiled with zig by `fdk-aac.sh`), with their licenses |
 | `tools/portmaster/` | `art.sh`: regenerates the port's cover and screenshot |
 | `site/` | The website (GitHub Pages); its screenshots and GIFs come from `-shots`/`-frames` with `-lang en` |

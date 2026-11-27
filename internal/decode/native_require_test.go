@@ -6,6 +6,18 @@ import (
 	"testing"
 )
 
+// TestDylibName checks the Linux to macOS library name mapping (Homebrew names).
+func TestDylibName(t *testing.T) {
+	for in, want := range map[string]string{
+		"libmpg123.so.0": "libmpg123.0.dylib", "libfdk-aac.so.2": "libfdk-aac.2.dylib",
+		"libavshim.so": "libavshim.dylib", "libgme-0.dll": "", "libsome.solib": "",
+	} {
+		if got, _ := dylibName(in); got != want {
+			t.Errorf("dylibName(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
 // Con AUDIOFILUS_REQUIRE_NATIVE=1 (el CI de Windows con las DLL del paquete
 // en el PATH), las bibliotecas nativas tienen que cargar y decodificar: así
 // se comprueba que las DLL que va a llevar el zip de Windows sirven.

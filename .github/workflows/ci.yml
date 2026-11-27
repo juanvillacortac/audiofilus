@@ -56,6 +56,21 @@ jobs:
           ./bin/audiofilus.exe status
           ./bin/audiofilus.exe quit
 
+  # No smoke test: the runner has no audio device.
+  macos:
+    runs-on: macos-15-intel # arm64 runners often wait 15 min and get cancelled
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: The C decoders from Homebrew, so the decoder tests use them
+        run: brew install mpg123 opusfile libxmp game-music-emu
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Build without cgo, like the release
+        run: CGO_ENABLED=0 go build -o bin/audiofilus ./cmd/audiofilus
+
   # Las DLL que lleva el zip de Windows (tools/windows/dlls.sh), probadas en
   # Windows: tienen que cargar y decodificar MP3, AAC y Opus.
   windows-dlls:

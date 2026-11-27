@@ -198,10 +198,10 @@ On **Knulli Scarab** (for now the only system and version it is built and tested
 On a Linux PC it fits in like a native app, on GNOME, KDE, Hyprland or [Omarchy](https://omarchy.org):
 
 - **App launcher:** Audiofilus shows up with its icon, with Play/Pause, Next and Previous actions.
-- **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch) and from the Files app on iPhone.
+- **Open with:** files and folders open from the file manager ("Open with Audiofilus") and play as a temporary queue; also on Windows (registered on first launch), from the Finder on macOS and from the Files app on iPhone.
 - **Window:** its class is `audiofilus`, so docks group it and window rules can target it.
 - **Media keys and bars:** it speaks MPRIS, so keyboard media keys, headphone buttons and the desktop's media widget control it, with cover and title. On Omarchy that works with nothing to set up.
-- **System tray** (also on Windows): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit.
+- **System tray** (also on Windows and macOS): the Audiofilus CD sits in the tray while the music plays in the background: click to open the player, middle click to pause, and a menu with what's playing, play/pause, next, previous, shuffle and quit. On macOS it's a one-colour CD in the menu bar and a click opens the menu; opening Audiofilus again also brings the player back.
 - **Closing the window keeps the music playing** (a setting, on by default on the desktop); Quit stops everything.
 
 Details in [docs/linux-desktop.md](docs/linux-desktop.md).
@@ -258,6 +258,12 @@ Every release has an unsigned `audiofilus-ios-unsigned.ipa`. Install it with [Si
 
 On Windows 10 or later, grab `audiofilus-windows-amd64.zip`, unzip it anywhere and run `audiofilus.exe`. Everything plays out of the box, AAC/M4A, Opus, tracker modules, console music and AAC/HLS radio included: the zip carries the decoder DLLs next to the `.exe` (mpg123, opusfile, libxmp and libgme from MSYS2, and fdk-aac and a cut-down FFmpeg for WMA built with zig; their licenses are in `licenses/`). For YouTube Music, put `yt-dlp.exe` in a `yt-dlp` folder next to it, and `ffmpeg.exe` on `PATH` to convert downloads to MP3.
 
+### macOS
+
+Grab `Audiofilus-macos.dmg` (Apple Silicon and Intel, macOS 12 or later), open it and drag Audiofilus to Applications. The app isn't notarized, so the first time right-click it and choose Open, or run `xattr -dr com.apple.quarantine /Applications/Audiofilus.app`. Everything plays out of the box, AAC/M4A, WMA, Opus, tracker modules and console music included: the decoders come inside the app (mpg123, opusfile, libxmp, libgme, fdk-aac, a cut-down FFmpeg for WMA and libvgm, built with zig by `tools/macos/libs.sh`; their licenses are in `Contents/Resources/licenses`). Settings and data live in `~/Library/Application Support/Audiofilus`. New versions install from Settings → Update, as long as the app runs from Applications and not from the DMG.
+
+The keyboard's media keys, AirPods and headphone buttons control it, and Control Center shows the song with its cover, also with the window closed. When the sound falls back to the Mac's speakers (headphones unplugged, Bluetooth gone, a DAC removed) the music pauses; picking the speakers by hand while it plays pauses it too. In the Finder, Open With → Audiofilus plays audio files, folders and `.m3u` lists; tracker modules and console music still open from the player.
+
 ## Build
 
 With Docker, nothing else needed:
@@ -278,6 +284,7 @@ Both leave in `dist/`:
 |---|---|
 | `audiofilus-amd64`, `audiofilus-arm64` | Everything in one binary: the player (run it with no arguments), the audio service (`audiofilus daemon`, which the player starts itself) and the CLI |
 | `audiofilus-windows-amd64.exe` | The same for Windows |
+| `audiofilus-darwin-arm64`, `audiofilus-darwin-amd64` | The same for macOS |
 | `audiofilus.zip` | The PortMaster port |
 
 The handheld builds use no cgo. SDL2, mpg123, fdk-aac, opusfile, libxmp and the FFmpeg layer for WMA (`libavshim`) are loaded at runtime with [purego](https://github.com/ebitengine/purego) when the system has them. The interface uses [a fork of Ebitengine](https://github.com/juanvillacortac/ebiten) with an SDL2 backend, and audio goes through [a fork of oto](https://github.com/juanvillacortac/oto/tree/alsa-device) that can open a chosen ALSA card.

@@ -30,6 +30,6 @@ require (
 	golang.org/x/sync v0.22.0 // indirect
 )
 
-replace github.com/hajimehoshi/ebiten/v2 => github.com/juanvillacortac/ebiten/v2 v2.0.0-20261029051447-f7f4d06d4b49
+replace github.com/hajimehoshi/ebiten/v2 => github.com/juanvillacortac/ebiten/v2 v2.0.0-20261127185754-abc47ef24ceb
 
 replace github.com/ebitengine/oto/v3 => github.com/juanvillacortac/oto/v3 v3.6.0-alpha.1.0.20261124154125-1c9b2f9b4e4f

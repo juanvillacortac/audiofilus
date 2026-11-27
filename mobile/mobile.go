@@ -7,7 +7,6 @@
 package mobile
 
 import (
-	"errors"
 	"fmt"
 	"image/color"
 	"log"
@@ -490,16 +489,8 @@ func OpenFiles(paths string) {
 // openWhenReady manda los archivos al servicio en cuanto contesta (al abrir
 // la app por ellos, tarda un momento en arrancar).
 func openWhenReady(list []string) {
-	for i := 0; i < 80; i++ {
-		_, err := control.Call(socket, control.Request{Cmd: "open", Args: list})
-		if err == nil {
-			return
-		}
-		if !errors.Is(err, control.ErrNotRunning) {
-			log.Printf("audiofilus: open: %v", err)
-			return
-		}
-		time.Sleep(250 * time.Millisecond)
+	if _, err := control.CallReady(socket, control.Request{Cmd: "open", Args: list}); err != nil {
+		log.Printf("audiofilus: open: %v", err)
 	}
 }
 

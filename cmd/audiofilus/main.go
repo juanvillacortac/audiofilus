@@ -29,6 +29,7 @@ import (
 	"github.com/juanvillacortac/audiofilus/internal/daemon"
 	"github.com/juanvillacortac/audiofilus/internal/daemon/statusfmt"
 	"github.com/juanvillacortac/audiofilus/internal/proc"
+	"github.com/juanvillacortac/audiofilus/internal/tray"
 )
 
 const usage = `usage:
@@ -116,17 +117,20 @@ func runDaemon(paths config.Paths, args []string) {
 	// En ROCKNIX la interfaz corre en el scope del port, que se mata entero
 	// al cerrarla: el servicio se muda a uno propio.
 	proc.LeaveGameScope()
-	err := daemon.Run(paths)
-	switch {
-	case errors.Is(err, daemon.ErrRestart):
-		err = restartSelf() // restart_*.go
-	case errors.Is(err, daemon.ErrAlreadyRunning):
-		log.Print(err)
-		return
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
+	// On macOS the menu bar icon needs the main thread; elsewhere this just runs.
+	tray.RunWithMain(func() {
+		err := daemon.Run(paths)
+		switch {
+		case errors.Is(err, daemon.ErrRestart):
+			err = restartSelf() // restart_*.go
+		case errors.Is(err, daemon.ErrAlreadyRunning):
+			log.Print(err)
+			return
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+	})
 }
 
 // startDetached vuelve a lanzar el daemon en una sesión nueva (setsid) para que

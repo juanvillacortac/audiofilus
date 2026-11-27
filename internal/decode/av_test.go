@@ -14,6 +14,9 @@ import (
 func init() {
 	arch := map[string]string{"arm64": "aarch64", "amd64": "x86_64"}[runtime.GOARCH]
 	lib, err := filepath.Abs(filepath.Join("..", "..", "build", "ffmpeg", "libs."+arch, "libavshim.so"))
+	if runtime.GOOS == "darwin" {
+		lib, err = filepath.Abs(filepath.Join("..", "..", "build", "macos", arch, "libavshim.dylib")) // tools/macos/libs.sh build/macos
+	}
 	if _, serr := os.Stat(lib); err == nil && serr == nil {
 		avLibNames = append([]string{lib}, avLibNames...)
 	}

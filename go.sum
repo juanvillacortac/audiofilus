@@ -27,8 +27,8 @@ github.com/jfreymuth/pulse v0.1.3 h1:bc5TdxiB8E+2INnFjFWWgyfgXtz2IyNNNCX+Wt/ZD14
 github.com/jfreymuth/pulse v0.1.3/go.mod h1:cpYspI6YljhkUf1WLXLLDmeaaPFc3CnGLjDZf9dZ4no=
 github.com/jfreymuth/vorbis v1.0.2 h1:m1xH6+ZI4thH927pgKD8JOH4eaGRm18rEE9/0WKjvNE=
 github.com/jfreymuth/vorbis v1.0.2/go.mod h1:DoftRo4AznKnShRl1GxiTFCseHr4zR9BN3TWXyuzrqQ=
-github.com/juanvillacortac/ebiten/v2 v2.0.0-20261029051447-f7f4d06d4b49 h1:qNfWysQyBKJPzApTdYxEF3Rc62CXs1TjV5NBmnTpjXs=
-github.com/juanvillacortac/ebiten/v2 v2.0.0-20261029051447-f7f4d06d4b49/go.mod h1:47QNgyS/y2ZRkjVUvlGLx8a+F7MSjcn8/GsjcCZ9Rc8=
+github.com/juanvillacortac/ebiten/v2 v2.0.0-20261127185754-abc47ef24ceb h1:pShY60vRJOQsOTr/FLA4z7bf8MXU+rpBkGTcY0ZRIBA=
+github.com/juanvillacortac/ebiten/v2 v2.0.0-20261127185754-abc47ef24ceb/go.mod h1:47QNgyS/y2ZRkjVUvlGLx8a+F7MSjcn8/GsjcCZ9Rc8=
 github.com/juanvillacortac/oto/v3 v3.6.0-alpha.1.0.20261124154125-1c9b2f9b4e4f h1:AJ8TINEAP+1TFXycUlnzkak9eC+B/QyFnV0Es8emxCA=
 github.com/juanvillacortac/oto/v3 v3.6.0-alpha.1.0.20261124154125-1c9b2f9b4e4f/go.mod h1:Elkm7yzTRns3w2efvibzVOoQ65YOwmec9a76dCiK10o=
 github.com/mewkiz/flac v1.0.14 h1:hyRGAM8NCKznoPmIi9zz2jyO+nfmxY2ErqBnHZ+gxh4=

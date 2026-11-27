@@ -24,3 +24,17 @@ func TestWriteJSONConcurrent(t *testing.T) {
 		t.Errorf("temporary files left: %v", left)
 	}
 }
+
+// inAppBundle recognizes only the binary folder inside a macOS .app.
+func TestInAppBundle(t *testing.T) {
+	for dir, want := range map[string]bool{
+		"/Applications/Audiofilus.app/Contents/MacOS":                               true,
+		"/private/var/folders/x/AppTranslocation/y/d/Audiofilus.app/Contents/MacOS": true,
+		"/Users/me/audiofilus":                  false,
+		"/Applications/Audiofilus.app/Contents": false,
+	} {
+		if got := inAppBundle(dir); got != want {
+			t.Errorf("inAppBundle(%q) = %v, want %v", dir, got, want)
+		}
+	}
+}

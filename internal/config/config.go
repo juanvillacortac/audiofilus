@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -316,6 +317,18 @@ func Locate() (Paths, error) {
 			exe = real
 		}
 		base = filepath.Dir(exe)
+		// Inside Audiofilus.app the binary's folder is read-only (app
+		// translocation) and replaced on every update.
+		if runtime.GOOS == "darwin" && inAppBundle(base) {
+			dir, err := os.UserConfigDir()
+			if err != nil {
+				return Paths{}, err
+			}
+			base = filepath.Join(dir, "Audiofilus")
+			if err := os.MkdirAll(base, 0o755); err != nil {
+				return Paths{}, err
+			}
+		}
 	}
 	base, err := filepath.Abs(base)
 	if err != nil {
@@ -335,6 +348,11 @@ func Locate() (Paths, error) {
 		Log:    filepath.Join(data, "audiofilus.log"),
 		Socket: sock,
 	}, nil
+}
+
+// inAppBundle says whether dir is the Contents/MacOS folder of a macOS .app.
+func inAppBundle(dir string) bool {
+	return strings.HasSuffix(filepath.ToSlash(dir), ".app/Contents/MacOS")
 }
 
 // Resolve hace absoluta una ruta respecto a la carpeta del binario.

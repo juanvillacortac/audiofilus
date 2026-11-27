@@ -3,6 +3,8 @@ package mdns
 import (
 	"context"
 	"encoding/binary"
+	"errors"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -88,6 +90,9 @@ func TestAnnounceBrowse(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
 	defer cancel()
 	found, err := Browse(ctx, "_audiofilus-test._tcp.local")
+	if errors.Is(err, syscall.EHOSTUNREACH) {
+		t.Skipf("no multicast route: %v", err) // macOS CI runners
+	}
 	if err != nil {
 		t.Fatal(err)
 	}

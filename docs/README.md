@@ -21,5 +21,6 @@
 | [cast.md](cast.md) | Sending music to Chromecast and DLNA renderers |
 | [dlna.md](dlna.md) | The DLNA/UPnP server and renderer |
 | [mpd.md](mpd.md) | The MPD server, mDNS, and Audiofilus as an MPD client (sending, remote library) |
+| [macos-menu-freeze.md](macos-menu-freeze.md) | macOS: why the interface stopped while a window menu was open, the fix in the Ebitengine fork, and how to keep it |
 | [ios.md](ios.md) | The iPhone and iPad app |
 | [android.md](android.md) | The Android app (in progress) |

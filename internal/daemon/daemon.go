@@ -203,14 +203,20 @@ func Run(paths config.Paths) error {
 				defer d.mu.Unlock()
 				return d.attached > 0
 			},
-			Quit: func() { d.quitOnce.Do(func() { close(d.quit) }) },
-			Lang: cfg.Language,
+			Quit:   func() { d.quitOnce.Do(func() { close(d.quit) }) },
+			Lang:   cfg.Language,
+			Remote: d.remote,
 		})
 		if err != nil {
 			log.Printf("system tray disabled: %v", err)
 			tr = nil
 		} else {
 			defer tr.Close()
+			// Los saltos también: en macOS la bandeja es el Centro de control.
+			if NowPlayingHook == nil {
+				NowPlayingHook = func(engine.Status) { tr.Update() }
+				defer func() { NowPlayingHook = nil }()
+			}
 		}
 	}
 	eng.OnPlayingChanged = func(playing bool) {

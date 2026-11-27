@@ -1,0 +1,74 @@
+# The macOS app, universal (Apple Silicon and Intel in one), as a DMG and as
+# the zip that Settings → Update installs (tools/macos/dmg.sh), ad-hoc signed.
+# Run by hand from the Actions tab, on pull requests, and from release.yml.
+name: macOS
+
+on:
+  workflow_dispatch:
+  pull_request:
+  workflow_call:
+    secrets:
+      LASTFM_KEY:
+        required: false
+      LASTFM_SECRET:
+        required: false
+
+jobs:
+  dmg:
+    # On an Intel Mac: zig builds the decoders for both CPUs
+    # (tools/macos/libs.sh). The arm64 runners often wait 15 minutes and get
+    # cancelled.
+    runs-on: macos-15-intel
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      # The decoders take ~13 minutes on this runner: they're only rebuilt when
+      # the scripts that build them change.
+      - name: The decoders, from the cache
+        id: libs
+        uses: actions/cache@v4
+        with:
+          path: build/macos
+          key: macos-libs-zig0.15.2-${{ hashFiles('tools/macos/libs.sh', 'tools/libgme/build.sh', 'tools/fdk-aac/build.sh', 'tools/ffmpeg/build.sh', 'tools/ffmpeg/shim.c', 'tools/libvgm/build.sh', 'tools/libvgm/shim.cpp', 'tools/libvgm/libiconv.tbd') }}
+      - name: zig, for the decoders
+        if: steps.libs.outputs.cache-hit != 'true'
+        uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [tools]
+            zig = "0.15.2"
+      - name: The decoders (tools/macos/libs.sh)
+        if: steps.libs.outputs.cache-hit != 'true'
+        run: tools/macos/libs.sh build/macos
+      - name: The DMG
+        env:
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+        run: |
+          [ "$GITHUB_REF_TYPE" = tag ] && export VERSION=$GITHUB_REF_NAME
+          tools/macos/dmg.sh out
+      - name: Signed, for both CPUs, only the system's libraries, and it starts
+        run: |
+          mnt=/tmp/af
+          hdiutil attach out/Audiofilus-macos.dmg -mountpoint $mnt -nobrowse
+          codesign --verify --deep $mnt/Audiofilus.app
+          for f in $mnt/Audiofilus.app/Contents/MacOS/audiofilus $mnt/Audiofilus.app/Contents/Frameworks/*.dylib; do
+            [ "$(lipo -archs "$f")" = "x86_64 arm64" ] || { echo "$f is $(lipo -archs "$f"), not x86_64 and arm64"; exit 1; }
+          done
+          if otool -L $mnt/Audiofilus.app/Contents/Frameworks/*.dylib | grep -v -E '^/|@rpath|/usr/lib/lib(System.B|iconv.2)'; then exit 1; fi
+          $mnt/Audiofilus.app/Contents/MacOS/audiofilus version
+          $mnt/Audiofilus.app/Contents/MacOS/audiofilus bench "$PWD/internal/decode/testdata/tone.m4a"
+          hdiutil detach $mnt
+      - name: The updater's zip, unpacked file by file like internal/update, is still signed and starts
+        run: |
+          unzip -q out/Audiofilus-macos.zip -d /tmp/afzip
+          codesign --verify --deep --strict /tmp/afzip/Audiofilus.app
+          /tmp/afzip/Audiofilus.app/Contents/MacOS/audiofilus version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audiofilus-macos
+          path: out/*
+          retention-days: 14

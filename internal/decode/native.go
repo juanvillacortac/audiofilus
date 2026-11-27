@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/ebitengine/purego"
 )
@@ -31,7 +32,7 @@ type libFunc struct {
 // libgme) y luego donde el sistema las tenga.
 func openLib(names []string, fns []libFunc) error {
 	var lib uintptr
-	for _, name := range append(bundled(names), names...) {
+	for _, name := range append(append(bundled(names), dylibs(names)...), names...) {
 		if l, err := loadLib(name); err == nil {
 			lib = l
 			break
@@ -64,6 +65,39 @@ func cString(s string) *byte {
 }
 
 var errDisabled = errors.New("native decoders disabled by AUDIOFILUS_DECODER=go")
+
+// dylibs are the macOS paths for names: in the .app's Frameworks, next to the
+// binary and in Homebrew (Apple Silicon and Intel), since dlopen doesn't
+// search /opt/homebrew/lib.
+func dylibs(names []string) []string {
+	if runtime.GOOS != "darwin" {
+		return nil
+	}
+	dirs := []string{"/opt/homebrew/lib", "/usr/local/lib"}
+	if exe, err := os.Executable(); err == nil {
+		dir := filepath.Dir(exe)
+		dirs = append([]string{filepath.Join(dir, "..", "Frameworks"), dir}, dirs...)
+	}
+	var out []string
+	for _, n := range names {
+		if d, ok := dylibName(n); ok {
+			for _, dir := range dirs {
+				out = append(out, filepath.Join(dir, d))
+			}
+		}
+	}
+	return out
+}
+
+// dylibName turns a Linux name into its macOS one: libmpg123.so.0 is
+// libmpg123.0.dylib and libavshim.so is libavshim.dylib.
+func dylibName(name string) (string, bool) {
+	base, ver, ok := strings.Cut(name, ".so")
+	if !ok || (ver != "" && ver[0] != '.') {
+		return "", false
+	}
+	return base + ver + ".dylib", true
+}
 
 // bundled son las rutas de names en la carpeta libs.<arquitectura> junto al
 // programa (libs.aarch64, libs.x86_64, como en PortMaster), si existe.
