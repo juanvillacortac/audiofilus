@@ -154,6 +154,7 @@ func ThemeFor(accent, accent2 color.RGBA) Theme {
 }
 
 func mix(a, b color.RGBA, t float64) color.RGBA {
+	t = max(0, min(1, t)) // fuera de 0..1 un canal pasaría de 255 y uint8 lo daría la vuelta
 	l := func(x, y uint8) uint8 { return uint8(float64(x)*(1-t) + float64(y)*t + 0.5) }
 	return color.RGBA{l(a.R, b.R), l(a.G, b.G), l(a.B, b.B), 0xff}
 }
