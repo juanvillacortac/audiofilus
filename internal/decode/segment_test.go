@@ -16,6 +16,10 @@ func TestCuePath(t *testing.T) {
 	if !ok || f != "/m/x.flac" || s != 12345*time.Millisecond || e != 256789*time.Millisecond {
 		t.Errorf("SplitCuePath = %q %v %v %v", f, s, e, ok)
 	}
+	// 64.6 no es exacto en float: tiene que volver tal cual (01:04:45 de una hoja).
+	if _, s, _, _ := SplitCuePath(CuePath("/m/x.ogg", 64600*time.Millisecond, 0)); s != 64600*time.Millisecond {
+		t.Errorf("SplitCuePath round trip = %v", s)
+	}
 	for _, p := range []string{"/m/#1 hit.mp3", "/m/x.flac#t=5,2", "/m/x.flac"} {
 		if IsCuePath(p) {
 			t.Errorf("%q should not be a CUE path", p)

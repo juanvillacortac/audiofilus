@@ -43,8 +43,9 @@ type libraryCache struct {
 // cacheVersion es la de las entradas de la caché: si la guardada es más
 // vieja, las etiquetas se vuelven a leer una vez (la 2 trajo el género y el
 // año, para las listas inteligentes; la 3, los varios artistas de una
-// canción y las etiquetas de los FLAC con un ID3v2 delante).
-const cacheVersion = 3
+// canción y las etiquetas de los FLAC con un ID3v2 delante; la 4, las
+// pistas CUE cuyo inicio no cabe exacto en un float, como 01:04:45).
+const cacheVersion = 4
 
 // Scan es un escaneo de la biblioteca en marcha. Leer las etiquetas de cada
 // archivo es lento en una portátil, así que se guardan en data/library.json y

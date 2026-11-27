@@ -3,6 +3,7 @@ package decode
 import (
 	"fmt"
 	"io"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -46,7 +47,9 @@ func SplitCuePath(p string) (file string, start, end time.Duration, ok bool) {
 			return 0
 		}
 		f, _ := strconv.ParseFloat(p[a:b], 64)
-		return time.Duration(f * float64(time.Second))
+		// Redondeado al milisegundo (lo que guarda CuePath): 64.6 en float
+		// es 64.5999..., y truncado no coincide con el inicio de la hoja.
+		return time.Duration(math.Round(f*1000)) * time.Millisecond
 	}
 	start, end = parse(m[2], m[3]), parse(m[4], m[5])
 	if end > 0 && end <= start {
