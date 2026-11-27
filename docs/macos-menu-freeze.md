@@ -2,7 +2,7 @@
 
 On macOS, hovering over the window's green button shows the tiling menu (Full Screen, Move & Resize, Fill & Arrange). Before this fix, every animation in the interface stopped while that menu was open: the visualizers, the scrolling titles, the progress bar. The music kept playing, because the service is a separate process, and everything moved again once the menu closed. The same happened with any other menu the app opens from its own window, such as the menu bar menus.
 
-The fix is in the Ebitengine fork, not in Audiofilus. This document explains the cause, how other projects handle it, what the fix does, and what to check so it doesn't come back.
+The fix is in the Ebitengine fork, behind a function of its own that Audiofilus turns on: `ebiten.SetRunnableWhileMenuOpen(true)` in `cmd/audiofilus/ui.go`. It is off by default, so other games built on the fork, like Trancazo, keep Ebitengine's usual behavior unless they ask for it. This document explains the cause, how other projects handle it, what the fix does, and what to check so it doesn't come back.
 
 ## Cause
 
@@ -22,10 +22,10 @@ Calling the window delegate's `windowDidResize:` from Audiofilus doesn't work ei
 
 ## The fix
 
-The fix is one file in the fork, `internal/ui/ui_darwin.go`, about 70 lines:
+The fix is fork commit `c823bb3` (`all: add SetRunnableWhileMenuOpen ...`), mostly in `internal/ui/ui_darwin.go`. `SetRunnableWhileMenuOpen` and `IsRunnableWhileMenuOpen` live in `run.go`, next to `SetRunnableOnUnfocused`, and keep an atomic flag in the shared `UserInterface` (`internal/ui/ui.go`). The macOS part:
 
 1. When the window is created (`initializeWindowAfterCreation`), a repeating 60 Hz `NSTimer` is added to the main run loop **only in `NSEventTrackingRunLoopMode`**. The rest of the time the run loop is in its default mode, so the timer never fires and costs no CPU when no menu is open.
-2. The timer calls a new method, `trackingLoopTick:`, on Ebitengine's existing window delegate class (`EbitengineWindowDelegate`). That method calls `forceUpdateFrameInTrackingLoop`.
+2. The timer calls a new method, `trackingLoopTick:`, on Ebitengine's existing window delegate class (`EbitengineWindowDelegate`). Unless the game called `SetRunnableWhileMenuOpen(true)`, that method returns right away; otherwise it calls `forceUpdateFrameInTrackingLoop`.
 3. `forceUpdateFrameInTrackingLoop` gets the current sizes the same way the game loop does (`layoutSizes`, `currentMonitor`). It then calls the existing `forceUpdateFrameDuringPollEvents`, so a menu goes through the same code as a live resize. That code already runs `Update` and `Draw` on another goroutine, keeps the main thread processing its calls, lets the clock decide how many ticks to run (so game time doesn't speed up), and refuses to run recursively or in single-thread mode.
 4. It does nothing in these cases:
    - The main thread isn't polling events for the game loop, or a forced frame is already running. Then the tracking loop is inside some other main-thread operation, and querying the window there is unsafe.
@@ -39,6 +39,9 @@ The change:
 	// The timer added in initializeWindowAfterCreation calls this.
 	Cmd: sel_trackingLoopTick,
 	Fn: func(id objc.ID, cmd objc.SEL, timer objc.ID) {
+		if !u.IsRunnableWhileMenuOpen() {
+			return
+		}
 		if b, ok := u.runningBackend().(*glfwBackend); ok {
 			b.forceUpdateFrameInTrackingLoop()
 		}
@@ -142,7 +145,7 @@ Audiofilus doesn't contain Ebitengine. The `replace` in `go.mod` decides which c
 grep -c trackingLoopTick "$(go list -m -f '{{.Dir}}' github.com/hajimehoshi/ebiten/v2)/internal/ui/ui_darwin.go"
 ```
 
-Anything above 0 means the fix is in. 0, or a "no such file" error, means the build has the old behavior.
+Anything above 0 means the fix is in. 0, or a "no such file" error, means the build has the old behavior. A fork commit without the fix also has no `SetRunnableWhileMenuOpen`, so Audiofilus wouldn't build against it.
 
 **When the fix has to go into a fork commit** (the first time, or after the fork was rebuilt from upstream without it):
 

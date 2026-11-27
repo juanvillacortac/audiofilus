@@ -121,6 +121,10 @@ func run(music, shots, frames, album, language string, scroll bool, bench, bench
 	ebiten.SetWindowTitle("Audiofilus")
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	// En macOS, que la interfaz siga moviéndose con un menú de la ventana
+	// abierto (el del botón verde, los de la barra de menús). Es una función
+	// del fork de Ebitengine, apagada por defecto; en el resto no hace nada.
+	ebiten.SetRunnableWhileMenuOpen(true)
 	// Dentro de gamescope (como se prueba en el PC un formato de consola), la
 	// ventana de 4:3 saldría con bandas negras; a pantalla completa toma el
 	// formato que tenga gamescope.
