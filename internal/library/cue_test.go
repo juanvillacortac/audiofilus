@@ -134,6 +134,27 @@ func TestReadCueTrack(t *testing.T) {
 	}
 }
 
+// TestReadCueEntryInexactStart comprueba que una pista que empieza en un
+// tiempo que no cabe exacto en un float (01:04:45 son 64,6 s) se encuentre
+// en su hoja: antes salía sin número y con las etiquetas del archivo.
+func TestReadCueEntryInexactStart(t *testing.T) {
+	dir := t.TempDir()
+	_ = os.WriteFile(filepath.Join(dir, "album.ogg"), []byte("x"), 0o644)
+	cue := "FILE \"album.ogg\" WAVE\n" +
+		"  TRACK 01 AUDIO\n    TITLE \"Track 1\"\n    INDEX 01 00:00:00\n" +
+		"  TRACK 02 AUDIO\n    TITLE \"Track 2\"\n    INDEX 01 01:04:45\n" +
+		"  TRACK 03 AUDIO\n    TITLE \"Track 3\"\n    INDEX 01 05:18:35\n"
+	_ = os.WriteFile(filepath.Join(dir, "album.cue"), []byte(cue), 0o644)
+	c, err := ReadCue(filepath.Join(dir, "album.cue"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	tr, n, ok := ReadCueEntry(c.Tracks[1].Path())
+	if !ok || n != 2 || tr.Title != "Track 2" {
+		t.Errorf("ReadCueEntry(%q) = %+v, %d, %v", c.Tracks[1].Path(), tr, n, ok)
+	}
+}
+
 // TestScanWithCue comprueba que al escanear una carpeta con un disco entero
 // en un archivo y su hoja CUE salgan las pistas de la hoja (con sus
 // títulos) en vez del archivo, y que Expand de la hoja dé lo mismo.
