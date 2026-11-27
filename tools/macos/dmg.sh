@@ -96,5 +96,11 @@ echo "$out/Audiofilus-macos.zip"
 
 ln -s /Applications "$work/dmg/Applications"
 dmg=$out/Audiofilus-macos.dmg
-hdiutil create -volname Audiofilus -srcfolder "$work/dmg" -ov -format UDZO "$dmg" >/dev/null
+# On the GitHub runners hdiutil sometimes fails with "Resource busy" (something
+# else still has the files open): it works on a second try.
+for try in 1 2 3; do
+	hdiutil create -volname Audiofilus -srcfolder "$work/dmg" -ov -format UDZO "$dmg" >/dev/null && break
+	[ "$try" = 3 ] && exit 1
+	sleep 5
+done
 echo "$dmg"
